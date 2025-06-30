@@ -77,7 +77,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
     'dsn'   => '',
-    'hostname' => '51.94.163.211',
+    'hostname' => '18.101.123.255',
     'username' => 'root',
     'password' => '123456789',
     'database' => 'formation_preprod',
@@ -102,7 +102,7 @@ $db['default'] = array(
 
 $db['humhub'] = [
     'dsn'      => '',
-    'hostname' => '51.94.163.211',
+    'hostname' => '18.101.123.255',
     'username' => 'root',
     'password' => '123456789',
     'database' => 'humhub',

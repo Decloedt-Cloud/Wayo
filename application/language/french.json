@@ -1552,5 +1552,10 @@
     "general_settings_updated_successfully": "General settings updated successfully",
     "mentor_information": "Mentor information",
     "error_deleting_humhub_user": "Error deleting humhub user",
-    "wall": "Wall"
+    "wall": "Wall",
+    "back_to_list_room": "Back to list room",
+    "hr": "Hr",
+    "your_quiz_results": "Your quiz results",
+    "please_add_an_appointment_in_the_calendar": "Please add an appointment in the calendar",
+    "correct_answers": "Correct answers"
 }
