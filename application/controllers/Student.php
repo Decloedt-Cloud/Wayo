@@ -97,9 +97,10 @@ class Student extends CI_Controller {
 			$page_data = [
 				'folder_name' => 'dashboard',
 				'page_title'  => 'Dashboard',
-				//'page_name'   => 'central',
+				
 				'iframe_url'  => $iframeUrl,
 			];
+		
 		$this->load->view('backend/index', $page_data);
 	}
 	public function get_appointments() {

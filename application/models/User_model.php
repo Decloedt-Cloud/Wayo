@@ -401,7 +401,6 @@ class User_model extends CI_Model
 				'linkedin' => $this->input->post('linkedin_link')
 			);
 			$teacher_table_data['social_links'] = json_encode($social_links);
-			$teacher_table_data['department_id'] = html_escape($this->input->post('department'));
 			$teacher_table_data['designation'] = html_escape($this->input->post('designation'));
 			$teacher_table_data['school_id'] = html_escape($this->input->post('school_id'));
 			$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
@@ -455,7 +454,7 @@ class User_model extends CI_Model
 			$this->db->where('school_id', $this->input->post('school_id'));
 			$this->db->update('users', $data);
 
-			$teacher_table_data['department_id'] = html_escape($this->input->post('department'));
+		
 			$teacher_table_data['designation'] = html_escape($this->input->post('designation'));
 			$teacher_table_data['about'] = html_escape($this->input->post('about'));
 			$social_links = array(

@@ -1737,5 +1737,6 @@
     "membres_actifs": "Membres actifs",
     "error_deleting_humhub_user": "Error deleting humhub user",
     "password_add_successful": "Password add successful",
-    "wall": "Wall"
+    "wall": "Wall",
+    "online_admission_learner": "Online admission learner"
 }

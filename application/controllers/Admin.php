@@ -932,66 +932,6 @@ public function get_sections_by_class()
 	//END SUBJECT section
 
 
-	//START DEPARTMENT section
-	public function department($param1 = '', $param2 = '')
-	{
-
-		if ($param1 == 'create') {
-			$modelResponse = $this->crud_model->department_create();
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-			  'name' => $this->security->get_csrf_token_name(),
-			  'hash' => $this->security->get_csrf_hash()
-		  );
-		  
-		  // Fusionner la réponse du modèle avec le CSRF
-		  $response = array(
-			  'status' => $modelResponse['status'],
-			  'notification' => $modelResponse['notification'],
-			  'csrf' => $csrf
-		  );
-		  
-		  echo json_encode($response);
-		}
-
-		if ($param1 == 'update') {
-			$response = $this->crud_model->department_update($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
-
-		if ($param1 == 'delete') {
-			$response = $this->crud_model->department_delete($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
-
-		// Get the data from database
-		if ($param1 == 'list') {
-			$this->load->view('backend/admin/department/list');
-		}
-
-		if (empty($param1)) {
-			$page_data['folder_name'] = 'department';
-			$page_data['page_title'] = 'department';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
-	//END DEPARTMENT section
 
 
 	//START SYLLABUS section

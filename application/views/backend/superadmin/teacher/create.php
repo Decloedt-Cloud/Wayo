@@ -30,18 +30,7 @@
             <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_designation'); ?></small>
         </div>
 
-        <div class="form-group mb-1">
-            <label for="department"><?php echo get_phrase('department'); ?><span class="required"> * </span></label>
-            <select name="department" id="department" class="form-control select2" data-toggle = "select2" required>
-                <option value=""><?php echo get_phrase('select_a_department'); ?></option>
-                <?php $departments = $this->db->get_where('departments', array('school_id' => school_id()))->result_array();
-                foreach($departments as $department){
-                    ?>
-                    <option value="<?php echo $department['id']; ?>"><?php echo $department['name']; ?></option>
-                <?php } ?>
-            </select>
-            <small id="" class="form-text text-muted"><?php echo get_phrase('provide_a_department'); ?></small>
-        </div>
+
 
         <div class="form-group mb-1">
             <label for="phone"><?php echo get_phrase('phone_number'); ?><span class="required"> * </span></label>
@@ -129,7 +118,7 @@
 
 <script>
 $(document).ready(function () {
-    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#department', '#gender','#show_on_website']);
+    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['', '#gender','#show_on_website']);
   $(".ajaxForm").validate({}); // Jquery form validation initialization
     $(".ajaxForm").submit(function(e) {
         
