@@ -3051,11 +3051,18 @@ public function get_sections_by_class()
     }
 
     // showing the list of language
-    if ($param1 == 'active') {
-      $user_id = $this->session->userdata('user_id');
-      $this->settings_model->update_system_language($user_id, $param2);
-      redirect(route('language'), 'refresh');
-  }
+ if ($param1 == 'active') {
+    $user_id = $this->session->userdata('user_id');
+    $this->settings_model->update_system_language($user_id, $param2);
+
+    // Redirige vers la page précédente si elle existe, sinon vers le dashboard
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    if (!empty($referer)) {
+        redirect($referer, 'refresh');
+    } else {
+        redirect(site_url('home'), 'refresh');
+    }
+}
   
 
     // showing the list of language

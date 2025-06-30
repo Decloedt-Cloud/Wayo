@@ -70,8 +70,8 @@
 
                     </div>
                     <div class="form-group mt-2 col-md-12">
-                        <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right">Supprimer</button>
+                        <button type="submit" class="btn btn-primary"><?php echo get_phrase("Sauvegarder") ?></button>
+                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right"><?php echo get_phrase("Supprimer") ?></button>
                     </div>
                 </form>
             </div>
@@ -89,7 +89,7 @@
 <div id="DynamicNotification" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-2 m-3" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
-            Action effectuée avec succès.
+            <?php echo get_phrase("Action effectuée avec succès.") ?>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -138,9 +138,9 @@
                 if (clicked.isBefore(now, 'day')) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Date invalide',
-                        text: 'Impossible d’ajouter un rendez-vous à une date passée.',
-                        confirmButtonText: 'OK'
+                        title: '<?php echo get_phrase("Date invalide") ?>',
+                        text: '<?php echo get_phrase("Impossible d’ajouter un rendez-vous à une date passée.") ?>',
+                        confirmButtonText: '<?php echo get_phrase("OK") ?>'
                     });
                     $('#calendar').fullCalendar('unselect');
                     return;
@@ -215,14 +215,14 @@
                     var id = $('#appointmentId').val();
 
                     Swal.fire({
-                        title: "Êtes-vous sûr ?",
-                        text: "Cette action est irréversible !",
+                        title: "<?php echo get_phrase("Êtes-vous sûr ?") ?>",
+                        text: "<?php echo get_phrase("Cette action est irréversible !") ?>",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#d33",
                         cancelButtonColor: "#3085d6",
-                        confirmButtonText: "Oui, supprimer !",
-                        cancelButtonText: "Annuler"
+                        confirmButtonText: "<?php echo get_phrase("Oui, supprimer !") ?>",
+                        cancelButtonText: "<?php echo get_phrase("Annuler") ?>"
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
@@ -263,9 +263,9 @@
             if (selected.isBefore(now)) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Heure invalide',
-                    text: 'Impossible de programmer un rendez-vous dans le passé.',
-                    confirmButtonText: 'OK'
+                    title: '<?php echo get_phrase("Heure invalide") ?>',
+                    text: '<?php echo get_phrase("Impossible de programmer un rendez-vous dans le passé.") ?>',
+                    confirmButtonText: '<?php echo get_phrase("OK") ?>'
                 });
                 return; // Ne pas envoyer l'Ajax
             }
@@ -275,7 +275,7 @@
             }
 
             var url = id ? "<?= base_url('teacher/update_appointment'); ?>" : "<?= base_url('teacher/add_appointment'); ?>";
-            var successMessage = id ? "Rendez-vous mis à jour !" : "Rendez-vous ajouté avec succès !";
+            var successMessage = id ? "<?php echo get_phrase("Rendez-vous mis à jour !") ?>" : "<?php echo get_phrase("Rendez-vous ajouté avec succès !") ?>";
 
 
             $.ajax({
@@ -290,7 +290,7 @@
                     showNotification(successMessage, "success");
                 },
                 error: function () {
-                    showNotification("Une erreur est survenue.", "error");
+                    showNotification("<?php echo get_phrase("Une erreur est survenue.") ?>", "error");
                 }
             });
         });

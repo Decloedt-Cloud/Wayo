@@ -30,7 +30,7 @@
 
         <div class="form-group mb-1">
             <label for="gender"><?php echo get_phrase('admin_of'); ?></label>
-            <select name="school_id" id="school_id" class="form-control select2" data-toggle = "select2" required>
+            <select name="school_id" id="school_id" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_school'); ?></option>
                 <?php $schools = $this->crud_model->get_schools()->result_array(); ?>
                 <?php foreach ($schools as $school): ?>
@@ -42,7 +42,7 @@
 
         <div class="form-group mb-1">
             <label for="gender"><?php echo get_phrase('gender'); ?></label>
-            <select name="gender" id="gender" class="form-control select2" data-toggle = "select2">
+            <select name="gender" id="gender" class="form-control" >
                 <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
                 <option value="Male"><?php echo get_phrase('male'); ?></option>
                 <option value="Female"><?php echo get_phrase('female'); ?></option>

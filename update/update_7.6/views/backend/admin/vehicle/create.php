@@ -34,7 +34,7 @@ $drivers = $this->db->get()->result_array(); ?>
 
         <div class="form-group mb-1">
             <label for="driver"><?php echo get_phrase('driver'); ?></label>
-            <select name="driver" id="driver" class="form-control select2" data-toggle="select2" required>
+            <select name="driver" id="driver" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_driver'); ?></option>
                 <?php foreach ($drivers as $driver) : ?>
                 <option value="<?php echo $driver['id'] ?>"><?php echo $driver['name'] ?></option>

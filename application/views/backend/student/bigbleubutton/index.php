@@ -40,11 +40,22 @@
   </div>
 </div>
 
+<style>
+    body[dir="rtl"] .modal-header .btn-close {
+        float: left !important;
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    body[dir="rtl"] .badge{
+        font-size: 1rem !important;
+    }
+</style>
 
 <div id="copyNotification" class="toast align-items-center text-white bg-danger border-0 position-fixed bottom-0 end-0 p-2 m-3" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
-            ⚠️ Aucun lien de réunion disponible pour la copie.
+            ⚠️ <?php echo get_phrase("Aucun lien de réunion disponible pour la copie.") ?>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -304,8 +315,8 @@ document.addEventListener("DOMContentLoaded", function () {
                    //   Mise à jour de l'état de la réunion
                      if (statusElement) {
                          statusElement.innerHTML = isRunning 
-                             ? `<span class="badge bg-success">En Cours</span>` 
-                             : `<span class="badge bg-danger">Non Démarrée</span>`;
+                             ? `<span class="badge bg-success"><?php echo get_phrase("En Cours") ?></span>` 
+                             : `<span class="badge bg-danger"><?php echo get_phrase("Non Démarrée") ?></span>`;
                      }
 
                    //   Mise à jour du bouton "Join"
@@ -354,18 +365,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!meetingURL || meetingURL.trim() === "" || meetingURL.includes("undefined") || meetingURL.includes("null")) {
                 console.warn("⚠️ Aucun lien de réunion disponible pour la copie.");
-                showCopyNotification("Aucun lien de réunion disponible !");
+                showCopyNotification("<?php echo get_phrase("Aucun lien de réunion disponible !") ?>");
                 return;
             }
 
             navigator.clipboard.writeText(meetingURL)
                 .then(() => {
                     this.innerText = "✅";
-                    this.title = "Lien copié !";
+                    this.title = "<?php echo get_phrase("Lien copié !") ?>";
 
                     setTimeout(() => {
                         this.innerText = "📋";  
-                        this.title = "Copier le lien";
+                        this.title = "<?php echo get_phrase("Copier le lien") ?>";
                     }, 2000);
                 })
                 .catch(err => {

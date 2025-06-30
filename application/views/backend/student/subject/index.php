@@ -16,7 +16,7 @@
             <div class="row mt-3">
                 <div class="col-md-3"></div>
                 <div class="col-md-4">
-                    <select name="class_id" id="class_id_subject" class="form-control select2" data-toggle = "select2" required>
+                    <select name="class_id" id="class_id_subject" class="form-control"  required>
                         <?php 
                         $school_id = school_id();
                         $this->db->where('class_id', $student_data['class_id']);

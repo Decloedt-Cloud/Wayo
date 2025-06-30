@@ -26,7 +26,7 @@
 
         <div class="form-group mb-1">
             <label for="access"><?php echo get_phrase('Access'); ?><span class="required"> * </span></label>
-            <select name="access" id="access" class="form-control select2" data-toggle = "select2" required>
+            <select name="access" id="access" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_access'); ?></option>
                 <option value="1"><?php echo get_phrase('public'); ?></option>
                 <option value="0"><?php echo get_phrase('privé'); ?></option>
@@ -38,7 +38,7 @@
 
         <div class="form-group mb-1">
             <label for="access"><?php echo get_phrase('Category'); ?><span class="required"> * </span></label>
-            <select name="category" id="category" class="form-control select2" data-toggle = "select2" required>
+            <select name="category" id="category" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_category'); ?></option>
                 <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
                 <?php foreach ($categories as $categorie): ?>

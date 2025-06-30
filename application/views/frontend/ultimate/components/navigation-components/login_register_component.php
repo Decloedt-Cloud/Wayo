@@ -1,4 +1,4 @@
-<div class="login-section nav-link">
+<div class="login-section">
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
   </div>
   <!-- Login Section -->
@@ -18,7 +18,7 @@
         <label for="loginPassword" class="login-input-label text-uppercase"><?php echo get_phrase("password") ?> <span class="required"> * </span></label>
         <input type="password" class="form-control shadow-none" id="loginPassword" name="login_password">
       </div>
-      <button type="submit" id="loginSubmit" class="login-button text-uppercase mb-3" style="background-color: rgba(210, 130, 45, 0.7);"><?php echo get_phrase("login") ?></button>
+      <button type="submit" id="loginSubmit" class="login-button text-uppercase mb-3" style="background-color: #FC7B30;"><?php echo get_phrase("login") ?></button>
       <!-- Conteneur pour le message d'erreur -->
     </form>
     <a class="register-phrase text-uppercase"><?php echo get_phrase("no account yet? ") ?> <span class="ml-1 register-link"><span>(</span> <?php echo get_phrase("register") ?> <span>)</span></span></a>
@@ -45,10 +45,10 @@
       <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
     </svg>
     <div class="register-choice-dropdown hidden-section display-none">
-      <div class="register-choice mt-10 ml-9">
+      <div class="register-choice mt-10">
       <a class="text-uppercase"><span class="login-link"><svg class="m-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" /></svg><?php echo get_phrase("login") ?></span></a>
-        <button class="btn learner-btn mt-3" style="background-color: rgba(210, 130, 45, 0.7); color: white;">I am a learner</button>
-        <button class="btn mentor-btn mt-3" style="background-color: rgba(210, 130, 45, 0.7); color: white;">I am a mentor</button>
+        <button class="btn learner-btn mt-3" style="background-color: #FC7B30; color: white;">I am a member</button>
+        <button class="btn mentor-btn mt-3" style="background-color: #FC7B30; color: white;">I am a mentor</button>
       </div>
       <div class="learner-form-container hidden-section display-none">
         <form class="learner-form" id="learner-form" method="post" enctype="multipart/form-data" action="<?php echo site_url('admission/online_admission_student/submit/student'); ?>">
@@ -75,8 +75,8 @@
                   <input type="email" class="form-control shadow-none" name="student_email" required placeholder="Email">
                 </div>
                 <div class="form-buttons">
-                <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-                  <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+                <button type="button" class="back-btn text-uppercase">Back</button>
+                  <button type="button" class="next-btn text-uppercase">Next</button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="2">
@@ -98,8 +98,8 @@
                   <input type="date" class="form-control shadow-none" name="date_of_birth" required>
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-                  <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+                  <button type="button" class="back-btn text-uppercase">Back</button>
+                  <button type="button" class="next-btn text-uppercase">Next</button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="3">
@@ -117,8 +117,8 @@
                   <span id="errorMessage" class="text-danger display-none">Passwords need to match.</span>
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-                  <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+                  <button type="button" class="back-btn text-uppercase">Back</button>
+                  <button type="button" class="next-btn text-uppercase">Next</button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="4">
@@ -130,8 +130,8 @@
                   <input type="file" class="form-control shadow-none" name="student_image" id="popup_student_image" accept=".jpg, .jpeg, .png">
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-                  <button type="submit" class="register-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Register</button>
+                  <button type="button" class="back-btn text-uppercase">Back</button>
+                  <button type="submit" class="register-btn text-uppercase">Register</button>
                 </div>
               </div>
             </div>
@@ -176,8 +176,8 @@
             <input type="text" class="form-control shadow-none" name="school_adress" required placeholder="<?php echo get_phrase('address'); ?>">
           </div>
           <div class="form-buttons">
-            <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-            <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+            <button type="button" class="back-btn text-uppercase">Back</button>
+            <button type="button" class="next-btn text-uppercase">Next</button>
           </div>
         </div>
 
@@ -189,7 +189,7 @@
           </div>
           <div class="mb-4 login-input">
   <label class="login-input-label text-uppercase"><?php echo get_phrase('access_mode'); ?> <span class="required"> * </span></label>
-  <div class="visibility-selector pt-3">
+  <div class="visibility-selector space-label-button pt-3">
     <div class="vis-button">
       <input id="popup_private" type="radio" name="visibility" value="0" checked>
       <label class="private-button form-label" for="popup_private"><?php echo get_phrase('private'); ?></label>
@@ -201,8 +201,8 @@
   </div>
 </div>
           <div class="form-buttons" style="margin-top: 57px;">
-            <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-            <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+            <button type="button" class="back-btn text-uppercase">Back</button>
+            <button type="button" class="next-btn text-uppercase">Next</button>
           </div>
         </div>
 
@@ -216,8 +216,8 @@
             <input type="file" class="form-control shadow-none" name="school_image" id="popup_mentor_image" accept=".jpg, .jpeg, .png">
           </div>
           <div class="form-buttons">
-            <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-            <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+            <button type="button" class="back-btn text-uppercase">Back</button>
+            <button type="button" class="next-btn text-uppercase">Next</button>
           </div>
         </div>
 
@@ -241,8 +241,8 @@
             </select>
           </div>
           <div class="form-buttons">
-            <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-            <button type="button" class="next-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Next</button>
+            <button type="button" class="back-btn text-uppercase">Back</button>
+            <button type="button" class="next-btn text-uppercase">Next</button>
           </div>
         </div>
 
@@ -262,8 +262,8 @@
             <span id="errorMessageMentor" class="text-danger display-none"><?php echo get_phrase('passwords_need_to_match'); ?></span>
           </div>
           <div class="form-buttons">
-            <button type="button" class="back-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Back</button>
-            <button type="submit" class="register-btn text-uppercase" style="background-color: rgba(210, 130, 45, 0.7);">Register</button>
+            <button type="button" class="back-btn text-uppercase">Back</button>
+            <button type="submit" class="register-btn text-uppercase">Register</button>
           </div>
         </div>
       </div>
@@ -351,14 +351,12 @@
 }
 
 .public-button {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-radius: 0 5px 5px 0 !important;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .private-button {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-radius: 5px 0 0 5px !important;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
@@ -369,9 +367,13 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
+.space-label-button input[type="radio"] + label {
+  margin-top: 10px;
+}
+
 
 .visibility-selector input[type="radio"]:checked + label {
-  background: rgba(210, 130, 45, 0.937); /* Active color */
+  background-color: #FC7B30 !important;
   box-shadow: none; /* Remove shadow when active */
   transition: all 0.5s ease-in-out;
 }
@@ -419,7 +421,6 @@
   /* Style the buttons to ensure they look good */
   .learner-btn,
   .mentor-btn {
-    background-color: rgba(210, 130, 45, 0.7); /* Your original color */
     color: white;
     border: none; /* Remove any default borders */
     padding: 10px 20px; /* Adjust padding */
@@ -462,7 +463,7 @@
     height: 30px;
     border-radius: 50%;
     background-color: #ccc;
-    color: white;
+    color: #fff !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -470,7 +471,8 @@
   }
 
   .step.active {
-    background-color: rgba(210, 130, 45, 0.7);
+    background-color: #FC7B30;
+    color: #fff;
   }
 
   /* Conteneur des étapes du formulaire */
@@ -496,6 +498,7 @@
   }
 
   .back-btn, .next-btn, .register-btn {
+    background-color: #FC7B30;
     padding: 5px 10px;
     border: none;
     border-radius: 5px;

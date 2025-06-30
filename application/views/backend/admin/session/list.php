@@ -12,7 +12,7 @@ if($check_data->num_rows() > 0): ?>
                     </div>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                    <select class="form-control select2" data-bs-toggle="select2" id = "session_dropdown">
+                    <select class="form-control"  id = "session_dropdown">
                         <option value = ""><?php echo get_phrase('select_a_session'); ?></option>
                         <?php $sessions = $this->db->get('sessions')->result_array();
                         foreach($sessions as $session):?>

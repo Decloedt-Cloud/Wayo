@@ -69,8 +69,8 @@
 
                     </div>
                     <div class="form-group mt-2 col-md-12">
-                        <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right">Supprimer</button>
+                        <button type="submit" class="btn btn-primary"><?php echo get_phrase("Sauvegarder") ?></button>
+                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right"><?php echo get_phrase("Supprimer") ?></button>
                     </div>
                 </form>
             </div>
@@ -88,7 +88,7 @@
 <div id="DynamicNotification" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-2 m-3" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
-            Action effectuée avec succès.
+            <?php echo get_phrase("Action effectuée avec succès.") ?>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>

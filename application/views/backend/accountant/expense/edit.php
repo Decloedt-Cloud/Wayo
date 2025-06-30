@@ -17,7 +17,7 @@
 
     <div class="form-group mb-1">
       <label for="expense_category_id"><?php echo get_phrase('expense_category'); ?></label>
-      <select class="form-control select2" data-toggle = "select2" name="expense_category_id" id = "expense_category_id_on_update" required>
+      <select class="form-control"  name="expense_category_id" id = "expense_category_id_on_update" required>
         <option value=""><?php echo get_phrase('select_an_expense_category'); ?></option>
         <?php
         $expense_categories = $this->crud_model->get_expense_categories()->result_array();

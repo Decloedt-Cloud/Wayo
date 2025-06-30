@@ -20,7 +20,72 @@ $this->db->where('exams.id NOT IN (SELECT exam_id FROM exam_responses WHERE user
 $total_exams = $this->db->count_all_results();
 log_message('debug', 'Total exams not yet taken calculated: ' . $total_exams);
 ?>
+<style>
 
+    body[dir="rtl"] .side-nav-forth-level li a {
+        padding: 8px 10px 8px 15px !important;
+    }
+    body[dir="rtl"] .side-nav .side-nav-link {
+        padding: 15px 0px !important;
+    }
+    body[dir="rtl"] .menu-arrow{
+       left: 5px;
+       right: auto;
+       transform: rotate(180deg);
+       -webkit-transform: rotate(180deg);
+       float: left !important;
+       margin-right: 5px;
+    }
+    body[dir="rtl"] .side-nav-title{
+        font-size: 1.2rem !important;
+
+    }
+    body[dir="rtl"] .side-nav-link{
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
+    }
+    body[dir="rtl"] .side-nav-second-level {
+        font-weight: bold !important;
+        padding-right: 0 !important;
+        margin-right: 35px !important;
+    }
+    body[dir="ltr"] .side-nav .menu-arrow,
+    body[dir="ltr"] .side-nav-link .menu-arrow {
+    transform: rotate(0deg) !important;
+    -webkit-transform: rotate(180deg) !important;
+    }
+
+    body[dir="rtl"] .side-nav-second-level > li > a {
+    font-size: 1rem !important;
+    padding-right: 0 !important;
+    padding-left: 40px !important;
+    text-align: right !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    display: block;
+}
+
+body[dir="rtl"] .badge.float-end {
+    float: left !important;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+@media (max-width: 992px) {
+    body[dir="rtl"] .side-nav-title {
+        font-size: 1.3rem !important;
+    }
+    body[dir="rtl"] .side-nav-link{
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+    }
+    body[dir="rtl"] .side-nav-second-level > li > a {
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
+    }
+}
+
+</style>
 <!-- ========== Left Sidebar Start ========== -->
 <div class="leftside-menu leftside-menu-detached" style="min-width: 280px; max-width: 280px;">
     <div class="leftbar-user">

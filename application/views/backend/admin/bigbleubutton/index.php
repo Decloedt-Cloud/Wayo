@@ -41,7 +41,17 @@
   </div>
 </div>
 
+<style>
+    body[dir="rtl"] .modal-header .btn-close {
+        float: left !important;
+        margin-left: 0;
+        margin-right: auto;
+    }
 
+    body[dir="rtl"] .badge{
+        font-size: 1rem !important;
+    }
+</style>
 
 
 <!-- POPUP DE CONFIRMATION -->
@@ -49,15 +59,15 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteLabel">❌ Confirmation</h5>
+                <h5 class="modal-title" id="confirmDeleteLabel">❌ <?php echo get_phrase("Confirmation") ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>⚠️ Êtes-vous sûr de vouloir supprimer cette room ? Cette action est irréversible.</p>
+                <p>⚠️ <?php echo get_phrase("Êtes-vous sûr de vouloir supprimer cette room ? Cette action est irréversible.") ?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn_room" data-bs-dismiss="modal">Supprimer</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo get_phrase("Annuler") ?></button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn_room" data-bs-dismiss="modal"><?php echo get_phrase("Supprimer") ?></button>
             </div>
         </div>
     </div>
@@ -108,8 +118,8 @@
 
                             if (statusElement) {
                                 statusElement.innerHTML = isRunning 
-                                    ? `<span class="badge bg-success">En Cours</span>` 
-                                    : `<span class="badge bg-danger">Non Démarrée</span>`;
+                                    ? `<span class="badge bg-success"><?php echo get_phrase("En Cours") ?></span>` 
+                                    : `<span class="badge bg-danger"><?php echo get_phrase("Non Démarrée") ?></span>`;
                             }
 
                             if (startButton) {
@@ -183,10 +193,10 @@
                                     showAllRooms();
                                     
                                     // ✅ Notification de succès
-                                    Swal.fire("Supprimé !", "La room a été supprimée avec succès.", "success");
+                                    Swal.fire("<?php echo get_phrase("Supprimé !") ?>", "<?php echo get_phrase("La room a été supprimée avec succès.") ?>", "success");
                                 },
                                 error: function () {
-                                    Swal.fire("Erreur", `❌ Impossible de supprimer la room : ${data.message}`, "error");
+                                    Swal.fire("<?php echo get_phrase("Erreur") ?>", `❌ <?php echo get_phrase("Impossible de supprimer la room :") ?> ${data.message}`, "error");
                                 }
                             });
 
@@ -197,7 +207,7 @@
                                 });
                 } catch (error) {
                     console.error("❌ Erreur lors de la suppression :", error);
-                    Swal.fire("Erreur", "❌ Une erreur inattendue est survenue.", "error");
+                    Swal.fire("<?php echo get_phrase("Erreur") ?>", "❌ <?php echo get_phrase("Une erreur inattendue est survenue") ?>.", "error");
                 }
             });
         });

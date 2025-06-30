@@ -12,8 +12,40 @@ $school_id = school_id();
     <?php include 'metas.php'; ?>
     <!-- all the css files -->
     <?php include 'includes_top.php'; ?>
+    <style>
+    body[dir="rtl"] {
+        font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+        font-size: 1.1rem !important;
+    }
+    body[data-layout="detached"] .content-page {
+        margin-left: 0;
+        overflow: hidden;
+        padding: 0 55px 5px 30px;
+        position: relative;
+        margin-right: -15px;
+        width: 100%;
+        padding-bottom: 60px; 
+    }
+
+    body[dir="rtl"] .card-body .float-end {
+        float: left !important;
+        right: auto !important;
+        left: 0 !important;
+    }
+
+    body[dir="rtl"] .card-body h5 {
+        font-size: 1.1rem !important;
+    }
+
+    body[dir="ltr"] .title_icon {
+        margin-right: 10px;
+    }
+    body[dir="rtl"] .title_icon {
+        margin-left: 10px;
+    }
+    </style>
 </head>
-<body class="loading" data-layout="detached" data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+<body class="loading" data-layout="detached" data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}' <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- HEADER -->
     <?php include 'header.php'; ?>
     <div class="container-fluid">

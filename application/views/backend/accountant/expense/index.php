@@ -28,7 +28,7 @@
                         </div>
 
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0">
-                            <select class="form-control select2" data-toggle = "select2" name="expense_category_id" id="expense_category_id">
+                            <select class="form-control"  name="expense_category_id" id="expense_category_id">
                                 <option value="all"><?php echo get_phrase('expense_category'); ?></option>
                                 <?php
                                 $expense_categories = $this->crud_model->get_expense_categories()->result_array();

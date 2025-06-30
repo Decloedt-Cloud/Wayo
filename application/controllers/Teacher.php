@@ -890,21 +890,17 @@ class Teacher extends CI_Controller {
 
     
 	if ($param1 == 'active') {
-		// 1) Mise à jour de la langue en base et en session
-		$user_id = $this->session->userdata('user_id');
-		$this->session->set_userdata('language', $param2);
-		$this->settings_model->update_system_language($user_id, $param2);
-	
-		// 2) Retourner à la page appelante
-		$referer = $this->input->server('HTTP_REFERER');
-		if ($referer) {
-			redirect($referer, 'refresh');
-		} else {
-			// Fallback : renvoyer vers la home du rôle
-			$role = $this->session->userdata('user_type');
-			redirect(site_url($role), 'refresh');
-		}
-	}
+    $user_id = $this->session->userdata('user_id');
+    $this->settings_model->update_system_language($user_id, $param2);
+
+    // Redirige vers la page précédente si elle existe, sinon vers le dashboard
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    if (!empty($referer)) {
+        redirect($referer, 'refresh');
+    } else {
+        redirect(site_url('home'), 'refresh');
+    }
+}
 
     // showing the list of language
     // if ($param1 == 'update_phrase') {

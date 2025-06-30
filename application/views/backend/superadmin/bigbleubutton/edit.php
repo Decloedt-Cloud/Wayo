@@ -29,9 +29,9 @@
 
         <div class="form-group mb-1">
           
-            <label for="classSelect" class="form-label">Sélectionner une classe</label>
+            <label for="classSelect" class="form-label"><?php echo get_phrase("Sélectionner une classe") ?></label>
             <select class="form-select" id="classSelect" name="classSelect" disabled required>
-                <option value="">Choisissez une classe</option>
+                <option value=""><?php echo get_phrase("Choisissez une classe") ?></option>
                     <?php foreach ($classes as $class): ?>
                         <option <?php if ($room['class_id'] == $class['id']): ?> selected <?php endif; ?> value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                     <?php endforeach; ?>

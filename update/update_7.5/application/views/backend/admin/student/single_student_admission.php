@@ -26,7 +26,7 @@
         <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="parent_id"><?php echo get_phrase('parent'); ?></label>
             <div class="col-md-9">
-                <select id="parent_id" name="parent_id" class="form-control select2" data-toggle = "select2"  >
+                <select id="parent_id" name="parent_id" class="form-control"   >
                     <option value=""><?php echo get_phrase('select_a_parent'); ?></option>
                     <?php $parents = $this->db->get_where('parents', array('school_id' => $school_id))->result_array(); ?>
                     <?php foreach($parents as $parent): ?>
@@ -39,7 +39,7 @@
         <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="class_id"><?php echo get_phrase('class'); ?></label>
             <div class="col-md-9">
-                <select name="class_id" id="class_id" class="form-control select2" data-toggle = "select2" required onchange="classWiseSection(this.value)">
+                <select name="class_id" id="class_id" class="form-control"  required onchange="classWiseSection(this.value)">
                     <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                     <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                     <?php foreach($classes as $class){ ?>
@@ -52,7 +52,7 @@
         <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="section_id"><?php echo get_phrase('section'); ?></label>
             <div class="col-md-9" id = "section_content">
-                <select name="section_id" id="section_id" class="form-control select2" data-toggle = "select2" required >
+                <select name="section_id" id="section_id" class="form-control"  required >
                     <option value=""><?php echo get_phrase('select_section'); ?></option>
                 </select>
             </div>
@@ -68,7 +68,7 @@
         <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="gender"><?php echo get_phrase('gender'); ?></label>
             <div class="col-md-9">
-                <select name="gender" id="gender" class="form-control select2" data-toggle = "select2"  required>
+                <select name="gender" id="gender" class="form-control"   required>
                     <option value=""><?php echo get_phrase('select_gender'); ?></option>
                     <option value="Male"><?php echo get_phrase('male'); ?></option>
                     <option value="Female"><?php echo get_phrase('female'); ?></option>
@@ -80,7 +80,7 @@
         <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="blood_group"><?php echo get_phrase('blood_group'); ?></label>
             <div class="col-md-9">
-                <select name="blood_group" id="blood_group" class="form-control select2" data-toggle = "select2"  required>
+                <select name="blood_group" id="blood_group" class="form-control"   required>
                     <option value=""><?php echo get_phrase('select_a_blood_group'); ?></option>
                     <option value="a+">A+</option>
                     <option value="a-">A-</option>

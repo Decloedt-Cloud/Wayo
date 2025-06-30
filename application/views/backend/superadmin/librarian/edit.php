@@ -29,7 +29,7 @@ foreach($users as $user){
 
             <div class="form-group mb-1">
                 <label for="gender"><?php echo get_phrase('gender'); ?></label>
-                <select name="gender" id="gender" class="form-control select2" data-toggle = "select2">
+                <select name="gender" id="gender" class="form-control" >
                     <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
                     <option value="Male" <?php if($user['gender'] == 'Male') echo 'selected'; ?>><?php echo get_phrase('male'); ?></option>
                     <option value="Female" <?php if($user['gender'] == 'Female') echo 'selected'; ?>><?php echo get_phrase('female'); ?></option>

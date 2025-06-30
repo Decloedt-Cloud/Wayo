@@ -18,7 +18,7 @@
                 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id_cours" class="form-control select2" data-toggle = "select2" required onchange="classWiseCours(this.value)">
+                    <select name="class" id="class_id_cours" class="form-control"  required onchange="classWiseCours(this.value)">
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php
                         $classes = $this->db->get_where('classes', array('school_id' =>  $school_id))->result_array();
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="col-md-2 mb-1">
-                    <select name="quiz" id="quiz_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="quiz" id="quiz_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_quiz'); ?></option>
                     </select>
                 </div>

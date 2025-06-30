@@ -32,7 +32,7 @@ foreach($users as $user):
 
       <div class="form-group mb-1">
         <label for="department"><?php echo get_phrase('department'); ?><span class="required"> * </span></label>
-        <select name="department" id="department" class="form-control select2" data-toggle = "select2" required>
+        <select name="department" id="department" class="form-control"  required>
           <option value=""><?php echo get_phrase('select_a_department'); ?></option>
           <?php $departments = $this->db->get_where('departments', array('school_id' => school_id()))->result_array();
           foreach($departments as $department){
@@ -51,7 +51,7 @@ foreach($users as $user):
 
       <div class="form-group mb-1">
         <label for="gender"><?php echo get_phrase('gender'); ?></label>
-        <select name="gender" id="gender" class="form-control select2" data-toggle = "select2">
+        <select name="gender" id="gender" class="form-control" >
           <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
           <option value="Male" <?php if($user['gender'] == 'Male') echo 'selected'; ?>><?php echo get_phrase('male'); ?></option>
           <option value="Female" <?php if($user['gender'] == 'Female') echo 'selected'; ?>><?php echo get_phrase('female'); ?></option>
@@ -108,7 +108,7 @@ foreach($users as $user):
 
       <div class="form-group mb-1">
         <label for="show_on_website"><?php echo get_phrase('show_on_website'); ?></label>
-        <select name="show_on_website" id="show_on_website" class="form-control select2" data-toggle = "select2">
+        <select name="show_on_website" id="show_on_website" class="form-control" >
           <option value="1" <?php if($teacher['show_on_website'] == 1) echo 'selected'; ?>><?php echo get_phrase('show'); ?></option>
           <option value="0" <?php if($teacher['show_on_website'] == 0) echo 'selected'; ?>><?php echo get_phrase('do_not_need_to_show'); ?></option>
         </select>

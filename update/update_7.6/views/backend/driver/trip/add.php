@@ -6,7 +6,7 @@
 
         <div class="form-group mb-1">
             <label for="vehicle"><?php echo get_phrase('vehicle'); ?></label>
-            <select name="vehicle_id" id="vehicle" class="form-control select2" data-toggle="select2" onchange="get_route_by_vehicle()" required>
+            <select name="vehicle_id" id="vehicle" class="form-control"  onchange="get_route_by_vehicle()" required>
                 <option value=""><?php echo get_phrase('select_a_vehicle'); ?></option>
                 <?php foreach ($vehicles as $vehicle) : ?>
                 <option value="<?php echo $vehicle['id'] ?>"><?php echo $vehicle['vh_model'] . ', ' . $vehicle['vh_num'] ?></option>

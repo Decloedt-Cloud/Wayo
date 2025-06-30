@@ -18,7 +18,7 @@
                 <div class="row mt-3">
                     <h5><?php echo get_phrase('select_a_child'); ?></h5>
                     <div class="col-md-4 mb-1">
-                        <select name="filter_child_id" id="filter_child_id" class="form-control select2" data-toggle="select2" required>
+                        <select name="filter_child_id" id="filter_child_id" class="form-control"  required>
                             <option value=""><?php echo get_phrase('select_a_child'); ?></option>
                             <?php
                             $school_id = school_id();

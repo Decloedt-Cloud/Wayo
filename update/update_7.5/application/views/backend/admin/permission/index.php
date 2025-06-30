@@ -17,7 +17,7 @@
             <div class="row mt-3">
                 <div class="col-md-1"></div>
                 <div class="col-md-4">
-                    <select name="class" id="class_id" class="form-control select2" data-toggle = "select2" onchange="classWiseSection(this.value)" required>
+                    <select name="class" id="class_id" class="form-control"  onchange="classWiseSection(this.value)" required>
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                             <?php
                             $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -35,7 +35,7 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <select name="section" id="section_id" class="form-control select2" data-toggle = "select2"  required>
+                    <select name="section" id="section_id" class="form-control"   required>
                         <option value=""><?php echo get_phrase('select_a_section'); ?></option>
                     </select>
                 </div>

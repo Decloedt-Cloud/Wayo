@@ -5,7 +5,7 @@
     
     <div class="row justify-content-md-center">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0">
-            <select name="class_id" id="class_id_bulk" class="form-control select2" data-toggle = "select2" onchange="classWiseSection(this.value)" required>
+            <select name="class_id" id="class_id_bulk" class="form-control"  onchange="classWiseSection(this.value)" required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class){ ?>
@@ -14,7 +14,7 @@
             </select>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0" id = "section_content">
-            <select name="section_id" id="section_id" class="form-control select2" data-toggle = "select2" required >
+            <select name="section_id" id="section_id" class="form-control"  required >
                 <option value=""><?php echo get_phrase('select_section'); ?></option>
             </select>
         </div>
@@ -25,10 +25,10 @@
             <div class="col-xl-11 col-lg-11 col-md-12 col-sm-12 mb-3 mb-lg-0">
                 <div class="row justify-content-md-center">
                     <div class="form-group col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1 mb-lg-0">
-                        <input type="text" name="name[]" class="form-control"  value="" placeholder="Name" required>
+                        <input type="text" name="name[]" class="form-control"  value="" placeholder="<?php echo get_phrase('Name'); ?>" required>
                     </div>
                     <div class="form-group col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1 mb-lg-0">
-                        <input type="email" name="email[]" class="form-control"  value="" placeholder="Email" required>
+                        <input type="email" name="email[]" class="form-control"  value="" placeholder="<?php echo get_phrase('Email'); ?>" required>
                     </div>
                  
                     <div class="form-group col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1 mb-lg-0">
@@ -63,10 +63,10 @@
         <div class="col-xl-11 col-lg-11 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="row justify-content-md-center">
                 <div class="form-group col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1 mb-lg-0">
-                    <input type="text" name="name[]" class="form-control"  value="" placeholder="Name">
+                    <input type="text" name="name[]" class="form-control"  value="" placeholder="<?php echo get_phrase("Name") ?>">
                 </div>
                 <div class="form-group col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1 mb-lg-0">
-                    <input type="email" name="email[]" class="form-control"  value="" placeholder="Email">
+                    <input type="email" name="email[]" class="form-control"  value="" placeholder="<?php echo get_phrase("Email") ?>">
                 </div>
                
 

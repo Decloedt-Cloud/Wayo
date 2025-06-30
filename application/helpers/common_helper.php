@@ -53,17 +53,16 @@ if (!function_exists('get_user_language')) {
   function get_user_language() {
     $CI =& get_instance();
     $CI->load->database();
-    
-    // Récupérer l'ID de l'utilisateur connecté
+
     $user_id = $CI->session->userdata('user_id');
-    
-    // Si l'utilisateur est connecté
     if ($user_id) {
       $user_data = $CI->db->get_where('users', ['id' => $user_id])->row_array();
-      return $user_data['language'] ?? get_settings('language'); // Fallback
+      return $user_data['language'] ?? get_settings('language');
     }
 
-    return get_settings('language'); // Langue par défaut
+    // Pour les guests, retourne la langue stockée en session ou la langue par défaut
+    $lang = $CI->session->userdata('language');
+    return $lang ? $lang : get_settings('language');
   }
 }
 if (!function_exists('get_common_settings')) {

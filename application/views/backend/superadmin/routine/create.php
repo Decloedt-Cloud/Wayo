@@ -8,7 +8,7 @@
     <div class="form-group row mb-2 gap-3">
         <label for="class_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="class_id" id="class_id_on_routine_creation" class="form-control select2" data-bs-toggle="select2"  required onchange="classWiseSectionForRoutineCreate(this.value)">
+            <select name="class_id" id="class_id_on_routine_creation" class="form-control" required onchange="classWiseSectionForRoutineCreate(this.value)">
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -21,42 +21,41 @@
     <div class="form-group row mb-2 gap-3">
         <label for="section_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="section_id[]" id = "section_id_on_routine_creation" class="form-control select2" data-bs-toggle="select2"  multiple required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
+            <!-- Hidden input to store selected section IDs -->
+            <input type="hidden" name="section_id[]" id="section_id_hidden" required />
+            <!-- Container for section badges -->
+            <div id="section_id_on_routine_creation" class="d-flex flex-wrap gap-2"></div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-2 gap-3">
+        <label for="teacher" class="col-md-3 col-form-label"><?php echo get_phrase('teacher'); ?><span class="required"> * </span></label>
+        <div class="col-md-8">
+            <select name="teacher_id" id="teacher_on_routine_creation" class="form-control" required>
+                <option value=""><?php echo get_phrase('assign_a_teacher'); ?></option>
+                <?php
+                // S'assurer que l'admin est dans la table teachers
+                $this->crud_model->check_admins_in_teachers($school_id);
+                
+                // Récupérer les enseignants (y compris l'admin)
+                $teachers = $this->db->select('t.id, u.name, u.role')
+                                    ->from('teachers t')
+                                    ->join('users u', 'u.id = t.user_id', 'left')
+                                    ->where('t.school_id', $school_id)
+                                    ->get()->result_array();
+                foreach ($teachers as $teacher): ?>
+                    <option value="<?php echo $teacher['id']; ?>">
+                        <?php echo $teacher['name'] . ($teacher['role'] == 'superadmin' ? ' (SuperAdmin)' : ' (Teacher)'); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
     </div>
 
- 
-
-    <div class="form-group row mb-2 gap-3">
-    <label for="teacher" class="col-md-3 col-form-label"><?php echo get_phrase('teacher'); ?><span class="required"> * </span></label>
-    <div class="col-md-8">
-        <select name="teacher_id" id="teacher_on_routine_creation" class="form-control select2" data-bs-toggle="select2" required>
-            <option value=""><?php echo get_phrase('assign_a_teacher'); ?></option>
-            <?php
-            // S'assurer que l'admin est dans la table teachers
-            $this->crud_model->check_admins_in_teachers($school_id);
-            
-            // Récupérer les enseignants (y compris l'admin)
-            $teachers = $this->db->select('t.id, u.name, u.role')
-                                ->from('teachers t')
-                                ->join('users u', 'u.id = t.user_id', 'left')
-                                ->where('t.school_id', $school_id)
-                                ->get()->result_array();
-            foreach ($teachers as $teacher): ?>
-                <option value="<?php echo $teacher['id']; ?>">
-                    <?php echo $teacher['name'] . ($teacher['role'] == 'superadmin' ? ' (SuperAdmin)' : ' (Teacher)'); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-</div>
-
     <div class="form-group row mb-2 gap-3">
         <label for="class_room_id" class="col-md-3 col-form-label"><?php echo get_phrase('class_room'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="class_room_id" id = "class_room_id_on_routine_creation" class="form-control select2" data-bs-toggle="select2"  required>
+            <select name="class_room_id" id="class_room_id_on_routine_creation" class="form-control" required>
                 <option value=""><?php echo get_phrase('select_a_class_room'); ?></option>
                 <?php $class_rooms = $this->db->get_where('class_rooms', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($class_rooms as $class_room): ?>
@@ -69,7 +68,7 @@
     <div class="form-group row mb-2 gap-3">
         <label for="day" class="col-md-3 col-form-label"><?php echo get_phrase('day'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="day" id = "day_on_routine_creation" class="form-control select2" data-bs-toggle="select2"  required>
+            <select name="day" id="day_on_routine_creation" class="form-control" required>
                 <option value=""><?php echo get_phrase('select_a_day'); ?></option>
                 <option value="monday"><?php echo get_phrase('monday'); ?></option>
                 <option value="tuesday"><?php echo get_phrase('tuesday'); ?></option>
@@ -78,121 +77,185 @@
                 <option value="friday"><?php echo get_phrase('friday'); ?></option>
                 <option value="saturday"><?php echo get_phrase('saturday'); ?></option>
                 <option value="sunday"><?php echo get_phrase('sunday'); ?></option>             
-                
             </select>
         </div>
     </div>
 
-
-
     <div class="form-group row mb-2 gap-3">
         <label for="starting_minute" class="col-md-3 col-form-label"><?php echo get_phrase('starting'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-        <input type="time" name="starting_hour" id = "starting_minute_on_routine_creation"  class="form-control select2" data-bs-toggle="select2" required />
-
+            <input type="time" name="starting_hour" id="starting_minute_on_routine_creation" class="form-control" required />
         </div>
     </div>
 
     <div class="form-group row mb-2 gap-3">
         <label for="ending_hour" class="col-md-3 col-form-label"><?php echo get_phrase('ending'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-        <input type="time" name="ending_hour" id = "ending_hour_on_routine_creation"  class="form-control select2" data-bs-toggle="select2" required />
-
-        
+            <input type="time" name="ending_hour" id="ending_hour_on_routine_creation" class="form-control" required />
         </div>
     </div>
 
-  
-
-    <div class="form-group  col-md-12 d-flex justify-content-center mt-4">
+    <div class="form-group col-md-12 d-flex justify-content-center mt-4">
         <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-plus"></i><?php echo get_phrase('add_class_routine'); ?></button>
     </div>
 </form>
 
 <style>
     .required {
-    display: inline;
-    vertical-align: middle;
-    color: red;
+        display: inline;
+        vertical-align: middle;
+        color: red;
     }
 
     .col-form-label {
-    white-space: nowrap;
+        white-space: nowrap;
     }
 
+    .section-badge {
+        cursor: pointer;
+        transition: all 0.2s;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .section-badge.selected {
+        background-color: #007bff !important;
+        color: white !important;
+    }
 </style>
 
 <script>
 $(document).ready(function () {
-
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); 
 
-    $(".ajaxForm").validate({}); // Jquery form validation initialization
+    $(".ajaxForm").validate({
+        rules: {
+            'section_id[]': {
+                required: true,
+                minlength: 1
+            }
+        },
+        messages: {
+            'section_id[]': {
+                required: "<?php echo get_phrase('please_select_at_least_one_section'); ?>"
+            }
+        }
+    });
+
     $(".ajaxForm").submit(function(e) {
-        
-        e.preventDefault(); // Bloque le comportement normal
+        e.preventDefault();
         var form = $(this);
-        //ajaxSubmit(e, form, showAllGrades);
-        function getCsrfToken() {
-         // Récupérer le nom du token CSRF depuis le champ input caché
-          var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-         // Récupérer la valeur (hash) du token CSRF depuis le champ input caché
-           var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-         // Retourner un objet contenant le nom du token et sa valeur
-         return { csrfName: csrfName, csrfHash: csrfHash };
-      }
-           // Cible uniquement le bouton de ce formulaire
         var submitButton = $(this).find('button[type="submit"]');
         var adding_text = "<?php echo get_phrase('adding'); ?>...";
         
-        // Désactive et met à jour uniquement ce bouton
         submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+adding_text);
-         // Récupérer le token CSRF avant l'envoi
-         var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
-         const formData = new FormData(this);// Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
-
-    $.ajax({
-        url: $(this).attr('action'),
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'json',
-        success: function (response) {
-            if (response.status) { // Vérifie si la mise à jour a réussi
-                success_notify(response.notification);
-                // Met à jour le token CSRF
-                $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-
-                // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
-                setTimeout(function() {
-                  location.reload();
-                }, 3500);// Attendre 3500ms avant de recharger la page
-            } else {
-              error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
-                
-            }
-        },
-        error: function () {
-          error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
+        
+        function getCsrfToken() {
+            var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+            var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+            return { csrfName: csrfName, csrfHash: csrfHash };
         }
-      });
+        
+        var csrf = getCsrfToken();
+        const formData = new FormData(this);
+
+        // Append selected section IDs to FormData
+        var selectedSections = $('#section_id_hidden').val().split(',').filter(id => id);
+        selectedSections.forEach(function(id) {
+            formData.append('section_id[]', id);
+        });
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (response) {
+                if (response.status) {
+                    success_notify(response.notification);
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3500);
+                } else {
+                    error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>');
+                    submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo get_phrase('add_class_routine'); ?>');
+                }
+            },
+            error: function () {
+                error_notify('<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>');
+                submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo get_phrase('add_class_routine'); ?>');
+            }
+        });
     });
+
+    // Handle badge clicks
+    $(document).on('click', '.section-badge', function() {
+        $(this).toggleClass('selected');
+        updateHiddenSectionInput();
+    });
+
+    function updateHiddenSectionInput() {
+        var selectedSections = [];
+        $('.section-badge.selected').each(function() {
+            selectedSections.push($(this).data('section-id'));
+        });
+        $('#section_id_hidden').val(selectedSections.join(','));
+        // Trigger validation
+        $(".ajaxForm").validate().element('#section_id_hidden');
+    }
 });
+
 function classWiseSectionForRoutineCreate(classId) {
     $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_routine_creation').html(response);
+        url: "<?php echo route('section/list/'); ?>" + classId,
+        type: 'GET',
+        dataType: 'html',
+        success: function(response) {
+            // Parse response to extract options
+            var sections = [];
+            var $options = $(response).filter('option').add($(response).find('option'));
+            $options.each(function() {
+                if ($(this).val()) {
+                    sections.push({ id: $(this).val(), name: $(this).text() });
+                }
+            });
+
+            var badgeContainer = $('#section_id_on_routine_creation');
+            badgeContainer.empty();
+
+            if (sections.length > 0) {
+                sections.forEach(function(section) {
+                    badgeContainer.append(
+                        `<span class="badge bg-light text-dark section-badge" data-section-id="${section.id}">${section.name}</span>`
+                    );
+                });
+            } else {
+                badgeContainer.append('<span class="text-danger"><?php echo get_phrase('no_sections_found_for_this_class'); ?></span>');
+            }
+
+            // Reset hidden input
+            $('#section_id_hidden').val('');
+            // Trigger validation
+            $(".ajaxForm").validate().element('#section_id_hidden');
+
             classWiseSubjectForRoutineCreate(classId);
+        },
+        error: function(xhr, status, error) {
+            console.error('Section AJAX Error:', status, error, xhr.responseText);
+            $('#section_id_on_routine_creation').html('<span class="text-danger"><?php echo get_phrase('error_loading_sections'); ?></span>');
+            $('#section_id_hidden').val('');
+            $(".ajaxForm").validate().element('#section_id_hidden');
         }
     });
 }
 
 function classWiseSubjectForRoutineCreate(classId) {
     $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
+        url: "<?php echo route('class_wise_subject/'); ?>" + classId,
+        success: function(response) {
             $('#subject_id_on_routine_creation').html(response);
         }
     });

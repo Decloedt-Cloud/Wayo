@@ -12,7 +12,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
     </div>
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-        <select class="form-control select2" data-toggle="select2" name="section_id" id="section_id" required>
+        <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($sections as $section): ?>
                 <option value="<?php echo $section['id']; ?>" <?php if ($quiz_details['section_id'] == $section['id']): ?>selected<?php endif; ?>><?php echo $section['title']; ?></option>
             <?php endforeach; ?>

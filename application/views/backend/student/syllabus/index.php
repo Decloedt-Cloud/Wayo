@@ -17,7 +17,7 @@
                     <div class="col-md-1 mb-1"></div>
                     
                 <div class="col-md-3 mb-1">
-                            <select class="form-control select2" data-toggle="select2" name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
+                            <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
                                     <option value=""><?php echo get_phrase('select_a_schools'); ?></option>                                      
                                       <?php 
                                         $user_id   = $this->session->userdata('user_id');
@@ -35,14 +35,14 @@
                                 
                 </div>
                     <div class="col-md-3 mb-1">
-                        <select name="class" id="class_id_syllabus" class="form-control select2" data-toggle = "select2" onchange="classWiseSection(this.value)" required>
+                        <select name="class" id="class_id_syllabus" class="form-control"  onchange="classWiseSection(this.value)" required>
 
                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
 
                     </select>
                 </div>
                 <div class="col-md-3 mb-1">
-                    <select name="section" id="section_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="section" id="section_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_section'); ?></option>
                         <option value="<?php echo $student_data['section_id']; ?>"><?php echo $student_data['section_name']; ?></option>
                     </select>

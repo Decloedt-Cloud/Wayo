@@ -493,4 +493,18 @@ class Home extends CI_Controller
 			echo json_encode(array('status' => null));
 		}
 	}
+
+	public function dropdown_guest() {
+    $languages = $this->settings_model->get_all_languages(); // <-- Utilise settings_model ici
+    $current_language = function_exists('get_user_language') ? get_user_language() : 'english';
+    foreach ($languages as $language) {
+        echo '<a class="dropdown-item'.($current_language == $language ? ' active' : '').'" href="#" onclick="setGuestLanguage(\''.$language.'\')">'.ucfirst($language).'</a>';
+    }
+	}
+
+// Change la langue pour les guests (stockée en session)
+	public function set_guest_language() {
+		$lang = $this->input->post('language');
+		$this->session->set_userdata('language', $lang);
+	}
 }

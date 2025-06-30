@@ -9,7 +9,7 @@
 
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('section'); ?></label>
-        <select class="form-control select2" data-toggle="select2" name="section_id" id="section_id" required>
+        <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($course_sections as $section): ?>
                 <option value="<?php echo $section['id']; ?>"><?php echo $section['title']; ?></option>
             <?php endforeach; ?>
@@ -18,7 +18,7 @@
 
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('lesson_type'); ?></label>
-        <select class="form-control select2" data-toggle="select2" name="lesson_type" id="lesson_type" required onchange="show_lesson_type_form(this.value)">
+        <select class="form-control"  name="lesson_type" id="lesson_type" required onchange="show_lesson_type_form(this.value)">
             <option value=""><?php echo get_phrase('select_type_of_lesson'); ?></option>
             <option value="video-url"><?php echo get_phrase('video'); ?></option>
             <?php if (addon_status('amazon-s3')): ?>
@@ -35,7 +35,7 @@
 
         <div class="form-group mb-2">
             <label for="lesson_provider"><?php echo get_phrase('lesson_provider'); ?>( <?php echo get_phrase('for_web_application'); ?> )</label>
-            <select class="form-control select2" data-toggle="select2" name="lesson_provider" id="lesson_provider" onchange="check_video_provider(this.value)">
+            <select class="form-control"  name="lesson_provider" id="lesson_provider" onchange="check_video_provider(this.value)">
                 <option value=""><?php echo get_phrase('select_lesson_provider'); ?></option>
                 <option value="youtube"><?php echo get_phrase('youtube'); ?></option>
                 <option value="vimeo"><?php echo get_phrase('vimeo'); ?></option>

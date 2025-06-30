@@ -16,7 +16,7 @@
             <div class="row mt-3">
                 <div class="col-md-1 mb-1"></div>
                 <div class="col-md-2 mb-1">
-                    <select name="exam" id="exam_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="exam" id="exam_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_a_exam'); ?></option>
                         <?php $school_id = school_id();
                         $exams = $this->db->get_where('exams', array('school_id' => $school_id, 'session' => active_session()))->result_array();
@@ -26,7 +26,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id" class="form-control select2" data-toggle = "select2" required onchange="classWiseSubject(this.value)">
+                    <select name="class" id="class_id" class="form-control"  required onchange="classWiseSubject(this.value)">
                         <?php 
                         $school_id = school_id();
                         $this->db->where('class_id', $student_data['class_id']);
@@ -41,13 +41,13 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="section" id="section_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="section" id="section_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_section'); ?></option>
                         <option value="<?php echo $student_data['section_id']; ?>"><?php echo $student_data['section_name']; ?></option>
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="subject" id="subject_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="subject" id="subject_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_subject'); ?></option>
                     </select>
                 </div>
