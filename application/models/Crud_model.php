@@ -362,48 +362,10 @@ class Crud_model extends CI_Model {
 	//END SUBJECT section
 
 
-	//START DEPARTMENT section
-	public function department_create()
-	{
-		$data['name'] = html_escape($this->input->post('name'));
-		$data['school_id'] = html_escape($this->input->post('school_id'));
-		$this->db->insert('departments', $data);
 
-		return array(
-			'status' => true,
-			'notification' => get_phrase('department_has_been_added_successfully')
-		);
 
-		//return json_encode($response);
-	}
 
-	public function department_update($param1 = '')
-	{
-		$data['name'] = html_escape($this->input->post('name'));
-		$this->db->where('id', $param1);
-		$this->db->update('departments', $data);
 
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('department_has_been_updated_successfully')
-		);
-
-		return json_encode($response);
-	}
-
-	public function department_delete($param1 = '')
-	{
-		$this->db->where('id', $param1);
-		$this->db->delete('departments');
-
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('department_has_been_deleted_successfully')
-		);
-
-		return json_encode($response);
-	}
-	//END DEPARTMENT section
 
 
 	//START SYLLABUS section

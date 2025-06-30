@@ -147,11 +147,11 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
                         <?php if ($main_menu['unique_identifier'] == 'exam' && $total_exams > 0) : ?>
                             <span class="badge bg-primary float-end"><?php echo $total_exams; ?></span>
                         <?php endif; ?>
-<?php if ($main_menu['unique_identifier'] == 'chat') : ?>
-    <span class="badge bg-danger float-end" id="chat-badge">
-        <?= $unread_messages > 0 ? $unread_messages : '0' ?>
-    </span>
-<?php endif; ?>
+                <?php if ($main_menu['unique_identifier'] == 'chat') : ?>
+                    <span class="badge bg-danger float-end" id="chat-badge">
+                        <?= $unread_messages > 0 ? $unread_messages : '0' ?>
+                    </span>
+                <?php endif; ?>
                     </a>
                 <?php } ?>
             </li>

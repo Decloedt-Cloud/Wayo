@@ -27,18 +27,7 @@
                 <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_designation'); ?></small>
             </div>
 
-            <div class="form-group mb-1">
-                <label for="department"><?php echo get_phrase('department'); ?></label>
-                <select name="department" id="department" class="form-control" required>
-                    <option value=""><?php echo get_phrase('select_a_department'); ?></option>
-                    <?php $departments = $this->db->get_where('departments', array('school_id' => school_id()))->result_array();
-                        foreach($departments as $department){
-                    ?>
-                        <option value="<?php echo $department['id']; ?>" <?php if($department['id'] == $teacher['department_id']) echo 'selected'; ?>><?php echo $department['name']; ?></option>
-                    <?php } ?>
-                </select>
-                <small id="" class="form-text text-muted"><?php echo get_phrase('provide_a_department'); ?></small>
-            </div>
+
 
             <div class="form-group mb-1">
                 <label for="phone"><?php echo get_phrase('phone_number'); ?></label>

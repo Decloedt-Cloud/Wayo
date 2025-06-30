@@ -6,7 +6,7 @@ if($check_data->num_rows() > 0):?>
     <thead>
         <tr style="background-color: #313a46; color: #ababab;">
             <th><?php echo get_phrase('name'); ?></th>
-            <th><?php echo get_phrase('department'); ?></th>
+        
             <th><?php echo get_phrase('designation'); ?></th>
         </tr>
     </thead>
@@ -17,7 +17,7 @@ if($check_data->num_rows() > 0):?>
             ?>
             <tr>
                 <td><?php echo $this->db->get_where('users', array('id' => $teacher['user_id']))->row('name'); ?></td>
-                <td><?php echo $this->db->get_where('departments', array('id' => $teacher['department_id']))->row('name'); ?></td>
+               
                 <td><?php echo $teacher['designation']; ?></td>
             </tr>
         <?php } ?>
