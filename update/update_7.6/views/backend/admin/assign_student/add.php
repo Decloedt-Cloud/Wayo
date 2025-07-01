@@ -21,7 +21,7 @@ $students = $this->db->where('school_id', school_id())->get('students')->result_
 
         <div class="form-group mb-1">
             <label for="vehicle"><?php echo get_phrase('vehicle'); ?></label>
-            <select name="vehicle" id="vehicle" class="form-control select2" data-toggle="select2" required>
+            <select name="vehicle" id="vehicle" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_vehicle'); ?></option>
                 <?php foreach ($vehicles as $vehicle) : ?>
                 <option value="<?php echo $vehicle['id'] ?>"><?php echo $vehicle['vh_num'] ?></option>
@@ -32,7 +32,7 @@ $students = $this->db->where('school_id', school_id())->get('students')->result_
 
         <div class="form-group mb-1">
             <label for="class_id"><?php echo get_phrase('class'); ?></label>
-            <select name="class_id" id="class_id" class="form-control select2" data-toggle="select2" onchange="classWiseStudent(this.value)" required>
+            <select name="class_id" id="class_id" class="form-control"  onchange="classWiseStudent(this.value)" required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php foreach ($classes as $class) : ?>
                 <option value="<?php echo $class['id'] ?>"><?php echo $class['name'] ?></option>
@@ -43,7 +43,7 @@ $students = $this->db->where('school_id', school_id())->get('students')->result_
 
         <div class="form-group mb-1 select_student d-none">
             <label for="student_id"><?php echo get_phrase('Student'); ?></label>
-            <select id="student_id" class="form-control select2" data-toggle="select2" required>
+            <select id="student_id" class="form-control"  required>
                 <option value=""><?php echo get_phrase('first_select_class'); ?></option>
             </select>
             <small id="" class="form-text text-muted"><?php echo get_phrase('select_student'); ?></small>

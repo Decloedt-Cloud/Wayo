@@ -19,7 +19,7 @@
                 <div class="row mt-3">
                     <div class="col-md-1 mb-1"></div>
                     <div class="col-md-4 mb-1">
-                        <select name="parent_category" id="category_id" class="form-control select2" data-toggle="select2" required onchange="getAdditionalCategory(this.value)">
+                        <select name="parent_category" id="category_id" class="form-control"  required onchange="getAdditionalCategory(this.value)">
                             <?php if ($parent_category) : ?>
                                 <option value="<?php echo $parent_category; ?>"><?php echo ucfirst(get_phrase($parent_category)); ?></option>
                             <?php endif; ?>
@@ -30,7 +30,7 @@
                         </select>
                     </div>
                     <div class="col-md-4 mb-1">
-                        <select name="child_category" id="additional_category" class="form-control select2" data-toggle="select2" required>
+                        <select name="child_category" id="additional_category" class="form-control"  required>
                             <?php if ($child_category) : ?>
                                 <option value="<?php echo $child_category; ?>"><?php echo ucfirst(get_phrase($child_category)); ?></option>
                             <?php endif; ?>

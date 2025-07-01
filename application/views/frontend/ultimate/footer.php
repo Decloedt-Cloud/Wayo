@@ -1,152 +1,91 @@
 <?php
 $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
-$social = get_frontend_settings('social_links');
-$links = json_decode($social);
 ?>
 <!-- ========== FOOTER ========== -->
-<footer class="border-top footer">
-  <div class="container space-0 footer">
-    <div class="row gx-0 justify-content-between ">
-      <div class="col-sm-4 d-flex justify-content-center text-center ">
-       
-
-        <!-- Address -->
-        <div>
-          <ul class="list-group list-group-flush list-group-borderless text-break ">
-           <h4 class="h6 font-weight-semi-bold pb-4 pt-4 pt-sm-0 light-border-bottom">Contact</h4>
-            <li class="list-group-item custom-list-group-item">
-              <a class="footer-phone" href="tel:<?php echo get_settings('phone'); ?>">
+<footer class="site-footer" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+    <div class="container footer-top">
+      <a class="footer-logo" href="<?php echo base_url(); ?>">
+            <img src="<?php echo $this->settings_model->get_logo_light(); ?>" style="height:65px;" />
+          </a>
+      <nav class="footer-nav">
+        <ul>
+          <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase("About us") ?></a>
+          <a href="<?php echo site_url('home/courses'); ?>"><?php echo get_phrase("Our Communities") ?></a>
+          <a href="#"><?php echo get_phrase("Blog") ?></a>
+          <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Contact") ?></a>
+        </ul>
+      </nav>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0E7AE7" class="bi bi-facebook" viewBox="0 0 16 16">
+            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951" />
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/wayo_academy/" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="bi bi-instagram" viewBox="0 0 16 16">
+            <defs>
+              <linearGradient id="instagramGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#833AB4" />
+                <stop offset="30%" style="stop-color:#FD1D1D" />
+                <stop offset="60%" style="stop-color:#F56040" />
+                <stop offset="100%" style="stop-color:#FCAF45" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#instagramGradient)" d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/company/wayoacademy/about/" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#1469C7" class="bi bi-linkedin" viewBox="0 0 16 16">
+            <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div class="footer-contact">
+        <p>
+          <strong><?php echo get_phrase("Contact") ?> :</strong><br />
+          <a class="footer-phone" href="tel:<?php echo get_settings('phone'); ?>">
               <?php echo get_settings('phone'); ?>
-              </a>
-            </li>
-            <li class="list-group-item custom-list-group-item">
-              <a class="footer-email" href="mailto:<?php echo get_settings('system_email'); ?>">
+          </a><br />
+          <a class="footer-email" href="mailto:<?php echo get_settings('system_email'); ?>">
                 <?php echo get_settings('system_email'); ?>
-              </a>
-            </li>
-            <li class="list-group-item custom-list-group-item">
-              <a class="footer-address" href="<?php echo site_url('home/contact#map'); ?>">
+              </a><br />
+         <a class="footer-address" href="<?php echo site_url('home/contact#map'); ?>">
               <?php echo get_settings('address'); ?>
               </a>
-            </li>
-          </ul>
-        </div>
-        <!-- End Address -->
-
-
+        </p>
       </div>
-      <div class="col-sm-4 d-flex justify-content-center text-center">
-        <!-- List Group -->
-        <ul class="list-group list-group-flush list-group-borderless mb-0 text-break">
-         <h4 class="h6 font-weight-semi-bold pb-4 pt-4 pt-sm-0 light-border-bottom">About us</h4>
-          <li><a class="list-group-item  custom-list-group-item" href="<?php echo site_url('home/about'); ?>">About us</a>
-          </li>
-          <li><a class="list-group-item  custom-list-group-item" href="<?php echo site_url('home#mentors-section'); ?>">Mentors
-            </a></li>
- 
-        </ul>
-        <!-- End List Group -->
+      <div class="footer-links">
+        <p>
+        <strong><?php echo get_phrase("Useful links") ?></strong>
+          <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase("Terms & Conditions") ?></a>
+          <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase("Privacy Policy") ?></a>
+          <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Support") ?></a>
+        </p>
       </div>
-
-      <div class="col-sm-4 d-flex justify-content-center text-center">
-        
-
-        <!-- List Group -->
-        <ul class=" footer-section list-group list-group-flush list-group-borderless mb-0 text-break">
-        <h4 class="h6 font-weight-semi-bold pb-4 pt-4 pt-sm-0 light-border-bottom">Resources</h4>
-          <li><a class="list-group-item list-group-item-action custom-list-group-item "
-              href="<?php echo site_url('home/terms_conditions'); ?>">Terms & Conditions</a></li>
-          <li><a class="list-group-item list-group-item-action custom-list-group-item "
-              href="<?php echo site_url('home/privacy_policy'); ?>">Privacy Policy</a></li>
-        
-        </ul>
-        <!-- End List Group -->
+      <div class="footer-newsletter">
+        <strong><?php echo get_phrase("Newsletter") ?></strong>
+        <form action="#" method="post" class="newsletter-form">
+          <input
+            type="email"
+            name="email"
+            placeholder="<?php echo get_phrase("Your Email") ?>"
+            required
+          />
+          <button type="submit" class="btn btn-subscribe"><?php echo get_phrase("S'abonner") ?></button>
+        </form>
       </div>
-      <!-- End Social Networks -->
     </div>
-    <div class="row gx-0 justify-content-between light-border-top pt-4">
-        <!-- Logo -->
-        <div class="d-flex justify-content-center col-12 col-sm-4 mb-4 mb-sm-0">
-          <a href="<?php echo base_url(); ?>">
-            <img src="<?php echo $this->settings_model->get_logo_light(); ?>" style="height:45px;" />
-          </a>
-        </div>
-        <!-- End Logo -->
-
-        <div class="d-flex justify-content-center col-12 col-sm-4 mb-3 mb-sm-0 ">
-          <p class="small text-light">©
-            <?php echo get_frontend_settings('copyright_text'); ?>
-          </p>
-        </div>
-
-        <!-- Social Networks -->
-        <div class="d-flex justify-content-center col-12 col-sm-4">
-          <ul class="list-inline mb-0">
-            <!-- <li class="list-inline-item mx-0">
-              <a class="btn btn-sm btn-icon btn-soft-secondary rounded-circle" href="<?php //echo $links[0]->facebook; ?>"
-                target="_blank">
-                <span class="fab fa-facebook-f btn-icon__inner"></span>
-              </a>
-            </li>
-            <li class="list-inline-item mx-0">
-              <a class="btn btn-sm btn-icon btn-soft-secondary rounded-circle"
-                href="<?php //echo $links[0]->instagram; ?>" target="_blank">
-                <span class="fab fa-instagram btn-icon__inner"></span>
-              </a>
-            </li> -->
-            <!-- <li class="list-inline-item mx-0">
-              <a class="btn btn-sm btn-icon btn-soft-secondary rounded-circle" href="<?php //echo $links[0]->twitter; ?>"
-                target="_blank">
-                <span class=""></span>
-                <svg class="btn-icon__inner" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
-                      class="bi bi-twitter-x" viewBox="0 0 16 16">
-                      <path
-                        d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
-                    </svg>
-              </a>
-            </li> -->
-            <!-- <li class="list-inline-item mx-0">
-              <a class="btn btn-sm btn-icon btn-soft-secondary rounded-circle" href="<?php //echo $links[0]->google; ?>"
-                target="_blank">
-                <span class="fab fa-google btn-icon__inner"></span>
-              </a>
-            </li> -->
-            
-            <!-- <li class="list-inline-item mx-0">
-              <a class="btn btn-sm btn-icon btn-soft-secondary rounded-circle" href="<?php //echo $links[0]->linkedin; ?>"
-                target="_blank">
-                <span class="fab fa-linkedin btn-icon__inner"></span>
-              </a>
-            </li> -->
-          </ul>
-        </div>
-      </div>
-  </div>
-  </div>
-</footer>
+    <div class="container footer-credits">
+      <p>©<?php echo ' ' . date('Y') . ' ' . get_phrase("All the rights reserved to Wayo Academy"); ?></p>
+    </div>
+  </footer>
 <!-- ========== END FOOTER ========== -->
 
 <!-- Go to Top -->
-<a class="js-go-to u-go-to" href="#" data-position='{"bottom": 15, "right": 15 }' data-type="fixed"
+<a class="js-go-to u-go-to" href="#" data-position='{"bottom": 25, "right": 15 }' data-type="fixed"
   data-offset-top="400" data-compensation="#header" data-show-effect="slideInUp" data-hide-effect="slideOutDown">
   <span class="fas fa-arrow-up u-go-to__inner"></span>
 </a>
 <!-- End Go to Top -->
-
-
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function () {
-  const links = document.querySelectorAll("a[href^='#']");
-  links.forEach(link => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-      const targetId = this.getAttribute("href").substring(1);
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
-});
-
-</script>

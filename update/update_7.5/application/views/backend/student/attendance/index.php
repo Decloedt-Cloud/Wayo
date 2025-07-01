@@ -16,7 +16,7 @@
             <div class="row mt-3 d-print-none">
                 <div class="col-md-1 mb-1"></div>
                 <div class="col-md-2 mb-1">
-                    <select name="month" id="month" class="form-control select2" data-bs-toggle="select2" required>
+                    <select name="month" id="month" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_a_month'); ?></option>
                         <option value="Jan"<?php if(date('M') == 'Jan') echo 'selected'; ?>><?php echo get_phrase('january'); ?></option>
                         <option value="Feb"<?php if(date('M') == 'Feb') echo 'selected'; ?>><?php echo get_phrase('february'); ?></option>
@@ -33,7 +33,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="year" id="year" class="form-control select2" data-bs-toggle="select2" required>
+                    <select name="year" id="year" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_a_year'); ?></option>
                         <?php for($year = 2015; $year <= date('Y'); $year++){ ?>
                             <option value="<?php echo $year; ?>"<?php if(date('Y') == $year) echo 'selected'; ?>><?php echo $year; ?></option>
@@ -42,7 +42,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id" class="form-control select2" data-bs-toggle="select2" required>
+                    <select name="class" id="class_id" class="form-control"  required>
                         <?php 
                         $school_id = school_id();
                         $this->db->where('class_id', $student_data['class_id']);
@@ -58,7 +58,7 @@
                 </select>
             </div>
             <div class="col-md-2 mb-1">
-                <select name="section" id="section_id" class="form-control select2" data-bs-toggle="select2" required>
+                <select name="section" id="section_id" class="form-control"  required>
                     <option value=""><?php echo get_phrase('select_section'); ?></option>
                     <option value="<?php echo $student_data['section_id']; ?>"><?php echo $student_data['section_name']; ?></option>
                 </select>

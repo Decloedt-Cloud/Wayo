@@ -16,7 +16,7 @@
 			<div class="row mt-3">
 				<div class="col-md-1 mb-1"></div>
 				<div class="col-md-4 mb-1">
-					<select name="class" id="class_id" class="form-control select2" data-bs-toggle="select2" required>
+					<select name="class" id="class_id" class="form-control"  required>
 						<?php 
 						$school_id = school_id();
 						$this->db->where('class_id', $student_data['class_id']);
@@ -31,7 +31,7 @@
 					</select>
 				</div>
 				<div class="col-md-4 mb-1">
-					<select name="section" id="section_id" class="form-control select2" data-bs-toggle="select2" required>
+					<select name="section" id="section_id" class="form-control"  required>
 						<option value=""><?php echo get_phrase('select_section'); ?></option>
 						<option value="<?php echo $student_data['section_id']; ?>"><?php echo $student_data['section_name']; ?></option>
 					</select>

@@ -54,7 +54,7 @@
     <div class="general-container container-fluid">
         <div class="general-header align-items-center">
             <h1 class='col-6 display-4 text_fade text-uppercase text-center  text-sm-break'>
-                <?php echo get_phrase('Discover_our_Courses'); ?>
+                <?php echo get_phrase('Discover_our_Communities'); ?>
             </h1>
             <!-- Div Section For Header Background Fade In-Out Animation-->
             <div></div>

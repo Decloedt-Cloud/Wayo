@@ -59,7 +59,7 @@
               <label class="col-md-3 col-form-label" for="timezone"> <?php echo get_phrase('timezone') ;?></label>
 
               <div class="col-md-9">
-                <select class="form-control select2" data-bs-toggle="select2" id="timezone" name="timezone">
+                <select class="form-control"  id="timezone" name="timezone">
                   <?php $tzlist = DateTimeZone::listIdentifiers(DateTimeZone::ALL); ?>
                   <?php foreach ($tzlist as $tz): ?>
                     <option value="<?php echo $tz ;?>" <?php if(get_settings('timezone') == $tz) echo 'selected'; ?>><?php echo $tz ;?></option>

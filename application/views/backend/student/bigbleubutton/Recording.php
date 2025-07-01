@@ -24,7 +24,7 @@
                     <div class="col-lg-3 col-md-6 col-sm-12">
                       <div class="form-group">
                         <label for="school_id"><?php echo get_phrase('schools'); ?></label>
-                        <select class="form-control select2" data-toggle="select2" name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
+                        <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
                             <option value="<?php echo 'all'; ?>" <?php if($selected_school_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                  <?php 
                                      $user_id   = $this->session->userdata('user_id');
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<h4 class="fw-bold mb-3">📋 Historique </h4>
+<h4 class="fw-bold mb-3">📋 <?php echo get_phrase("Historique") ?> </h4>
 <div class="card shadow-sm border-0">
     <div class="card-body">
         <div class="table-responsive">
@@ -125,7 +125,7 @@
                             </td>
                             <td>
                                 <?php if (!empty($appointment['recordings']) && !$isExpired): ?>
-                                    <a href="<?= $rec['download_url'] ?>" class="btn btn-sm btn-success">Download</a>
+                                    <a href="<?= $rec['download_url'] ?>" class="btn btn-sm btn-success"><?php echo get_phrase("Download") ?></a>
                                 <?php endif ?>
                             
                             </td>
@@ -170,8 +170,8 @@
             error: function() {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erreur',
-                    text: 'Une erreur est survenue lors du chargement des données.'
+                    title: '<?php echo get_phrase("Erreur") ?>',
+                    text: '<?php echo get_phrase("Une erreur est survenue lors du chargement des données.") ?>'
                 });
             }
         });

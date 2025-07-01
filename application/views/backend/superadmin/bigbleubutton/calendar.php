@@ -47,20 +47,20 @@
 
                     <div class="form-group">
                         <label for="appointmentTitle"><?php echo get_phrase('titre_du_rendez_vous'); ?></label><span class="required"> * </span>
-                        <input type="text" class="form-control" id="appointmentTitle" required>
+                        <input type="text"  id="appointmentTitle" required>
                     </div>
                     <div class="form-group">
                         <label for="appointmentDate"><?php echo get_phrase('date_heure'); ?></label><span class="required"> * </span>
-                        <input type="datetime-local" class="form-control" id="appointmentDate" required>
+                        <input type="datetime-local"  id="appointmentDate" required>
                     </div>
                     <div class="form-group">
                         <label for="appointmentDescription"><?php echo get_phrase('description'); ?></label>
-                        <textarea class="form-control" id="appointmentDescription" rows="3"></textarea>
+                        <textarea  id="appointmentDescription" rows="3"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="section"><?php echo get_phrase('section'); ?></label><span class="required"> * </span>
                       
-                        <select class="form-control" name="section[]" id="section" multiple>
+                        <select  name="section[]" id="section" multiple>
                             <?php 
                             $sections = $this->db->get_where('sections', array('class_id' => $classe_id))->result_array();
                             foreach ($sections as $section): ?>
@@ -70,8 +70,8 @@
 
                     </div>
                     <div class="form-group mt-2 col-md-12">
-                        <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right">Supprimer</button>
+                        <button type="submit" class="btn btn-primary"><?php echo get_phrase("Sauvegarder") ?></button>
+                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right"><?php echo get_phrase("Supprimer") ?></button>
                     </div>
                 </form>
             </div>
@@ -89,7 +89,7 @@
 <div id="DynamicNotification" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-2 m-3" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
-            Action effectuée avec succès.
+            <?php echo get_phrase("Action effectuée avec succès.") ?>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -224,14 +224,14 @@
                     var id = $('#appointmentId').val();
 
                     Swal.fire({
-                        title: "Êtes-vous sûr ?",
-                        text: "Cette action est irréversible !",
+                        title: "<?php echo get_phrase("Êtes-vous sûr ?") ?>",
+                        text: "<?php echo get_phrase("Cette action est irréversible !") ?>",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#d33",
                         cancelButtonColor: "#3085d6",
-                        confirmButtonText: "Oui, supprimer !",
-                        cancelButtonText: "Annuler"
+                        confirmButtonText: "<?php echo get_phrase("Oui, supprimer !") ?>",
+                        cancelButtonText: "<?php echo get_phrase("Annuler") ?>"
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
@@ -241,10 +241,10 @@
                                 success: function () {
                                     $('#appointmentModal').modal('hide');
                                     $('#calendar').fullCalendar('refetchEvents'); // Rafraîchir le calendrier
-                                    Swal.fire("Supprimé !", "Le rendez-vous a été supprimé.", "success");
+                                    Swal.fire("<?php echo get_phrase("Supprimé !") ?>", "<?php echo get_phrase("Le rendez-vous a été supprimé.") ?>", "success");
                                 },
                                 error: function () {
-                                    Swal.fire("Erreur", "Impossible de supprimer le rendez-vous.", "error");
+                                    Swal.fire("<?php echo get_phrase("Erreur") ?>", "<?php echo get_phrase("Impossible de supprimer le rendez-vous.") ?>", "error");
                                 }
                             });
                         }
@@ -272,9 +272,9 @@
             if (selected.isBefore(now)) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Heure invalide',
-                    text: 'Impossible de programmer un rendez-vous dans le passé.',
-                    confirmButtonText: 'OK'
+                    title: '<?php echo get_phrase("Heure invalide") ?>',
+                    text: '<?php echo get_phrase("Impossible de programmer un rendez-vous dans le passé.") ?>',
+                    confirmButtonText: '<?php echo get_phrase("OK") ?>'
                 });
                 return; // Ne pas envoyer l'Ajax
             }
@@ -284,7 +284,7 @@
             }
 
             var url = id ? "<?= base_url('superadmin/update_appointment'); ?>" : "<?= base_url('superadmin/add_appointment'); ?>";
-            var successMessage = id ? "Rendez-vous mis à jour !" : "Rendez-vous ajouté avec succès !";
+            var successMessage = id ? "<?php echo get_phrase("Rendez-vous mis à jour !") ?>" : "<?php echo get_phrase("Rendez-vous ajouté avec succès !") ?>";
 
 
             $.ajax({
@@ -299,7 +299,7 @@
                     showNotification(successMessage, "success");
                 },
                 error: function () {
-                    showNotification("Une erreur est survenue.", "error");
+                    showNotification("<?php echo get_phrase("Une erreur est survenue.") ?>", "error");
                 }
             });
         });

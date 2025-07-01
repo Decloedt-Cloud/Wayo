@@ -31,6 +31,15 @@
   float: right;
 }
 
+body[dir="rtl"] .alignToTitle {
+  /* margin-top: 25px; */
+  float: left;
+}
+
+body[dir="rtl"] .between-button {
+  margin-left: 10px !important;
+}
+
 /* Custom file upload */
 @import "compass/css3";
 
@@ -497,3 +506,24 @@ label.error{
 .note-toolbar.card-header{
     position: relative !important;
 }
+
+    body[dir="rtl"] .paginate_button.page-item.next i.mdi-chevron-right,
+    body[dir="rtl"] .paginate_button.page-item.previous i.mdi-chevron-left {
+    display: inline-block;
+    transform: rotate(180deg);
+    vertical-align: middle;
+    }
+
+    body[dir="rtl"] i.mdi-arrow-right {
+    display: inline-block;
+    transform: rotate(180deg);
+    vertical-align: middle;
+    }
+
+      body[dir="rtl"] i.mdi-export {
+        display: inline-block;
+        transform: rotate(180deg);
+        vertical-align: middle;
+    }
+
+ 

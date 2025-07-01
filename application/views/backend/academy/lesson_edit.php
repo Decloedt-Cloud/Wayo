@@ -18,7 +18,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
 
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-        <select class="form-control select2" data-toggle="select2" name="section_id" id="section_id" required>
+        <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($sections as $section): ?>
                 <option value="<?php echo $section['id']; ?>" <?php if($lesson_details['section_id'] == $section['id']) echo 'selected'; ?>><?php echo $section['title']; ?></option>
             <?php endforeach; ?>
@@ -27,7 +27,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
 
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('lesson_type'); ?><span class="required"> * </span></label>
-        <select class="form-control select2" data-toggle="select2" name="lesson_type" id="lesson_type" required onchange="show_lesson_type_form(this.value)">
+        <select class="form-control"  name="lesson_type" id="lesson_type" required onchange="show_lesson_type_form(this.value)">
             <option value=""><?php echo get_phrase('select_type_of_lesson'); ?></option>
             <option value="video-url" <?php if($lesson_details['attachment_type'] == 'url' || $lesson_details['attachment_type'] == '') echo 'selected'; ?>><?php echo get_phrase('video_url'); ?></option>
             <?php if (addon_status('amazon-s3')): ?>
@@ -44,7 +44,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
 
         <div class="form-group mb-2">
             <label for="lesson_provider"><?php echo get_phrase('lesson_provider'); ?>( <?php echo get_phrase('for_web_application'); ?> ) <span class="required"> * </span></label>
-            <select class="form-control select2" data-toggle="select2" name="lesson_provider" id="lesson_provider" onchange="check_video_provider(this.value)">
+            <select class="form-control"  name="lesson_provider" id="lesson_provider" onchange="check_video_provider(this.value)">
                 <option value=""><?php echo get_phrase('select_lesson_provider'); ?></option>
                 <option value="youtube" <?php if(strtolower($lesson_details['video_type']) == 'youtube') echo 'selected'; ?>><?php echo get_phrase('youtube'); ?></option>
                 <option value="vimeo" <?php if(strtolower($lesson_details['video_type']) == 'vimeo') echo 'selected'; ?>><?php echo get_phrase('vimeo'); ?></option>

@@ -19330,13 +19330,13 @@ label.btn {
   display: none;
   position: relative;
   z-index: 100;
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: #377dff;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #FC7B30;
   color: #fff;
-  font-size: 0.75rem;
-  border-radius: 0.3125rem;
-  opacity: 0.5;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 50%;
   transition: 0.3s ease-out;
 }
 

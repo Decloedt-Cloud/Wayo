@@ -15,7 +15,7 @@
     <div class="form-group row mb-3">
         <div class="col-md-12" id = "section_content_2">
             <label for="section_id_on_academy"><?php echo get_phrase('section'); ?></label>
-            <select name="section_id" id="section_id_on_academy" class="form-control select2" data-bs-toggle="select2" required >
+            <select name="section_id" id="section_id_on_academy" class="form-control"  required >
                 <option value=""><?php echo get_phrase('select_section'); ?></option>
             </select>
         </div>

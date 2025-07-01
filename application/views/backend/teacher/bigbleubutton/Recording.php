@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<h4 class="fw-bold mb-3">📋 Historique </h4>
+<h4 class="fw-bold mb-3">📋 <?php echo get_phrase("Historique") ?> </h4>
 <div class="card shadow-sm border-0">
     <div class="card-body">
         <table class="table table-bordered table-hover align-middle">
@@ -132,16 +132,16 @@
                                 <?php if (!empty($appointment['recordings']) && $isExpired != 1): ?>
                                     <?php $rec = $appointment['recordings'][0]; ?>
                                    
-                                    <a href="<?= $rec['download_url'] ?>" class="btn btn-sm btn-success"> Download</a>
+                                    <a href="<?= $rec['download_url'] ?>" class="btn btn-sm btn-success"> <?php echo get_phrase("Download") ?></a>
                                     
                                 <?php endif ?>
                                
                      
 
                                 <a href="<?= site_url('teacher/delete_appointment_and_recording/' . $appointment['id']) ?>"
-                                onclick="return confirm('❗ Cette action supprimera le rendez-vous et l’enregistrement associé. Continuer ?')"
+                                onclick="return confirm('❗ <?php echo get_phrase("Cette action supprimera le rendez-vous et l’enregistrement associé. Continuer ?") ?>')"
                                 class="btn btn-sm btn-danger">
-                                🗑️ Supprimer
+                                🗑️ <?php echo get_phrase("Supprimer") ?>
                                 </a>
                         </td>
                     </tr>
@@ -180,8 +180,8 @@
             error: function() {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erreur',
-                    text: 'Une erreur est survenue lors du chargement des données.'
+                    title: '<?php echo get_phrase("Erreur") ?>',
+                    text: '<?php echo get_phrase("Une erreur est survenue lors du chargement des données.") ?>'
                 });
             }
         });

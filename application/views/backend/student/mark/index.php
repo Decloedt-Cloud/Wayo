@@ -32,7 +32,7 @@ $enrolments = $this->db->get()->result_array();
             <div class="row mt-3">
                 <div class="col-md-1 mb-1"></div>
                 <div class="col-md-2 mb-1">
-                    <select name="exam" id="exam_id" class="form-control select2" data-toggle="select2" required onchange="examsWiseClass(this.value)">
+                    <select name="exam" id="exam_id" class="form-control"  required onchange="examsWiseClass(this.value)">
                         <option value=""><?php echo get_phrase('select_a_exam'); ?></option>
                         <?php
                         // Récupérer les examens liés aux inscriptions de l'étudiant
@@ -55,7 +55,7 @@ $enrolments = $this->db->get()->result_array();
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id_mark" class="form-control select2" data-toggle="select2" required onchange="classWiseSection(this.value)" disabled>
+                    <select name="class" id="class_id_mark" class="form-control"  required onchange="classWiseSection(this.value)" disabled>
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php
                         // Afficher les classes où l'étudiant est inscrit
@@ -68,7 +68,7 @@ $enrolments = $this->db->get()->result_array();
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="section" id="section_id" class="form-control select2" data-toggle="select2" required disabled>
+                    <select name="section" id="section_id" class="form-control"  required disabled>
                         <option value=""><?php echo get_phrase('select_section'); ?></option>
                         <?php
                         // Afficher les sections où l'étudiant est inscrit

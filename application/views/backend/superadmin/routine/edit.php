@@ -23,7 +23,7 @@
         <div class="form-group row mb-2 gap-3">
             <label for="section_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
             <div class="col-md-8">
-                 <select name="section_id[]" id="section_id_on_routine_creation" class="form-control select2" data-bs-toggle="select2" multiple required>
+                 <select name="section_id[]" id="section_id_on_routine_creation" class="form-control"  multiple required>
                      <option value=""><?php echo get_phrase('select_a_section'); ?></option>
                      <?php 
                       $sections = $this->db->get_where('sections', array('class_id' => $routine['class_id']))->result_array();
@@ -41,7 +41,7 @@
         <div class="form-group row mb-2 gap-3">
     <label for="teacher_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('teacher'); ?><span class="required"> * </span></label>
     <div class="col-md-8">
-        <select name="teacher_id" id="teacher_on_routine_creation" class="form-control select2" data-bs-toggle="select2" required>
+        <select name="teacher_id" id="teacher_on_routine_creation" class="form-control"  required>
             <option value=""><?php echo get_phrase('assign_a_teacher'); ?></option>
             <?php
             // S'assurer que l'admin est dans la table teachers
@@ -95,7 +95,7 @@
         <div class="form-group row mb-2 gap-3">
             <label for="starting_hour_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('starting'); ?><span class="required"> * </span></label>
             <div class="col-md-8">
-            <input type="time" value="<?php echo $routine['starting_hour']; ?>" name="starting_hour" id = "starting_minute_on_routine_creation"  class="form-control select2" data-bs-toggle="select2" required />
+            <input type="time" value="<?php echo $routine['starting_hour']; ?>" name="starting_hour" id = "starting_minute_on_routine_creation"  class="form-control"  required />
 
             </div>
         </div>
@@ -105,7 +105,7 @@
         <div class="form-group row mb-2 gap-3">
             <label for="ending_hour_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('ending'); ?><span class="required"> * </span></label>
             <div class="col-md-8">
-            <input type="time" value="<?php echo $routine['ending_hour']; ?>" name="ending_hour" id = "ending_hour_on_routine_creation"  class="form-control select2" data-bs-toggle="select2" required />
+            <input type="time" value="<?php echo $routine['ending_hour']; ?>" name="ending_hour" id = "ending_hour_on_routine_creation"  class="form-control"  required />
 
          
             </div>

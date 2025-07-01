@@ -36,7 +36,7 @@ if($check_data->num_rows() > 0): ?>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="class_id"><?php echo get_phrase('classes'); ?></label>
-                                    <select class="form-control select2" data-toggle="select2" name="class_id" id="class_id">
+                                    <select class="form-control"  name="class_id" id="class_id">
                                         <option value="<?php echo 'all'; ?>" <?php if($selected_class_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                         <?php foreach ($classes->result_array() as $class): ?>
                                             <option value="<?php echo $class['id']; ?>" <?php if($selected_class_id == $class['id']) echo 'selected'; ?>><?php echo $class['name']; ?></option>
@@ -49,7 +49,7 @@ if($check_data->num_rows() > 0): ?>
                             <div class="col-md-3" <?php if($this->session->userdata('teacher_login') == 1) echo 'hidden'; ?>>
                                 <div class="form-group">
                                     <label for="user_id"><?php echo get_phrase('instructor'); ?></label>
-                                    <select class="form-control select2" data-toggle="select2" name="user_id" id = 'user_id'>
+                                    <select class="form-control"  name="user_id" id = 'user_id'>
                                         <option value="all" <?php if($selected_user_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                         <?php foreach ($all_teachers->result_array() as $teacher): ?>
                                             <option value="<?php echo $teacher['id']; ?>" <?php if($selected_user_id == $teacher['id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
@@ -62,7 +62,7 @@ if($check_data->num_rows() > 0): ?>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="status"><?php echo get_phrase('status'); ?></label>
-                                    <select class="form-control select2" data-toggle="select2" name="status" id = 'course_status'>
+                                    <select class="form-control"  name="status" id = 'course_status'>
                                         <option value="all" <?php if($selected_status == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                         <option value="active" <?php if($selected_status == 'active') echo 'selected'; ?>><?php echo get_phrase('active'); ?></option>
                                         <option value="inactive" <?php if($selected_status == 'inactive') echo 'selected'; ?>><?php echo get_phrase('inactive'); ?></option>

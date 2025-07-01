@@ -33,6 +33,9 @@ $rooms = $this->db->get_where('rooms', array('Etat' => 1))->result_array();
             color: #777;
             font-size: 14px;
         }
+         body[dir="rtl"] .meeting-time {
+            font-size: 1.2rem !important;
+        }
         #calendar {
             max-width: 900px;
             margin: auto;
@@ -62,7 +65,7 @@ $rooms = $this->db->get_where('rooms', array('Etat' => 1))->result_array();
 <div class="row mt-4">
     <?php foreach ($rooms as $room):
         $className = $this->db->get_where('classes', array('id' => $room['class_id']))->row('name');
-        $status = '<span class="badge bg-danger">Non Démarrée</span>'; // Par défaut, réunion non démarrée
+        $status = '<span class="badge bg-danger">' . get_phrase('Non Démarrée') . '</span>'; // Par défaut, réunion non démarrée
 
         $user_id   = $this->session->userdata('user_id');
         
@@ -82,11 +85,11 @@ $rooms = $this->db->get_where('rooms', array('Etat' => 1))->result_array();
         <div class="col-md-4">
             <div class="meeting-card">
                 <div class="meeting-title"><?php echo $room['name']; ?></div>
-                <div class="meeting-time">Classe : <?php echo $className; ?></div>
+                <div class="meeting-time"><?php echo get_phrase("Classe :") ?> <?php echo $className; ?></div>
                 <div class="meeting-status" id="status-<?php echo $room['id']; ?>"><?php echo $status; ?></div>
 
                 <!-- Nombre de participants -->
-                <div class="meeting-participants" id="participants-<?php echo $room['id']; ?>">👥 0 participants</div>
+                <div class="meeting-participants" id="participants-<?php echo $room['id']; ?>">👥 0 <?php echo get_phrase("participants") ?></div>
                 
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
@@ -96,7 +99,7 @@ $rooms = $this->db->get_where('rooms', array('Etat' => 1))->result_array();
                     class="btn btn-secondary meeting-btn join-btn disabled"
                     id="join-btn-<?php echo $room['id']; ?>"
                     data-meeting-id="<?php echo $room['id']; ?>">
-                        Join 
+                        <?php echo get_phrase("Join") ?> 
                     </a>
 
 

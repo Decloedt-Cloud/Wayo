@@ -20,7 +20,7 @@
         <div class="row justify-content-md-center d-print-none" style="margin-bottom: 10px;">
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <label for="session_from"><?php echo get_phrase('current_session'); ?></label>
-            <select class="form-control select2" data-toggle = "select2" id = "session_from" name="session_from">
+            <select class="form-control"  id = "session_from" name="session_from">
               <option value=""><?php echo get_phrase('session_from'); ?></option>
               <?php
               $sessions = $this->crud_model->get_session()->result_array();
@@ -32,7 +32,7 @@
 
         <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
           <label for="session_to"><?php echo get_phrase('next_session'); ?></label>
-          <select class="form-control select2" data-toggle = "select2" id = "session_to" name="session_to">
+          <select class="form-control"  id = "session_to" name="session_to">
             <option value=""><?php echo get_phrase('session_to'); ?></option>
             <?php
             $sessions = $this->crud_model->get_session()->result_array();
@@ -44,7 +44,7 @@
 
       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
         <label for="class_id_from"><?php echo get_phrase('promoting_from'); ?></label>
-        <select name="class_id_from select2" data-toggle = "select2" id="class_id_from" class="form-control" required>
+        <select name="class_id_from select2"  id="class_id_from" class="form-control" required>
           <option value=""><?php echo get_phrase('promoting_from'); ?></option>
           <?php
           $classes = $this->crud_model->get_classes()->result_array();
@@ -64,7 +64,7 @@
 
     <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
       <label for="class_id_to"><?php echo get_phrase('promoting_to'); ?></label>
-      <select name="class_id_to" class="form-control select2" data-toggle = "select2" id="class_id_to" required>
+      <select name="class_id_to" class="form-control"  id="class_id_to" required>
         <option value=""><?php echo get_phrase('promoting_to'); ?></option>
         <?php
         $classes = $this->crud_model->get_classes()->result_array();

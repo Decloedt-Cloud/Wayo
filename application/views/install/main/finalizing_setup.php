@@ -93,7 +93,7 @@
                   <div class="form-group">
             				<label class="col-sm-3 control-label">TimeZone</label>
             				<div class="col-sm-5">
-                      <select class="form-control select2" data-toggle="select2" id="timezone" name="timezone">
+                      <select class="form-control"  id="timezone" name="timezone">
                         <?php $tzlist = DateTimeZone::listIdentifiers(DateTimeZone::ALL); ?>
                         <?php foreach ($tzlist as $tz): ?>
                           <option value="<?php echo $tz ;?>" <?php if($tz == 'Asia/Dhaka') echo 'selected'; ?>><?php echo $tz ;?></option>

@@ -37,7 +37,7 @@
                         </select>
                     </div>
                     <div class="col-md-4 mb-1">
-                        <select name="section" id="section_id" class="form-control select2" data-toggle = "select2" required>
+                        <select name="section" id="section_id" class="form-control"  required>
                             <?php if($class_id !=""){
                                 $sections = $this->db->get_where('sections', array('class_id' => $class_id))->result_array(); ?>
                                 <?php foreach($sections as $section): ?>

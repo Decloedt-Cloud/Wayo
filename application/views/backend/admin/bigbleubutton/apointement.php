@@ -22,7 +22,7 @@ $appointments_count = count($appointments);
           
             <label for="appointementSelect" class="form-label"><?php echo get_phrase('Select_an_appointment'); ?>  </label>
             <select class="form-select" id="appointementSelect" name="appointementSelect"  required>
-                <option value="">Choisissez un Appointement</option>
+                <option value=""><?php echo get_phrase("Choisissez un Appointement") ?></option>
                     <?php foreach ($appointments as $appointment): ?>
                         <option value="<?php echo $appointment['id']; ?>"><?php echo $appointment['title']; ?></option>
                     <?php endforeach; ?>

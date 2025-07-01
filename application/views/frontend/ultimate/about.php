@@ -2,7 +2,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
 
-<div class=" container-about">
+<div class=" container-about" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="general-container ">
     <div class="general-header align-items-center">
       <h1 class='col-6 display-4 text_fade text-uppercase text-center  text-sm-break'> <?php echo get_phrase('About_us'); ?> </h1>
@@ -19,10 +19,10 @@
   <div class="container row">
     <!-- Text Section -->
     <div class="col-md-6 content-section">
-      <h1>Welcome to Wayo Academy</h1>
-      <p> Where learning adapts to you at WAYO Academy, we are dedicated to delivering a personalized, dynamic educational experience that integrates effortlessly into your life. Our platform offers a diverse selection of expert-led courses and practical resources to help you develop the skills that matter most, for today and the future. </p>
-      <p> Whether you are beginning a new career, advancing in your field or exploring a passion, we will support you at every stage. Join us in a journey of growth, discovery and achievement. </p>
-      <p style="font-family: 'Dancing Script', cursive; font-optical-sizing: auto; font-weight: bold; font-style: normal; font-size: 1.9rem;">Because learning should evolve with you !</p>
+      <h1><?php echo get_phrase('Welcome to Wayo Academy'); ?></h1>
+      <p><?php echo get_phrase('Where learning adapts to you at WAYO Academy, we are dedicated to delivering a personalized, dynamic educational experience that integrates effortlessly into your life. Our platform offers a diverse selection of expert-led courses and practical resources to help you develop the skills that matter most, for today and the future'); ?></p>
+      <p><?php echo get_phrase('Whether you are beginning a new career, advancing in your field or exploring a passion, we will support you at every stage. Join us in a journey of growth, discovery and achievement'); ?></p>
+      <p style="font-family: 'Dancing Script', cursive; font-optical-sizing: auto; font-weight: bold; font-style: normal; font-size: 1.9rem;"><?php echo get_phrase('Because learning should evolve with you !'); ?></p>
     </div>
     <!-- Image Section -->
     <div class="col-md-6 image-section">

@@ -13,7 +13,7 @@
     <div class="form-group row">
         <div class="col-md-12">
             <label  for="class_id_on_taking_attendance"><?php echo get_phrase('class'); ?></label>
-            <select name="class_id" id="class_id_on_taking_attendance" class="form-control select2" data-bs-toggle="select2" onchange="classWiseSectionOnTakingAttendance(this.value)" required>
+            <select name="class_id" id="class_id_on_taking_attendance" class="form-control"  onchange="classWiseSectionOnTakingAttendance(this.value)" required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -26,7 +26,7 @@
     <div class="form-group row">
         <div class="col-md-12" id = "section_content_2">
             <label for="section_id_on_taking_attendance"><?php echo get_phrase('section'); ?></label>
-            <select name="section_id" id="section_id_on_taking_attendance" class="form-control select2" data-bs-toggle="select2" required >
+            <select name="section_id" id="section_id_on_taking_attendance" class="form-control"  required >
                 <option value=""><?php echo get_phrase('select_section'); ?></option>
             </select>
         </div>
