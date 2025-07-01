@@ -1399,7 +1399,6 @@
     "updated_successfully": "Succesvol bijgewerkt",
     "the_file_size_exceeds_the_limit.": "De bestandsgrootte overschrijdt de limiet.",
     "old": "oud",
-
     "Total_Students": "Totaal aantal leden",
     "email_address": "E-mailadres",
     "online_admission_student": "Online toelatingslid",
@@ -2005,7 +2004,6 @@
     "la_room_a_été_supprimée_avec_succès.": "De kamer is succesvol verwijderd.",
     "impossible_de_supprimer_la_room_:": "Kamer kan niet worden verwijderd:",
     "une_erreur_inattendue_est_survenue.": "Er is een onverwachte fout opgetreden.",
-
     "Total Students": "Totaal aantal studenten",
     "Email address": "E-mailadres",
     "Online admission student": "Online toelating student",
@@ -2325,7 +2323,8 @@
     "Mentor information": "Mentorinformatie",
     "Quiz submitted successfully": "Quiz succesvol ingediend",
     "Your results have been submitted": "Uw resultaten zijn ingediend",
-    "Online cours": "Online cursus"
-
-
+    "Online cours": "Online cursus",
+    "wall": "Wall",
+    "people": "People",
+    "spaces": "Spaces"
 }

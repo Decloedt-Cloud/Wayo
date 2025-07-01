@@ -1732,19 +1732,16 @@
     "online_cours": "Online cours",
     "please_login_before_continuing": "Please login before continuing",
     "your_quiz_results": "Your quiz results",
-
     "build_your_digital_future": "Build your digital future",
     "practical_training,_human_support_and_concrete_results": "Practical training, human support and concrete results",
     "i'm_a_member": "I'm a member",
     "i'm_a_mentor": "I'm a mentor",
     "our_key_features": "Our key features",
-    
     "choose_your_plan": "Choose your plan",
     "premium": "Premium",
     "unlimited": "Unlimited",
     "calendar_&_events": "Calendar & events",
     "social_hub": "Social hub",
-  
     "live_classes": "Live classes",
     "assessments_&_progress_tracking": "Assessments & progress tracking",
     "additional_mentors": "Additional mentors",
@@ -2002,7 +1999,6 @@
     "historique": "Historical",
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "This action will delete the appointment and associated record. Continue?",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "An error occurred while loading the data.",
-    "save_exam": "Save exam"
-
-
+    "save_exam": "Save exam",
+    "wall": "Wall"
 }

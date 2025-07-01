@@ -2009,5 +2009,8 @@
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "هذا الإجراء سيؤدي إلى حذف الموعد والتسجيل المرتبط به. هل تريد المتابعة؟",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "حدث خطأ أثناء تحميل البيانات.",
     "ex:_réunion_pédagogique": "سجل الاجتماعات التربوية",
-    "choisir_une_plage_de_dates": "اختر نطاق التواريخ"
+    "choisir_une_plage_de_dates": "اختر نطاق التواريخ",
+    "wall": "Wall",
+    "people": "People",
+    "spaces": "Spaces"
 }
