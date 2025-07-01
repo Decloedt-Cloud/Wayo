@@ -7,7 +7,7 @@ if($check_data->num_rows() > 0):?>
         <tr style="background-color: #313a46; color: #ababab;">
             <th><?php echo get_phrase('image'); ?></th>
             <th><?php echo get_phrase('name'); ?></th>
-            <th><?php echo get_phrase('department'); ?></th>
+            
             <th><?php echo get_phrase('designation'); ?></th>
             <th><?php echo get_phrase('options'); ?></th>
         </tr>
@@ -20,7 +20,7 @@ if($check_data->num_rows() > 0):?>
             <tr>
                 <td><img class="rounded-circle" width="50" height="50" src="<?php echo $this->user_model->get_user_image($teacher['user_id']); ?>"></td>
                 <td><?php echo $this->db->get_where('users', array('id' => $teacher['user_id']))->row('name'); ?></td>
-                <td><?php echo $this->db->get_where('departments', array('id' => $teacher['department_id']))->row('name'); ?></td>
+                
                 <td><?php echo $teacher['designation']; ?></td>
                 <td>
                     <div class="dropdown text-center">

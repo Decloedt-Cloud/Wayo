@@ -90,21 +90,6 @@
    
             </div> <!-- end col -->
             <div class="col-xl-4">
-                <!-- <div class="card bg-primary">
-                    <div class="card-body">
-                        <h4 class="header-title text-white mb-2"><?php echo get_phrase('todays_attendance'); ?></h4>
-                        <div class="text-center">
-                            <h3 class="font-weight-normal text-white mb-2">
-                                <?php echo $this->crud_model->get_todays_attendance(); ?>
-                            </h3> -->
-                            <!-- <p class="text-light text-uppercase font-13 font-weight-bold"><?php echo $this->crud_model->get_todays_attendance(); ?> <?php echo get_phrase('students_are_attending_today'); ?></p> -->
-                            <!-- <a href="<?php echo route('attendance'); ?>" class="btn btn-outline-light btn-sm mb-1"><?php echo get_phrase('go_to_attendance'); ?>
-                                <i class="mdi mdi-arrow-right ms-1"></i>
-                            </a> -->
-
-                        <!-- </div>
-                    </div>
-                </div> -->
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title"><?php echo get_phrase('recent_events'); ?><a href="<?php echo route('event_calendar'); ?>" style="color: #6c757d;"><i class = "mdi mdi-export"></i></a></h4>
@@ -114,6 +99,25 @@
             </div>
         </div>
     </div><!-- end col-->
+</div>
+
+<div class="row ">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-body py-2">
+        <h4 class="page-title"> <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="iframe-container">
+   
+    <iframe src="<?= $iframe_url ?>"
+            width="100%"
+            height="800"
+            frameborder="0"
+            allowfullscreen>
+    </iframe>
 </div>
 
 <script>

@@ -1703,6 +1703,14 @@
     "calendar_failed_to_load": "Calendar failed to load",
     "failed_to_load_exams": "Failed to load exams",
     "an_error_occurred_please_try_again": "An error occurred please try again",
+    "central": "Wall",
+    "membres": "Membres",
+    "people": "Members",
+    "espaces": "Spaces",
+    "social": "Social",
+    "chat": "Chat",
+    "messages": "Messages",
+    "spaces": "Spaces",
     "session_has_been_deleted_successfully": "Session has been deleted successfully",
     "deleting": "Deleting",
     "export_csv": "Export csv",
@@ -1724,18 +1732,19 @@
     "online_cours": "Online cours",
     "please_login_before_continuing": "Please login before continuing",
     "your_quiz_results": "Your quiz results",
+
     "build_your_digital_future": "Build your digital future",
     "practical_training,_human_support_and_concrete_results": "Practical training, human support and concrete results",
     "i'm_a_member": "I'm a member",
     "i'm_a_mentor": "I'm a mentor",
     "our_key_features": "Our key features",
-    "social": "Social",
+    
     "choose_your_plan": "Choose your plan",
     "premium": "Premium",
     "unlimited": "Unlimited",
     "calendar_&_events": "Calendar & events",
     "social_hub": "Social hub",
-    "chat": "Chat",
+  
     "live_classes": "Live classes",
     "assessments_&_progress_tracking": "Assessments & progress tracking",
     "additional_mentors": "Additional mentors",
@@ -1994,4 +2003,6 @@
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "This action will delete the appointment and associated record. Continue?",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "An error occurred while loading the data.",
     "save_exam": "Save exam"
+
+
 }

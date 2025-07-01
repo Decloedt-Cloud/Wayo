@@ -21,6 +21,8 @@ class Admin extends CI_Controller
 		parent::__construct();
 
 		$this->load->database();
+		
+		$this->load->library('Humhub_sso');
 		$this->load->library('session');
 		require_once APPPATH . '../vendor/autoload.php';
 
@@ -56,6 +58,7 @@ class Admin extends CI_Controller
 	public function index()
 	{
 		redirect(route('dashboard'), 'refresh');
+		
 	}
 
 	   //START TEACHER Create_Join bigbleubutton 
@@ -262,10 +265,43 @@ class Admin extends CI_Controller
 	{
 
 		// $this->msg91_model->clickatell();
-		$page_data['page_title'] = 'Dashboard';
-		$page_data['folder_name'] = 'dashboard';
-		$this->load->view('backend/index', $page_data);
+		
+			// 1) Vérifier que c'est bien un admin
+			if (! $this->session->userdata('admin_login')) {
+				show_error('Accès réservé aux administrateurs.');
+			}
+			
+			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
+			$userId = $this->session->userdata('user_id');
+			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
+			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
+				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
+				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
+			}
+			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
+
+			// 3) Stocker temporairement cet objet pour la librairie SSO
+			$this->session->set_userdata('user', $wUser);
+
+			// 4) Générer l’URL SSO
+			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
+			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
+
+			if (! $iframeUrl) {
+				show_error('Impossible de générer l’URL SSO HumHub.');
+			}
+			
+			// 5) Passer à la vue
+			$page_data = [
+				'folder_name' => 'dashboard',
+				'page_title'  => 'Dashboard',
+				//'page_name'   => 'central',
+				'iframe_url'  => $iframeUrl,
+			];
+			$this->load->view('backend/index', $page_data);
 	}
+
+	
 
 	public function get_csrf_token()
 	{
@@ -892,66 +928,6 @@ public function get_sections_by_class()
 	//END SUBJECT section
 
 
-	//START DEPARTMENT section
-	public function department($param1 = '', $param2 = '')
-	{
-
-		if ($param1 == 'create') {
-			$modelResponse = $this->crud_model->department_create();
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-			  'name' => $this->security->get_csrf_token_name(),
-			  'hash' => $this->security->get_csrf_hash()
-		  );
-		  
-		  // Fusionner la réponse du modèle avec le CSRF
-		  $response = array(
-			  'status' => $modelResponse['status'],
-			  'notification' => $modelResponse['notification'],
-			  'csrf' => $csrf
-		  );
-		  
-		  echo json_encode($response);
-		}
-
-		if ($param1 == 'update') {
-			$response = $this->crud_model->department_update($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
-
-		if ($param1 == 'delete') {
-			$response = $this->crud_model->department_delete($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
-
-		// Get the data from database
-		if ($param1 == 'list') {
-			$this->load->view('backend/admin/department/list');
-		}
-
-		if (empty($param1)) {
-			$page_data['folder_name'] = 'department';
-			$page_data['page_title'] = 'department';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
-	//END DEPARTMENT section
 
 
 	//START SYLLABUS section
@@ -1738,6 +1714,165 @@ public function get_sections_by_class()
     }
 }
 	//END EXAM section
+
+		//HUMHUB DASHBOARD
+		public function wall()
+		{
+			// 1) Vérifier que c'est bien un admin
+			if (! $this->session->userdata('admin_login')) {
+				show_error('Accès réservé aux administrateurs.');
+			}
+			
+			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
+			$userId = $this->session->userdata('user_id');
+			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
+			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
+				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
+				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
+			}
+			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
+
+			// 3) Stocker temporairement cet objet pour la librairie SSO
+			$this->session->set_userdata('user', $wUser);
+
+			// 4) Générer l’URL SSO
+			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
+			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
+
+			if (! $iframeUrl) {
+				show_error('Impossible de générer l’URL SSO HumHub.');
+			}
+			
+			// 5) Passer à la vue
+			$page_data = [
+				'folder_name' => 'humhub',
+				'page_title'  => 'wall',
+				'page_name'   => 'wall',
+				'iframe_url'  => $iframeUrl,
+			];
+			$this->load->view('backend/index', $page_data);
+		}
+			//HUMHUB PEOPLE
+		public function people()
+		{
+			// 1) Vérifier que c'est bien un admin
+			if (! $this->session->userdata('admin_login')) {
+				show_error('Accès réservé aux administrateurs.');
+			}
+			
+			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
+			$userId = $this->session->userdata('user_id');
+			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
+
+			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
+				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
+				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
+			}
+			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
+
+			// 3) Stocker temporairement cet objet pour la librairie SSO
+			$this->session->set_userdata('user', $wUser);
+
+			// 4) Générer l’URL SSO
+			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
+			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
+		
+			if (! $iframeUrl) {
+				show_error('Impossible de générer l’URL SSO HumHub.');
+			}
+
+			// 5) Passer à la vue
+			$page_data = [
+				'folder_name' => 'humhub',
+				'page_title'  => 'People',
+				'page_name'   => 'people',
+				'iframe_url'  => $iframeUrl,
+			];
+			$this->load->view('backend/index', $page_data);
+		}
+
+		//HUMHUB SPEACES
+		public function spaces() {
+			// 1) Vérifier que c'est bien un admin
+			if (! $this->session->userdata('admin_login')) {
+				show_error('Accès réservé aux administrateurs.');
+			}
+			
+			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
+			$userId = $this->session->userdata('user_id');
+			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
+			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
+				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
+				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
+			}
+			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
+
+			// 3) Stocker temporairement cet objet pour la librairie SSO
+			$this->session->set_userdata('user', $wUser);
+
+			// 4) Générer l’URL SSO
+			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
+			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
+
+			if (! $iframeUrl) {
+				show_error('Impossible de générer l’URL SSO HumHub.');
+			}
+
+			// 5) Passer à la vue
+			$page_data = [
+				'folder_name' => 'humhub',
+				'page_title'  => 'Spaces',
+				'page_name'   => 'spaces',
+				'iframe_url'  => $iframeUrl,
+			];
+			$this->load->view('backend/index', $page_data);
+		
+		}
+		//HUMHUB MESSAGING	
+		public function chat() {
+			// 1) Vérifier que c'est bien un admin
+			if (! $this->session->userdata('admin_login')) {
+				show_error('Accès réservé aux admins.');
+			}
+			
+			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
+			$userId = $this->session->userdata('user_id');
+
+			 // Marquer tous les messages comme lus
+    	  	$this->user_model->mark_all_messages_read($userId);
+
+			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
+			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
+				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
+				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
+			}
+			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
+
+			// 3) Stocker temporairement cet objet pour la librairie SSO
+			$this->session->set_userdata('user', $wUser);
+
+			// 4) Générer l’URL SSO
+			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
+			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
+
+			if (! $iframeUrl) {
+				show_error('Impossible de générer l’URL SSO HumHub.');
+			}
+ 			// Ajoute ça pour le badge :
+  		   $unread_messages = $this->user_model->get_unread_messages_count($userId);
+			// 5) Passer à la vue
+			$page_data = [
+				'folder_name' => 'humhub',
+				'page_title'  => 'Messages',
+				'page_name'   => 'message',
+				'iframe_url'  => $iframeUrl,
+				'unread_messages'=>$unread_messages,
+			];
+			$this->load->view('backend/index', $page_data);
+		
+		}
+
+
   // SMTP SETTINGS MANAGER
   public function smtp_settings($param1 = "", $param2 = "")
   {
