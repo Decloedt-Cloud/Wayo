@@ -39,7 +39,7 @@ $notice = $this->db->get_where('noticeboard', array('id' => $param1))->row_array
 
       <div class="form-group mb-1">
         <label for="show_on_website"><?php echo get_phrase('show_on_website'); ?></label>
-        <select name="show_on_website" id="show_on_website" class="form-control select2" data-toggle = "select2">
+        <select name="show_on_website" id="show_on_website" class="form-control" >
           <option value="1" <?php if($notice['show_on_website'] == 1) echo 'selected'; ?>><?php echo get_phrase('show'); ?></option>
           <option value="0" <?php if($notice['show_on_website'] == 0) echo 'selected'; ?>><?php echo get_phrase('do_not_need_to_show'); ?></option>
         </select>

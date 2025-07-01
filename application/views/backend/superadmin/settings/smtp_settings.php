@@ -10,7 +10,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-md-3 col-form-label" for="mail_sender"><?php echo get_phrase('mail_sender') ; ?><span class="required"> * </span></label>
                             <div class="col-md-9">
-                                <select class="form-control select2" data-toggle = "select2" name="mail_sender" id="mail_sender" onchange = "showHideSMTPCredentials(this.value)" required>
+                                <select class="form-control"  name="mail_sender" id="mail_sender" onchange = "showHideSMTPCredentials(this.value)" required>
                                     <option value="php_mailer" <?php if (get_smtp('mail_sender') == 'php_mailer'): ?> selected <?php endif; ?>><?php echo get_phrase('php_mailer') ;?></option>
                                     <option value="generic_smtp" <?php if (get_smtp('mail_sender') == 'generic_smtp'): ?> selected <?php endif; ?>><?php echo get_phrase('generic_smtp') ;?></option>
                                 </select>
@@ -72,7 +72,7 @@
                             <div class="form-group row mb-3 hidden">
                                 <label class="col-md-3 col-form-label" for="smtp_show_error">SMTP <?php echo get_phrase('show_error') ; ?></label>
                                 <div class="col-md-9">
-                                    <select class="form-control select2" data-toggle = "select2" name="smtp_show_error" id="smtp_show_error">
+                                    <select class="form-control"  name="smtp_show_error" id="smtp_show_error">
                                         <option value="yes" <?php if (get_smtp('smtp_show_error') == 'yes'): ?> selected <?php endif; ?>><?php echo get_phrase('show') ;?></option>
                                         <option value="no" <?php if (get_smtp('smtp_show_error') == 'no'): ?> selected <?php endif; ?>><?php echo get_phrase('do_not_show') ;?></option>
                                     </select>

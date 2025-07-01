@@ -83,7 +83,7 @@
                                                 <div class="form-group row mb-3">
                                                     <label class="col-md-2 col-form-label" for="class_id"><?php echo get_phrase('class'); ?><span class="required">*</span></label>
                                                     <div class="col-md-10">
-                                                        <select class="form-control select2" data-bs-toggle="select2" onchange="get_subject()" name="class_id" id="class_id" required>
+                                                        <select class="form-control"  onchange="get_subject()" name="class_id" id="class_id" required>
                                                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                                                             <?php foreach ($classes->result_array() as $class): ?>
                                                                 <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
@@ -95,7 +95,7 @@
                                                 <div class="form-group row mb-3">
                                                     <label class="col-md-2 col-form-label" for="subject_id"><?php echo get_phrase('subject'); ?><span class="required">*</span></label>
                                                     <div class="col-md-10">
-                                                        <select class="form-control select2" data-bs-toggle="select2" name="subject_id" id="subject_id" required>
+                                                        <select class="form-control"  name="subject_id" id="subject_id" required>
                                                             <option value=""><?php echo get_phrase('first_select_a_class'); ?></option>
                                                         </select>
                                                     </div>
@@ -107,7 +107,7 @@
                                                 <div class="form-group row mb-3">
                                                     <label class="col-md-2 col-form-label" for="user_id"><?php echo get_phrase('instructor'); ?><span class="required">*</span></label>
                                                     <div class="col-md-10">
-                                                        <select class="form-control select2" data-bs-toggle="select2" name="user_id" id="user_id" required>
+                                                        <select class="form-control"  name="user_id" id="user_id" required>
                                                             <option value=""><?php echo get_phrase('select_a_teacher'); ?></option>
                                                             <?php foreach ($all_teachers->result_array() as $teacher): ?>
                                                                 <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['name']; ?></option>
@@ -142,7 +142,7 @@
                                                 <div class="form-group row mb-3">
                                                     <label class="col-md-2 col-form-label" for="course_overview_provider"><?php echo get_phrase('course_overview_provider'); ?></label>
                                                     <div class="col-md-10">
-                                                        <select class="form-control select2" data-bs-toggle="select2" name="course_overview_provider" id="course_overview_provider">
+                                                        <select class="form-control"  name="course_overview_provider" id="course_overview_provider">
                                                             <option value="youtube"><?php echo get_phrase('youtube'); ?></option>
                                                             <option value="vimeo"><?php echo get_phrase('vimeo'); ?></option>
                                                             <option value="html5"><?php echo get_phrase('HTML5'); ?></option>

@@ -36,6 +36,9 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
             color: #777;
             font-size: 14px;
         }
+         body[dir="rtl"] .meeting-time {
+            font-size: 1.2rem !important;
+        }
         .delete-room-btn {
             border-radius: 50%;
             padding: 3px 8px;
@@ -75,7 +78,7 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
 <div class="row mt-4">
     <?php foreach ($rooms as $room):
         $className = $this->db->get_where('classes', array('id' => $room['class_id']))->row('name');
-        $status = '<span class="badge bg-danger">Non Démarrée</span>'; // Par défaut, réunion non démarrée
+        $status = '<span class="badge bg-danger">' . get_phrase('Non Démarrée') . '</span>'; // Par défaut, réunion non démarrée
     ?>
         <div class="col-md-4">
             <div class="meeting-card position-relative">
@@ -89,12 +92,12 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
                 </button>
 
                 <div class="meeting-title"><?php echo $room['name']; ?></div>
-                <div class="meeting-time">Classe : <?php echo $className; ?></div>
+                <div class="meeting-time"><?php echo get_phrase("Classe :") ?> <?php echo $className; ?></div>
                 <div class="meeting-status" id="status-<?php echo $room['id']; ?>"><?php echo $status; ?></div>
 
                 <!-- Nombre de participants -->
-                <div class="meeting-participants" id="participants-<?php echo $room['id']; ?>">👥 0 participants</div>
-                <a href="<?php echo route('Calendar/').$room['class_id'].'/'.$room['id']; ?>"><i class="mdi mdi-calendar">Calendar</i></a>
+                <div class="meeting-participants" id="participants-<?php echo $room['id']; ?>">👥 0 <?php echo get_phrase("participants") ?></div>
+                <a href="<?php echo route('Calendar/').$room['class_id'].'/'.$room['id']; ?>"><i class="mdi mdi-calendar"><?php echo get_phrase("Calendar") ?></i></a>
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <!-- <a href="<?php //echo base_url('bigbluebutton/start_meeting/' . $room['id']); ?>"
@@ -168,8 +171,8 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
                         </select>
                     </div>
                     <div class="form-group mt-2 col-md-12">
-                        <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right">Supprimer</button>
+                        <button type="submit" class="btn btn-primary"><?php echo get_phrase("Sauvegarder") ?></button>
+                        <button type="button" id="deleteAppointment" class="btn btn-danger float-right"><?php echo get_phrase("Supprimer") ?></button>
                     </div>
                 </form>
             </div>
@@ -182,7 +185,7 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="appointmentModalLabel">Add new appointment directly from room calendar</h5>
+                <h5 class="modal-title" id="appointmentModalLabel"><?php echo get_phrase("Add new appointment directly from room calendar") ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -194,7 +197,7 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
 <div id="DynamicNotification" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-2 m-3" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
-            Action effectuée avec succès.
+            <?php echo get_phrase("Action effectuée avec succès.") ?>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>

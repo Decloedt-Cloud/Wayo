@@ -12,7 +12,7 @@ if($check_data->num_rows() > 0): ?>
                                 <div class="col-md-3" <?php if($this->session->userdata('teacher_login') == 1) echo 'hidden'; ?>>
                                     <div class="form-group">
                                         <label for="user_id"><?php echo get_phrase('instructor'); ?></label>
-                                        <select class="form-control select2" data-toggle="select2" name="user_id" id = 'user_id'>
+                                        <select class="form-control"  name="user_id" id = 'user_id'>
                                             <option value="all" <?php if($selected_user_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                             <?php foreach ($all_teachers->result_array() as $teacher): ?>
                                                 <option value="<?php echo $teacher['id']; ?>" <?php if($selected_user_id == $teacher['id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
@@ -27,7 +27,7 @@ if($check_data->num_rows() > 0): ?>
                                         <?php $class_id = $this->lms_model->get_class_id_by_user($this->session->userdata('user_id'));; ?>
                                             <?php $subjects = $this->lms_model->get_subject_by_class_id($class_id); ?>
                                         <label for="subject_id"><?php echo get_phrase('subject'); ?></label>
-                                        <select class="form-control select2" data-toggle="select2" name="subject" id = 'subject_id'>
+                                        <select class="form-control"  name="subject" id = 'subject_id'>
                                             <option value="all" <?php if($selected_subject == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                                             
                                             <?php foreach($subjects as $subject){ ?>

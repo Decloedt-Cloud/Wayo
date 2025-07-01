@@ -6,7 +6,7 @@
   <!-- Header Section -->
   <div class="general-container container-fluid">
     <div class="row general-header align-items-center">
-      <h1 class='col-12 text_fade text-uppercase text-center'>contact us</h1>
+      <h1 class='col-12 text_fade text-uppercase text-center'><?php echo get_phrase('contact us'); ?></h1>
     </div>
     <img class="ct-img rellax" data-rellax-speed="1.5" src="
 			<?php echo base_url('assets/frontend/ultimate/img/contact us/cu-img-top.jpg') ?>" alt="">
@@ -207,7 +207,7 @@
   </div>
   <div class="container-fluid location-container">
     <div class="row">
-      <h1 class="office-title text-center text-break py-10 text-uppercase">WAYO ACADEMY LOCATION</h1>
+      <h1 class="office-title text-center text-break py-10 text-uppercase"><?php echo get_phrase('WAYO ACADEMY LOCATION'); ?></h1>
     </div>
     <div class="row">
       <div id="map" class="g-0 col-12"></div>

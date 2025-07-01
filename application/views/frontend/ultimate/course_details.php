@@ -4,7 +4,7 @@
     <div class="general-container container-fluid">
         <div class="general-header align-items-center">
             <h1 class='col-6 display-4 text_fade text-uppercase text-center  text-sm-break'>
-                <?php echo get_phrase('Discover_our_Courses'); ?>
+                <?php echo get_phrase('Discover_our_Communities'); ?>
             </h1>
             <!-- Div Section For Header Background Fade In-Out Animation-->
             <div></div>
@@ -54,17 +54,17 @@
             <div class="v-divider my-0"></div>
             <div class="col-4 col-md-auto align-content-center grand-pill mb-2 mb-sm-0">
               <span class="text-white"> <?php echo $school["category"] ?></span>
-              <p class="details-text text-uppercase">category</p>
+              <p class="details-text text-uppercase"><?php echo get_phrase("category"); ?></p>
             </div>
             <div class="d-none d-md-block v-divider my-0"></div>
             <div class="col-4 col-md-auto align-content-center text-white grand-pill mb-2 mb-sm-0">
               <span>Free</span>
-              <p class="details-text text-uppercase">price</p>
+              <p class="details-text text-uppercase"><?php echo get_phrase("price"); ?></p>
             </div>
             <div class="v-divider my-0"></div>
             <div class="col-4 col-md-auto text-center grand-pill mb-2 mb-sm-0">
               <span class="text-white font-weight-bold"> <?php echo $course_students_count > 0 ? $course_students_count : "0" ?> </span>
-              <p class="details-text text-uppercase">students</p>
+              <p class="details-text text-uppercase"><?php echo get_phrase("students"); ?></p>
             </div>
             <div class="col-auto d-none d-md-block v-divider my-0"></div>
             <div class="col-12 col-md-auto justify-content-center grand-pill mb-sm-0 mt-2 mt-md-0">
@@ -118,7 +118,7 @@
           <div class="row justify-content-center">
             <div class="col-4 col-md-4 text-center grand-pill mb-2 mb-sm-0">
               <span class="text-white font-weight-bold"> <?php echo $course_students_count > 0 ? $course_students_count : "0" ?> </span>
-              <p class="details-text text-uppercase">students</p>
+              <p class="details-text text-uppercase"><?php echo get_phrase("students"); ?></p>
             </div>
             <div class="col-4 v-divider"></div>
             <div class="col-auto teacher-pill">
@@ -134,7 +134,7 @@
               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
               <button id="join-button" type="submit" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
             </form>
-            <button id="login-join-button" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("login")); ?> </button>
+            <button id="login-join-button" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
           </div>
         </div>
         <!-- New Box Below Small Section -->
@@ -155,14 +155,14 @@
                                 <span class="text-white font-weight-bold"> 
                                     <?php echo $course_students_count > 0 ? $course_students_count : "0" ?>
                                 </span>
-                                <p class="details-text text-uppercase">students</p>
+                                <p class="details-text text-uppercase"><?php echo get_phrase("students"); ?></p>
                             </div>
                             <div class="col-4 v-divider"></div>
                             <div class="col-4 text-center">
                                 <span class="text-white font-weight-bold">
                                     <?php echo $course['price'] ?? '0' ?>$
                                 </span>
-                                <p class="details-text text-uppercase">Price</p>
+                                <p class="details-text text-uppercase"><?php echo get_phrase("Price"); ?></p>
                             </div>
                         </div>
                         <div class="h-divider"></div>

@@ -7,7 +7,7 @@
           <i class="mdi mdi-file-document title_icon"></i> <?php echo get_phrase('student_fee_manager'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?></button>
-          <button type="button" class="btn btn-outline-success btn-rounded alignToTitle float-end my-1" style="margin-right: 10px;" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_mass_invoice'); ?></button>
+          <button type="button" class="btn btn-outline-success btn-rounded alignToTitle float-end my-1 between-button" style="margin-right: 10px;" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_mass_invoice'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
@@ -28,7 +28,7 @@
           </div>
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="form-group">
-              <select name="class" id="class_id_invoice" class="form-control select2" data-bs-toggle="select2">
+              <select name="class" id="class_id_invoice" class="form-control">
                 <option value="all"><?php echo get_phrase('all_class'); ?></option>
                 <?php
                 $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -48,7 +48,7 @@
           </div>
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="form-group">
-              <select name="status" id="status" class="form-control select2" data-bs-toggle="select2">
+              <select name="status" id="status_select" class="form-control">
                 <option value="all"><?php echo get_phrase('all_status'); ?></option>
                 <option value="paid"><?php echo get_phrase('paid'); ?></option>
                 <option value="unpaid"><?php echo get_phrase('unpaid'); ?></option>
@@ -84,7 +84,7 @@ var showAllInvoices = function () {
   var url = '<?php echo route('invoice/list'); ?>';
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id_invoice').val();
-  var selectedStatus = $('#status').val();
+  var selectedStatus = $('#status_select').val();
   $.ajax({
     type : 'GET',
     url: url,
@@ -101,7 +101,7 @@ function getExportUrl(type) {
   var url = '<?php echo route('export/url'); ?>';
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id_invoice').val();
-  var selectedStatus = $('#status').val();
+  var selectedStatus = $('#status_select').val();
   // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
   var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
   var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();

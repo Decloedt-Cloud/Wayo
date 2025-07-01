@@ -17,7 +17,7 @@
                 <div class="row mt-3">
                     <h5><?php echo get_phrase('select_a_vehicle'); ?></h5>
                     <div class="col-md-4 mb-1">
-                        <select name="filter_vehicle_id" id="filter_by_vehicle" class="form-control select2" data-toggle="select2" required>
+                        <select name="filter_vehicle_id" id="filter_by_vehicle" class="form-control"  required>
                             <option value=""><?php echo get_phrase('select_a_vehicle'); ?></option>
                             <?php foreach ($this->db->where('driver', driver_id())->get('vehicles')->result_array() as $vehicle) : ?>
                             <option value="<?php echo $vehicle['id']; ?>">

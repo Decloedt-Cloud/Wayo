@@ -17,7 +17,7 @@
                 <div class="col-md-1 mb-1"></div>
                 <div class="col-md-2 mb-1">
 
-                    <select name="exam" id="exam_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="exam" id="exam_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_a_exam'); ?></option>
                         <?php 
                         $user_id = $this->session->userdata('user_id');
@@ -29,7 +29,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id_marks" class="form-control select2" data-toggle = "select2" required onchange="classWiseSection(this.value)">
+                    <select name="class" id="class_id_marks" class="form-control"  required onchange="classWiseSection(this.value)">
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php
                         $classes = $this->db->get_where('classes', array('school_id' =>  $school_id))->result_array();
@@ -47,12 +47,12 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="section" id="section_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="section" id="section_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_section'); ?></option>
                     </select>
                 </div>
                 <!-- <div class="col-md-2 mb-1">
-                    <select name="subject" id="subject_id" class="form-control select2" data-toggle = "select2" required>
+                    <select name="subject" id="subject_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_subject'); ?></option>
                     </select>
                 </div> -->

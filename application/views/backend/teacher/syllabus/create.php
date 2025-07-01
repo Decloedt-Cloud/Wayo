@@ -14,7 +14,7 @@
         </div>
         <div class="form-group col-md-12 mb-2">
             <label for="class_id_on_create"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
-            <select class="form-control select2" data-toggle = "select2" id="class_id_on_create" name="class_id" onchange="classWiseSectionOnCreate(this.value)" required>
+            <select class="form-control"  id="class_id_on_create" name="class_id" onchange="classWiseSectionOnCreate(this.value)" required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -25,14 +25,14 @@
 
         <div class="form-group col-md-12 mb-2">
             <label for="section_id_on_create"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-            <select class="form-control select2" data-toggle = "select2" id="section_id_on_create" name="section_id" required>
+            <select class="form-control"  id="section_id_on_create" name="section_id" required>
                 <option value=""><?php echo get_phrase('select_a_section'); ?></option>
             </select>
         </div>
 
         <div class="form-group col-md-12 mb-2">
             <label for="subject_id_on_create"><?php echo get_phrase('subject'); ?><span class="required"> * </span></label>
-            <select class="form-control select2" data-toggle = "select2" id="subject_id_on_create" name="subject_id" requied>
+            <select class="form-control"  id="subject_id_on_create" name="subject_id" requied>
                 <option><?php echo get_phrase('select_a_subject'); ?></option>
             </select>
         </div>

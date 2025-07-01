@@ -772,20 +772,16 @@ public function get_sections_by_class()
 		// 	$this->load->view('backend/admin/language/list');
 		// }
 
-		if ($param1 == 'active') {
-			// 1) Mise à jour de la langue en base et en session
+		 if ($param1 == 'active') {
 			$user_id = $this->session->userdata('user_id');
-			$this->session->set_userdata('language', $param2);
 			$this->settings_model->update_system_language($user_id, $param2);
-		
-			// 2) Retourner à la page appelante
-			$referer = $this->input->server('HTTP_REFERER');
-			if ($referer) {
+
+			// Redirige vers la page précédente si elle existe, sinon vers le dashboard
+			$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+			if (!empty($referer)) {
 				redirect($referer, 'refresh');
 			} else {
-				// Fallback : renvoyer vers la home du rôle
-				$role = $this->session->userdata('user_type');
-				redirect(site_url($role), 'refresh');
+				redirect(site_url('home'), 'refresh');
 			}
 		}
   

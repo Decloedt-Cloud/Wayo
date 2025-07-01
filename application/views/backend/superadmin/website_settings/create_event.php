@@ -16,7 +16,7 @@
 
     <div class="form-group mb-1">
         <label for="status"><?php echo get_phrase('status'); ?></label>
-        <select name="status" id="status" class="form-control select2" data-toggle = "select2">
+        <select name="status" id="status" class="form-control" >
             <option value="1"><?php echo get_phrase('active'); ?></option>
             <option value="0"><?php echo get_phrase('inactive'); ?></option>
         </select>

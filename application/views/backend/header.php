@@ -1,3 +1,67 @@
+<style>
+   body[dir="rtl"] .navbar-custom.topnav-navbar {
+    direction: rtl;
+    flex-direction: row-reverse !important;
+}
+
+body[dir="rtl"] .navbar-custom .container-fluid {
+    flex-direction: row-reverse !important;
+    align-items: center;
+}
+
+body[dir="rtl"] .topbar-menu.float-end {
+    float: left !important;
+}
+
+body[dir="rtl"] .app-search {
+    float: right !important;
+    text-align: right !important;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    margin-right: 10px;
+}
+
+body[dir="rtl"] .app-search .system-name {
+    order: 2;
+}
+body[dir="rtl"] .app-search .website-button {
+    order: 1;
+}
+
+body[dir="rtl"] .topnav-logo {
+    float: right !important;
+    text-align: right !important;
+    margin-left: 10px;
+}
+
+body[dir="rtl"] .website-button {
+    margin-right: 10px !important;
+    margin-left: 0 !important;
+}
+body[dir="rtl"] .topbar-menu {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    float: none !important;
+    align-items: center;
+}
+
+body[dir="rtl"] .topbar-menu .language-selector {
+    order: 2;
+}
+body[dir="rtl"] .topbar-menu .profile-menu {
+    order: 1;
+}
+
+body[dir="rtl"] .account-user-name {
+    font-size: 0.9rem !important;
+}
+
+body[dir="rtl"] .app-search a,
+body[dir="rtl"] .app-search .website-button {
+    font-size: 1.1rem !important;
+}
+</style>
 <!-- Topbar Start -->
 <div class="navbar-custom topnav-navbar navbar-color topnav-navbar-dark">
     <div class="container-fluid">
@@ -16,7 +80,7 @@
 
           <?php if ($this->session->userdata('user_type') == 'superadmin' || $this->session->userdata('user_type') == 'admin' || $this->session->userdata('user_type') == 'teacher'
           || $this->session->userdata('user_type') == 'student'): ?>
-              <li class="dropdown notification-list topbar-dropdown d-none d-lg-block">
+              <li class="dropdown notification-list topbar-dropdown d-none d-lg-block language-selector">
                   <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false" onclick="getLanguageList()">
                       <i class="mdi mdi-translate noti-icon"></i> <?php echo ucfirst(get_user_language()); ?>
                   </a>
@@ -36,7 +100,7 @@
               </li>
           <?php endif; ?>
 
-            <li class="dropdown notification-list">
+            <li class="dropdown notification-list profile-menu">
                 <a class="nav-link dropdown-toggle nav-user  user-dropdown arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
                 aria-expanded="false">
                     <span class="account-user-avatar">
@@ -100,8 +164,8 @@
 
         </ul>
         <div class="app-search dropdown pt-1 mt-2">
-             <h4 style="color: #fff; float: left;" class="d-none d-md-inline-block"> <?php echo get_settings('system_name'); ?></h4>
-            <a href="<?php echo site_url(); ?>" target="" class="btn btn-outline-light website-button ms-2 d-none d-md-inline-block"><?php echo get_phrase('visit_website'); ?></a>
+            <h4 style="color: #fff; float: left;" class="d-none d-md-inline-block system-name"><?php echo get_settings('system_name'); ?></h4>
+            <a href="<?php echo site_url(); ?>" target="" class="btn btn-outline-light website-button ms-2 d-none d-md-inline-block website-button"><?php echo get_phrase('visit_website'); ?></a>
         </div>
         <a class="button-menu-mobile disable-btn">
             <div class="lines">

@@ -15,7 +15,7 @@
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="system_currency"> <?php echo get_phrase('system_currency') ;?> <span class="required"> * </span></label>
               <div class="col-md-9">
-                <select class="form-control select2" data-bs-toggle="select2" id = "system_currency" name="system_currency" required>
+                <select class="form-control"  id = "system_currency" name="system_currency" required>
                   <option value=""><?php echo get_phrase('select_system_currency'); ?></option>
                   <?php
                   $currencies = $this->settings_model->get_currencies();
@@ -31,7 +31,7 @@
           <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
             <div class="col-md-9">
-              <select class="form-control select2" data-bs-toggle="select2" id = "currency_position" name="currency_position" required>
+              <select class="form-control"  id = "currency_position" name="currency_position" required>
                 <option value="left" <?php if ($result['currency_position'] == 'left') echo 'selected';?> ><?php echo get_phrase('left'); ?></option>
                 <option value="right" <?php if ($result['currency_position'] == 'right') echo 'selected';?> ><?php echo get_phrase('right'); ?></option>
                 <option value="left-space" <?php if ($result['currency_position'] == 'left-space') echo 'selected';?> ><?php echo get_phrase('left_with_a_space'); ?></option>
@@ -73,7 +73,7 @@
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="paypal_currency"> <?php echo get_phrase('paypal_currency') ;?> <span class="required"> * </span></label>
               <div class="col-md-9">
-                <select class="form-control select2" data-bs-toggle="select2" id = "paypal_currency" name="paypal_currency" required>
+                <select class="form-control"  id = "paypal_currency" name="paypal_currency" required>
                   <option value=""><?php echo get_phrase('select_paypal_currency'); ?></option>
                   <?php
                   $currencies = $this->settings_model->get_paypal_supported_currencies();
@@ -142,7 +142,7 @@
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="stripe_currency"> <?php echo get_phrase('stripe_currency') ;?><span class="required"> * </span></label>
               <div class="col-md-9">
-                <select class="form-control select2" data-bs-toggle="select2" id = "stripe_currency" name="stripe_currency" required>
+                <select class="form-control"  id = "stripe_currency" name="stripe_currency" required>
                   <option value=""><?php echo get_phrase('select_stripe_currency'); ?></option>
                   <?php
                   $currencies = $this->settings_model->get_stripe_supported_currencies();

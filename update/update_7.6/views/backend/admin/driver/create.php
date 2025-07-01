@@ -27,7 +27,7 @@
 
         <div class="form-group mb-1">
             <label for="gender"><?php echo get_phrase('gender'); ?></label>
-            <select name="gender" id="gender" class="form-control select2" data-toggle="select2">
+            <select name="gender" id="gender" class="form-control" >
                 <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
                 <option value="Male"><?php echo get_phrase('male'); ?></option>
                 <option value="Female"><?php echo get_phrase('female'); ?></option>
@@ -38,7 +38,7 @@
 
         <div class="form-group mb-1">
             <label for="blood_group"><?php echo get_phrase('blood_group'); ?></label>
-            <select name="blood_group" id="blood_group" class="form-control select2" data-toggle="select2">
+            <select name="blood_group" id="blood_group" class="form-control" >
                 <option value=""><?php echo get_phrase('select_a_blood_group'); ?></option>
                 <option value="a+">A+</option>
                 <option value="a-">A-</option>

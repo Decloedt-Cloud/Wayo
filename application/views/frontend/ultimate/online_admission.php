@@ -106,7 +106,7 @@
 
 
               <select name="category" id="category" class="form-control selec2 rounded-end shadow-none"
-                data-toggle="select2" required>
+                 required>
                 <option value=""><?php echo get_phrase('select_a_category'); ?></option>
                 <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
                 <?php foreach ($categories as $categorie): ?>
