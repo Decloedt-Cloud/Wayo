@@ -1410,7 +1410,7 @@
     "validation_error": "Validation error",
     "access_mode": "Access mode",
     "an_error_occurred": "An error occurred",
-    "no_course_or_school": "No course or school found for your account. Join a course or register with a school to proceed.",
+    "no_course_or_school": "No community found for your account. Join a community or register with a community to proceed.",
     "click_here": "Click here to join",
     "back_to_student_list": "Back to Member list",
     "video_conf": "Video conf",
@@ -1808,7 +1808,7 @@
     "total_entries": "Total entries",
     "support_your_members_without_pressure,_according_to_your_availability_and_teaching_style": "Support your members without pressure, according to your availability and teaching style",
     "share_your_expertise_through_hands-on_case_studies_for_a_real_impact_on_members'_professional_lives": "Share your expertise through hands-on case studies for a real impact on members' professional lives",
-    "discover_our_communities": "Discover our communities",
+    "discover_our_communities": "Discover our Communities",
     "1._introduction": "1. Introduction",
     "welcome_to_wayo_academy,_your_online_learning_platform._wayo_academy_is_dedicated_to_empowering_professional_coaches_across_various_fields_(scrum,_agility,_languages,_sciences,_sports,_etc.)_to_offer_personalized_online_training_to_their_clients_or_members._by_accessing_or_using_our_website_and_mobile_application,_you_agree_to_these_terms_and_conditions._please_read_them_carefully_as_they_outline_your_rights_and_obligations_as_a_user.": "Welcome to wayo academy, your online learning platform. wayo academy is dedicated to empowering professional coaches across various fields (scrum, agility, languages, sciences, sports, etc.) to offer personalized online training to their clients or members. by accessing or using our website and mobile application, you agree to these terms and conditions. please read them carefully as they outline your rights and obligations as a user.",
     "2._definitions": "2. Definitions",
@@ -2000,5 +2000,14 @@
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "This action will delete the appointment and associated record. Continue?",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "An error occurred while loading the data.",
     "save_exam": "Save exam",
+    "welcome_to_wayo_academy": "Welcome to wayo academy",
+    "where_learning_adapts_to_you_at_wayo_academy,_we_are_dedicated_to_delivering_a_personalized,_dynamic_educational_experience_that_integrates_effortlessly_into_your_life._our_platform_offers_a_diverse_selection_of_expert-led_courses_and_practical_resources_to_help_you_develop_the_skills_that_matter_most,_for_today_and_the_future": "Where learning adapts to you at wayo academy, we are dedicated to delivering a personalized, dynamic educational experience that integrates effortlessly into your life. our platform offers a diverse selection of expert-led courses and practical resources to help you develop the skills that matter most, for today and the future",
+    "whether_you_are_beginning_a_new_career,_advancing_in_your_field_or_exploring_a_passion,_we_will_support_you_at_every_stage._join_us_in_a_journey_of_growth,_discovery_and_achievement": "Whether you are beginning a new career, advancing in your field or exploring a passion, we will support you at every stage. join us in a journey of growth, discovery and achievement",
+    "because_learning_should_evolve_with_you_!": "Because learning should evolve with you !",
+    "communities": "Communities",
+    "0_communities_found_in_category": "0 communities found in category",
+    "community_details": "Community details",
+
     "wall": "Wall"
+
 }

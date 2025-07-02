@@ -1,6 +1,6 @@
 /* === Digital Security Lock with Orange Theme === */
 :root {
-    --gradient-1: rgba(210, 130, 45, 0.937);
+    --gradient-1: #FC7B30;
     --gradient-2: #b4691f;
     --accent: #ff7e21;
     --accent-glow: rgba(255, 126, 33, 0.5);
@@ -173,7 +173,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 2rem;
-    background: rgba(210, 130, 45, 0.937);
+    background: #FC7B30;
     color: #2c1a0a;
     border: 2px solid #8B4000;
     text-decoration: none;

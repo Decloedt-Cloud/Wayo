@@ -174,7 +174,7 @@ else if ($page_name == "online_admission_student"){
 
 }
 
-else if($page_name == "courses"){
+else if($page_name == "communities"){
   echo '<script defer >var rellax = new Rellax(".rellax");</script>';
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/courses.js"></script>';
 

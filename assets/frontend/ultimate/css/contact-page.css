@@ -25,7 +25,7 @@ gmp-map {
 }
 
 .btn-send {
-  background-color: rgba(210, 130, 45, 0.937); 
+  background-color: #FC7B30; 
   color: white;
 }
 
@@ -80,7 +80,7 @@ textarea:focus {
 
 .contact-phone:hover {
   text-decoration: none !important;
-  color: rgba(210, 130, 45, 0.937);
+  color: #FC7B30;
 }
 
 .contact-email {
@@ -90,7 +90,7 @@ textarea:focus {
 
 .contact-email:hover {
   text-decoration: none !important;
-  color: rgba(210, 130, 45, 0.937);
+  color: #FC7B30;
 }
 
 .contact-address {
@@ -100,7 +100,7 @@ textarea:focus {
 
 .contact-address:hover {
   text-decoration: none !important;
-  color: rgba(210, 130, 45, 0.937);
+  color: #FC7B30;
 }
 
 .cm-img {

@@ -1408,7 +1408,7 @@
     "validation_error": "خطأ في التحقق",
     "access_mode": "وضع الوصول",
     "an_error_occurred": "فعالية خطأ",
-    "no_course_or_school": "لم يتم العثور على دورة أو مجتمع لحسابك. انضم إلى دورة أو سجل في مجتمع للمتابعة.",
+    "no_course_or_school": "لم يتم العثور على مجتمع لحسابك. انضم إلى مجتمع أو سجّل فيه للمتابعة.",
     "click_here": "انقر هنا للانضمام",
     "back_to_member_list": "العودة إلى قائمة المتعلمين",
     "video_conf": "مؤتمر فيديو",
@@ -2010,7 +2010,9 @@
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "حدث خطأ أثناء تحميل البيانات.",
     "ex:_réunion_pédagogique": "سجل الاجتماعات التربوية",
     "choisir_une_plage_de_dates": "اختر نطاق التواريخ",
-    "wall": "Wall",
-    "people": "People",
-    "spaces": "Spaces"
+    "communities": "المجتمعات",
+    "المجتمعات": "المجتمعات",
+    "community_details": "تفاصيل المجتمع",
+    "تفاصيل_المجتمع": "تفاصيل المجتمع"
+
 }

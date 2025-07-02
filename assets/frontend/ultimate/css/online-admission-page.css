@@ -97,7 +97,7 @@
 .active-form {
   box-shadow: rgba(0, 0, 0, 0.35) 0px -2px 15px;
   color: #fff !important;
-  background: rgba(210, 130, 45, 0.937) !important ;
+  background: #FC7B30 !important ;
   height: 40px !important;
   bottom: 0px !important;
   transition: all 0.5s ease-in-out;
@@ -148,7 +148,7 @@
 }
 
 .button-label {
-  background-color: rgba(210, 130, 45, 0.937) !important;
+  background-color: #FC7B30 !important;
   font-weight: 700;
   position: relative;
   width: 102%;
@@ -347,7 +347,7 @@ textarea {
 }
 
 .submit-button {
-  background-color: rgba(210, 130, 45, 0.937) !important;
+  background-color: #FC7B30 !important;
   color: #fff !important;
   font-weight: 700;
 }
@@ -398,7 +398,7 @@ textarea {
 }
 
 .visibility-selector input[type="radio"]:checked + label {
-  background: rgba(210, 130, 45, 0.937) !important;
+  background: #FC7B30 !important;
   transition: all 0.5s ease-in-out;
     box-shadow: none;
 }

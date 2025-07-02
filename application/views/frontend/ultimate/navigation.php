@@ -35,7 +35,7 @@ $system_name = get_frontend_settings('website_title');
             </a>
           </li>
           <li class="nav-item nav-item-courses">
-            <a class="nav-link <?php if ($page_name === 'courses') echo 'active'; ?>" href="<?php echo site_url('home/courses'); ?>">
+            <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo site_url('home/communities'); ?>">
               <?php echo get_phrase('Our Communities'); ?>
             </a>
           </li>
