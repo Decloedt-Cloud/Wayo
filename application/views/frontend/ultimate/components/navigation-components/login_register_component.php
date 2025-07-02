@@ -296,7 +296,7 @@
 
 .spinner {
   border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid rgba(210, 130, 45, 0.7); /* Match your theme color */
+  border-top: 4px solid #FC7B30; /* Match your theme color */
   border-radius: 50%;
   width: 40px;
   height: 40px;

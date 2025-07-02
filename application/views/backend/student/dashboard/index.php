@@ -10,7 +10,7 @@
 <div class="alert alert-warning" role="alert" style="font-size: 15px;">
 	<i class="dripicons-information me-2"></i> 
     <?php echo get_phrase('no_course_or_school'); ?> 
-    <strong><a style="color: black; font-weight: bold;text-decoration: underline !important;" target="_blank"  href="<?php echo site_url('home/courses'); ?>"><?php echo get_phrase('click_here'); ?></a>
+    <strong><a style="color: black; font-weight: bold;text-decoration: underline !important;" target="_blank"  href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase('click_here'); ?></a>
     </strong>.
 </div>
 <?php

@@ -33,7 +33,6 @@
             <span class="my-4 col-auto text-start font-weight-normal details text-white display-6"> <?php echo $school["name"] ?> </span>
           </div>
           <!-- END Course Details Header Section -->
-          <script> console.log("<?php echo $school["id"]; ?>")</script>
           <!-- Course Details Pills Section -->
           <div class="row mt-4 p-2 mb-5 mb-md-0 justify-content-center m-auto course-information">
             <div class="col-4 col-md-auto align-content-center grand-pill ml-md-3 mb-2 mb-sm-0">
@@ -130,12 +129,13 @@
           <div class="mt-4 mb-2 row justify-content-center">
           </div>
           <div class="row justify-content-center">
-            <form action="<?php echo base_url('home/join_school/' . $school_id); ?>" method="post">
-              <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-              <button id="join-button" type="submit" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
-            </form>
-            <button id="login-join-button" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
-          </div>
+    <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+    <form action="<?php echo base_url('home/join_school/' . $school_id); ?>" method="post">
+        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+        <button id="join-button" type="submit" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+    </form>
+    <button id="login-join-button" class="join-button text-uppercase" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+</div>
         </div>
         <!-- New Box Below Small Section -->
         <div class="container g-0 details-signup-card mb-5" style="margin-top: 2rem;">
@@ -146,7 +146,7 @@
                 <div class="course-slider-item align-items-center justify-content-center">
                     <div>
                     <img src="
-                    <?php base_url($this->frontend_model->get_course_image($course["thumbnail"])) ?>" alt="">
+                    <?php echo base_url($this->frontend_model->get_course_image($course["thumbnail"])) ?>" alt="">
                         <p class="text-grey text-center pt-2"> <?php echo $course["title"] ?> </p>
                         <div class="course-slider-description"> <?php echo $course["description"] ?> </div>
                         <div class="h-divider mt-5"></div>
@@ -210,37 +210,44 @@
 </script>
 
 <script>
-  $(document).ready(function () {
+$(document).ready(function () {
     function updateButton() {
-      $.ajax({
-        url: "<?php echo base_url('home/check_student_status_ajax/' . $school_id); ?>",
-        method: "GET",
-        dataType: "json",
-        success: function (response) {
-          var button = $("#join-button");
-          var loginButton = $("#login-join-button");
+        $.ajax({
+            url: "<?php echo base_url('home/check_student_status_ajax/' . $school_id); ?>",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var button = $("#join-button");
+                var loginButton = $("#login-join-button");
+                var dashboardCommunityAppButton = $("#dashboard-community-app-button");
 
-          if (response.status === null) {
-            loginButton.show();
-            button.hide();
-          } else {
-            loginButton.hide();
-            button.show();
-            if (response.status == 1) {
-              button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('enrolled')); ?>");
-            } else if (response.status == 0) {
-              button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('pending')); ?>");
-            } else if (response.status == 2) {
-              button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
-            } else {
-              button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join')); ?>");
+                if (response.status === null) {
+                    loginButton.show();
+                    button.hide();
+                    dashboardCommunityAppButton.hide();
+                } else {
+                    loginButton.hide();
+                    button.show();
+                    if (response.status == 1) {
+                        button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('enrolled')); ?>");
+                        dashboardCommunityAppButton.show();
+                    } else {
+                        button.show();
+                        dashboardCommunityAppButton.hide();
+                        if (response.status == 0) {
+                            button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('pending')); ?>");
+                        } else if (response.status == 2) {
+                            button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
+                        } else {
+                            button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join')); ?>");
+                        }
+                    }
+                }
             }
-          }
-        }
-      });
+        });
     }
 
     updateButton();
     setInterval(updateButton, 5000);
-  });
+});
 </script>

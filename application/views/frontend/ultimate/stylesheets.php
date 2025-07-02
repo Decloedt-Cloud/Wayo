@@ -73,10 +73,10 @@ if ($page_name == "home") {
 elseif ($page_name == "online_admission_student"){
 
   echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
-}elseif ($page_name == "courses"){
+}elseif ($page_name == "communities"){
 
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/courses-page.css">';
-}elseif ($page_name == "course_details"){
+}elseif ($page_name == "community_details"){
 
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
 }

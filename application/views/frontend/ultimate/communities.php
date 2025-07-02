@@ -73,7 +73,7 @@
     <div class="container g-0 courses-section ">
 
         <div class="row justify-content-center pt-5">
-            <form class="col-10 col-lg-8 search-bar " action="<?php echo site_url('home/courses_search'); ?>" method="get">
+            <form class="col-10 col-lg-8 search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
 
 
             <div class="input-group pb-5 shadow-sm rounded">
@@ -81,7 +81,7 @@
            
                 <select name="categories" id="categories" class="form-select border-0 select_course" onchange="location = this.value;">
     <!-- Option pour "All" -->
-    <option value="<?php echo base_url('home/courses/'); ?>" <?php echo empty($selected_category) ? 'selected' : ''; ?>>
+    <option value="<?php echo base_url('home/communities/'); ?>" <?php echo empty($selected_category) ? 'selected' : ''; ?>>
         <?php echo get_phrase('All'); ?>
     </option>
 
@@ -90,7 +90,7 @@
         <?php 
         $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
         ?>
-        <option value="<?php echo base_url('home/courses/' . $cat_formated); ?>" 
+        <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
             <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
             <?php echo $category['name']; ?>
         </option>
@@ -105,7 +105,7 @@
                    aria-label="Search" aria-describedby="search-addon" 
                    value="<?php if ($input_search) echo ($input_search); ?>" />
             <!-- Bouton de recherche -->
-            <button type="submit" class="input-group-text px-4 rounded-end" style="background-color:rgba(210, 130, 45, 0.937) !important;" id="search-addon">
+            <button type="submit" class="input-group-text px-4 rounded-end" style="background-color:#FC7B30 !important;" id="search-addon">
                 <i class="fas fa-search"></i>
             </button>
             </div>
@@ -178,7 +178,7 @@
                     foreach ($courses_array as $c) {
                         ?>
                         <!-- Course Card Start -->
-                        <a href="<?php echo base_url('home/course_details/' . $c['id']) ?>"
+                        <a href="<?php echo base_url('home/community_details/' . $c['id']) ?>"
                             class="col-11 col-sm-10 col-md-5 col-lg-3 pt-4 pb-4 ">
                             <div class=" course-card row g-0 ">
                                 <div class="course-category text-break text-capitalize">

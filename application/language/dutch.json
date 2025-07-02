@@ -1399,7 +1399,6 @@
     "updated_successfully": "Succesvol bijgewerkt",
     "the_file_size_exceeds_the_limit.": "De bestandsgrootte overschrijdt de limiet.",
     "old": "oud",
-
     "Total_Students": "Totaal aantal leden",
     "email_address": "E-mailadres",
     "online_admission_student": "Online toelatingslid",
@@ -1410,7 +1409,7 @@
     "validation_error": "Validatiefout",
     "access_mode": "Toegangsmodus",
     "an_error_occurred": "Er is een fout opgetreden",
-    "no_course_or_school": "Geen cursus of school gevonden voor uw account. Sluit aan bij een cursus of registreer bij een school om verder te gaan.",
+    "no_course_or_school": "Geen community gevonden voor uw account. Sluit aan bij een community of registreer bij een community om verder te gaan.",
     "click_here": "Klik hier om deel te nemen",
     "back_to_student_list": "Terug naar ledenlijst",
     "video_conf": "Videoconferentie",
@@ -1801,7 +1800,7 @@
     "total_entries": "Totaal aantal inzendingen",
     "support_your_members_without_pressure,_according_to_your_availability_and_teaching_style": "Ondersteun je leden zonder druk, volgens je beschikbaarheid en onderwijsstijl",
     "share_your_expertise_through_hands-on_case_studies_for_a_real_impact_on_members'_professional_lives": "Deel je expertise via praktische casestudies voor een echte impact op het professionele leven van leden",
-    "discover_our_communities": "Ontdek onze gemeenschappen",
+    "discover_our_communities": "Ontdek onze Gemeenschappen",
     "over_ons": "Over ons",
     "welcome_to_wayo_academy": "Welcome to wayo academy",
     "where_learning_adapts_to_you_at_wayo_academy,_we_are_dedicated_to_delivering_a_personalized,_dynamic_educational_experience_that_integrates_effortlessly_into_your_life._our_platform_offers_a_diverse_selection_of_expert-led_courses_and_practical_resources_to_help_you_develop_the_skills_that_matter_most,_for_today_and_the_future": "Waar leren zich aanpast aan jou bij Wayo Academy, zetten we ons in om een ​​gepersonaliseerde, dynamische leerervaring te bieden die moeiteloos integreert in jouw leven. Ons platform biedt een gevarieerde selectie van door experts geleide cursussen en praktische hulpmiddelen om je te helpen de vaardigheden te ontwikkelen die er het meest toe doen, voor vandaag en de toekomst.",
@@ -2005,7 +2004,6 @@
     "la_room_a_été_supprimée_avec_succès.": "De kamer is succesvol verwijderd.",
     "impossible_de_supprimer_la_room_:": "Kamer kan niet worden verwijderd:",
     "une_erreur_inattendue_est_survenue.": "Er is een onverwachte fout opgetreden.",
-
     "Total Students": "Totaal aantal studenten",
     "Email address": "E-mailadres",
     "Online admission student": "Online toelating student",
@@ -2016,7 +2014,7 @@
     "Validation error": "Validatiefout",
     "Access mode": "Toegangsmodus",
     "An error occurred": "Er is een fout opgetreden",
-    "No course or school found for your account. Join a course or register with a school to proceed.": "Geen cursus of school gevonden voor uw account. Sluit u aan bij een cursus of registreer bij een school om verder te gaan.",
+    "No course or school found for your account. Join a course or register with a school to proceed.": "Er is geen community gevonden voor uw account. Word lid van een community of registreer u om verder te gaan.",
     "Click here to join": "Klik hier om lid te worden",
     "Back to student list": "Terug naar studentenlijst",
     "Video conf": "Videoconferentie",
@@ -2325,7 +2323,8 @@
     "Mentor information": "Mentorinformatie",
     "Quiz submitted successfully": "Quiz succesvol ingediend",
     "Your results have been submitted": "Uw resultaten zijn ingediend",
-    "Online cours": "Online cursus"
-
-
+    "Online cours": "Online cursus",
+    "communities": "Gemeenschappen",
+    "community_details": "Gemeenschap Gegevens",
+    "gemeenschap_gegevens": "Gemeenschap gegevens"
 }

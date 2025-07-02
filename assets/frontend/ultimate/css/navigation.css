@@ -473,7 +473,7 @@ label div:last-child {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
   padding: 5px 10px;
   border-radius: 6px;
   color: #ffffff !important;
@@ -490,7 +490,7 @@ label div:last-child {
   font-size: 12px;
   bottom: 20px;
   left: 20px;
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
   padding: 5px 10px;
   border-radius: 6px;
   color: #ffffff !important;
@@ -562,11 +562,11 @@ label div:last-child {
 
 .step.active {
   opacity: 1;
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
 }
 
 .step.finish {
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
 }
 
 .tab {
@@ -606,7 +606,7 @@ label div:last-child {
 }
 
 .loginforge-link:hover {
-  color: rgba(210, 130, 45, 0.7) !important;
+  color: #FC7B30 !important;
   transition: all 0.3s;
 }
 .loginforge-link {
@@ -623,7 +623,7 @@ label div:last-child {
 }
 
 .loginforge-link:hover {
-  color: rgba(210, 130, 45, 0.7) !important;
+  color: #FC7B30 !important;
   transition: all 0.3s;
 }
 
@@ -677,7 +677,7 @@ select.invalid {
   border-radius: 5px;
   border: none;
   height: 35px;
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
   font-size: 14px;
   border: #515151 1px solid;
 }
