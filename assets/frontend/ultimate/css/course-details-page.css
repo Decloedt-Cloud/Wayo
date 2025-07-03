@@ -51,7 +51,7 @@
 
 .join-button {
   width: 100%;
-  background-color: rgba(210, 130, 45, 0.7);
+  background-color: #FC7B30;
   margin-top: 20px;
   box-shadow: none;
   border: none;
@@ -64,7 +64,7 @@
 }
 
 .join-button:hover {
-  background-color: rgba(152, 96, 37, 0.7);
+  background-color: #ee7626;
   color: white;
 }
 

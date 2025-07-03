@@ -420,46 +420,53 @@ if (learnerForm) {
                                     toastr.success(response.message || 'Votre inscription a été effectuée avec succès.', 'Inscription réussie !', {
                                         timeOut: 2000,
                                         onHidden: function () {
-                                            // Perform auto-login after success toast
                                             $.ajax({
                                                 type: "POST",
-                                                url: window.baseUrl + 'login/validate_login_frontend',
-                                                data: {
-                                                    login_email: email,
-                                                    login_password: password,
-                                                    [response.csrf.csrfName]: response.csrf.csrfHash
-                                                },
-                                                dataType: 'json',
-                                                success: function (loginResponse) {
-                                                    // Update CSRF token
-                                                    const newCsrfName = loginResponse.csrf?.csrfName;
-                                                    const newCsrfHash = loginResponse.csrf?.csrfHash;
-                                                    if (newCsrfName && newCsrfHash) {
-                                                        $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
-                                                    }
+                                                url: window.baseUrl + 'login/set_student_just_registered',
+                                                data: { just_registered: 1 },
+                                                success: function() {
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: window.baseUrl + 'login/validate_login_frontend',
+                                                        data: {
+                                                            login_email: email,
+                                                            login_password: password,
+                                                            just_registered: 1,
+                                                            [response.csrf.csrfName]: response.csrf.csrfHash
+                                                        },
+                                                        dataType: 'json',
+                                                        success: function (loginResponse) {
+                                                            // Update CSRF token
+                                                            const newCsrfName = loginResponse.csrf?.csrfName;
+                                                            const newCsrfHash = loginResponse.csrf?.csrfHash;
+                                                            if (newCsrfName && newCsrfHash) {
+                                                                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                                                            }
 
-                                                    if ($spinner.length) $spinner.addClass('display-none');
-                                                    registerBtn.disabled = false;
-                                                    registerBtn.innerHTML = 'S\'inscrire';
+                                                            if ($spinner.length) $spinner.addClass('display-none');
+                                                            registerBtn.disabled = false;
+                                                            registerBtn.innerHTML = 'S\'inscrire';
 
-                                                    if (loginResponse.status) {
-                                                        learnerForm.reset();
-                                                        $('.register-dropdown').css('opacity', '0');
-                                                        setTimeout(() => {
-                                                            $('.register-dropdown').addClass("display-none");
-                                                            window.location.href = window.baseUrl + 'home';
-                                                        }, 100);
-                                                    } else {
-                                                        toastr.error(loginResponse.message || 'Échec de la connexion automatique.', 'Erreur', { timeOut: 3000 });
-                                                        window.location.href = window.baseUrl + 'login';
-                                                    }
-                                                },
-                                                error: function (error) {
-                                                    console.error("Error during auto-login:", error);
-                                                    if ($spinner.length) $spinner.addClass('display-none');
-                                                    registerBtn.disabled = false;
-                                                    registerBtn.innerHTML = 'S\'inscrire';
-                                                    window.location.href = window.baseUrl + 'login';
+                                                            if (loginResponse.status) {
+                                                                learnerForm.reset();
+                                                                $('.register-dropdown').css('opacity', '0');
+                                                                setTimeout(() => {
+                                                                    $('.register-dropdown').addClass("display-none");
+                                                                    window.location.href = window.baseUrl + 'home/communities';
+                                                                }, 100);
+                                                            } else {
+                                                                toastr.error(loginResponse.message || 'Échec de la connexion automatique.', 'Erreur', { timeOut: 3000 });
+                                                                window.location.href = window.baseUrl + 'login';
+                                                            }
+                                                        },
+                                                        error: function (error) {
+                                                            console.error("Error during auto-login:", error);
+                                                            if ($spinner.length) $spinner.addClass('display-none');
+                                                            registerBtn.disabled = false;
+                                                            registerBtn.innerHTML = 'S\'inscrire';
+                                                            window.location.href = window.baseUrl + 'login';
+                                                        }
+                                                    });
                                                 }
                                             });
                                         }

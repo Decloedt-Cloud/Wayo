@@ -243,11 +243,11 @@ class Home extends CI_Controller
 	}
 
 
-	//Courses Overview Page
-	function courses($param1 = null, $param2 = null)
+	//communities Overview Page
+	function communities($param1 = null, $param2 = null)
 {
     $config = array();
-    $config['base_url'] = site_url('home/courses/');
+    $config['base_url'] = site_url('home/communities/');
     $config['per_page'] = 8;
     $config['use_page_numbers'] = true;
 
@@ -262,11 +262,11 @@ class Home extends CI_Controller
 
     // Déterminer la page actuelle et l'offset
     if ($is_category) {
-        // Si c'est une catégorie, la page est dans le segment 4 (home/courses/category/page)
+        // Si c'est une catégorie, la page est dans le segment 4 (home/communities/category/page)
         $page = $this->uri->segment(4) ? (int)$this->uri->segment(4) : 1;
-        $config['base_url'] = site_url('home/courses/' . str_replace(" ", "_", $category));
+        $config['base_url'] = site_url('home/communities/' . str_replace(" ", "_", $category));
     } else {
-        // Si ce n'est pas une catégorie, la page est dans le segment 3 (home/courses/page)
+        // Si ce n'est pas une catégorie, la page est dans le segment 3 (home/communities/page)
         $page = ($param1 != null && is_numeric($param1)) ? (int)$param1 : ($this->uri->segment(3) ? (int)$this->uri->segment(3) : 1);
     }
 
@@ -289,7 +289,7 @@ class Home extends CI_Controller
         $config['uri_segment'] = 4;
         $page_data['schools'] = array();
         $config['total_rows'] = 0;
-        $page_data['no_courses_found'] = get_phrase('0_courses_found_in_category') . ' ' . $category;
+        $page_data['no_courses_found'] = get_phrase('0_communities_found_in_category') . ' ' . $category;
         $page_data['statement'] = 2;
     }
     // Si aucune catégorie n'est spécifiée (cas "All")
@@ -339,18 +339,18 @@ class Home extends CI_Controller
     // Définir les données de la page
     $page_data['selected_category'] = $category;
     $page_data['categories'] = $this->frontend_model->get_categories();
-    $page_data['page_name'] = 'courses';
-    $page_data['page_title'] = get_phrase('courses');
+    $page_data['page_name'] = 'communities';
+    $page_data['page_title'] = get_phrase('communities');
     $this->load->view('frontend/' . $this->theme . '/index', $page_data);
 }
 
-	function courses_search()
+	function communities_search()
 	{
 
 		$input = htmlspecialchars($this->input->get('search'));
 
 		$config = array();
-		$config['base_url'] = site_url('home/courses_search/');
+		$config['base_url'] = site_url('home/communities_search/');
 		$config['suffix'] = '?search=' . urlencode($input);
 		$config['per_page'] = 8;
 		$config['use_page_numbers'] = true;
@@ -379,7 +379,7 @@ class Home extends CI_Controller
 		}
 
 		if ($page_data['schools']->num_rows() == 0) {
-			$page_data['no_courses_found'] = get_phrase('0_courses_found_for_search') . ' ' . '"' . $input . '"';
+			$page_data['no_courses_found'] = get_phrase('0_communities_found_for_search') . ' ' . '"' . $input . '"';
 		}
 
 		//pagination bootstrap settings
@@ -435,21 +435,21 @@ class Home extends CI_Controller
 
 
 		$page_data['categories'] = $this->frontend_model->get_categories();
-		$page_data['page_name'] = 'courses';
-		$page_data['page_title'] = get_phrase('courses');
+		$page_data['page_name'] = 'communities';
+		$page_data['page_title'] = get_phrase('communities');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 
 
 	}
 
-	function course_details($school_id = '')
+	function community_details($school_id = '')
 	{
 		$page_data['school'] = $this->user_model->get_school_details(urldecode($school_id));
 		$page_data['school_id'] = $page_data['school']["id"];
 		$page_data['course_students_count'] = $this->user_model->get_school_students_count($page_data['school']["id"]);
 
-		$page_data['page_name'] = 'course_details';
-		$page_data['page_title'] = get_phrase('course_details');
+		$page_data['page_name'] = 'community_details';
+		$page_data['page_title'] = get_phrase('community_details');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
