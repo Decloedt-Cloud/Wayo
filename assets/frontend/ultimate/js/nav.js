@@ -9,7 +9,7 @@ $(document).ready(function () {
     const $registerChoiceDropdown = $(".register-choice-dropdown");
     const $forgetToggle = $(".forget-link");
     const $forgetDropdown = $(".forget-dropdown");
-
+    const emailAlreadyInUse = '<?php echo get_phrase("email_already_in_use"); ?>';
     // Configurer Toastr
     toastr.options = {
         closeButton: true,
@@ -230,7 +230,7 @@ $(document).ready(function () {
                     
                     if (response.exists) {
                         // Display error message below email field
-                        $emailInput.after('<span class="email-error text-danger">Email is already in use.</span>');
+                        $emailInput.after('<span class="email-error text-danger">' + window.emailAlreadyInUse + '</span>');
                         $emailInput.addClass('invalid');
                     } else {
                         // Proceed to next step
@@ -240,6 +240,26 @@ $(document).ready(function () {
                     // Adjust dropdown height
                     adjustLoginDropdownHeight($form);
                 });
+            }
+            else if (formId === 'learner-form' && currentStep === 3) {
+                const password = $form.find('#password-student').val();
+                const repeatPassword = $form.find('#repeat-password-student').val();
+                const $passwordInput = $form.find('#password-student');
+                const $errorSpan = $passwordInput.next('.password-error');
+
+                // Remove any existing error message
+                if ($errorSpan.length) $errorSpan.remove();
+
+                if (password !== repeatPassword) {
+                    // Display error message below password field
+                    $passwordInput.after('<span class="password-error text-danger">' + passwordsDoNotMatch + '</span>');
+                    $passwordInput.addClass('invalid');
+                    adjustLoginDropdownHeight($form);
+                } else {
+                    // Proceed to next step
+                    updateStep(currentStep + 1, formId);
+                    adjustLoginDropdownHeight($form);
+                }
             }
             // Mentor form: Check school name in Step 1
             else if (formId === 'mentor-form' && currentStep === 1) {

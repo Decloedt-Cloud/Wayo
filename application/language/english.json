@@ -2007,5 +2007,10 @@
     "because_learning_should_evolve_with_you_!": "Because learning should evolve with you !",
     "communities": "Communities",
     "0_communities_found_in_category": "0 communities found in category",
-    "community_details": "Community details"
+    "community_details": "Community details",
+    "create_community": "Create community",
+    "i_am_a_member": "I am a member",
+    "i_am_a_mentor": "I am a mentor",
+    "passwords_need_to_match.": "Passwords need to match.",
+    "passwords_do_not_match": "Passwords do not match"
 }

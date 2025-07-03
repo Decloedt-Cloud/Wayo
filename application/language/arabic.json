@@ -2010,9 +2010,12 @@
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "حدث خطأ أثناء تحميل البيانات.",
     "ex:_réunion_pédagogique": "سجل الاجتماعات التربوية",
     "choisir_une_plage_de_dates": "اختر نطاق التواريخ",
-     "communities": "المجتمعات",
+    "communities": "المجتمعات",
     "المجتمعات": "المجتمعات",
     "community_details": "تفاصيل المجتمع",
-    "تفاصيل_المجتمع": "تفاصيل المجتمع"
-
+    "create_community": "إنشاء المجتمع",
+    "i_am_a_member": "أنا عضو",
+    "i_am_a_mentor": "أنا موجه",
+    "passwords_need_to_match.": "يجب أن تتطابق كلمات المرور.",
+    "passwords_do_not_match": "كلمات المرور غير متطابقة"
 }

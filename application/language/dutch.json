@@ -2328,6 +2328,10 @@
     "Online cours": "Online cursus",
     "communities": "Gemeenschappen",
     "community_details": "Gemeenschap Gegevens",
-    "gemeenschap_gegevens": "Gemeenschap gegevens"
-
+    "gemeenschap_gegevens": "Gemeenschap gegevens",
+    "create_community": "Creëer gemeenschap",
+    "i_am_a_member": "Ik ben lid",
+    "i_am_a_mentor": "Ik ben een mentor",
+    "passwords_need_to_match.": "Wachtwoorden moeten overeenkomen",
+    "passwords_do_not_match": "Wachtwoorden komen niet overeen"
 }
