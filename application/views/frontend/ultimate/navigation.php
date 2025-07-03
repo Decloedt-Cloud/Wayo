@@ -39,6 +39,11 @@ $system_name = get_frontend_settings('website_title');
               <?php echo get_phrase('Our Communities'); ?>
             </a>
           </li>
+           <li class="nav-item nav-item-courses">
+            <a class="nav-link <?php if ($page_name === 'courses') echo 'active'; ?>" href="<?php echo site_url('admission/online_admission'); ?>">
+              <?php echo get_phrase('Create Community'); ?>
+            </a>
+          </li>
           <li class="nav-item nav-item-contact">
             <a class="nav-link <?php if ($page_name === 'contact') echo 'active'; ?>" href="<?php echo site_url('home/contact'); ?>">
               <?php echo get_phrase('Contact_us'); ?>

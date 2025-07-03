@@ -1999,7 +1999,13 @@
     "communities": "Communautés",
     "communautés": "Communautés",
     "community_details": "Détails de la communauté",
-    "détails_de_la_communauté": "Détails de la communauté"
-    
+    "détails_de_la_communauté": "Détails de la communauté",
+    "create_community": "Créer communauté",
+    "i_am_a_member": "je suis un membre",
+    "i_am_a_mentor": "je suis un mentor",
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas",
+    "admission_en_ligne": "Admission en ligne",
+    "mentor_information": "Informations sur le mentor",
+    "passwords_need_to_match.": "Les mots de passe doivent correspondre"
 }
 

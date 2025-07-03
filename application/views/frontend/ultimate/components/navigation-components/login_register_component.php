@@ -1,4 +1,4 @@
-<div class="login-section">
+<div class="login-section" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
   </div>
   <!-- Login Section -->
@@ -11,11 +11,11 @@
 <div id="loginError" class="text-danger display-none" style="background-color: #fef2f2; border: none; border-radius: 12px; padding: 5px 22px; width: fit-content; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); color: #b91c1c; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; transition: all 0.3s ease; margin-left: auto; margin-right: auto;"></div>
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
       <div class="mb-4 mt-4 login-input">
-        <label for="loginEmail" class="login-input-label text-uppercase"><?php echo get_phrase("e-mail") ?> <span class="required"> * </span></label>
+        <label for="loginEmail" class="login-input-label login-input-label-rtl text-uppercase"><?php echo get_phrase("e-mail") ?> <span class="required"> * </span></label>
         <input type="email" class="form-control shadow-none" id="loginEmail" aria-describedby="emailHelp" name="login_email">
       </div>
       <div class="mb-3 login-input">
-        <label for="loginPassword" class="login-input-label text-uppercase"><?php echo get_phrase("password") ?> <span class="required"> * </span></label>
+        <label for="loginPassword" class="login-input-label login-input-label-rtl text-uppercase"><?php echo get_phrase("password") ?> <span class="required"> * </span></label>
         <input type="password" class="form-control shadow-none" id="loginPassword" name="login_password">
       </div>
       <button type="submit" id="loginSubmit" class="login-button text-uppercase mb-3" style="background-color: #FC7B30;"><?php echo get_phrase("login") ?></button>
@@ -47,8 +47,8 @@
     <div class="register-choice-dropdown hidden-section display-none">
       <div class="register-choice mt-10">
       <a class="text-uppercase"><span class="login-link"><svg class="m-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" /></svg><?php echo get_phrase("login") ?></span></a>
-        <button class="btn learner-btn mt-3" style="background-color: #FC7B30; color: white;">I am a member</button>
-        <button class="btn mentor-btn mt-3" style="background-color: #FC7B30; color: white;">I am a mentor</button>
+        <button class="btn learner-btn mt-3" style="background-color: #FC7B30; color: white;"><?php echo get_phrase("I am a member") ?></button>
+        <button class="btn mentor-btn mt-3" style="background-color: #FC7B30; color: white;"><?php echo get_phrase("I am a mentor") ?></button>
       </div>
       <div class="learner-form-container hidden-section display-none">
         <form class="learner-form" id="learner-form" method="post" enctype="multipart/form-data" action="<?php echo site_url('admission/online_admission_student/submit/student'); ?>">
@@ -63,75 +63,75 @@
             <div class="form-steps-container">
               <div class="form-step" data-step="1">
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">First Name <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("First Name") ?> <span class="required"> * </span></label>
                   <input type="text" class="form-control shadow-none" name="first_name" required placeholder="First Name">
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Last Name <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Last Name") ?> <span class="required"> * </span></label>
                   <input type="text" class="form-control shadow-none" name="last_name" required placeholder="Last Name">
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Email <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Email") ?> <span class="required"> * </span></label>
                   <input type="email" class="form-control shadow-none" name="student_email" required placeholder="Email">
                 </div>
                 <div class="form-buttons">
-                <button type="button" class="back-btn text-uppercase">Back</button>
-                  <button type="button" class="next-btn text-uppercase">Next</button>
+                <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
+                <button type="button" class="next-btn text-uppercase"><?php echo get_phrase("Next") ?></button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="2">
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Phone</label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Phone") ?></label>
                   <input type="text" class="form-control shadow-none" name="phone" placeholder="+971 22 222 2222" pattern="(?=(?:\D*\d){7,15}\D*$)\+?\d+\s?\d{1,3}\s?\d{1,4}\s?\d{1,4}">
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Gender <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Gender") ?> <span class="required"> * </span></label>
                   <select name="gender" class="form-control shadow-none" required>
-                    <option value="">Select your gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Others">Others</option>
+                    <option value=""><?php echo get_phrase("Select your gender") ?></option>
+                    <option value="Male"><?php echo get_phrase("Male") ?></option>
+                    <option value="Female"><?php echo get_phrase("Female") ?></option>
+                    <option value="Others"><?php echo get_phrase("Others") ?></option>
                   </select>
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Date of Birth <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Date of Birth") ?> <span class="required"> * </span></label>
                   <input type="date" class="form-control shadow-none" name="date_of_birth" required>
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase">Back</button>
-                  <button type="button" class="next-btn text-uppercase">Next</button>
+                   <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
+                  <button type="button" class="next-btn text-uppercase"><?php echo get_phrase("Next") ?></button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="3">
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Address <span class="required"> * </span></label>
+                   <label class="login-input-label text-uppercase"><?php echo get_phrase("Address") ?> <span class="required"> * </span></label>
                   <input type="text" class="form-control shadow-none" name="address" required placeholder="Address">
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Password <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Password") ?> <span class="required"> * </span></label>
                   <input type="password" class="form-control shadow-none" name="password-student" id="password-student" required>
                 </div>
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase">Repeat Password <span class="required"> * </span></label>
+                  <label class="login-input-label text-uppercase"><?php echo get_phrase("Repeat Password") ?> <span class="required"> * </span></label>
                   <input type="password" class="form-control shadow-none" name="repeat-password-student" id="repeat-password-student" required>
-                  <span id="errorMessage" class="text-danger display-none">Passwords need to match.</span>
+                  <span id="errorMessage" class="text-danger display-none"><?php echo get_phrase("Passwords need to match.") ?></span>
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase">Back</button>
-                  <button type="button" class="next-btn text-uppercase">Next</button>
+                 <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
+                  <button type="button" class="next-btn text-uppercase"><?php echo get_phrase("Next") ?></button>
                 </div>
               </div>
               <div class="form-step display-none" data-step="4">
                 <div class="mb-4 login-input">
-                  <label class="login-input-label text-uppercase" style="padding-bottom: 30px !important; right: 70px !important;">Your Photo</label>
+                   <label class="login-input-label text-uppercase" style="padding-bottom: 30px !important; right: 70px !important;"><?php echo get_phrase("Your Photo") ?></label>
                   <div id="popup_photo_preview" class="photo-preview photo-preview-popup">
                     <img src="<?php echo base_url() . 'uploads/users/placeholder.jpg' ?>" alt="Default Avatar" id="default-avatar">
                   </div>
                   <input type="file" class="form-control shadow-none" name="student_image" id="popup_student_image" accept=".jpg, .jpeg, .png">
                 </div>
                 <div class="form-buttons">
-                  <button type="button" class="back-btn text-uppercase">Back</button>
-                  <button type="submit" class="register-btn text-uppercase">Register</button>
+                  <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
+                  <button type="submit" class="register-btn text-uppercase"><?php echo get_phrase("Register") ?></button>
                 </div>
               </div>
             </div>
@@ -530,6 +530,159 @@
     font-size: 0.9em;
     text-align: center !important;
   }
+
+  [dir="rtl"] .login-dropdown,
+[dir="rtl"] .register-dropdown,
+[dir="rtl"] .forget-dropdown {
+  right: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important; /* Keep centered for consistency */
+}
+
+/* Exit SVG positioning for RTL */
+[dir="rtl"] .login-exit-svg,
+[dir="rtl"] .register-exit-svg {
+  right: auto !important;
+  left: 20px !important;
+}
+
+/* Login and Forget links for RTL */
+[dir="rtl"] .loginforge-link,
+[dir="rtl"] .login-link {
+  left: auto !important;
+  right: 20px !important;
+  text-align: right !important;
+}
+
+[dir="rtl"] .form-layout {
+  flex-direction: row-reverse !important;
+  gap: 20px !important;
+}
+
+/* Step indicators for RTL */
+[dir="rtl"] .step-indicators {
+  align-items: flex-end !important; /* Align indicators to the right */
+  order: 2 !important;
+}
+
+[dir="rtl"] .form-steps-container {
+  order: 1 !important; /* Place les champs avant les indicateurs */
+}
+
+/* Form buttons for RTL */
+[dir="rtl"] .form-buttons {
+  flex-direction: row-reverse !important; /* Reverse button order */
+}
+
+/* Next and Back buttons for RTL */
+[dir="rtl"] .next-btn {
+  order: 1 !important;
+  margin-left: 5px !important; /* Next à gauche */
+  margin-right: auto !important;
+}
+
+[dir="rtl"] .back-btn {
+   order: 2 !important;
+  margin-right: 5px !important; /* Back à droite */
+  margin-left: auto !important;
+}
+
+[dir="rtl"] .register-btn {
+  margin-left: 10px !important; /* Register à gauche */
+  margin-right: auto !important;
+}
+
+/* Input labels for RTL */
+[dir="rtl"] .login-input-label {
+  right: auto !important;
+  left: 0 !important;
+  text-align: right !important;
+  width: 100% !important;
+  padding-right: 70px !important;
+  padding-bottom: 20px !important;
+}
+
+[dir="rtl"] .login-input-label-rtl {
+  right: auto !important;
+  left: 0 !important;
+  text-align: right !important;
+  padding-right: 20px !important;
+}
+
+/* Photo preview label for RTL */
+[dir="rtl"] .login-input-label[for="popup_student_image"],
+[dir="rtl"] .login-input-label[for="popup_mentor_image"] {
+  right: auto !important;
+  left: 0 !important;
+  text-align: right !important;
+  padding-right: 70px !important;
+}
+
+/* Visibility selector for RTL */
+[dir="rtl"] .visibility-selector {
+  flex-direction: row-reverse !important; /* Reverse button order */
+}
+
+[dir="rtl"] .public-button {
+  border-radius: 5px 0 0 5px !important; /* Invert border-radius */
+}
+
+[dir="rtl"] .private-button {
+  border-radius: 0 5px 5px 0 !important; /* Invert border-radius */
+}
+
+/* Text alignment for inputs and textareas */
+[dir="rtl"] .login-input input,
+[dir="rtl"] .login-input select,
+[dir="rtl"] .login-input textarea {
+  text-align: right !important;
+}
+
+/* Error message alignment for RTL */
+[dir="rtl"] #loginError,
+[dir="rtl"] #errorMessage,
+[dir="rtl"] #errorMessageMentor {
+  text-align: right !important;
+  margin-right: 10px !important;
+}
+
+/* Photo preview alignment for RTL */
+[dir="rtl"] .photo-preview-popup {
+  margin: 0 auto !important; /* Keep centered */
+}
+
+@media (max-width: 991px) {
+  [dir="rtl"] .form-layout {
+    flex-direction: column !important; /* Empile verticalement */
+    align-items: center !important;
+  }
+
+  [dir="rtl"] .step-indicators {
+    flex-direction: row !important; /* Indicateurs en ligne */
+    justify-content: center !important;
+    margin-bottom: 20px !important;
+    order: 0 !important; /* Indicateurs en haut sur mobile */
+  }
+
+  [dir="rtl"] .form-steps-container {
+    order: 1 !important; /* Champs en bas */
+  }
+
+  [dir="rtl"] .next-btn {
+    margin-left: 10px !important;
+    margin-right: auto !important;
+  }
+
+  [dir="rtl"] .back-btn {
+    margin-right: 10px !important;
+    margin-left: auto !important;
+  }
+
+  [dir="rtl"] .register-btn {
+    margin-left: 10px !important;
+    margin-right: auto !important;
+  }
+}
 </style>
 
 <script type="text/javascript">
@@ -541,6 +694,8 @@
   var inputs = document.querySelectorAll('.information');
   var passwordInputs = document.querySelectorAll('.password');
   var selects = document.getElementsByTagName('select');
+  window.emailAlreadyInUse = '<?php echo get_phrase("email_already_in_use"); ?>';
+  window.passwordsDoNotMatch = '<?php echo get_phrase("passwords_do_not_match"); ?>';
   window.baseUrl = '<?php echo base_url(); ?>';
     if (!window.baseUrl.endsWith('/')) {
         window.baseUrl += '/';
