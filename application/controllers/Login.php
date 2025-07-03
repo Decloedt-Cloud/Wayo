@@ -52,7 +52,12 @@ class Login extends CI_Controller
 		} elseif ($this->session->userdata('parent_login') == true) {
 			redirect(route('dashboard'), 'refresh');
 		} elseif ($this->session->userdata('student_login') == true) {
-    redirect(site_url('home'), 'refresh');
+    if ($this->session->userdata('student_just_registered')) {
+        $this->session->unset_userdata('student_just_registered');
+        redirect(site_url('home/communities'), 'refresh');
+    } else {
+        redirect(site_url('student/dashboard'), 'refresh');
+    }
 } elseif ($this->session->userdata('accountant_login') == true) {
 			redirect(route('dashboard'), 'refresh');
 		} elseif ($this->session->userdata('librarian_login') == true) {
@@ -119,7 +124,12 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_name', $row->name);
 				$this->session->set_userdata('user_type', 'student');
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				redirect(site_url('student/dashboard'), 'refresh');
+				if ($this->session->userdata('student_just_registered')) {
+					$this->session->unset_userdata('student_just_registered');
+					redirect(site_url('home/communities'), 'refresh');
+				} else {
+					redirect(site_url('student/dashboard'), 'refresh');
+				}
 			} elseif ($row->role == 'librarian') {
 				$this->session->set_userdata('librarian_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -176,9 +186,7 @@ class Login extends CI_Controller
 			
 				
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
-				}
+				redirect('/superadmin/dashboard', 'refresh');
 			} elseif ($row->role == 'admin') {
 				$this->session->set_userdata('admin_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -187,9 +195,7 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'admin');
 
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
-				}
+				redirect('/admin/dashboard', 'refresh');
 			} elseif ($row->role == 'teacher') {
 				$this->session->set_userdata('teacher_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -197,15 +203,13 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_name', $row->name);
 				$this->session->set_userdata('user_type', 'teacher');
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				if (isset($_SERVER['HTTP_REFERER'])) {
-				redirect($_SERVER['HTTP_REFERER'], 'refresh');
-				}
+				redirect('/teacher/dashboard', 'refresh');
 			} elseif ($row->role == 'student') {
 				if ($row->status != 1) {
 					$this->session->set_flashdata('error_message', get_phrase('your_account_has_been_disabled'));
 					if (isset($_SERVER['HTTP_REFERER'])) {
 					redirect($_SERVER['HTTP_REFERER'], 'refresh');
-				}
+					}
 				}
 				$this->session->set_userdata('student_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -213,8 +217,17 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_name', $row->name);
 				$this->session->set_userdata('user_type', 'student');
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
+				// Vérifie si l'utilisateur vient de s'inscrire
+				if ($this->input->post('just_registered')) {
+					redirect('/home/communities', 'refresh');
+				} else {
+					// Redirige vers la page référente si elle existe et contient home/communities ou home/community_details
+					if (isset($_SERVER['HTTP_REFERER']) && (strpos($_SERVER['HTTP_REFERER'], 'home/communities') !== false || strpos($_SERVER['HTTP_REFERER'], 'home/community_details') !== false)) {
+						redirect($_SERVER['HTTP_REFERER'], 'refresh');
+					} else {
+						// Par défaut, redirige vers student/dashboard si la page référente n'est pas valide
+						redirect('/student/dashboard', 'refresh');
+					}
 				}
 			} elseif ($row->role == 'parent') {
 				$this->session->set_userdata('parent_login', true);
@@ -569,6 +582,11 @@ public function get_csrf_token()
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash()
         ]));
+}
+
+public function set_student_just_registered() {
+    $this->session->set_userdata('student_just_registered', true);
+    echo json_encode(['status' => 'ok']);
 }
 
 }

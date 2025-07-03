@@ -165,7 +165,7 @@ body[dir="rtl"] .app-search .website-button {
         </ul>
         <div class="app-search dropdown pt-1 mt-2">
             <h4 style="color: #fff; float: left;" class="d-none d-md-inline-block system-name"><?php echo get_settings('system_name'); ?></h4>
-            <a href="<?php echo site_url(); ?>" target="" class="btn btn-outline-light website-button ms-2 d-none d-md-inline-block website-button"><?php echo get_phrase('visit_website'); ?></a>
+            <a href="<?php echo site_url('home/communities'); ?>" target="" class="btn btn-outline-light website-button ms-2 d-none d-md-inline-block website-button"><?php echo get_phrase('Discover_our_communities'); ?></a>
         </div>
         <a class="button-menu-mobile disable-btn">
             <div class="lines">

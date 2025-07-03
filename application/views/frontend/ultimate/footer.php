@@ -10,7 +10,7 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
       <nav class="footer-nav">
         <ul>
           <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase("About us") ?></a>
-          <a href="<?php echo site_url('home/courses'); ?>"><?php echo get_phrase("Our Communities") ?></a>
+          <a href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Our Communities") ?></a>
           <a href="#"><?php echo get_phrase("Blog") ?></a>
           <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Contact") ?></a>
         </ul>

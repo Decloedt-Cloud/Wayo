@@ -582,7 +582,7 @@ class Email_model extends CI_Model {
 									<p><strong>Name:</strong> {$name}</p>
 									<p><strong>Email:</strong> {$email}</p>
 									<p>If you have any questions or need assistance, please feel free to contact our support team at: <a href="mailto:{$systemEmail}">{$systemEmail}</a>.</p>
-									<a href="http://51.92.7.185/home/courses" class="button">Login to Your Account</a>
+									<a href="http://51.92.7.185/home/communities" class="button">Login to Your Account</a>
 								</div>
 							</div>
 						</td>
@@ -1140,9 +1140,9 @@ class Email_model extends CI_Model {
 											<p>We are pleased to inform you that your admission request to ' . $school_data['name'] . ' has been successfully approved. Below are the details of your admission:</p>
 											<p><strong>Student Code:</strong> ' . $student_code . '</p>
 											<p><strong>Email:</strong> ' . $student_email . '</p>
-											<p>Please log in to your account to access course details and complete any additional onboarding steps required.</p>
+											<p>Please log in to your account to access community details and complete any additional onboarding steps required.</p>
 											<div>
-												<a href="http://51.92.7.185/home/course_details/' . $school_data['id'] . '" class="button">Login to Your Account</a>
+												<a href="http://51.92.7.185/home/community_details/' . $school_data['id'] . '" class="button">Login to Your Account</a>
 											</div>
 											<p>If you have any questions or need assistance, please feel free to contact our support team at: <a href="mailto:' . $systemEmail . '">' . $systemEmail . '</a></p>
 										</div>
@@ -1329,7 +1329,7 @@ class Email_model extends CI_Model {
 											<p><strong>Email:</strong> ' . $email_student . '</p>
 											<p>You will be notified once your request has been reviewed and approved. In the meantime, you may log in to your account to check the status of your application or access additional information.</p>
 											<div>
-												<a href="http://51.92.7.185/home/course_details/' . $school_id . '" class="button">Login to Your Account</a>
+												<a href="http://51.92.7.185/home/community_details/' . $school_id . '" class="button">Login to Your Account</a>
 											</div>
 											<p>If you have any questions or need assistance, please feel free to contact our support team at: <a href="mailto:' . $systemEmail . '">' . $systemEmail . '</a></p>
 										</div>

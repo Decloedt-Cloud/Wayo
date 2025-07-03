@@ -1402,7 +1402,7 @@
     "email_already_exists": "Email déjà existant",
     "validation_error": "Erreur de validation",
     "access_mode": "Mode d'accès",
-    "no_course_or_school": "Aucun cours ou école trouvé pour votre compte. Rejoignez un cours ou inscrivez-vous à une école pour continuer.",
+    "no_course_or_school": "Aucune communauté trouvé pour votre compte. Rejoignez une communauté ou inscrivez-vous à une communauté pour continuer.",
     "click_here": "Cliquez ici pour rejoindre",
     "back_to_student_list": "Retour à la liste des membres",
     "video_conf": "Conférence vidéo",
@@ -1800,7 +1800,7 @@
     "support_your_members_without_pressure,_according_to_your_availability_and_teaching_style": "Guidez vos apprenants sans pression, selon votre disponibilité et votre style d’enseignement.",
     "share_your_expertise_through_hands-on_case_studies_for_a_real_impact_on_members'_professional_lives": "Partagez votre expertise sur des cas pratiques pour un impact réel dans la vie professionnelle des apprenants.",
     "for_members": "Pour les membres",
-    "discover_our_communities": "Découvrez nos communautés",
+    "discover_our_communities": "Découvrez nos Communautés",
     "nous_contacter": "Nous contacter",
     "wayo_academy_location": "Emplacement de Wayo Academy",
     "détails_du_cours": "Détails du cours",
@@ -1995,8 +1995,11 @@
     "historique": "Historique",
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "Cette action supprimera le rendez-vous et l’enregistrement associé. continuer ?",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "Une erreur est survenue lors du chargement des données.",
-
-    "Please_add_an_appointment_in_the_calendar": "Veuillez ajouter un rendez-vous dans le calendrier."
-
+     "Please_add_an_appointment_in_the_calendar": "Veuillez ajouter un rendez-vous dans le calendrier.",
+    "communities": "Communautés",
+    "communautés": "Communautés",
+    "community_details": "Détails de la communauté",
+    "détails_de_la_communauté": "Détails de la communauté"
+    
 }
 
