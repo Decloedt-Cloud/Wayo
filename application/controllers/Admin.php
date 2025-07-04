@@ -1838,8 +1838,6 @@ public function get_sections_by_class()
 			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
 			$userId = $this->session->userdata('user_id');
 
-			 // Marquer tous les messages comme lus
-    	  	$this->user_model->mark_all_messages_read($userId);
 
 			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
 			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
