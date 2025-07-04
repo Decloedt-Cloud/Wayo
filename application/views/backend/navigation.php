@@ -229,19 +229,3 @@ body[dir="rtl"] .badge.float-end {
 </div>
 <!-- Left Sidebar End -->
  
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const chatBadge = document.getElementById('chat-badge');
-    
-
-    // Écoutez les messages de HumHub
-    window.addEventListener('message', (event) => {
-        if (event.data.type === 'MESSAGE_READ') {
-            updateChatBadge();
-        }
-    });
-
-    // Actualiser périodiquement
-    setInterval(updateChatBadge, 30000);
-});
-</script>
