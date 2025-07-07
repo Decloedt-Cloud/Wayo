@@ -617,3 +617,6 @@ $config['enable_hooks'] = TRUE;
 // $config['HUMHUB_JWT_SECRET'] = 'ry4mRP6N8ZBKP_Xn6998drxRXtml_jaDv5cvR2KJuM0dzr0owm4TiKxlnHnjG7qf3RPrvJFbMDAIlbDbz71MuT';
 // $config['HUMHUB_API_TOKEN']  = 'kteQ3M3rtHxiOuDPUbdgaTWN_ao_dWGk0Qrm85Zsrk-diUilMSzEqDTSqNROvkaLBF5wdXac8sFpfVVNeqrcvr';
 
+
+// Dans config.php ou constants.php
+$config['humhub_url'] = 'https://humhub.wayo.site';
