@@ -2012,5 +2012,7 @@
     "i_am_a_member": "I am a member",
     "i_am_a_mentor": "I am a mentor",
     "passwords_need_to_match.": "Passwords need to match.",
-    "passwords_do_not_match": "Passwords do not match"
+    "passwords_do_not_match": "Passwords do not match",
+    "member_register": "Member register",
+    "language_updated_successfully": "Language updated successfully"
 }

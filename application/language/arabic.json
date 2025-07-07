@@ -1311,7 +1311,7 @@
     "section_for_class": "القسم للفصل",
     "e-mail": "البريد الإلكتروني",
     "no_account_yet?_": "ليس لديك حساب بعد؟",
-    "register": "تسجيل",
+    "register": "تسجيل العضو",
     "next": "التالي",
     "required": "مطلوب",
     "picture": "صورة",
@@ -2017,5 +2017,7 @@
     "i_am_a_member": "أنا عضو",
     "i_am_a_mentor": "أنا موجه",
     "passwords_need_to_match.": "يجب أن تتطابق كلمات المرور.",
-    "passwords_do_not_match": "كلمات المرور غير متطابقة"
+    "passwords_do_not_match": "كلمات المرور غير متطابقة",
+    "member_register": "تسجيل العضو",
+    "language_updated_successfully": "تم تحديث اللغة بنجاح"
 }

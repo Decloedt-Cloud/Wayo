@@ -1,15 +1,12 @@
 $(document).ready(function () {
-    const $navbar = $(".sticky-nav");
     const $userButton = $(".user-section");
     const $userDropdown = $(".user-dropdown");
     const $loginToggle = $(".login-toggle");
     const $loginDropdown = $(".login-dropdown");
     const $registerToggle = $(".register-link");
     const $registerDropdown = $(".register-dropdown");
-    const $registerChoiceDropdown = $(".register-choice-dropdown");
     const $forgetToggle = $(".forget-link");
     const $forgetDropdown = $(".forget-dropdown");
-    const emailAlreadyInUse = '<?php echo get_phrase("email_already_in_use"); ?>';
     // Configurer Toastr
     toastr.options = {
         closeButton: true,
@@ -64,11 +61,12 @@ $(document).ready(function () {
             }
             if ($registerDropdown.hasClass("display-none")) {
                 $registerDropdown.removeClass("display-none");
-                setTimeout(() => $registerDropdown.css('opacity', '1'), 10);
-            }
-            if ($registerChoiceDropdown.hasClass("display-none")) {
-                $registerChoiceDropdown.removeClass("display-none");
-                setTimeout(() => $registerChoiceDropdown.css('opacity', '1'), 10);
+                setTimeout(() => {
+                    $registerDropdown.css('opacity', '1');
+                    $('.learner-form-container').removeClass('display-none');
+                    setTimeout(() => $('.learner-form-container').css('opacity', '1'), 10);
+                    updateStep(1, 'learner-form');
+                }, 10);
             }
         });
     }
@@ -154,45 +152,6 @@ $(document).ready(function () {
 
     // Initialize forms with step tracking
     $('#learner-form').data('currentStep', 1);
-    $('#mentor-form').data('currentStep', 1);
-
-    // Learner button logic
-    $('.learner-btn').on('click', function () {
-        const $registerChoice = $('.register-choice');
-        const $learnerFormContainer = $('.learner-form-container');
-
-        // Fade out the register-choice section
-        $registerChoice.css('opacity', '0');
-        setTimeout(() => {
-            $registerChoice.addClass('display-none');
-            $registerChoice.css('opacity', ''); // Reset opacity to default
-            // Show the learner form container
-            $learnerFormContainer.removeClass('display-none');
-            setTimeout(() => {
-                $learnerFormContainer.css('opacity', '1'); // Ensure it’s fully visible
-                updateStep(1, 'learner-form');
-            }, 10);
-        }, 100);
-    });
-
-    // Mentor button logic
-    $('.mentor-btn').on('click', function () {
-        const $registerChoice = $('.register-choice');
-        const $mentorFormContainer = $('.mentor-form-container');
-
-        // Fade out the register-choice section
-        $registerChoice.css('opacity', '0');
-        setTimeout(() => {
-            $registerChoice.addClass('display-none');
-            $registerChoice.css('opacity', ''); // Reset opacity to default
-            // Show the mentor form container
-            $mentorFormContainer.removeClass('display-none');
-            setTimeout(() => {
-                $mentorFormContainer.css('opacity', '1'); // Ensure it’s fully visible
-                updateStep(1, 'mentor-form');
-            }, 10);
-        }, 100);
-    });
 
     // Next button logic
     $('.next-btn').on('click', function (e) {
@@ -214,7 +173,7 @@ $(document).ready(function () {
             }
         });
 
-        const maxSteps = formId === 'learner-form' ? 4 : 5;
+        const maxSteps = 2;
 
         // If form inputs are valid, proceed with additional checks
         if (valid && currentStep < maxSteps) {
@@ -241,88 +200,7 @@ $(document).ready(function () {
                     adjustLoginDropdownHeight($form);
                 });
             }
-            else if (formId === 'learner-form' && currentStep === 3) {
-                const password = $form.find('#password-student').val();
-                const repeatPassword = $form.find('#repeat-password-student').val();
-                const $passwordInput = $form.find('#password-student');
-                const $errorSpan = $passwordInput.next('.password-error');
-
-                // Remove any existing error message
-                if ($errorSpan.length) $errorSpan.remove();
-
-                if (password !== repeatPassword) {
-                    // Display error message below password field
-                    $passwordInput.after('<span class="password-error text-danger">' + passwordsDoNotMatch + '</span>');
-                    $passwordInput.addClass('invalid');
-                    adjustLoginDropdownHeight($form);
-                } else {
-                    // Proceed to next step
-                    updateStep(currentStep + 1, formId);
-                    adjustLoginDropdownHeight($form);
-                }
-            }
-            // Mentor form: Check school name in Step 1
-            else if (formId === 'mentor-form' && currentStep === 1) {
-                const schoolName = $form.find('input[name="school_name"]').val();
-                checkSchoolNameExists(schoolName).then((response) => {
-                    const $schoolInput = $form.find('input[name="school_name"]');
-                    const $errorSpan = $schoolInput.next('.school-error');
-                    
-                    // Remove any existing error message
-                    if ($errorSpan.length) $errorSpan.remove();
-                    
-                    if (response.exists) {
-                        // Display error message below school name field
-                        $schoolInput.after('<span class="school-error text-danger">School name is already in use.</span>');
-                        $schoolInput.addClass('invalid');
-                    } else {
-                        // Proceed to next step
-                        updateStep(currentStep + 1, formId);
-                    }
-                    
-                    // Adjust dropdown height
-                    adjustLoginDropdownHeight($form);
-                });
-            }
-            // Mentor form: Check email in Step 4
-            else if (formId === 'mentor-form' && currentStep === 4) {
-                const email = $form.find('input[name="email"]').val();
-                checkEmailExists(email).then((response) => {
-                    const $emailInput = $form.find('input[name="email"]');
-                    const $errorSpan = $emailInput.next('.email-error');
-                    
-                    // Remove any existing error message
-                    if ($errorSpan.length) $errorSpan.remove();
-                    
-                    if (response.exists) {
-                        // Display error message below email field
-                        $emailInput.after('<span class="email-error text-danger">Email is already in use.</span>');
-                        $emailInput.addClass('invalid');
-                    } else {
-                        // Proceed to next step
-                        updateStep(currentStep + 1, formId);
-                    }
-                    
-                    // Adjust dropdown height
-                    adjustLoginDropdownHeight($form);
-                });
-            }
-            // Mentor form: Check password match in Step 5
-            else if (formId === 'mentor-form' && currentStep === 5) {
-                const password = $('#password-mentor').val();
-                const repeatPassword = $('#repeat-password-mentor').val();
-                if (password !== repeatPassword) {
-                    $('#errorMessageMentor').removeClass('display-none');
-                    // Adjust dropdown height (in case other errors are present)
-                    adjustLoginDropdownHeight($form);
-                    return;
-                } else {
-                    $('#errorMessageMentor').addClass('display-none');
-                    updateStep(currentStep + 1, formId);
-                    // Adjust dropdown height
-                    adjustLoginDropdownHeight($form);
-                }
-            }
+            
             // Proceed to next step for other cases
             else {
                 updateStep(currentStep + 1, formId);
@@ -333,7 +211,7 @@ $(document).ready(function () {
     });
 
     // Back button logic
-    $('.back-btn').on('click', function (e) {
+     $('.back-btn').on('click', function (e) {
         e.preventDefault();
         const $form = $(this).closest('form');
         const formId = $form.attr('id');
@@ -342,44 +220,17 @@ $(document).ready(function () {
         if (currentStep > 1) {
             updateStep(currentStep - 1, formId);
         } else {
-            const $formContainer = formId === 'learner-form' ? $('.learner-form-container') : $('.mentor-form-container');
-            const $registerChoice = $('.register-choice');
-
-            $formContainer.css('opacity', '0');
+            $registerDropdown.css('opacity', '0');
             setTimeout(() => {
-                $formContainer.addClass('display-none');
-                $formContainer.css('opacity', '');
-                $registerChoice.removeClass('display-none');
-                setTimeout(() => $registerChoice.css('opacity', '1'), 10);
+                $registerDropdown.addClass("display-none");
+                $('.learner-form-container').addClass('display-none');
+                $('.mentor-form-container').addClass('display-none');
+                $loginDropdown.removeClass("display-none");
+                setTimeout(() => $loginDropdown.css('opacity', '1'), 10);
             }, 100);
         }
     });
 
-    // Photo preview for learner
-    $('#popup_student_image').on('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                $('#popup_photo_preview').html(`<img src="${e.target.result}" alt="Photo preview" />`);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Photo preview for mentor
-    $('#popup_mentor_image').on('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                $('#popup_mentor-photo-preview').html(`<img src="${e.target.result}" alt="Photo preview" />`);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Gestion du formulaire learner
 // Gestion du formulaire learner
 const learnerForm = document.getElementById("learner-form");
 if (learnerForm) {
@@ -529,116 +380,6 @@ if (learnerForm) {
     }
 }
 
-    // Gestion du formulaire mentor
-const mentorForm = document.getElementById("mentor-form");
-if (mentorForm) {
-    const registerBtn = document.querySelector('#mentor-form .register-btn');
-    if (registerBtn) {
-        registerBtn.addEventListener('click', function (event) {
-            event.preventDefault();
-            if (mentorForm.checkValidity()) {
-                const password = document.getElementById('password-mentor')?.value;
-                const repeatPassword = document.getElementById('repeat-password-mentor')?.value;
-                if (password !== repeatPassword) {
-                    const errorMessage = document.getElementById('errorMessageMentor');
-                    if (errorMessage) errorMessage.classList.remove('display-none');
-                    return;
-                } else {
-                    const errorMessage = document.getElementById('errorMessageMentor');
-                    if (errorMessage) errorMessage.classList.add('display-none');
-                }
-
-                const email = document.querySelector('#mentor-form input[name="email"]')?.value;
-                if (!email) {
-                    toastr.error('Adresse e-mail manquante.', 'Erreur', { timeOut: 3000 });
-                    return;
-                }
-
-                // Show loading spinner and disable button
-                const $spinner = $('.register-dropdown .loading-spinner');
-                if ($spinner.length) $spinner.removeClass('display-none');
-                registerBtn.disabled = true;
-
-                // Fetch fresh CSRF token
-                $.ajax({
-                    type: "GET",
-                    url: window.baseUrl + 'login/get_csrf_token',
-                    dataType: 'json',
-                    success: function (response) {
-                        if (!response.csrfName || !response.csrfHash) {
-                            if ($spinner.length) $spinner.addClass('display-none');
-                            registerBtn.disabled = false;
-                            registerBtn.innerHTML = 'S\'inscrire';
-                            toastr.error('Jeton CSRF invalide.', 'Erreur', { timeOut: 3000 });
-                            return;
-                        }
-
-                        // Update CSRF token in form
-                        $('input[name="' + response.csrfName + '"]').val(response.csrfHash);
-
-                        // Submit form via AJAX
-                        $.ajax({
-                            type: "POST",
-                            url: mentorForm.action,
-                            data: new FormData(mentorForm),
-                            contentType: false,
-                            processData: false,
-                            dataType: 'json',
-                            success: function (response) {
-                                // Hide spinner and re-enable button
-                                if ($spinner.length) $spinner.addClass('display-none');
-                                registerBtn.disabled = false;
-                                registerBtn.innerHTML = 'S\'inscrire';
-
-                                if (response.status) {
-                                    // Show success message
-                                    toastr.success(response.message || 'Votre inscription a été effectuée avec succès.', 'Inscription réussie !', { timeOut: 1500 });
-
-                                    // Reset form and hide dropdown
-                                    mentorForm.reset();
-                                    $('.register-dropdown').css('opacity', '0');
-                                    setTimeout(() => {
-                                        $('.register-dropdown').addClass("display-none");
-                                        // Redirect to login page
-                                        setTimeout(() => {
-                                            console.log("Mentor redirect to login triggered");
-                                            window.location.href = window.baseUrl + '';
-                                        }, 1500); // Delay redirect by 1.5s
-                                    }, 100); // Dropdown animation
-                                } else {
-                                    toastr.error(response.message || 'Une erreur s\'est produite lors de l\'inscription.', 'Erreur', { timeOut: 3000 });
-                                }
-
-                                // Update CSRF token
-                                const newCsrfName = response.csrf?.csrfName;
-                                const newCsrfHash = response.csrf?.csrfHash;
-                                if (newCsrfName && newCsrfHash) {
-                                    $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
-                                }
-                            },
-                            error: function (error) {
-                                console.error("Error:", error);
-                                if ($spinner.length) $spinner.addClass('display-none');
-                                registerBtn.disabled = false;
-                                registerBtn.innerHTML = 'S\'inscrire';
-                                toastr.error('Une erreur serveur s\'est produite. Vérifiez reCAPTCHA ou contactez l\'administrateur.', 'Erreur', { timeOut: 3000 });
-                            }
-                        });
-                    },
-                    error: function (error) {
-                        console.error("Error fetching CSRF token:", error);
-                        if ($spinner.length) $spinner.addClass('display-none');
-                        registerBtn.disabled = false;
-                        registerBtn.innerHTML = 'S\'inscrire';
-                        toastr.error('Impossible de récupérer le jeton CSRF.', 'Erreur', { timeOut: 3000 });
-                    }
-                });
-            } else {
-                mentorForm.reportValidity();
-            }
-        });
-    }
-}
 
     if ($registerDropdown.length) {
         const $registerExitSvg = $(".register-exit-svg");
@@ -824,30 +565,6 @@ function checkEmailExists(email) {
             error: function (error) {
                 console.error("Error:", error);
                 resolve({ exists: false }); // Assume email doesn't exist on error
-            }
-        });
-    });
-}
-
-function checkSchoolNameExists(schoolName) {
-    return new Promise((resolve) => {
-        const csrfName = $('input[name="' + csrfTokenName + '"]').attr('name');
-        const csrfHash = $('input[name="' + csrfTokenName + '"]').val();
-
-        $.ajax({
-            type: "POST",
-            url: checkSchoolNameExistsUrl,
-            data: { school_name: schoolName, [csrfName]: csrfHash },
-            dataType: 'json',
-            success: function (response) {
-                const newCsrfName = response.csrf.csrfName;
-                const newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
-                resolve({ exists: response.exists });
-            },
-            error: function (error) {
-                console.error("Error:", error);
-                resolve({ exists: false }); // Assume school name doesn't exist on error
             }
         });
     });

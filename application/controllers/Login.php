@@ -226,7 +226,7 @@ class Login extends CI_Controller
 						redirect($_SERVER['HTTP_REFERER'], 'refresh');
 					} else {
 						// Par défaut, redirige vers student/dashboard si la page référente n'est pas valide
-						redirect('/student/dashboard', 'refresh');
+						redirect('student/dashboard', 'refresh');
 					}
 				}
 			} elseif ($row->role == 'parent') {
