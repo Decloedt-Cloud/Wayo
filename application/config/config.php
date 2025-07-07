@@ -529,8 +529,8 @@ $config['csrf_exclude_uris'] = array(
     
 
     'student/filter_recordings',
-     'login/set_student_just_registered'
-
+     'login/set_student_just_registered',
+    'home/set_guest_language/.*'
 
 );
  

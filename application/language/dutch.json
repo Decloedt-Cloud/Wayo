@@ -1399,7 +1399,6 @@
     "updated_successfully": "Succesvol bijgewerkt",
     "the_file_size_exceeds_the_limit.": "De bestandsgrootte overschrijdt de limiet.",
     "old": "oud",
-
     "Total_Students": "Totaal aantal leden",
     "email_address": "E-mailadres",
     "online_admission_student": "Online toelatingslid",
@@ -2005,7 +2004,6 @@
     "la_room_a_été_supprimée_avec_succès.": "De kamer is succesvol verwijderd.",
     "impossible_de_supprimer_la_room_:": "Kamer kan niet worden verwijderd:",
     "une_erreur_inattendue_est_survenue.": "Er is een onverwachte fout opgetreden.",
-
     "Total Students": "Totaal aantal studenten",
     "Email address": "E-mailadres",
     "Online admission student": "Online toelating student",
@@ -2333,5 +2331,7 @@
     "i_am_a_member": "Ik ben lid",
     "i_am_a_mentor": "Ik ben een mentor",
     "passwords_need_to_match.": "Wachtwoorden moeten overeenkomen",
-    "passwords_do_not_match": "Wachtwoorden komen niet overeen"
+    "passwords_do_not_match": "Wachtwoorden komen niet overeen",
+    "member_register": "Ledenregister",
+    "language_updated_successfully": "Taal is succesvol bijgewerkt"
 }

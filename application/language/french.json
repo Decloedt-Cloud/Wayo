@@ -1299,7 +1299,6 @@
     "passwords_need_to_match": "Les mots de passe doivent correspondre",
     "sec": "Sec",
     "invalid_lesson_provider": "Fournisseur de leçon invalide",
-   
     "login": "Connexion",
     "accountant_has_been_updated_successfully": "Comptable mis à jour avec succès",
     "paid_amount_is_not_equal_to_total_amount": "Le montant payé n'est pas égal au montant total",
@@ -1362,16 +1361,13 @@
     "you_must_select_at_least_one_correct_answer": "Vous devez sélectionner au moins une réponse correcte",
     "refresh": "Actualiser",
     "no_instruction_found": "Aucune instruction trouvée",
-   
     "admin_has_been_deleted_successfully": "Administrateur supprimé avec succès",
     "teacher_has_been_deleted_successfully": "Mentor supprimé avec succès",
     "accountant_has_been_deleted_successfully": "Comptable supprimé avec succès",
     "librarian_deleted_successfully": "Bibliothécaire supprimé avec succès",
     "class_routine_updated_successfully": "Routine de classe mise à jour avec succès",
     "class_routine_deleted_successfully": "Routine de classe supprimée avec succès",
-  
     "classroom_updated_successfully": "Salle de classe mise à jour avec succès",
-
     "invoice_deleted_successfully": "Facture supprimée avec succès",
     "expense_category_updated_successfully": "Catégorie de dépenses mise à jour avec succès",
     "expense_category_deleted_successfully": "Catégorie de dépenses supprimée avec succès",
@@ -1581,7 +1577,6 @@
     "no_answers_found": "Aucune réponse trouvée",
     "student_answer": "Réponse du membre",
     "comment_has_been_updated_successfully": "Commentaire mis à jour avec succès",
-
     "exam_has_passed": "Examen terminé",
     "starts_in_%s_days_%s_hours_%s_minutes": "Commence dans %s jours %s heures %s minutes",
     "starts_in": "Commence dans",
@@ -1995,7 +1990,7 @@
     "historique": "Historique",
     "cette_action_supprimera_le_rendez-vous_et_l’enregistrement_associé._continuer_?": "Cette action supprimera le rendez-vous et l’enregistrement associé. continuer ?",
     "une_erreur_est_survenue_lors_du_chargement_des_données.": "Une erreur est survenue lors du chargement des données.",
-     "Please_add_an_appointment_in_the_calendar": "Veuillez ajouter un rendez-vous dans le calendrier.",
+    "Please_add_an_appointment_in_the_calendar": "Veuillez ajouter un rendez-vous dans le calendrier.",
     "communities": "Communautés",
     "communautés": "Communautés",
     "community_details": "Détails de la communauté",
@@ -2006,6 +2001,7 @@
     "passwords_do_not_match": "Les mots de passe ne correspondent pas",
     "admission_en_ligne": "Admission en ligne",
     "mentor_information": "Informations sur le mentor",
-    "passwords_need_to_match.": "Les mots de passe doivent correspondre"
+    "passwords_need_to_match.": "Les mots de passe doivent correspondre",
+    "member_register": "Inscription du membre",
+    "language_updated_successfully": "Langue mise à jour avec succès"
 }
-

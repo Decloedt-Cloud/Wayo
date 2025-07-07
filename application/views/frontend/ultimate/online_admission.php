@@ -599,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toastr.success(data.message); // Afficher le toast de succès
                     resetBtn.click(); // Reset form
                     setTimeout(() => {
-                        window.location.href = '<?php echo site_url('home'); ?>'; // Rediriger vers la page d'accueil
+                        window.location.href = '<?php echo site_url('/home/communities'); ?>';
                     }, 2000); // Attendre 2 secondes pour que le toast soit visible
                 } else {
                     // Error case (e.g., duplicate email, school name, or validation error)

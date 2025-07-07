@@ -504,7 +504,26 @@ class Home extends CI_Controller
 
 // Change la langue pour les guests (stockée en session)
 	public function set_guest_language() {
-		$lang = $this->input->post('language');
-		$this->session->set_userdata('language', $lang);
-	}
+    $lang = $this->input->post('language', TRUE); // Filtrage XSS
+    if ($lang) {
+        $this->session->set_userdata('language', $lang);
+        $response = array(
+            'status' => 'success',
+            'message' => get_phrase('language_updated_successfully'),
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        );
+    } else {
+        $response = array(
+            'status' => 'error',
+            'message' => get_phrase('language_not_provided'),
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        );
+    }
+
+    $this->output
+        ->set_content_type('application/json')
+        ->set_output(json_encode($response));
+}
 }

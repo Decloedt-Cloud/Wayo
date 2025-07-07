@@ -2165,10 +2165,7 @@ public function register_user_form()
         'name' => htmlspecialchars($this->input->post('first_name') . ' ' . $this->input->post('last_name')),
         'email' => htmlspecialchars($this->input->post('student_email')),
         'birthday' => htmlspecialchars($this->input->post('date_of_birth')),
-        'gender' => htmlspecialchars($this->input->post('gender')),
         'password' => sha1($this->input->post('password-student')),
-        'phone' => $this->input->post('phone') ? htmlspecialchars($this->input->post('phone')) : '',
-        'address' => htmlspecialchars($this->input->post('address')),
         'role' => 'student',
         'status' => 1,
         'school_id' => 1, // Ajustez selon votre logique
