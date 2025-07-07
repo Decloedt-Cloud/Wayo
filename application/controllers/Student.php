@@ -17,6 +17,8 @@ class Student extends CI_Controller {
 		$this->load->database();
 		$this->load->library('Humhub_sso');
 		$this->load->library('session');
+		$this->config->load('config'); 
+    	
 		 require_once APPPATH . '../vendor/autoload.php';
 
 		/*LOADING ALL THE MODELS HERE*/

@@ -608,7 +608,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error:', error);
-                toastr.error('<?php echo get_phrase('an_error_occurred'); ?>');
+                toastr.error("<?= get_phrase('an_error_occurred'); ?>");
+
             });
         });
     }

@@ -18,7 +18,8 @@ class Teacher extends CI_Controller {
 		$this->load->database();
 		$this->load->library('Humhub_sso');
 		$this->load->library('session');
-
+		$this->config->load('config'); 
+    
 		/*LOADING ALL THE MODELS HERE*/
 		$this->load->model('Crud_model',     'crud_model');
 		$this->load->model('User_model',     'user_model');

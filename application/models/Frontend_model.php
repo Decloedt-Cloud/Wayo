@@ -13,6 +13,8 @@ class Frontend_model extends CI_Model
     $this->school_id = school_id();
     $this->active_session = active_session();
     $this->load->model('Crud_model', 'crud_model');
+    $this->load->library('Humhub_sso'); // Chargez la bibliothèque ici
+    $this->humhub_sso = $this->humhub_sso; // Initialisez la propriété
   }
 
   // get noticeboard
@@ -717,12 +719,13 @@ class Frontend_model extends CI_Model
     $this->db->insert('settings_school', $settings_school);
 
     // Prepare user (admin/mentor) data
+    $plainPassword = $this->input->post('password'); // <- mot de passe en clair
     $admin_data = [
         'name' => htmlspecialchars($this->input->post('name')),
         'email' => htmlspecialchars($this->input->post('email')),
         'gender' => htmlspecialchars($this->input->post('gender')),
         'phone' => htmlspecialchars($this->input->post('phone')),
-        'password' => sha1($this->input->post('password')),
+        'password' => sha1($plainPassword), // hashé pour Wayo
         'role' => 'admin',
         'school_id' => $school_id,
         'status' => 3, // Pending status
@@ -733,6 +736,7 @@ class Frontend_model extends CI_Model
     $this->db->insert('users', $admin_data);
     $user_id = $this->db->insert_id();
 
+    
     // Handle school image upload
     if (isset($_FILES['school_image']) && $_FILES['school_image']['error'] == UPLOAD_ERR_OK) {
         $upload_path = 'Uploads/schools/' . $school_id . '.jpg';
@@ -752,6 +756,54 @@ class Frontend_model extends CI_Model
     $this->email_model->School_online_admission($admin_data['email'], $school_data['name'], $admin_data['name']);
     $this->email_model->School_online_admission_superadmin($admin_data['email'], $school_data['name'], $admin_data['name']);
 
+    // Créer l’utilisateur HumHub
+    $nameParts = explode(' ', $admin_data['name'], 2);
+    $firstname = $nameParts[0];
+    $lastname = isset($nameParts[1]) ? $nameParts[1] : '';
+    $username = $this->sanitizeUsername($admin_data['name']);
+  //  $plainPassword = $this->input->post('password');
+
+$infouser = [
+        'account' => [
+            'email' => $admin_data['email'],
+            'username' => $username,
+            'newPassword' => $plainPassword,
+            'newPasswordConfirm' => $plainPassword,
+        ],
+        'profile' => [
+            'language' => 'fr',
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'title' => $admin_data['role']
+        ]
+    ];
+    $humhubUser = $this->humhub_sso->createUser($infouser);
+    log_message('debug', 'HumHub user: ' . json_encode($humhubUser));
+
+    if (isset($humhubUser['id'])) {
+        $this->db->where('id', $user_id);
+        $this->db->update('users', ['humhub_id' => $humhubUser['id']]);
+    }
+
+    // Créer l’espace HumHub
+    $spaceData = [
+        'name'        => $school_data['name'],
+        'description' => 'Espace de l\'école ' . $school_data['name'] . ' créé depuis Wayo Academy',
+        'join_policy' => 0,
+        'visibility'  => ($school_data['access'] === 'public' ? 2 : 1),
+    ];
+    $humhubSpace = $this->humhub_sso->createSpace($spaceData);
+    log_message('debug', 'HumHub space: ' . json_encode($humhubSpace));
+
+    if (isset($humhubSpace['id'])) {
+        $this->db->where('id', $school_id);
+        $this->db->update('schools', ['humhub_space_id' => $humhubSpace['id']]);
+
+        if (isset($humhubUser['id'])) {
+            $this->humhub_sso->addUserSpace($humhubSpace['id'], $humhubUser['id']);
+        }
+    }
+
     // Success response
     return json_encode([
         'status' => true,
@@ -763,9 +815,11 @@ class Frontend_model extends CI_Model
     ]);
 }
 
-
-
-
+private function sanitizeUsername($str) 
+	{
+		$u = strtolower(preg_replace('/[^a-z0-9]/i', '', $str));
+		return $u ? $u . rand(100, 999) : 'user' . rand(1000, 9999);
+	}
   function contains($table_name = '', $column_name = '', $value = '')
   {
     // Check if a value exists in the table
