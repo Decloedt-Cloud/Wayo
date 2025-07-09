@@ -2333,5 +2333,6 @@
     "passwords_need_to_match.": "Wachtwoorden moeten overeenkomen",
     "passwords_do_not_match": "Wachtwoorden komen niet overeen",
     "member_register": "Ledenregister",
-    "language_updated_successfully": "Taal is succesvol bijgewerkt"
+    "language_updated_successfully": "Taal is succesvol bijgewerkt",
+    "failed_to_delete": "Verwijderen mislukt"
 }

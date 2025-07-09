@@ -2014,5 +2014,6 @@
     "passwords_need_to_match.": "Passwords need to match.",
     "passwords_do_not_match": "Passwords do not match",
     "member_register": "Member register",
-    "language_updated_successfully": "Language updated successfully"
+    "language_updated_successfully": "Language updated successfully",
+    "failed_to_delete": "Failed to delete"
 }

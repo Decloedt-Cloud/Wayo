@@ -1491,27 +1491,24 @@ class Superadmin extends CI_Controller
     }
 
     if ($param1 == 'filter') {
-      $page_data['class_id'] = $param2;
-      $page_data['section_id'] = $param3;
-      // $this->load->view('backend/superadmin/student/list', $page_data);
-      $html_content = $this->load->view('backend/superadmin/student/list', $page_data, TRUE);
+            $page_data['class_id'] = ($param2 == '' || $param2 == 'all') ? 'all' : $param2;
+            $page_data['section_id'] = ($param3 == '' || $param3 == 'all') ? 'all' : $param3;
+            $html_content = $this->load->view('backend/superadmin/student/list', $page_data, TRUE);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('html' => $html_content, 'csrf' => $csrf));
+        }
 
-      // Prepare a new CSRF token for the response
-      $csrf = array(
-          'csrfName' => $this->security->get_csrf_token_name(),
-          'csrfHash' => $this->security->get_csrf_hash(),
-      );
-  
-      // Return JSON response with the HTML content and new CSRF token
-      echo json_encode(array('html' => $html_content, 'csrf' => $csrf));
-    }
-
-    if (empty($param1)) {
-      $page_data['working_page'] = 'filter';
-      $page_data['folder_name'] = 'student';
-      $page_data['page_title'] = 'student_list';
-      $this->load->view('backend/index', $page_data);
-    }
+        if (empty($param1)) {
+            $page_data['class_id'] = 'all';
+            $page_data['section_id'] = 'all';
+            $page_data['working_page'] = 'filter';
+            $page_data['folder_name'] = 'student';
+            $page_data['page_title'] = 'student_list';
+            $this->load->view('backend/index', $page_data);
+        }
   }
   //END STUDENT ADN ADMISSION section
 
