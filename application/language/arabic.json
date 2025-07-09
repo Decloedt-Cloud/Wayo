@@ -2019,5 +2019,6 @@
     "passwords_need_to_match.": "يجب أن تتطابق كلمات المرور.",
     "passwords_do_not_match": "كلمات المرور غير متطابقة",
     "member_register": "تسجيل العضو",
-    "language_updated_successfully": "تم تحديث اللغة بنجاح"
+    "language_updated_successfully": "تم تحديث اللغة بنجاح",
+    "failed_to_delete": "فشل في الحذف"
 }

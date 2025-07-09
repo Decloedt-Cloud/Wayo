@@ -567,127 +567,180 @@ class Teacher extends CI_Controller {
 		  
 	
 	//START STUDENT ADN ADMISSION section
-	public function student($param1 = '', $param2 = '', $param3 = '', $param4 = '', $param5 = ''){
+	public function student($param1 = '', $param2 = '', $param3 = '', $param4 = '', $param5 = '')
+  {
+    $this->session->unset_session();
+    $page_data['class_id'] = '';
+    $page_data['section_id'] = '';
 
-		if($param1 == 'create'){
-			//form view
-			if($param2 == 'bulk'){
-				$page_data['aria_expand'] = 'bulk';
-				$page_data['working_page'] = 'create';
-				$page_data['folder_name'] = 'student';
-				$page_data['page_title'] = 'add_student';
-				$this->load->view('backend/index', $page_data);
-			}elseif($param2 == 'excel'){
-				$page_data['aria_expand'] = 'excel';
-				$page_data['working_page'] = 'create';
-				$page_data['folder_name'] = 'student';
-				$page_data['page_title'] = 'add_student';
-				$this->load->view('backend/index', $page_data);
-			}else{
-				$page_data['aria_expand'] = 'single';
-				$page_data['working_page'] = 'create';
-				$page_data['folder_name'] = 'student';
-				$page_data['page_title'] = 'add_student';
-				$this->load->view('backend/index', $page_data);
-			}
-		}
+    if ($param1 == 'create') {
+      //form view
+      if ($param2 == 'bulk') {
+        $page_data['aria_expand'] = 'bulk';
+        $page_data['working_page'] = 'create';
+        $page_data['folder_name'] = 'student';
+        $page_data['page_title'] = 'add_student';
+        $this->load->view('backend/index', $page_data);
+      } elseif ($param2 == 'excel') {
+        $page_data['aria_expand'] = 'excel';
+        $page_data['working_page'] = 'create';
+        $page_data['folder_name'] = 'student';
+        $page_data['page_title'] = 'add_student';
+        $this->load->view('backend/index', $page_data);
+      } else {
+        $page_data['aria_expand'] = 'single';
+        $page_data['working_page'] = 'create';
+        $page_data['folder_name'] = 'student';
+        $page_data['page_title'] = 'add_student';
+        $this->load->view('backend/index', $page_data);
+      }
+    }
 
-		//create to database
-		if($param1 == 'create_single_student'){
-			$response = $this->user_model->single_student_create();
-			// echo $response;
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				  'csrfHash' => $this->security->get_csrf_hash(),
-				);
-				
-		  // Renvoyer la réponse avec un nouveau jeton CSRF
-		  echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+    //create to database
+    if ($param1 == 'create_single_student') {
 
-		if($param1 == 'create_bulk_student'){
-			$response = $this->user_model->bulk_student_create();
-			// echo $response;
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				  'csrfHash' => $this->security->get_csrf_hash(),
-				);
-				
-		  // Renvoyer la réponse avec un nouveau jeton CSRF
-		  echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+      if ($param2 == "submit") {
+        header('Content-Type: application/json'); // Force le retour JSON
+        $response_from_model = $this->user_model->single_student_create();
+        $status = ($response_from_model === true); // Check if the model returned true for success
+        //$this->session->set_flashdata('flash_message', get_phrase('student_added_successfully'));
+        // Ajout du token CSRF à la réponse
+        $response = [
+          'status' => $status,
+          'message' => $status ? get_phrase('student_added_successfully') : $this->session->flashdata('error'),
+          'redirect' => site_url('teacher/student'),
+          'csrf' => [
+              'name' => $this->security->get_csrf_token_name(),
+              'hash' => $this->security->get_csrf_hash()
+          ]
+      ];
 
-		if($param1 == 'create_excel'){
-			$response = $this->user_model->excel_create();
-			// echo $response;
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				  'csrfHash' => $this->security->get_csrf_hash(),
-				);
-				
-		  // Renvoyer la réponse avec un nouveau jeton CSRF
-		  echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+      echo json_encode($response);
+      exit;
+    } else {
+        // Load the view with filtered data
+        $page_data['class_id'] = html_escape($this->input->post('class_id'));
+        $page_data['section_id'] = html_escape($this->input->post('section_id'));
+        $page_data['working_page'] = 'filter';
+        $page_data['folder_name'] = 'student';
+        $page_data['page_title'] = 'student_list';
 
-		// form view
-		if($param1 == 'edit'){
-			$page_data['student_id'] = $param2;
-			$page_data['working_page'] = 'edit';
-			$page_data['folder_name'] = 'student';
-			$page_data['page_title'] = 'update_student_information';
-			$this->load->view('backend/index', $page_data);
-		}
+        $this->load->view('backend/index', $page_data);
+    }
+  }else {
+    // Nouveau else ajouté pour la condition parente
+    $this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
+  }
 
-		//updated to database
-		if($param1 == 'updated'){
-			$response = $this->user_model->student_update($param2, $param3);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash(),
-				);
-				
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+    if ($param1 == 'create_bulk_student') {
+      $response = $this->user_model->bulk_student_create();
+      // echo $response;
+      // Préparer la réponse avec un nouveau jeton CSRF
+      $csrf = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+              'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+      echo json_encode(array('status' => $response, 'csrf' => $csrf));
+    }
 
-		if($param1 == 'delete'){
-			$response = $this->user_model->delete_student($param2, $param3);
-			// echo $response;
-			       // Préparer la réponse avec un nouveau jeton CSRF
-				   $csrf = array(
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-				// Renvoyer la réponse avec un nouveau jeton CSRF
-				 echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+    if ($param1 == 'create_excel') {
+      $response = $this->user_model->excel_create();
+      // die($response) ;
+      // Préparer la réponse avec un nouveau jeton CSRF
+      $csrf = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+            );
+                
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+      echo json_encode(array('status' => $response, 'csrf' => $csrf));
+    }
 
-		if($param1 == 'filter'){
-			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
-			// $this->load->view('backend/teacher/student/list', $page_data);
-			$html_content = $this->load->view('backend/teacher/student/list', $page_data, TRUE);
+   // form view
+   if ($param1 == 'edit') {
+    $page_data['student_id'] = $param2;
+    $page_data['working_page'] = 'edit';
+    $page_data['folder_name'] = 'student';
+    $page_data['page_title'] = 'update_student_information';
+    $this->load->view('backend/index', $page_data);
+  }
 
-			// Prepare a new CSRF token for the response
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-			);
-		
-			// Return JSON response with the HTML content and new CSRF token
-			echo json_encode(array('html' => $html_content, 'csrf' => $csrf));
-		}
 
-		if(empty($param1)){
-			$page_data['working_page'] = 'filter';
-			$page_data['folder_name'] = 'student';
-			$page_data['page_title'] = 'student_list';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
+    if ($param1 == 'status') {
+      $this->db->where('id', $param3);
+      $this->db->update('users', array('status' => $param4));
+      $response = array(
+        'status' => true,
+        'notification' => get_phrase('status_has_been_updated')
+      );
+      
+        // Préparer la réponse avec un nouveau jeton CSRF
+        $csrf = array(
+                  'csrfName' => $this->security->get_csrf_token_name(),
+                  'csrfHash' => $this->security->get_csrf_hash(),
+                );
+              
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+      echo json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+    }
+
+    //updated to database
+    if ($param1 == 'updated') {
+      $response = $this->user_model->student_update($param2, $param3);
+      // echo $response;
+         // Préparer la réponse avec un nouveau jeton CSRF
+         $csrf = array(
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+      );
+  
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+       echo json_encode(array('status' => $response, 'csrf' => $csrf));
+    }
+    //updated to database
+    if ($param1 == 'id_card') {
+      $page_data['student_id'] = $param2;
+      $page_data['folder_name'] = 'student';
+      $page_data['page_title'] = 'identity_card';
+      $page_data['page_name'] = 'id_card';
+      $this->load->view('backend/index', $page_data);
+    }
+
+    if ($param1 == 'delete') {
+      $response = $this->user_model->delete_student($param2, $param3);
+      // echo $response;
+       // Préparer la réponse avec un nouveau jeton CSRF
+      $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    // Renvoyer la réponse avec un nouveau jeton CSRF
+     echo json_encode(array('status' => $response, 'csrf' => $csrf));
+    }
+
+    if ($param1 == 'filter') {
+            $page_data['class_id'] = ($param2 == '' || $param2 == 'all') ? 'all' : $param2;
+            $page_data['section_id'] = ($param3 == '' || $param3 == 'all') ? 'all' : $param3;
+            $html_content = $this->load->view('backend/teacher/student/list', $page_data, TRUE);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('html' => $html_content, 'csrf' => $csrf));
+        }
+
+        if (empty($param1)) {
+            $page_data['class_id'] = 'all';
+            $page_data['section_id'] = 'all';
+            $page_data['working_page'] = 'filter';
+            $page_data['folder_name'] = 'student';
+            $page_data['page_title'] = 'student_list';
+            $this->load->view('backend/index', $page_data);
+        }
+  }
 	//END STUDENT ADN ADMISSION section
 	public function get_sections_by_class()
 	{

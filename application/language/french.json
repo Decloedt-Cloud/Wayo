@@ -2003,5 +2003,6 @@
     "mentor_information": "Informations sur le mentor",
     "passwords_need_to_match.": "Les mots de passe doivent correspondre",
     "member_register": "Inscription du membre",
-    "language_updated_successfully": "Langue mise à jour avec succès"
+    "language_updated_successfully": "Langue mise à jour avec succès",
+    "failed_to_delete": "Échec de la suppression"
 }

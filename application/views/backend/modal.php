@@ -75,9 +75,9 @@ function confirmModal(delete_url, callback) {
 
                 // Afficher une notification basée sur la réponse
                 if (response.status) {
-                    showNotification('success', response.notification || '<?php echo get_phrase('exam_deleted_successfully'); ?>');
+                    showNotification('success', response.notification || '<?php echo get_phrase('deleted_successfully'); ?>');
                 } else {
-                    showNotification('error', response.notification || '<?php echo get_phrase('failed_to_delete_exam'); ?>');
+                    showNotification('error', response.notification || '<?php echo get_phrase('failed_to_delete'); ?>');
                 }
 
                 // Appeler le callback avec la réponse
