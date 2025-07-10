@@ -2334,5 +2334,15 @@
     "passwords_do_not_match": "Wachtwoorden komen niet overeen",
     "member_register": "Ledenregister",
     "language_updated_successfully": "Taal is succesvol bijgewerkt",
-    "failed_to_delete": "Verwijderen mislukt"
+    "failed_to_delete": "Verwijderen mislukt",
+    "Êtes-vous_sûr_?": "Weet je het zeker?",
+    "cette_action_est_irréversible_!": "Deze actie is onomkeerbaar!",
+    "oui,_supprimer_!": "Ja, verwijderen!",
+    "le_rendez-vous_a_été_supprimé.": "De afspraak is geannuleerd.",
+    "impossible_de_supprimer_le_rendez-vous.": "Kan afspraak niet verwijderen.",
+    "heure_invalide": "Ongeldige tijd",
+    "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "Het is mij niet gelukt om in het verleden een afspraak te maken.",
+    "rendez-vous_mis_à_jour_!": "Afspraak bijgewerkt!",
+    "rendez-vous_ajouté_avec_succès_!": "Afspraak succesvol toegevoegd!",
+    "une_erreur_est_survenue.": "Er is een fout opgetreden."
 }

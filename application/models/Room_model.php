@@ -16,85 +16,72 @@ class Room_model extends CI_Model {
     public function create_room()
     {
         try {
-            // die('room_name');
-            // die($this->input->post('classSelect'));
-            // Récupération et décodage des données JSON envoyées
+            // Récupération et décodage des données envoyées
             $roomName = html_escape($this->input->post('roomName'));
             $classID = html_escape($this->input->post('classSelect'));
-            $description = !empty($this->input->post('description')) ? htmlspecialchars($this->input->post('description')) : null;
 
-    
             // Vérification des champs obligatoires
-            if (empty($roomName) || empty($classID) || empty($description) ) {
-                echo json_encode(["status" => "error", "message" => "Tous les champs obligatoires doivent être remplis."]);
-                return;
+            if (empty($roomName) || empty($classID)) {
+                return json_encode([
+                    'status' => false,
+                    'notification' => get_phrase('tous_les_champs_obligatoires_doivent_etre_remplis')
+                ]);
             }
-    
-
 
             $schoolID = school_id(); // Fonction pour récupérer l'ID de l'école
             $userID = $this->session->userdata('user_id');
-    
 
-    
             // Vérifier si la salle existe déjà pour cette école
             $exists = $this->db->get_where('rooms', ['name' => $roomName, 'school_id' => $schoolID])->row();
             if ($exists) {
-                echo json_encode(["status" => "error", "message" => "Cette salle existe déjà."]);
-                return;
+                return json_encode([
+                    'status' => false,
+                    'notification' => get_phrase('cette_salle_existe_deja')
+                ]);
             }
-    
+
             // Préparation des données pour l'insertion
             $roomData = [
                 'name' => $roomName,
-                'description' => $description,
                 'school_id' => $schoolID,
                 'user_id' => $userID,
                 'class_id' => $classID
             ];
-    
+
             // Insertion dans la base de données
             $this->db->insert('rooms', $roomData);
-    
+
             // Vérification de l'insertion
             if ($this->db->affected_rows() > 0) {
-                // $response =  json_encode(["status" => "success", "message" => "Salle créée avec succès"]);
-                $response = array(
+                return json_encode([
                     'status' => true,
-                    'notification' => get_phrase('Salle_créée_avec_succès')
-                );
-
+                    'notification' => get_phrase('salle_creee_avec_succes')
+                ]);
             } else {
-                $response =  json_encode(["status" => "error", "message" => "Erreur lors de la création de la salle."]);
-                $response = array(
+                return json_encode([
                     'status' => false,
-                    'notification' => "Erreur lors de la création de la salle."
-                );
+                    'notification' => get_phrase('erreur_lors_de_la_creation_de_la_salle')
+                ]);
             }
         } catch (Exception $e) {
-            $response =  json_encode(["status" => "error", "message" => "Erreur serveur : " . $e->getMessage()]);
+            return json_encode([
+                'status' => false,
+                'notification' => get_phrase('erreur_serveur') . ': ' . $e->getMessage()
+            ]);
         }
-        return json_encode($response);
     }
     public function update_room($param1 = '')
-	{
-
+    {
         $data['name'] = html_escape($this->input->post('roomName'));
-		$data['description'] = html_escape($this->input->post('description'));
-		// check email duplication
 
-			$this->db->where('id', $param1);
-			$this->db->update('rooms', $data);
+        $this->db->where('id', $param1);
+        $this->db->update('rooms', $data);
 
-			$response = array(
-				'status' => true,
-				'notification' => get_phrase('room_has_been_updated_successfully')
-			);
-
-		
-
-		return json_encode($response);
-	}
+        return json_encode([
+            'status' => true,
+            'notification' => get_phrase('room_has_been_updated_successfully')
+        ]);
+    }
 
     public function get_all_appointments() {
 

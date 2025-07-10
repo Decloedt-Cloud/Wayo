@@ -2015,5 +2015,15 @@
     "passwords_do_not_match": "Passwords do not match",
     "member_register": "Member register",
     "language_updated_successfully": "Language updated successfully",
-    "failed_to_delete": "Failed to delete"
+    "failed_to_delete": "Failed to delete",
+    "Êtes-vous_sûr_?": "Are you sure?",
+    "cette_action_est_irréversible_!": "This action is irreversible!",
+    "oui,_supprimer_!": "Yes, delete!",
+    "le_rendez-vous_a_été_supprimé.": "The appointment has been cancelled.",
+    "impossible_de_supprimer_le_rendez-vous.": "Unable to delete appointment.",
+    "heure_invalide": "Invalid time",
+    "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "Unable to schedule an appointment in the past.",
+    "rendez-vous_mis_à_jour_!": "Appointment updated!",
+    "rendez-vous_ajouté_avec_succès_!": "Appointment added successfully!",
+    "une_erreur_est_survenue.": "An error has occurred."
 }
