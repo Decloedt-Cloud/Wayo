@@ -2020,5 +2020,15 @@
     "passwords_do_not_match": "كلمات المرور غير متطابقة",
     "member_register": "تسجيل العضو",
     "language_updated_successfully": "تم تحديث اللغة بنجاح",
-    "failed_to_delete": "فشل في الحذف"
+    "failed_to_delete": "فشل في الحذف",
+    "Êtes-vous_sûr_?": "العودة إلى غرفة القائمة",
+    "cette_action_est_irréversible_!": "هذا الإجراء لا رجعة فيه!",
+    "oui,_supprimer_!": "نعم احذف!",
+    "le_rendez-vous_a_été_supprimé.": "لقد تم إلغاء الموعد.",
+    "impossible_de_supprimer_le_rendez-vous.": "غير قادر على حذف الموعد.",
+    "heure_invalide": "الوقت غير صالح",
+    "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "لم أتمكن من جدولة موعد في الماضي.",
+    "rendez-vous_mis_à_jour_!": "تم تحديث الموعد!",
+    "rendez-vous_ajouté_avec_succès_!": "تمت إضافة الموعد بنجاح!",
+    "une_erreur_est_survenue.": "لقد حدث خطأ."
 }

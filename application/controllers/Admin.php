@@ -345,76 +345,58 @@ public function get_sections_by_class()
 
 	//START CLASS secion
 	public function manage_class($param1 = '', $param2 = '', $param3 = '')
-	{
+    {
+        if ($param1 == 'create') {
+            $modelResponse = $this->crud_model->class_create();
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            );
+            $response = array(
+                'status' => $modelResponse['status'],
+                'notification' => $modelResponse['notification'],
+                'csrf' => $csrf
+            );
+            echo json_encode($response);
+        }
 
-		if ($param1 == 'create') {
-			$modelResponse = $this->crud_model->class_create();
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-			  'name' => $this->security->get_csrf_token_name(),
-			  'hash' => $this->security->get_csrf_hash()
-		  );
-		  
-		  // Fusionner la réponse du modèle avec le CSRF
-		  $response = array(
-			  'status' => $modelResponse['status'],
-			  'notification' => $modelResponse['notification'],
-			  'csrf' => $csrf
-		  );
-		  
-		  echo json_encode($response);
-		}
+        if ($param1 == 'delete') {
+            $response = $this->crud_model->class_delete($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
 
-		if ($param1 == 'delete') {
-			$response = $this->crud_model->class_delete($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+        if ($param1 == 'update') {
+            $response = $this->crud_model->class_update($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
 
-		if ($param1 == 'update') {
-			$response = $this->crud_model->class_update($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+        if ($param1 == 'section') {
+            $response = $this->crud_model->section_update($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
 
-		if ($param1 == 'section') {
-			$response = $this->crud_model->section_update($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
-			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+        if ($param1 == 'list') {
+            $this->load->view('backend/admin/class/list');
+        }
 
-		// show data from database
-		if ($param1 == 'list') {
-			$this->load->view('backend/admin/class/list');
-		}
-
-		if (empty($param1)) {
-			$page_data['folder_name'] = 'class';
-			$page_data['page_title'] = 'class';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
+        if (empty($param1)) {
+            $page_data['folder_name'] = 'class';
+            $page_data['page_title'] = 'class';
+            $this->load->view('backend/index', $page_data);
+        }
+    }
 	//END CLASS section
 
 

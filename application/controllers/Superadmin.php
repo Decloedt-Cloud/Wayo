@@ -106,76 +106,58 @@ class Superadmin extends CI_Controller
 
   //START CLASS secion
   public function manage_class($param1 = '', $param2 = '', $param3 = '')
-  {
+    {
+        if ($param1 == 'create') {
+            $modelResponse = $this->crud_model->class_create();
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            );
+            $response = array(
+                'status' => $modelResponse['status'],
+                'notification' => $modelResponse['notification'],
+                'csrf' => $csrf
+            );
+            echo json_encode($response);
+        }
 
-      if ($param1 == 'create') {
-        $modelResponse = $this->crud_model->class_create();
-        // Préparer la réponse avec un nouveau jeton CSRF
-        $csrf = array(
-          'name' => $this->security->get_csrf_token_name(),
-          'hash' => $this->security->get_csrf_hash()
-      );
-      
-      // Fusionner la réponse du modèle avec le CSRF
-      $response = array(
-          'status' => $modelResponse['status'],
-          'notification' => $modelResponse['notification'],
-          'csrf' => $csrf
-      );
-      
-      echo json_encode($response);
+        if ($param1 == 'delete') {
+            $response = $this->crud_model->class_delete($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
+
+        if ($param1 == 'update') {
+            $response = $this->crud_model->class_update($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
+
+        if ($param1 == 'section') {
+            $response = $this->crud_model->section_update($param2);
+            $csrf = array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            );
+            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
+        }
+
+        if ($param1 == 'list') {
+            $this->load->view('backend/superadmin/class/list');
+        }
+
+        if (empty($param1)) {
+            $page_data['folder_name'] = 'class';
+            $page_data['page_title'] = 'class';
+            $this->load->view('backend/index', $page_data);
+        }
     }
-
-    if ($param1 == 'delete') {
-      $response = $this->crud_model->class_delete($param2);
-      // echo $response;
-       // Préparer la réponse avec un nouveau jeton CSRF
-       $csrf = array(
-        'csrfName' => $this->security->get_csrf_token_name(),
-        'csrfHash' => $this->security->get_csrf_hash(),
-    );
-
-    // Renvoyer la réponse avec un nouveau jeton CSRF
-    echo json_encode(array('status' => $response, 'csrf' => $csrf));
-    }
-
-    if ($param1 == 'update') {
-      $response = $this->crud_model->class_update($param2);
-      // echo $response;
-       // Préparer la réponse avec un nouveau jeton CSRF
-       $csrf = array(
-        'csrfName' => $this->security->get_csrf_token_name(),
-        'csrfHash' => $this->security->get_csrf_hash(),
-    );
-
-    // Renvoyer la réponse avec un nouveau jeton CSRF
-    echo json_encode(array('status' => $response, 'csrf' => $csrf));
-    }
-
-    if ($param1 == 'section') {
-      $response = $this->crud_model->section_update($param2);
-      // echo $response;
-       // Préparer la réponse avec un nouveau jeton CSRF
-       $csrf = array(
-        'csrfName' => $this->security->get_csrf_token_name(),
-        'csrfHash' => $this->security->get_csrf_hash(),
-    );
-
-    // Renvoyer la réponse avec un nouveau jeton CSRF
-    echo json_encode(array('status' => $response, 'csrf' => $csrf));
-    }
-
-    // show data from database
-    if ($param1 == 'list') {
-      $this->load->view('backend/superadmin/class/list');
-    }
-
-    if (empty($param1)) {
-      $page_data['folder_name'] = 'class';
-      $page_data['page_title'] = 'class';
-      $this->load->view('backend/index', $page_data);
-    }
-  }
   //END CLASS section
 
   //	SECTION STARTED
@@ -191,64 +173,44 @@ class Superadmin extends CI_Controller
   //	SECTION ENDED
 
   //START CLASS_ROOM section
-  public function class_room($param1 = '', $param2 = '')
-  {
-
-    if ($param1 == 'create') {
-        $modelResponse = $this->crud_model->class_room_create();
+  public function class_room($param1 = '', $param2 = '', $param3 = '')
+    {
+  
+      if ($param1 == 'create') {
+        $response = $this->room_model->create_room();
+        // echo $response;
         // Préparer la réponse avec un nouveau jeton CSRF
         $csrf = array(
-          'name' => $this->security->get_csrf_token_name(),
-          'hash' => $this->security->get_csrf_hash()
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
       );
-      
-      // Fusionner la réponse du modèle avec le CSRF
-      $response = array(
-          'status' => $modelResponse['status'],
-          'notification' => $modelResponse['notification'],
-          'csrf' => $csrf
+  
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+      echo json_encode(array('status' => $response, 'csrf' => $csrf));
+      }
+
+      if ($param1 == 'update') {
+        $response = $this->room_model->update_room($param2);
+        // echo $response;
+        // Préparer la réponse avec un nouveau jeton CSRF
+        $csrf = array(
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
       );
-      
-      echo json_encode($response);
+  
+      // Renvoyer la réponse avec un nouveau jeton CSRF
+      echo json_encode(array('status' => $response, 'csrf' => $csrf));
+      }
+       if ($param1 == 'list') {
+          $this->load->view('backend/superadmin/class_room/list');
+        }
+  
+      if (empty($param1)) {
+        $page_data['folder_name'] = 'class_room';
+        $page_data['page_title'] = 'Démarrer Réunion';
+        $this->load->view('backend/index', $page_data);
+      }
     }
-
-    if ($param1 == 'update') {
-      $response = $this->crud_model->class_room_update($param2);
-      // echo $response;
-            // Préparer la réponse avec un nouveau jeton CSRF
-            $csrf = array(
-              'csrfName' => $this->security->get_csrf_token_name(),
-              'csrfHash' => $this->security->get_csrf_hash(),
-          );
-      
-          // Renvoyer la réponse avec un nouveau jeton CSRF
-          echo json_encode(array('status' => $response, 'csrf' => $csrf));
-    }
-
-    if ($param1 == 'delete') {
-      $response = $this->crud_model->class_room_delete($param2);
-      // echo $response;
-            // Préparer la réponse avec un nouveau jeton CSRF
-            $csrf = array(
-              'csrfName' => $this->security->get_csrf_token_name(),
-              'csrfHash' => $this->security->get_csrf_hash(),
-          );
-      
-          // Renvoyer la réponse avec un nouveau jeton CSRF
-          echo json_encode(array('status' => $response, 'csrf' => $csrf));
-    }
-
-    // PROVIDE A LIST OF SECTION ACCORDING TO CLASS ID
-    if ($param1 == 'list') {
-      $this->load->view('backend/superadmin/class_room/list');
-    }
-
-    if (empty($param1)) {
-      $page_data['folder_name'] = 'class_room';
-      $page_data['page_title'] = 'class_room';
-      $this->load->view('backend/index', $page_data);
-    }
-  }
   //END CLASS_ROOM section
 
   //START SUBJECT section
@@ -601,7 +563,7 @@ class Superadmin extends CI_Controller
       if ($class_id === null || $room_id === null ) {
         show_404(); // Erreur 404 si aucun ID n'est fourni
        }
-        $page_data['page_name'] = 'bigbleubutton/calendar';
+        $page_data['page_name'] = 'class_room/calendar';
         $page_data['page_title'] = 'Calendar';
         $page_data['classe_id'] = $class_id;
         $page_data['room_id'] = $room_id;

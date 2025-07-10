@@ -2004,5 +2004,16 @@
     "passwords_need_to_match.": "Les mots de passe doivent correspondre",
     "member_register": "Inscription du membre",
     "language_updated_successfully": "Langue mise à jour avec succès",
-    "failed_to_delete": "Échec de la suppression"
+    "failed_to_delete": "Échec de la suppression",
+    "back_to_list_room": "Retour à la salle de liste",
+    "Êtes-vous_sûr_?": "Êtes-vous sûr ?",
+    "cette_action_est_irréversible_!": "Cette action est irréversible !",
+    "oui,_supprimer_!": "Oui, supprimer !",
+    "le_rendez-vous_a_été_supprimé.": "Le rendez-vous a été supprimé.",
+    "impossible_de_supprimer_le_rendez-vous.": "Impossible de supprimer le rendez-vous.",
+    "heure_invalide": "Heure invalide",
+    "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "Impossible de programmer un rendez-vous dans le passé.",
+    "rendez-vous_mis_à_jour_!": "Rendez-vous mis à jour !",
+    "rendez-vous_ajouté_avec_succès_!": "Rendez-vous ajouté avec succès !",
+    "une_erreur_est_survenue.": "Une erreur est survenue."
 }
