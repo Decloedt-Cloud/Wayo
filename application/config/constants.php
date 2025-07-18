@@ -88,9 +88,9 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 
 defined('HUMHUB_BASE_URL') OR define('HUMHUB_BASE_URL', 'https://humhub.wayo.site');
  
-// Clé secrète pour signer les tokens JWT
+// Clé secrète pour signer les tokens JWT 
 defined('HUMHUB_JWT_SECRET') OR define('HUMHUB_JWT_SECRET', 'ry4mRP6N8ZBKP_Xn6998drxRXtml_jaDv5cvR2KJuM0dzr0owm4TiKxlnHnjG7qf3RPrvJFbMDAIlbDbz71MuT');
  
 // Token API de HumHub (pour créer des utilisateurs par API REST)
-defined('HUMHUB_API_TOKEN') OR define('HUMHUB_API_TOKEN', 'qzwVd1QwkPW-COoHTK7XnK3owCRCxZfPrbuvyinLWHQI4VrMCVGIuNEm-JyNBOh4--b7ruqW3VxfxlgQqfIApx');
+defined('HUMHUB_API_TOKEN') OR define('HUMHUB_API_TOKEN', 'JzJA-cCjiVsYcEKUJ_ZDTLqrPU0KZdTBgh5LuoviIDmAg9HeCXs5efdOqAoWfmNNYBAFDEy2VhOaWgi5-IMywl');
 
