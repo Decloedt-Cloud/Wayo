@@ -19,7 +19,7 @@
   <div class="col-12">
     <div class="card">
       <div class="row mt-3 d-print-none">
-        <div class="col-md-1 mb-1"></div>
+        <div class="col-md-2 mb-1"></div>
         <div class="col-md-2 mb-1">
           <select name="month" id="month" class="form-control"  required>
             <option value=""><?php echo get_phrase('select_a_month'); ?></option>
@@ -47,7 +47,7 @@
           </select>
         </div>
         <div class="col-md-2 mb-1">
-          <select name="class" id="class_id_teacher" class="form-control"  onchange="classWiseSection(this.value)" required>
+          <select name="class" id="class_id_teacher" class="form-control"  required>
             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
             <?php
             $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -64,11 +64,7 @@
             <?php } ?>
           </select>
         </div>
-        <div class="col-md-2 mb-1">
-          <select name="section" id="section_id" class="form-control"  required>
-            <option value=""><?php echo get_phrase('select_section'); ?></option>
-          </select>
-        </div>
+
         <div class="col-md-2">
           <button class="btn btn-block btn-secondary" onclick="filter_attendance()" ><?php echo get_phrase('filter'); ?></button>
         </div>
@@ -86,24 +82,17 @@
 
 <script>
 $('document').ready(function(){
-  $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#month', '#year', '#class_id', '#section_id']);
+  $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#month', '#year', '#class_id']);
 });
 
-function classWiseSection(classId) {
-  $.ajax({
-    url: "<?php echo route('section/list/'); ?>"+classId,
-    success: function(response){
-      $('#section_id').html(response);
-    }
-  });
-}
+
 
 function filter_attendance(){
   var month = $('#month').val();
   var year = $('#year').val();
   var class_id = $('#class_id_teacher').val();
-  var section_id = $('#section_id').val();
-  if(class_id != "" && section_id != "" && month != "" && year != ""){
+
+  if(class_id != ""  && month != "" && year != ""){
     getDailtyAttendance();
   }else{
     toastr.error('<?php echo get_phrase('please_select_in_all_fields !'); ?>');
@@ -114,16 +103,16 @@ var getDailtyAttendance = function () {
   var month = $('#month').val();
   var year = $('#year').val();
   var class_id = $('#class_id_teacher').val();
-  var section_id = $('#section_id').val();
+  
    // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
    var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
   var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
 
-  if(class_id != "" && section_id != "" && month != "" && year != "" ){
+  if(class_id != ""  && month != "" && year != "" ){
     $.ajax({
       type: 'POST',
       url: '<?php echo route('attendance/filter') ?>',
-      data: {month : month, year : year, class_id : class_id, section_id : section_id , [csrfName]: csrfHash},
+      data: {month : month, year : year, class_id : class_id, [csrfName]: csrfHash},
       dataType: 'json',
       success: function(response){
         console.log(response),

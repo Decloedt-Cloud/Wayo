@@ -1,4 +1,4 @@
-<?php if(isset($class_id) && isset($section_id)): ?>
+<?php if(isset($class_id)): ?>
     <table class="table table-striped table-bordered table-centered mb-0">
         <tbody>
 
@@ -7,7 +7,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$monday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'monday'))->result_array();
+                        	$monday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'monday'))->result_array();
                         	foreach($monday_routines as $monday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -40,7 +40,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$tuesday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'tuesday'))->result_array();
+                        	$tuesday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'tuesday'))->result_array();
                         	foreach($tuesday_routines as $tuesday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -73,7 +73,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$wednesday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'wednesday'))->result_array();
+                        	$wednesday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'wednesday'))->result_array();
                         	foreach($wednesday_routines as $wednesday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -106,7 +106,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$thursday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'thursday'))->result_array();
+                        	$thursday_routines = $this->db->get_where('routines', array('class_id' => $class_id,  'session_id' => active_session(), 'day' => 'thursday'))->result_array();
                         	foreach($thursday_routines as $thursday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -139,7 +139,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$friday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'friday'))->result_array();
+                        	$friday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'friday'))->result_array();
                         	foreach($friday_routines as $friday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -172,7 +172,7 @@
                 <td class="m-1">
 
                         <?php
-                            $satureday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'saturday'))->result_array();
+                            $satureday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'saturday'))->result_array();
                         	foreach($satureday_routines as $satureday_routine){
                         ?>
                             <div class="btn-group text-start">
@@ -204,7 +204,7 @@
                 <td class="m-1">
 
                         <?php
-                        	$sunday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'day' => 'sunday'))->result_array();
+                        	$sunday_routines = $this->db->get_where('routines', array('class_id' => $class_id, 'session_id' => active_session(), 'day' => 'sunday'))->result_array();
                         	foreach($sunday_routines as $sunday_routine){
                         ?>
                             <div class="btn-group text-start">

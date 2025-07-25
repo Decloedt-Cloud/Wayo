@@ -16,9 +16,9 @@
 	<div class="col-12">
 		<div class="card">
 			<div class="row mt-3">
-				<div class="col-md-1 mb-1"></div>
+				<div class="col-md-3 mb-1"></div>
 				<div class="col-md-4 mb-1">
-					<select name="class" id="class_id_routine" class="form-control"  required onchange="classWiseSection(this.value)">
+					<select name="class" id="class_id_routine" class="form-control"  required>
 						<option value=""><?php echo get_phrase('select_a_class'); ?></option>
 						<?php
 						$classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -35,12 +35,8 @@
 						<?php } ?>
 					</select>
 				</div>
-				<div class="col-md-4 mb-1">
-					<select name="section" id="section_id" class="form-control"  required>
-						<option value=""><?php echo get_phrase('select_section'); ?></option>
-					</select>
-				</div>
-				<div class="col-md-2">
+
+				<div class="col-md-4">
 					<button class="btn btn-block btn-secondary" onclick="filter_class_routine()" ><?php echo get_phrase('filter'); ?></button>
 				</div>
 			</div>
@@ -53,19 +49,12 @@
 
 <script>
 
-function classWiseSection(classId) {
-	$.ajax({
-		url: "<?php echo route('section/list/'); ?>"+classId,
-		success: function(response){
-			$('#section_id').html(response);
-		}
-	});
-}
+
 
 function filter_class_routine(){
 	var class_id = $('#class_id_routine').val();
-	var section_id = $('#section_id').val();
-	if(class_id != "" && section_id!= ""){
+	
+	if(class_id != "" ){
 		getFilteredClassRoutine();
 	}else{
 		toastr.error('<?php echo get_phrase('please_select_a_class_and_section'); ?>');
@@ -74,10 +63,10 @@ function filter_class_routine(){
 
 var getFilteredClassRoutine = function() {
 	var class_id = $('#class_id_routine').val();
-	var section_id = $('#section_id').val();
-	if(class_id != "" && section_id!= ""){
+
+	if(class_id != "" ){
 		$.ajax({
-			url: '<?php echo route('routine/filter/') ?>'+class_id+'/'+section_id,
+			url: '<?php echo route('routine/filter/') ?>'+class_id,
 			success: function(response){
 				$('.class_routine_content').html(response);
 			}

@@ -13,7 +13,7 @@
 			$school_id = school_id();
 			$teachers = $this->db->get_where('teachers', array('school_id' => $school_id))->result_array();
 			foreach($teachers as $teacher){
-                $permission = $this->db->get_where('teacher_permissions', array('teacher_id' => $teacher['id'], 'class_id' => $class_id, 'section_id' => $section_id))->row_array();
+                $permission = $this->db->get_where('teacher_permissions', array('teacher_id' => $teacher['id'], 'class_id' => $class_id))->row_array();
 		?>
 		<tr>
             <td><?php echo $this->db->get_where('users', array('id' => $teacher['user_id']))->row('name'); ?></td>

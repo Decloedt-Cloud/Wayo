@@ -62,6 +62,8 @@ body[dir="rtl"] .app-search .website-button {
     font-size: 1.1rem !important;
 }
 </style>
+
+
 <!-- Topbar Start -->
 <div class="navbar-custom topnav-navbar navbar-color topnav-navbar-dark">
     <div class="container-fluid">

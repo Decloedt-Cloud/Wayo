@@ -15,7 +15,7 @@
     <div class="form-group row">
         <div class="col-md-12">
             <label  for="class_id_on_taking_attendance"><?php echo get_phrase('class'); ?></label>
-            <select name="class_id" id="class_id_on_taking_attendance" class="form-control"  onchange="classWiseSectionOnTakingAttendance(this.value)" required>
+            <select name="class_id" id="class_id_on_taking_attendance" class="form-control"  required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -25,17 +25,10 @@
         </div>
     </div>
 
-    <div class="form-group row mb-3">
-        <div class="col-md-12" id = "section_content_2">
-            <label for="section_id_on_taking_attendance"><?php echo get_phrase('section'); ?></label>
-            <select name="section_id" id="section_id_on_taking_attendance" class="form-control"  required >
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-        </div>
-    </div>
 
 
-    <div class="row" id = "student_content" style="margin-left: 2px;">
+
+    <div class="row" id = "student_content" style="margin-bottom: 7px;">
     </div>
 
     <div class='row'>
@@ -51,7 +44,7 @@
 <script>
 
     $('document').ready(function(){
-        $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id_on_taking_attendance', '#section_id_on_taking_attendance']);
+        $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id_on_taking_attendance', );
 
         $('#date_on_taking_attendance').change(function(){
             $('#showStudentDiv').show();
@@ -63,11 +56,7 @@
             $('#updateAttendanceDiv').hide();
             $('#student_content').hide();
         });
-        $('#section_id_on_taking_attendance').change(function(){
-            $('#showStudentDiv').show();
-            $('#updateAttendanceDiv').hide();
-            $('#student_content').hide();
-        });
+
 
 $(".ajaxForm").validate({}); // Jquery form validation initialization
   $(".ajaxForm").submit(function(e) {
@@ -124,28 +113,20 @@ $(".ajaxForm").validate({}); // Jquery form validation initialization
 
     $('#date_on_taking_attendance').daterangepicker();
 
-    function classWiseSectionOnTakingAttendance(classId) {
-        $.ajax({
-            url: "<?php echo route('section/list/'); ?>"+classId,
-            success: function(response){
-                $('#section_id_on_taking_attendance').html(response);
-            }
-        });
-    }
 
     function getStudentList() {
         var date = $('#date_on_taking_attendance').val();
         var class_id = $('#class_id_on_taking_attendance').val();
-        var section_id = $('#section_id_on_taking_attendance').val();
+        
         // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
         var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
         var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
 
-        if(date != '' && class_id != '' && section_id != ''){
+        if(date != '' && class_id != '' ){
             $.ajax({
                 type : 'POST',
                 url : '<?php echo route('attendance/student/'); ?>',
-                data: {date : date, class_id : class_id, section_id : section_id , [csrfName]: csrfHash},
+                data: {date : date, class_id : class_id,  [csrfName]: csrfHash},
                 dataType: 'json',
                 success : function(response) {
                     $('#student_content').show();

@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-1 mb-1"></div>
+                    <div class="col-md-2 mb-1"></div>
                     
                 <div class="col-md-3 mb-1">
                             <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
@@ -35,18 +35,13 @@
                                 
                 </div>
                     <div class="col-md-3 mb-1">
-                        <select name="class" id="class_id_syllabus" class="form-control"  onchange="classWiseSection(this.value)" required>
+                        <select name="class" id="class_id_syllabus" class="form-control"   required>
 
                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
 
                     </select>
                 </div>
-                <div class="col-md-3 mb-1">
-                    <select name="section" id="section_id" class="form-control"  required>
-                        <option value=""><?php echo get_phrase('select_section'); ?></option>
-                        <option value="<?php echo $student_data['section_id']; ?>"><?php echo $student_data['section_name']; ?></option>
-                    </select>
-                </div>
+
                 <div class="col-md-2">
                     <button class="btn btn-block btn-secondary" onclick="filter_syllabus()" ><?php echo get_phrase('filter'); ?></button>
                 </div>
@@ -61,34 +56,27 @@
 <script>
 
 $('document').ready(function(){
-    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id', '#section_id']);
+    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id']);
 });
 
-function classWiseSection(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id').html(response);
-        }
-    });
-}
+
 
 function filter_syllabus(){
     var class_id = $('#class_id_syllabus').val();
-    var section_id = $('#section_id').val();
-    if(class_id != "" && section_id!= ""){
+    
+    if(class_id != "" ){
         showAllSyllabuses();
     }else{
-        toastr.error('<?php echo get_phrase('please_select_a_class_and_section'); ?>');
+        toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
     }
 }
 
 var showAllSyllabuses = function () {
     var class_id = $('#class_id_syllabus').val();
-    var section_id = $('#section_id').val();
-    if(class_id != "" && section_id!= ""){
+   
+    if(class_id != ""){
         $.ajax({
-            url: '<?php echo route('syllabus/list/') ?>'+class_id+'/'+section_id,
+            url: '<?php echo route('syllabus/list/') ?>'+class_id,
             success: function(response){
                 $('.syllabus_content').html(response);
                 initDataTable('basic-datatable');

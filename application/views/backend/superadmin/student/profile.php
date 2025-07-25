@@ -44,15 +44,7 @@
                                     ?>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style="font-weight: bold;"><?php echo get_phrase('section'); ?>:</td>
-                                <td>
-                                    <?php
-                                        $section_id = $this->db->get_where('enrols', array('student_id' => $param1))->row('section_id');
-                                        echo $this->db->get_where('sections', array('id' => $section_id))->row('name');
-                                    ?>
-                                </td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -62,7 +54,7 @@
                         <thead>
                             <tr>
                                 <th><?php echo get_phrase('exam'); ?></th>
-                                <th><?php echo get_phrase('subject'); ?></th>
+             
                                 <th><?php echo get_phrase('mark'); ?></th>
                                 <th><?php echo get_phrase('grade_point'); ?></th>
                             </tr>
@@ -79,7 +71,6 @@
                                     <?php if($exam_id != $mark['exam_id']): ?>
                                         <td rowspan="<?php echo $total_row; ?>" style="font-weight: bold;"><?php echo $exam['name']; ?></td>
                                     <?php endif; ?>
-                                    <td><?php echo $this->db->get_where('subjects', array('id' => $mark['subject_id']))->row('name'); ?></td>
                                     <td><?php echo $mark['mark_obtained']; ?></td>
                                     <td>
                                         <?php echo get_grade($mark['mark_obtained']); ?>

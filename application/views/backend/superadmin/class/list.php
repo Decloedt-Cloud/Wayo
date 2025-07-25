@@ -7,7 +7,6 @@ if (count($classes) > 0): ?>
     <thead>
         <tr style="background-color: #313a46; color: #ababab;">
             <th><?php echo get_phrase('name'); ?></th>
-            <th><?php echo get_phrase('section'); ?></th>
             <th><?php echo get_phrase('price'); ?></th>
             <th><?php echo get_phrase('options'); ?></th>
         </tr>
@@ -16,23 +15,12 @@ if (count($classes) > 0): ?>
         <?php foreach($classes as $class): ?>
             <tr>
                 <td><?php echo $class['name']; ?></td>
-                <td>
-                    <ul>
-                        <?php
-                        $sections = $this->db->get_where('sections', array('class_id' => $class['id']))->result_array();
-                        foreach($sections as $section){
-                            echo '<li>'.$section['name'].'</li>';
-                        }
-                        ?>
-                    </ul>
-                </td>
+             
                 <td><?php echo $class['price'].' '.$currencies; ?></td>
                 <td>
                     <div class="dropdown text-center">
                         <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/class/sections/'.$class['id'])?>', '<?php echo get_phrase('sections'); ?>');"><?php echo get_phrase('sections'); ?></a>
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/class/edit/'.$class['id'])?>', '<?php echo get_phrase('update_class'); ?>');"><?php echo get_phrase('edit'); ?></a>
                             <!-- item-->

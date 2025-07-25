@@ -48,7 +48,7 @@
           </div>
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="form-group">
-              <select name="status" id="status" class="form-control" >
+              <select name="status" id="status_invoice" class="form-control" >
                 <option value="all"><?php echo get_phrase('all_status'); ?></option>
                 <option value="paid"><?php echo get_phrase('paid'); ?></option>
                 <option value="unpaid"><?php echo get_phrase('unpaid'); ?></option>
@@ -84,7 +84,7 @@ var showAllInvoices = function () {
   var url = '<?php echo route('invoice/list'); ?>';
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id_invoice').val();
-  var selectedStatus = $('#status').val();
+  var selectedStatus = $('#status_invoice').val();
   $.ajax({
     type : 'GET',
     url: url,
@@ -101,7 +101,7 @@ function getExportUrl(type) {
   var url = '<?php echo route('export/url'); ?>';
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id_invoice').val();
-  var selectedStatus = $('#status').val();
+  var selectedStatus = $('#status_invoice').val();
   // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
   var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
   var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();

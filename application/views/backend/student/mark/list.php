@@ -19,14 +19,13 @@ $exam_details = $this->db->get_where('exams', array('id' => $exam_id))->row_arra
         <h4><?php echo get_phrase('manage_marks'); ?></h4>
         <span><?php echo get_phrase('Exam name'); ?> : <?php echo $this->db->get_where('exams', array('id' => $exam_id))->row('name'); ?></span><br>
         <span><?php echo get_phrase('class'); ?> : <?php echo $this->db->get_where('classes', array('id' => $class_id))->row('name'); ?></span><br>
-        <span><?php echo get_phrase('section'); ?> : <?php echo $this->db->get_where('sections', array('id' => $section_id))->row('name'); ?></span><br>
         <!-- Ajout de la date et heure de l'examen -->
         <span><?php echo get_phrase('exam_date'); ?> : <?php echo date('D, d-M-Y H:i', $exam_details['starting_date']); ?></span>
     </div>
 </div>
 
 <?php
-$marks = $this->crud_model->get_marks($class_id, $section_id, $exam_id, $school_id)->result_array();
+$marks = $this->crud_model->get_marks($class_id, $exam_id, $school_id)->result_array();
 ?>
 
 <?php if (count($marks) > 0): ?>

@@ -187,18 +187,6 @@ class Admin extends CI_Controller
 		   echo json_encode(["status" => "deleted"]);
 	   }
 	   //END TEACHER Create_Join bigbleubutton 
-	   public function get_sections()
-	    {
-			$classe_id = $this->input->post('classe_id');
-		
-			if (!empty($classe_id)) {
-				$sections = $this->db->get_where('sections', array('class_id' => $classe_id))->result_array();
-			} else {
-				$sections = [];
-			}
-		
-			echo json_encode($sections);
-		}
 
 
 		   //START TEACHER Create_Join bigbleubutton 
@@ -314,33 +302,6 @@ class Admin extends CI_Controller
 		echo json_encode($csrf);
 	}
 
-public function get_sections_by_class()
-{
-    if ($this->session->userdata('admin_login') != 1) {
-        echo json_encode(['error' => 'Unauthorized']);
-        return;
-    }
-
-    $class_id = $this->input->post('class_id');
-    $school_id = school_id();
-
-    if (empty($class_id)) {
-        echo json_encode(['sections' => [], 'message' => 'No class ID provided']);
-        return;
-    }
-
-    $this->db->select('sections.id, sections.name');
-    $this->db->from('sections');
-    $this->db->join('classes', 'sections.class_id = classes.id', 'left');
-    $this->db->where('sections.class_id', $class_id);
-    $this->db->where('classes.school_id', $school_id);
-    $sections = $this->db->get()->result_array();
-
-    echo json_encode([
-        'sections' => $sections,
-        'message' => empty($sections) ? 'No sections found for this class' : 'Sections retrieved successfully'
-    ]);
-}
 
 
 	//START CLASS secion
@@ -378,14 +339,7 @@ public function get_sections_by_class()
             echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
         }
 
-        if ($param1 == 'section') {
-            $response = $this->crud_model->section_update($param2);
-            $csrf = array(
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            );
-            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
-        }
+
 
         if ($param1 == 'list') {
             $this->load->view('backend/admin/class/list');
@@ -798,17 +752,6 @@ public function get_sections_by_class()
 			$this->load->view('backend/index', $page_data);
 		}
 	}
-	//	SECTION STARTED
-	public function section($action = "", $id = "")
-	{
-
-		// PROVIDE A LIST OF SECTION ACCORDING TO CLASS ID
-		if ($action == 'list') {
-			$page_data['class_id'] = $id;
-			$this->load->view('backend/admin/section/list', $page_data);
-		}
-	}
-	//	SECTION ENDED
 
 	//START CLASS_ROOM section
 	public function class_room($param1 = '', $param2 = '')
@@ -871,45 +814,6 @@ public function get_sections_by_class()
 	}
 	//END CLASS_ROOM section
 
-	//START SUBJECT section
-	public function subject($param1 = '', $param2 = '')
-	{
-
-		if ($param1 == 'create') {
-			$response = $this->crud_model->subject_create();
-			echo $response;
-		}
-
-		if ($param1 == 'update') {
-			$response = $this->crud_model->subject_update($param2);
-			echo $response;
-		}
-
-		if ($param1 == 'delete') {
-			$response = $this->crud_model->subject_delete($param2);
-			echo $response;
-		}
-
-		if ($param1 == 'list') {
-			$page_data['class_id'] = $param2;
-			$this->load->view('backend/admin/subject/list', $page_data);
-		}
-
-		if (empty($param1)) {
-			$page_data['folder_name'] = 'subject';
-			$page_data['page_title'] = 'subject';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
-
-	public function class_wise_subject($class_id)
-	{
-
-		// PROVIDE A LIST OF SUBJECT ACCORDING TO CLASS ID
-		$page_data['class_id'] = $class_id;
-		$this->load->view('backend/admin/subject/dropdown', $page_data);
-	}
-	//END SUBJECT section
 
 
 
@@ -951,7 +855,7 @@ public function get_sections_by_class()
 
 		if ($param1 == 'list') {
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+			
 			$this->load->view('backend/admin/syllabus/list', $page_data);
 		}
 
@@ -1033,13 +937,13 @@ public function get_sections_by_class()
 
 		if ($param1 == 'filter') {
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+			
 			$this->load->view('backend/admin/permission/list', $page_data);
 		}
 
 		if ($param1 == 'modify_permission') {
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+			
 			$this->user_model->teacher_permission();
 			// $this->load->view('backend/admin/permission/list', $page_data);
 
@@ -1065,37 +969,7 @@ public function get_sections_by_class()
 	//END TEACHER PERMISSION section
 
 
-	//START PARENT section
-	public function parent($param1 = '', $param2 = '')
-	{
-
-		if ($param1 == 'create') {
-			$response = $this->user_model->parent_create();
-			echo $response;
-		}
-
-		if ($param1 == 'update') {
-			$response = $this->user_model->parent_update($param2);
-			echo $response;
-		}
-
-		if ($param1 == 'delete') {
-			$response = $this->user_model->parent_delete($param2);
-			echo $response;
-		}
-
-		// show data from database
-		if ($param1 == 'list') {
-			$this->load->view('backend/admin/parent/list');
-		}
-
-		if (empty($param1)) {
-			$page_data['folder_name'] = 'parent';
-			$page_data['page_title'] = 'parent';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
-	//END PARENT section
+	
 
 
 	//START ACCOUNTANT section
@@ -1274,7 +1148,7 @@ public function get_sections_by_class()
 
 		if ($param1 == 'filter') {
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+	
 			$this->load->view('backend/admin/routine/list', $page_data);
 		}
 
@@ -1314,7 +1188,7 @@ public function get_sections_by_class()
 			$date = '01 ' . $this->input->post('month') . ' ' . $this->input->post('year');
 			$page_data['attendance_date'] = strtotime($date);
 			$page_data['class_id'] = $this->input->post('class_id');
-			$page_data['section_id'] = $this->input->post('section_id');
+		
 			$page_data['month'] = $this->input->post('month');
 			$page_data['year'] = $this->input->post('year');
 			// $this->load->view('backend/admin/attendance/list', $page_data);
@@ -1334,7 +1208,7 @@ public function get_sections_by_class()
 		if ($param1 == 'student') {
 			$page_data['attendance_date'] = strtotime($this->input->post('date'));
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+		
 			// $this->load->view('backend/admin/attendance/student', $page_data);
 
 			        // Charger la vue mise à jour
@@ -1430,7 +1304,7 @@ public function get_sections_by_class()
   {
     $this->session->unset_session();
     $page_data['class_id'] = '';
-    $page_data['section_id'] = '';
+  
 
     if ($param1 == 'create') {
       //form view
@@ -1479,7 +1353,7 @@ public function get_sections_by_class()
     } else {
         // Load the view with filtered data
         $page_data['class_id'] = html_escape($this->input->post('class_id'));
-        $page_data['section_id'] = html_escape($this->input->post('section_id'));
+        
         $page_data['working_page'] = 'filter';
         $page_data['folder_name'] = 'student';
         $page_data['page_title'] = 'student_list';
@@ -1582,7 +1456,7 @@ public function get_sections_by_class()
 
     if ($param1 == 'filter') {
             $page_data['class_id'] = ($param2 == '' || $param2 == 'all') ? 'all' : $param2;
-            $page_data['section_id'] = ($param3 == '' || $param3 == 'all') ? 'all' : $param3;
+           
             $html_content = $this->load->view('backend/admin/student/list', $page_data, TRUE);
             $csrf = array(
                 'csrfName' => $this->security->get_csrf_token_name(),
@@ -1593,7 +1467,7 @@ public function get_sections_by_class()
 
         if (empty($param1)) {
             $page_data['class_id'] = 'all';
-            $page_data['section_id'] = 'all';
+           
             $page_data['working_page'] = 'filter';
             $page_data['folder_name'] = 'student';
             $page_data['page_title'] = 'student_list';
@@ -1646,9 +1520,9 @@ public function get_sections_by_class()
         if ($exam) {
             $exam['formatted_date'] = date('D, d-M-Y H:i', $exam['starting_date']);
             $class = $this->db->get_where('classes', array('id' => $exam['class_id']))->row_array();
-            $section = $this->db->get_where('sections', array('id' => $exam['section_id']))->row_array();
+           
             $exam['class_name'] = $class ? $class['name'] : 'No Class';
-            $exam['section_name'] = $section ? $section['name'] : 'No Section';
+           
             $output = array(
                 'status' => isset($response['status']) ? $response['status'] : $response,
                 'exam' => $exam,
@@ -1881,10 +1755,10 @@ public function get_sections_by_class()
 
 		if ($param1 == 'list') {
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+			
 			// $page_data['subject_id'] = htmlspecialchars($this->input->post('subject'));
 			$page_data['exam_id'] = htmlspecialchars($this->input->post('exam'));
-			$this->crud_model->mark_insert($page_data['class_id'], $page_data['section_id'], $page_data['exam_id']);
+			$this->crud_model->mark_insert($page_data['class_id'], $page_data['exam_id']);
 			// $this->load->view('backend/admin/mark/list', $page_data);
 
 			// Charger la vue mise à jour
@@ -2924,10 +2798,10 @@ public function get_sections_by_class()
 			}
 	
 			// Récupérer les détails de l'examen
-			$this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+			$this->db->select('exams.*, classes.name as class_name schools.name as school_name');
 			$this->db->from('exams');
 			$this->db->join('classes', 'exams.class_id = classes.id', 'left');
-			$this->db->join('sections', 'exams.section_id = sections.id', 'left');
+			
 			$this->db->join('schools', 'exams.school_id = schools.id', 'left');
 			$this->db->where('exams.id', $exam_id);
 			$this->db->where('exams.school_id', $school_id);
@@ -2976,7 +2850,7 @@ public function get_sections_by_class()
     $session = active_session();
 
     $class_id = $this->input->post('class_id');
-    $section_id = $this->input->post('section_id');
+
     $date_range = $this->input->post('date_range');
     $date_from = '';
     $date_to = '';
@@ -2987,18 +2861,15 @@ public function get_sections_by_class()
         $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
     }
 
-    $this->db->select('exams.*, classes.name as class_name, sections.name as section_name');
+    $this->db->select('exams.*, classes.name as class_name');
     $this->db->from('exams');
     $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->join('sections', 'exams.section_id = sections.id', 'left');
     $this->db->where('exams.school_id', $school_id);
     $this->db->where('exams.session', $session);
     if (!empty($class_id)) {
         $this->db->where('exams.class_id', $class_id);
     }
-    if (!empty($section_id)) {
-        $this->db->where('exams.section_id', $section_id);
-    }
+ 
     if (!empty($date_range)) {
         $this->db->where('exams.starting_date >=', $date_from);
         $this->db->where('exams.starting_date <=', $date_to);
@@ -3011,8 +2882,8 @@ public function get_sections_by_class()
             'id' => $exam['id'],
             'name' => $exam['name'] ?: 'Unnamed Exam',
             'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
-            'class_name' => $exam['class_name'] ?: 'No Class',
-            'section_name' => $exam['section_name'] ?: 'No Section'
+            'class_name' => $exam['class_name'] ?: 'No Class'
+           
         ];
     }
 
@@ -3031,7 +2902,6 @@ public function get_sections_by_class()
         'calendar' => $exam_calendar,
         'debug' => [
             'class_id' => $class_id,
-            'section_id' => $section_id,
             'date_range' => $date_range,
             'exam_count' => count($exams)
         ]
