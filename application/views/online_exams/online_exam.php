@@ -26,7 +26,6 @@ $questions = $questions;
                     <div class="card-body">
                         <h4><strong><?php echo get_phrase('exam'); ?>:</strong> <?php echo $exam_details['name']; ?></h4>
                         <p><strong><?php echo get_phrase('class'); ?>:</strong> <?php echo $exam_details['class_name']; ?></p>
-                        <p><strong><?php echo get_phrase('section'); ?>:</strong> <?php echo $exam_details['section_name']; ?></p>
                         <p><strong><?php echo get_phrase('school'); ?>:</strong> <?php echo $exam_details['school_name']; ?></p>
                         <p><strong><?php echo get_phrase('start_time'); ?>:</strong> <?php echo date('D, d-M-Y H:i', $exam_details['starting_date']); ?></p>
                         <p><strong><?php echo get_phrase('total_questions'); ?>:</strong> <?php echo count($questions); ?></p>

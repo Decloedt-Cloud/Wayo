@@ -15,7 +15,7 @@
     <div class="col-12">
         <div class="card">
             <div class="row mt-3">
-                <div class="col-md-1 mb-1"></div>
+                <div class="col-md-3 mb-1"></div>
                 <div class="col-md-2 mb-1">
                     <select name="exam" id="exam_id" class="form-control"  required>
                         <option value=""><?php echo get_phrase('select_a_exam'); ?></option>
@@ -27,7 +27,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 mb-1">
-                    <select name="class" id="class_id_teachaer" class="form-control"  required onchange="classWiseSection(this.value)">
+                    <select name="class" id="class_id_teachaer" class="form-control"  required >
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php
                         $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -44,16 +44,7 @@
                         <?php } ?>
                     </select>
                 </div>
-                <div class="col-md-2 mb-1">
-                    <select name="section" id="section_id" class="form-control"  required>
-                        <option value=""><?php echo get_phrase('select_section'); ?></option>
-                    </select>
-                </div>
-                <!-- <div class="col-md-2 mb-1">
-                    <select name="subject" id="subject_id" class="form-control"  required>
-                        <option value=""><?php // echo get_phrase('select_subject'); ?></option>
-                    </select>
-                </div> -->
+
                 <div class="col-md-2">
                     <button class="btn btn-block btn-secondary" onclick="filter_attendance()" ><?php echo get_phrase('filter'); ?></button>
                 </div>
@@ -71,41 +62,26 @@
 
 <script>
 $('document').ready(function(){
-    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id', '#exam_id', '#section_id', '#subject_id']);
+    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id', '#exam_id']);
 });
 
-function classWiseSection(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id').html(response);
-           
-        }
-    });
-}
 
-function classWiseSubject(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
-            $('#subject_id').html(response);
-        }
-    });
-}
+
+
 
 function filter_attendance(){
     var exam = $('#exam_id').val();
     var class_id = $('#class_id_teachaer').val();
-    var section_id = $('#section_id').val();
-    // var subject = $('#subject_id').val();
+ 
+ 
     // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
     var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
     var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-    if(class_id != "" && section_id != "" && exam != "" ){
+    if(class_id != ""  && exam != "" ){
         $.ajax({
             type: 'POST',
             url: '<?php echo route('mark/list') ?>',
-            data: {class_id : class_id, section_id : section_id, exam : exam, [csrfName]: csrfHash},
+            data: {class_id : class_id,  exam : exam, [csrfName]: csrfHash},
             dataType: 'json',
             success: function(response){
                 $('.mark_content').html(response.html);

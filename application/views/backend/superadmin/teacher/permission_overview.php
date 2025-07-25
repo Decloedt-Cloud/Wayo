@@ -16,12 +16,7 @@
                                 <?php echo $this->db->get_where('classes', array('id' => $teacher_permission['class_id']))->row('name'); ?>
                             </td>
                         </tr>
-                        <tr>
-                            <td><?php echo get_phrase('section'); ?></td>
-                            <td>
-                                <?php echo $this->db->get_where('sections', array('id' => $teacher_permission['section_id']))->row('name'); ?>
-                            </td>
-                        </tr>
+
                         <tr>
                             <td><?php echo get_phrase('marks'); ?></td>
                             <td>

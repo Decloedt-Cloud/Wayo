@@ -8,7 +8,7 @@
         <div class="form-group row">
             <label for="class_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('class'); ?></label>
             <div class="col-md-9">
-                <select name="class_id" id="class_id_on_routine_creation" class="form-control" required onchange="classWiseSectionForRoutineCreate(this.value)">
+                <select name="class_id" id="class_id_on_routine_creation" class="form-control" required >
                     <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                     <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                     <?php foreach($classes as $class): ?>
@@ -18,31 +18,7 @@
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="section_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('section'); ?></label>
-            <div class="col-md-9">
-                <select name="section_id" id = "section_id_on_routine_creation" class="form-control" required>
-                    <option value=""><?php echo get_phrase('select_a_section'); ?></option>
-                    <?php $sections = $this->db->get_where('sections', array('class_id' => $routine['class_id']))->result_array(); ?>
-                    <?php foreach($sections as $section): ?>
-                        <option value="<?php echo $section['id']; ?>" <?php if($routine['section_id'] == $section['id']) echo 'selected'; ?>><?php echo $section['name']; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="subject_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('subject'); ?></label>
-            <div class="col-md-9">
-                <select name="subject_id" id = "subject_id_on_routine_creation" class="form-control" required>
-                    <option value=""><?php echo get_phrase('select_a_subject'); ?></option>
-                    <?php $subjects = $this->db->get_where('subjects', array('class_id' => $routine['class_id'], 'session' => active_session()))->result_array(); ?>
-                    <?php foreach($subjects as $subject): ?>
-                        <option value="<?php echo $subject['id']; ?>" <?php if($routine['subject_id'] == $subject['id']) echo 'selected'; ?>><?php echo $subject['name']; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
 
         <div class="form-group row">
             <label for="teacher_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('teacher'); ?></label>
@@ -173,8 +149,6 @@
 $(document).ready(function () {
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); });
 //     initSelect2(['#class_id_on_routine_creation',
-//     '#section_id_on_routine_creation',
-//     '#subject_id_on_routine_creation',
 //     '#teacher_on_routine_creation',
 //     '#class_room_id_on_routine_creation',
 //     '#day_on_routine_creation',
@@ -182,7 +156,7 @@ $(document).ready(function () {
 //     '#starting_minute_on_routine_creation',
 //     '#ending_hour_on_routine_creation',
 //     '#ending_minute_on_routine_creation']);
-// });
+ });
 
 $(".ajaxForm").validate({}); // Jquery form validation initialization
 $(".ajaxForm").submit(function(e) {
@@ -190,23 +164,7 @@ $(".ajaxForm").submit(function(e) {
     ajaxSubmit(e, form, getFilteredClassRoutine);
 });
 
-function classWiseSectionForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_routine_creation').html(response);
-            classWiseSubjectForRoutineCreate(classId);
-        }
-    });
-}
 
-function classWiseSubjectForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
-            console.log("<?php echo route('class_wise_subject/'); ?>"+classId);
-            $('#subject_id_on_routine_creation').html(response);
-        }
-    });
-}
+
+
 </script>

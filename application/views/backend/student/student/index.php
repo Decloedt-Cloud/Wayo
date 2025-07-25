@@ -17,7 +17,7 @@
                 <div class="row mt-3">
                     <div class="col-md-1 mb-1"></div>
                     <div class="col-md-4 mb-1">
-                        <select name="class" id="class_id" class="form-control"  required onchange="classWiseSection(this.value)">
+                        <select name="class" id="class_id" class="form-control"  required >
                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                                 <?php
                                     $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -27,11 +27,7 @@
                                 <?php } ?>
                         </select>
                     </div>
-                    <div class="col-md-4 mb-1">
-                        <select name="section" id="section_id" class="form-control"  required>
-                            <option value=""><?php echo get_phrase('select_section'); ?></option>
-                        </select>
-                    </div>
+  
                     <div class="col-md-2">
                         <button class="btn btn-block btn-secondary" onclick="filter_student()" ><?php echo get_phrase('filter'); ?></button>
                     </div>
@@ -57,27 +53,19 @@
 
     });
 
-    function classWiseSection(classId) {
-        $.ajax({
-            url: "<?php echo route('section/list/'); ?>"+classId,
-            success: function(response){
-                $('#section_id').html(response);
-            }
-        });
-    }
-
+    
     function filter_student(){
         var class_id = $('#class_id').val();
-        var section_id = $('#section_id').val();
-        if(class_id != "" && section_id!= ""){
+       
+        if(class_id != "" ){
             $.ajax({
-                url: '<?php echo route('student/filter/') ?>'+class_id+'/'+section_id,
+                url: '<?php echo route('student/filter/') ?>'+class_id,
                 success: function(response){
                     $('.student_content').html(response);
                 }
             });
         }else{
-            toastr.error('<?php echo get_phrase('please_select_a_class_and_section'); ?>');
+            toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
         }
     }
 </script>

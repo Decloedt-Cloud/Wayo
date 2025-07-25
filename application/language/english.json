@@ -2025,5 +2025,8 @@
     "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "Unable to schedule an appointment in the past.",
     "rendez-vous_mis_à_jour_!": "Appointment updated!",
     "rendez-vous_ajouté_avec_succès_!": "Appointment added successfully!",
-    "une_erreur_est_survenue.": "An error has occurred."
+    "une_erreur_est_survenue.": "An error has occurred.",
+    "teacher_permission_updated": "Teacher permission updated",
+    "_питать": " питать",
+    "please_select_class": "Please select class"
 }

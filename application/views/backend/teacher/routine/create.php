@@ -14,7 +14,7 @@ $teacher_id = $teacher ? $teacher['id'] : '';
     <div class="form-group row mb-2 gap-3">
         <label for="class_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="class_id" id="class_id_on_routine_creation" class="form-control"   required onchange="classWiseSectionForRoutineCreate(this.value)">
+            <select name="class_id" id="class_id_on_routine_creation" class="form-control"   required >
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -24,23 +24,9 @@ $teacher_id = $teacher ? $teacher['id'] : '';
         </div>
     </div>
 
-    <div class="form-group row mb-2 gap-3">
-        <label for="section_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-        <div class="col-md-8">
-            <select name="section_id[]" id = "section_id_on_routine_creation" class="form-control"  multiple  required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-        </div>
-    </div>
+
        
-    <!-- <div class="form-group row mb-2 gap-3">
-        <label for="subject_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('subject'); ?></label>
-        <div class="col-md-8">
-            <select name="subject_id" id = "subject_id_on_routine_creation" class="form-control"   required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-        </div>
-    </div> -->
+
 
    <input type="hidden" name="teacher_id" value="<?php echo htmlspecialchars($teacher_id); ?>">
 
@@ -227,22 +213,7 @@ $(document).ready(function () {
     });
 });
 
-function classWiseSectionForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_routine_creation').html(response);
-            classWiseSubjectForRoutineCreate(classId);
-        }
-    });
-}
 
-function classWiseSubjectForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
-            $('#subject_id_on_routine_creation').html(response);
-        }
-    });
-}
+
+
 </script>

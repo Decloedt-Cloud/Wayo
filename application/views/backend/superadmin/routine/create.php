@@ -8,7 +8,7 @@
     <div class="form-group row mb-2 gap-3">
         <label for="class_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
         <div class="col-md-8">
-            <select name="class_id" id="class_id_on_routine_creation" class="form-control" required onchange="classWiseSectionForRoutineCreate(this.value)">
+            <select name="class_id" id="class_id_on_routine_creation" class="form-control" required >
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -18,15 +18,7 @@
         </div>
     </div>
 
-    <div class="form-group row mb-2 gap-3">
-        <label for="section_id_on_routine_creation" class="col-md-3 col-form-label"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-        <div class="col-md-8">
-            <!-- Hidden input to store selected section IDs -->
-            <input type="hidden" name="section_id[]" id="section_id_hidden" required />
-            <!-- Container for section badges -->
-            <div id="section_id_on_routine_creation" class="d-flex flex-wrap gap-2"></div>
-        </div>
-    </div>
+
 
     <div class="form-group row mb-2 gap-3">
         <label for="teacher" class="col-md-3 col-form-label"><?php echo get_phrase('teacher'); ?><span class="required"> * </span></label>
@@ -159,12 +151,7 @@ $(document).ready(function () {
         var csrf = getCsrfToken();
         const formData = new FormData(this);
 
-        // Append selected section IDs to FormData
-        var selectedSections = $('#section_id_hidden').val().split(',').filter(id => id);
-        selectedSections.forEach(function(id) {
-            formData.append('section_id[]', id);
-        });
-
+  
         $.ajax({
             url: $(this).attr('action'),
             type: 'POST',
@@ -191,73 +178,10 @@ $(document).ready(function () {
         });
     });
 
-    // Handle badge clicks
-    $(document).on('click', '.section-badge', function() {
-        $(this).toggleClass('selected');
-        updateHiddenSectionInput();
-    });
 
-    function updateHiddenSectionInput() {
-        var selectedSections = [];
-        $('.section-badge.selected').each(function() {
-            selectedSections.push($(this).data('section-id'));
-        });
-        $('#section_id_hidden').val(selectedSections.join(','));
-        // Trigger validation
-        $(".ajaxForm").validate().element('#section_id_hidden');
-    }
 });
 
-function classWiseSectionForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>" + classId,
-        type: 'GET',
-        dataType: 'html',
-        success: function(response) {
-            // Parse response to extract options
-            var sections = [];
-            var $options = $(response).filter('option').add($(response).find('option'));
-            $options.each(function() {
-                if ($(this).val()) {
-                    sections.push({ id: $(this).val(), name: $(this).text() });
-                }
-            });
 
-            var badgeContainer = $('#section_id_on_routine_creation');
-            badgeContainer.empty();
 
-            if (sections.length > 0) {
-                sections.forEach(function(section) {
-                    badgeContainer.append(
-                        `<span class="badge bg-light text-dark section-badge" data-section-id="${section.id}">${section.name}</span>`
-                    );
-                });
-            } else {
-                badgeContainer.append('<span class="text-danger"><?php echo get_phrase('no_sections_found_for_this_class'); ?></span>');
-            }
 
-            // Reset hidden input
-            $('#section_id_hidden').val('');
-            // Trigger validation
-            $(".ajaxForm").validate().element('#section_id_hidden');
-
-            classWiseSubjectForRoutineCreate(classId);
-        },
-        error: function(xhr, status, error) {
-            console.error('Section AJAX Error:', status, error, xhr.responseText);
-            $('#section_id_on_routine_creation').html('<span class="text-danger"><?php echo get_phrase('error_loading_sections'); ?></span>');
-            $('#section_id_hidden').val('');
-            $(".ajaxForm").validate().element('#section_id_hidden');
-        }
-    });
-}
-
-function classWiseSubjectForRoutineCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>" + classId,
-        success: function(response) {
-            $('#subject_id_on_routine_creation').html(response);
-        }
-    });
-}
 </script>

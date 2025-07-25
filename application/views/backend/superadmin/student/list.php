@@ -4,9 +4,7 @@
   if (!empty($class_id) && $class_id != 'all') {
       $where['class_id'] = $class_id;
   }
-  if (!empty($section_id) && $section_id != 'all') {
-      $where['section_id'] = $section_id;
-  }
+
   // Fetch the count of students
   $student_count = $this->db->get_where('enrols', $where)->num_rows();
 ?>

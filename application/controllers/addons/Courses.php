@@ -40,6 +40,7 @@ class Courses extends CI_Controller {
   }
   //dashboard
   public function index($param1 = '', $param2 = ''){
+   
     $this->teacher_access($param2);
     if($param1 == 'create'){
       $this->student_access_denied();
@@ -84,7 +85,6 @@ class Courses extends CI_Controller {
       $page_data['selected_class_id']   = isset($_GET['class_id']) ? $_GET['class_id'] : "all";
       $page_data['selected_user_id'] = isset($_GET['user_id']) ? $_GET['user_id'] : "all";
       $page_data['selected_status']     = isset($_GET['status']) ? $_GET['status'] : "all";
-      // $page_data['selected_subject']     = isset($_GET['subject_id']) ? $_GET['subject_id'] : "all";
       $page_data['selected_school_id']     = isset($_GET['school_id']) ? $_GET['school_id'] : "all";
       $only_list = isset($_GET['only_list']) ? $_GET['only_list'] : "false";
 
@@ -97,17 +97,23 @@ class Courses extends CI_Controller {
       $page_data['folder_name'] = 'academy';
       $page_data['page_title'] = 'all_courses';
 
+      
 
 
-      if($only_list == 'true'):
-        if($this->session->userdata('student_login') == 1){
+      if($only_list == 'true'){
+        if($this->session->userdata('student_login') == 1){ 
           $this->load->view('backend/academy/grid_view_for_student', $page_data);
         }else{
+      
           $this->load->view('backend/academy/list', $page_data);
         }
-      else:
-        $this->load->view('backend/index', $page_data);
-      endif;
+      }else{
+ 
+          $this->load->view('backend/index', $page_data);
+       }
+    
+       
+
     }
   }
 

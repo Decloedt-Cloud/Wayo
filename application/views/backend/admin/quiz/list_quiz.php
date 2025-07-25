@@ -24,5 +24,5 @@ if (!empty($lessons)): ?>
         <option value="<?php echo $lesson['id']; ?>"><?php echo $lesson['title']; ?></option>
     <?php endforeach; ?>
 <?php else: ?>
-    <option value=""><?php echo get_phrase('no_section_found'); ?></option>
+    <option value=""><?php echo get_phrase('no_quiz_found'); ?></option>
 <?php endif; ?>

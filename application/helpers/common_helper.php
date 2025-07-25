@@ -321,7 +321,7 @@ if (!function_exists('active_session')) {
 
 // TEACHER PERMISSION. PROVIDE MODULE NAME AND TEACHERS ID
 if (!function_exists('has_permission')) {
-  function has_permission($class_id = "", $section_id = "", $module = "", $teacher_id = "")
+  function has_permission($class_id = "", $module = "", $teacher_id = "")
   {
     $CI = &get_instance();
     $CI->load->database();
@@ -331,7 +331,7 @@ if (!function_exists('has_permission')) {
       $teacher_id = $teacher_details['id'];
     }
     $school_id = school_id();
-    $permission_details = $CI->db->get_where('teacher_permissions', array('class_id' => $class_id, 'section_id' => $section_id, 'teacher_id' => $teacher_id));
+    $permission_details = $CI->db->get_where('teacher_permissions', array('class_id' => $class_id, 'teacher_id' => $teacher_id));
     if ($permission_details->num_rows() > 0) {
       $permission_details = $permission_details->row_array();
       return $permission_details[$module];
