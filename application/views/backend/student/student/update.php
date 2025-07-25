@@ -49,18 +49,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="section_id"><?php echo get_phrase('section'); ?></label>
-                        <div class="col-md-9" id = "section_content">
-                            <select name="section_id" id="section_id" class="form-control" required >
-                                <option value=""><?php echo get_phrase('select_a_section'); ?></option>
-                                <?php $sections = $this->db->get_where('sections', array('class_id' => $enroll['class_id']))->result_array(); ?>
-                                <?php foreach($sections as $section){ ?>
-                                    <option value="<?php echo $section['id']; ?>" <?php if($enroll['section_id'] == $section['id']) echo 'selected'; ?>><?php echo $section['name']; ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
 
                     <div class="form-group row mb-3">
                         <label class="col-md-3 col-form-label" for="birthdatepicker"><?php echo get_phrase('birthday'); ?></label>

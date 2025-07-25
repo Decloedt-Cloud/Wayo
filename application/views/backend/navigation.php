@@ -11,7 +11,7 @@ $user_id = $this->session->userdata('user_id');
 $session = active_session();
 $this->db->select('exams.id');
 $this->db->from('exams');
-$this->db->join('enrols', 'enrols.class_id = exams.class_id AND enrols.section_id = exams.section_id', 'left');
+$this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
 $this->db->join('students', 'students.id = enrols.student_id', 'left');
 $this->db->where('students.user_id', $user_id);
 $this->db->where('enrols.session', $session);

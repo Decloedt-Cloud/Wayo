@@ -7,7 +7,6 @@
                 <div class="text-center">
                     <h4><?php echo get_phrase('attendance_report').' '.get_phrase('of').' '.date('F', $attendance_date); ?></h4>
                     <h5><?php echo get_phrase('class'); ?> : <?php echo $this->db->get_where('classes', array('id' => $class_id))->row('name'); ?></h5>
-                    <h5><?php echo get_phrase('section'); ?> : <?php echo $this->db->get_where('sections', array('id' => $section_id))->row('name'); ?></h5>
                     <h5>
                         <?php echo get_phrase('last_updated_at'); ?> :
                         <?php if (get_settings('date_of_last_updated_attendance') == ""): ?>
@@ -41,7 +40,7 @@
             $student_id_count = 0;
             $active_sesstion = active_session();
             $this->db->order_by('student_id', 'asc');
-            $attendance_of_students = $this->db->get_where('daily_attendances', array('class_id' => $class_id, 'section_id' => $section_id, 'school_id' => $school_id, 'session_id' => $active_sesstion))->result_array();
+            $attendance_of_students = $this->db->get_where('daily_attendances', array('class_id' => $class_id, 'school_id' => $school_id, 'session_id' => $active_sesstion))->result_array();
                 foreach($attendance_of_students as $attendance_of_student){ ?>
                     <?php if(date('m', $attendance_date) == date('m', $attendance_of_student['timestamp'])): ?>
                         <?php if($student_id_count != $attendance_of_student['student_id']): ?>
@@ -51,7 +50,7 @@
                                     <?php $date = $i.' '.$month.' '.$year; ?>
                                     <?php $timestamp = strtotime($date); ?>
                                     <td class="text-center">
-                                        <?php $status = $this->db->get_where('daily_attendances', array('class_id' => $class_id, 'section_id' => $section_id, 'school_id' => $school_id, 'session_id' => $active_sesstion, 'student_id' => $attendance_of_student['student_id'], 'timestamp' => $timestamp))->row('status'); ?>
+                                        <?php $status = $this->db->get_where('daily_attendances', array('class_id' => $class_id, 'school_id' => $school_id, 'session_id' => $active_sesstion, 'student_id' => $attendance_of_student['student_id'], 'timestamp' => $timestamp))->row('status'); ?>
                                             <?php if($status == 1){ ?>
                                                 <i class="mdi mdi-circle text-success"></i>
                                             <?php }elseif($status === "0"){ ?>

@@ -139,14 +139,7 @@ class Superadmin extends CI_Controller
             echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
         }
 
-        if ($param1 == 'section') {
-            $response = $this->crud_model->section_update($param2);
-            $csrf = array(
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            );
-            echo json_encode(array('status' => $response['status'], 'notification' => $response['notification'], 'csrf' => $csrf));
-        }
+
 
         if ($param1 == 'list') {
             $this->load->view('backend/superadmin/class/list');
@@ -158,19 +151,9 @@ class Superadmin extends CI_Controller
             $this->load->view('backend/index', $page_data);
         }
     }
-  //END CLASS section
+  //END CLASS 
 
-  //	SECTION STARTED
-  public function section($action = "", $id = "")
-  {
-
-    // PROVIDE A LIST OF SECTION ACCORDING TO CLASS ID
-    if ($action == 'list') {
-      $page_data['class_id'] = $id;
-      $this->load->view('backend/superadmin/section/list', $page_data);
-    }
-  }
-  //	SECTION ENDED
+ 
 
   //START CLASS_ROOM section
   public function class_room($param1 = '', $param2 = '', $param3 = '')
@@ -293,7 +276,7 @@ class Superadmin extends CI_Controller
 
     if ($param1 == 'list') {
       $page_data['class_id'] = $param2;
-      $page_data['section_id'] = $param3;
+   
       $this->load->view('backend/superadmin/syllabus/list', $page_data);
     }
 
@@ -486,13 +469,11 @@ class Superadmin extends CI_Controller
 
     if ($param1 == 'filter') {
       $page_data['class_id'] = $param2;
-      $page_data['section_id'] = $param3;
       $this->load->view('backend/superadmin/permission/list', $page_data);
     }
 
     if ($param1 == 'modify_permission') {
       $page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-      $page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
       $this->user_model->teacher_permission();
       // $this->load->view('backend/superadmin/permission/list', $page_data);
       // Charger la vue mise à jour
@@ -648,18 +629,7 @@ class Superadmin extends CI_Controller
           // $this->db->delete('appointments');
           echo json_encode(["status" => "deleted"]);
       }
-      public function get_sections() 
-      {
-        $classe_id = $this->input->post('classe_id');
-    
-        if (!empty($classe_id)) {
-            $sections = $this->db->get_where('sections', array('class_id' => $classe_id))->result_array();
-        } else {
-            $sections = [];
-        }
-    
-        echo json_encode($sections);
-      }
+ 
       public function delete_room()
       {
           $data = json_decode(file_get_contents("php://input"), true);
@@ -1150,7 +1120,7 @@ class Superadmin extends CI_Controller
 
     if ($param1 == 'filter') {
       $page_data['class_id'] = $param2;
-      $page_data['section_id'] = $param3;
+      
       $this->load->view('backend/superadmin/routine/list', $page_data);
     }
 
@@ -1189,7 +1159,7 @@ class Superadmin extends CI_Controller
       $date = '01 ' . $this->input->post('month') . ' ' . $this->input->post('year');
       $page_data['attendance_date'] = strtotime($date);
       $page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-      $page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+     
       $page_data['month'] = htmlspecialchars($this->input->post('month'));
       $page_data['year'] = htmlspecialchars($this->input->post('year'));
       // $this->load->view('backend/superadmin/attendance/list', $page_data);
@@ -1209,7 +1179,7 @@ class Superadmin extends CI_Controller
     if ($param1 == 'student') {
       $page_data['attendance_date'] = strtotime($this->input->post('date'));
       $page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-      $page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+    
 
       // Charger la vue mise à jour
       $response_html = $this->load->view('backend/superadmin/attendance/student', $page_data, TRUE);
@@ -1302,8 +1272,7 @@ class Superadmin extends CI_Controller
   {
     $this->session->unset_session();
     $page_data['class_id'] = '';
-    $page_data['section_id'] = '';
-
+    
     if ($param1 == 'create') {
       //form view
       if ($param2 == 'bulk') {
@@ -1351,7 +1320,7 @@ class Superadmin extends CI_Controller
     } else {
         // Load the view with filtered data
         $page_data['class_id'] = html_escape($this->input->post('class_id'));
-        $page_data['section_id'] = html_escape($this->input->post('section_id'));
+      
         $page_data['working_page'] = 'filter';
         $page_data['folder_name'] = 'student';
         $page_data['page_title'] = 'student_list';
@@ -1377,8 +1346,10 @@ class Superadmin extends CI_Controller
     }
 
     if ($param1 == 'create_excel') {
+
+      // die($page_data);
       $response = $this->user_model->excel_create();
-      // die($response) ;
+      die($response) ;
       // Préparer la réponse avec un nouveau jeton CSRF
       $csrf = array(
             'csrfName' => $this->security->get_csrf_token_name(),
@@ -1454,7 +1425,7 @@ class Superadmin extends CI_Controller
 
     if ($param1 == 'filter') {
             $page_data['class_id'] = ($param2 == '' || $param2 == 'all') ? 'all' : $param2;
-            $page_data['section_id'] = ($param3 == '' || $param3 == 'all') ? 'all' : $param3;
+          
             $html_content = $this->load->view('backend/superadmin/student/list', $page_data, TRUE);
             $csrf = array(
                 'csrfName' => $this->security->get_csrf_token_name(),
@@ -1465,7 +1436,7 @@ class Superadmin extends CI_Controller
 
         if (empty($param1)) {
             $page_data['class_id'] = 'all';
-            $page_data['section_id'] = 'all';
+          
             $page_data['working_page'] = 'filter';
             $page_data['folder_name'] = 'student';
             $page_data['page_title'] = 'student_list';
@@ -1483,33 +1454,7 @@ class Superadmin extends CI_Controller
     echo json_encode($csrf);
 }
 
-public function get_sections_by_class()
-{
-    if ($this->session->userdata('superadmin_login') != 1) {
-        echo json_encode(['error' => 'Unauthorized']);
-        return;
-    }
 
-    $class_id = $this->input->post('class_id');
-    $school_id = school_id();
-
-    if (empty($class_id)) {
-        echo json_encode(['sections' => [], 'message' => 'No class ID provided']);
-        return;
-    }
-
-    $this->db->select('sections.id, sections.name');
-    $this->db->from('sections');
-    $this->db->join('classes', 'sections.class_id = classes.id', 'left');
-    $this->db->where('sections.class_id', $class_id);
-    $this->db->where('classes.school_id', $school_id);
-    $sections = $this->db->get()->result_array();
-
-    echo json_encode([
-        'sections' => $sections,
-        'message' => empty($sections) ? 'No sections found for this class' : 'Sections retrieved successfully'
-    ]);
-}
 
 
 
@@ -1557,9 +1502,8 @@ public function get_sections_by_class()
         if ($exam) {
             $exam['formatted_date'] = date('D, d-M-Y H:i', $exam['starting_date']);
             $class = $this->db->get_where('classes', array('id' => $exam['class_id']))->row_array();
-            $section = $this->db->get_where('sections', array('id' => $exam['section_id']))->row_array();
             $exam['class_name'] = $class ? $class['name'] : 'No Class';
-            $exam['section_name'] = $section ? $section['name'] : 'No Section';
+    
             $output = array(
                 'status' => isset($response['status']) ? $response['status'] : $response,
                 'exam' => $exam,
@@ -1769,10 +1713,10 @@ public function get_sections_by_class()
 
     if ($param1 == 'list') {
       $page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-      $page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+ 
       // $page_data['quiz_id'] = htmlspecialchars($this->input->post('subject'));
       $page_data['exam_id'] = htmlspecialchars($this->input->post('exam'));
-      $this->crud_model->mark_insert($page_data['class_id'], $page_data['section_id'], $page_data['exam_id']);
+      $this->crud_model->mark_insert($page_data['class_id'], $page_data['exam_id']);
       // $this->load->view('backend/superadmin/mark/list', $page_data);
       // Charger la vue et capturer le contenu
         $html_content = $this->load->view('backend/superadmin/mark/list', $page_data, TRUE);
@@ -1937,6 +1881,7 @@ public function get_sections_by_class()
     }
     //showing the list of student to promote
     if ($param1 == 'list') {
+   
       $page_data['session_from'] = htmlspecialchars($this->input->post('session_from'));
       $page_data['session_to'] = htmlspecialchars($this->input->post('session_to'));
       $page_data['class_id_from'] = htmlspecialchars($this->input->post('class_id_from'));
@@ -2330,7 +2275,7 @@ public function get_sections_by_class()
   }
   // ACCOUNTING SECTION ENDS
 
-  // BACKOFFICE SECTION
+
 
   //START SESSION_MANAGER section
   public function session_manager($param1 = '', $param2 = '')
@@ -3343,10 +3288,10 @@ public function get_sections_by_class()
         $session_id = active_session();
 
         // Récupérer les détails de l'examen
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
+       
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
         $this->db->where('exams.id', $exam_id);
 
@@ -3419,7 +3364,7 @@ public function filter_exams()
     $session = active_session();
 
     $class_id = $this->input->post('class_id');
-    $section_id = $this->input->post('section_id');
+
     $date_range = $this->input->post('date_range');
     $date_from = '';
     $date_to = '';
@@ -3430,18 +3375,15 @@ public function filter_exams()
         $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
     }
 
-    $this->db->select('exams.*, classes.name as class_name, sections.name as section_name');
+    $this->db->select('exams.*, classes.name as class_name');
     $this->db->from('exams');
     $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->join('sections', 'exams.section_id = sections.id', 'left');
     $this->db->where('exams.school_id', $school_id);
     $this->db->where('exams.session', $session);
     if (!empty($class_id)) {
         $this->db->where('exams.class_id', $class_id);
     }
-    if (!empty($section_id)) {
-        $this->db->where('exams.section_id', $section_id);
-    }
+  
     if (!empty($date_range)) {
         $this->db->where('exams.starting_date >=', $date_from);
         $this->db->where('exams.starting_date <=', $date_to);
@@ -3454,8 +3396,8 @@ public function filter_exams()
             'id' => $exam['id'],
             'name' => $exam['name'] ?: 'Unnamed Exam',
             'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
-            'class_name' => $exam['class_name'] ?: 'No Class',
-            'section_name' => $exam['section_name'] ?: 'No Section'
+            'class_name' => $exam['class_name'] ?: 'No Class'
+            
         ];
     }
 
@@ -3474,7 +3416,7 @@ public function filter_exams()
         'calendar' => $exam_calendar,
         'debug' => [
             'class_id' => $class_id,
-            'section_id' => $section_id,
+            
             'date_range' => $date_range,
             'exam_count' => count($exams)
         ]

@@ -14,7 +14,7 @@
         </div>
         <div class="form-group col-md-12 mb-2">
             <label for="class_id_on_create"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
-            <select class="form-control"  id="class_id_on_create" name="class_id" onchange="classWiseSectionOnCreate(this.value)" required>
+            <select class="form-control"  id="class_id_on_create" name="class_id"  required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -23,19 +23,7 @@
             </select>
         </div>
 
-        <div class="form-group col-md-12 mb-2">
-            <label for="section_id_on_create"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-            <select class="form-control"  id="section_id_on_create" name="section_id" required>
-                <option value=""><?php echo get_phrase('select_a_section'); ?></option>
-            </select>
-        </div>
 
-        <div class="form-group col-md-12 mb-2">
-            <label for="subject_id_on_create"><?php echo get_phrase('subject'); ?><span class="required"> * </span></label>
-            <select class="form-control"  id="subject_id_on_create" name="subject_id" requied>
-                <option><?php echo get_phrase('select_a_subject'); ?></option>
-            </select>
-        </div>
         <div class="form-group col-md-12 mb-2">
             <label for="syllabus_file"><?php echo get_phrase('upload_syllabus'); ?><span class="required"> * </span></label>
             <div class="custom-file-upload d-inline-block">
@@ -54,8 +42,7 @@
 $('document').ready(function(){
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); });
 //     initSelect2(['#class_id_on_create',
-//                 '#section_id_on_create',
-//                 '#subject_id_on_create']);
+
 $(".ajaxForm").validate({}); // Jquery form validation initialization
     $(".ajaxForm").submit(function(e) {
         
@@ -109,24 +96,8 @@ $(".ajaxForm").validate({}); // Jquery form validation initialization
     });
 });
 
-function classWiseSectionOnCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_create').html(response);
-            classWiseSubjectOnCreate(classId);
-        }
-    });
-}
 
-function classWiseSubjectOnCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
-            $('#subject_id_on_create').html(response);
-        }
-    });
-}
+
 </script>
 
 

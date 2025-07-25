@@ -3,9 +3,9 @@
         <div class="col-12">
             <div class="card ">
                 <div class="row mt-3">
-                    <div class="col-md-1 mb-1"></div>
+                    <div class="col-md-3 mb-1"></div>
                     <div class="col-md-4 mb-1">
-                        <select name="class" id="class_id" class="form-control" onchange="classWiseSection(this.value)">
+                        <select name="class" id="class_id" class="form-control" >
                             <option value="all"><?php echo get_phrase('all_classes'); ?></option>
                             <?php
                             $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -21,17 +21,7 @@
                             <?php } ?>
                         </select>
                     </div>
-                    <div class="col-md-4 mb-1">
-                        <select name="section" id="section_id" class="form-control">
-                            <option value="all"><?php echo get_phrase('all_sections'); ?></option>
-                            <?php if($class_id != "" && $class_id != "all"){
-                                $sections = $this->db->get_where('sections', array('class_id' => $class_id))->result_array(); ?>
-                                <?php foreach($sections as $section): ?>
-                                    <option value="<?php echo $section['id']; ?>" <?php if($section['id'] == $section_id) echo 'selected'; ?>><?php echo $section['name']; ?></option>
-                                <?php endforeach; ?>
-                            <?php } ?>
-                        </select>
-                    </div>
+
                     <div class="col-md-2">
                         <button class="btn btn-block btn-secondary" onclick="filter_student()"><?php echo get_phrase('filter'); ?></button>
                     </div>
@@ -54,36 +44,25 @@ $('document').ready(function(){
     showAllStudents();
 });
 
-function classWiseSection(classId) {
-    if (classId == 'all') {
-        $('#section_id').html('<option value="all"><?php echo get_phrase('all_sections'); ?></option>');
-    } else {
-        $.ajax({
-            url: "<?php echo route('section/list/'); ?>"+classId,
-            success: function(response){
-                $('#section_id').html(response);
-            }
-        });
-    }
-}
+
 
 function filter_student(){
     var class_id = $('#class_id').val();
-    var section_id = $('#section_id').val();
-    if(class_id != "" && section_id != ""){
+ 
+    if(class_id != "" ){
         showAllStudents();
     }else{
-        toastr.error('<?php echo get_phrase('please_select_a_class_and_section'); ?>');
+        toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
     }
 }
 
 var showAllStudents = function() {
     var class_id = $('#class_id').val();
-    var section_id = $('#section_id').val();
+   
     var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
     var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
     $.ajax({
-        url: '<?php echo route('student/filter/') ?>'+(class_id == 'all' ? '' : class_id)+'/'+(section_id == 'all' ? '' : section_id),
+        url: '<?php echo route('student/filter/') ?>'+(class_id == 'all' ? '' : class_id),
         data: {[csrfName]: csrfHash},
         dataType: 'json',
         success: function(response){

@@ -17,7 +17,7 @@
         </div>
         <div class="form-group mb-1">
             <label for="modal_class_id"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
-            <select class="form-control" id="modal_class_id" name="class_id" onchange="getSections(this.value)" required>
+            <select class="form-control" id="modal_class_id" name="class_id" required>
                 <option value=""><?php echo get_phrase('select_class'); ?></option>
                 <?php 
                 $school_id = school_id();
@@ -38,13 +38,7 @@
             </select>
             <small id="class_help" class="form-text text-muted"><?php echo get_phrase('select_a_class'); ?></small>
         </div>
-        <div class="form-group mb-1">
-            <label for="modal_section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-            <select class="form-control" id="modal_section_id" name="section_id" required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-            <small id="section_help" class="form-text text-muted"><?php echo get_phrase('select_a_section'); ?></small>
-        </div>
+
         <div class="form-group col-md-12">
             <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-plus"></i><?php echo get_phrase('create_exam'); ?></button>
         </div>
@@ -118,40 +112,8 @@ $(document).ready(function() {
         });
     });
 
-    // Load sections when a class is selected
-    window.getSections = function(class_id, selectedSectionId = '') {
-        if (class_id) {
-            $.ajax({
-                url: '<?php echo site_url('admin/get_sections_by_class'); ?>',
-                type: 'POST',
-                data: { class_id: class_id },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    var sectionSelect = $('#modal_section_id');
-                    sectionSelect.html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-                    if (data.sections && data.sections.length > 0) {
-                        $.each(data.sections, function(index, section) {
-                            var isSelected = (section.id == selectedSectionId) ? 'selected' : '';
-                            sectionSelect.append('<option value="' + section.id + '" ' + isSelected + '>' + section.name + '</option>');
-                        });
-                    } else {
-                        console.warn('No sections found for create:', data.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-                }
-            });
-        } else {
-            $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-        }
-    };
+   
 
-    // Class selection change handler
-    $('#class_id').change(function() {
-        var class_id = $(this).val();
-        window.getSections(class_id);
-    });
 
     let isSubmitting = false;
 
@@ -172,7 +134,7 @@ $(document).ready(function() {
             exam_name: $('#exam_name').val(),
             starting_date: $('#starting_date').val(),
             class_id: $('#modal_class_id').val(),
-            section_id: $('#modal_section_id').val(),
+          
             '<?php echo addslashes($this->security->get_csrf_token_name()); ?>': '<?php echo addslashes($this->security->get_csrf_hash()); ?>'
         };
 
@@ -190,7 +152,7 @@ $(document).ready(function() {
                         showNotification('success', response.message || '<?php echo addslashes(get_phrase('exam_created_successfully')); ?>');
                         $('#right-modal').modal('hide');
                         $('#examCreateForm')[0].reset();
-                        $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
+                        
 
                         if (typeof window.updateExamTableAndCalendar === 'function') {
                             window.updateExamTableAndCalendar();
@@ -220,10 +182,7 @@ $(document).ready(function() {
         if ($('#examCreateForm').length === 0) {
             return;
         }
-        const class_id = $('#modal_class_id').val();
-        if (class_id) {
-            window.getSections(class_id);
-        }
+
     });
 
     // Modal close handler

@@ -4,7 +4,7 @@ $session = active_session();
 
 // Initialize filter variables
 $class_id = isset($_POST['class_id']) ? htmlspecialchars($_POST['class_id']) : '';
-$section_id = isset($_POST['section_id']) ? htmlspecialchars($_POST['section_id']) : '';
+
 $date_range = isset($_POST['date_range']) && !empty($_POST['date_range']) ? htmlspecialchars($_POST['date_range']) : '';
 $date_from = '';
 $date_to = '';
@@ -16,18 +16,16 @@ if (!empty($date_range)) {
 }
 
 // Build the query with filters
-$this->db->select('exams.*, classes.name as class_name, sections.name as section_name');
+$this->db->select('exams.*, classes.name as class_name');
 $this->db->from('exams');
 $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-$this->db->join('sections', 'exams.section_id = sections.id', 'left');
+
 $this->db->where('exams.school_id', $school_id);
 $this->db->where('exams.session', $session);
 if (!empty($class_id)) {
     $this->db->where('exams.class_id', $class_id);
 }
-if (!empty($section_id)) {
-    $this->db->where('exams.section_id', $section_id);
-}
+
 if (!empty($date_range)) {
     $this->db->where('exams.starting_date >=', $date_from);
     $this->db->where('exams.starting_date <=', $date_to);
@@ -54,10 +52,13 @@ $exam_calendar_json = json_encode($exam_calendar);
             <div class="card-body">
                 <form id="filterForm">
                     <div class="row">
+                       <div class="col-md-2">
+                            
+                        </div>
                         <!-- Class Dropdown -->
                         <div class="col-md-3">
                             <label for="class_id"><?php echo get_phrase('class'); ?></label>
-                            <select name="class_id" id="class_id" class="form-control" onchange="getFilterSections(this.value)">
+                            <select name="class_id" id="class_id" class="form-control" >
                                 <option value=""><?php echo get_phrase('select_class'); ?></option>
                                 <?php
                                 $classes = $this->db->get_where('classes', ['school_id' => $school_id])->result_array();
@@ -68,22 +69,7 @@ $exam_calendar_json = json_encode($exam_calendar);
                                 ?>
                             </select>
                         </div>
-                        <!-- Section Dropdown -->
-                        <div class="col-md-3">
-                            <label for="section_id"><?php echo get_phrase('section'); ?></label>
-                            <select name="section_id" id="section_id" class="form-control">
-                                <option value=""><?php echo get_phrase('select_section'); ?></option>
-                                <?php
-                                if (!empty($class_id)) {
-                                    $sections = $this->db->get_where('sections', ['class_id' => $class_id])->result_array();
-                                    foreach ($sections as $section) {
-                                        $selected = ($section['id'] == $section_id) ? 'selected' : '';
-                                        echo "<option value='{$section['id']}' $selected>{$section['name']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </div>
+
                         <!-- Date Range Picker -->
                         <div class="col-md-3">
                             <label for="date_range"><?php echo get_phrase('Exam date'); ?></label>
@@ -121,7 +107,6 @@ $exam_calendar_json = json_encode($exam_calendar);
                                     <th><?php echo get_phrase('exam_name'); ?></th>
                                     <th><?php echo get_phrase('date'); ?></th>
                                     <th><?php echo get_phrase('class'); ?></th>
-                                    <th><?php echo get_phrase('section'); ?></th>
                                     <th><?php echo get_phrase('options'); ?></th>
                                 </tr>
                             </thead>
@@ -131,7 +116,7 @@ $exam_calendar_json = json_encode($exam_calendar);
                                         <td><?php echo $exam['name']; ?></td>
                                         <td><?php echo date('D, d-M-Y H:i', $exam['starting_date']); ?></td>
                                         <td><?php echo !empty($exam['class_name']) ? $exam['class_name'] : get_phrase('no_class'); ?></td>
-                                        <td><?php echo !empty($exam['section_name']) ? $exam['section_name'] : get_phrase('no_section'); ?></td>
+                                       
                                         <td>
                                             <div class="dropdown text-center">
                                                 <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -191,36 +176,6 @@ function initDataTable() {
     }
 }
 
-function getFilterSections(class_id, selectedSectionId = '') {
-    if (class_id) {
-        $.ajax({
-            url: '<?php echo site_url('admin/get_sections_by_class'); ?>',
-            type: 'POST',
-            data: { class_id: class_id },
-            success: function(response) {
-                var data = JSON.parse(response);
-                var sectionSelect = $('#section_id');
-                sectionSelect.html('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-                
-                if (data.sections && data.sections.length > 0) {
-                    $.each(data.sections, function(index, section) {
-                        var isSelected = (section.id == selectedSectionId) ? 'selected' : '';
-                        sectionSelect.append('<option value="' + section.id + '" ' + isSelected + '>' + section.name + '</option>');
-                    });
-                } else {
-                    console.warn('No sections found for filter:', data.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Filter Sections AJAX Error:', status, error);
-                console.error('Response Text:', xhr.responseText);
-                $('#section_id').html('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-            }
-        });
-    } else {
-        $('#section_id').html('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-    }
-}
 
 function updateExamTable(exams) {
     if ($('#basic-datatable').attr('data-datatable-initialized') === 'true') {
@@ -242,7 +197,7 @@ function updateExamTable(exams) {
                             <th><?php echo get_phrase('exam_name'); ?></th>
                             <th><?php echo get_phrase('date'); ?></th>
                             <th><?php echo get_phrase('class'); ?></th>
-                            <th><?php echo get_phrase('section'); ?></th>
+                         
                             <th><?php echo get_phrase('options'); ?></th>
                         </tr>
                     </thead>
@@ -254,7 +209,7 @@ function updateExamTable(exams) {
                         <td>${exam.name || 'Unnamed Exam'}</td>
                         <td>${exam.formatted_date || 'No Date'}</td>
                         <td>${exam.class_name || '<?php echo get_phrase('no_class'); ?>'}</td>
-                        <td>${exam.section_name || '<?php echo get_phrase('no_section'); ?>'}</td>
+                        
                         <td>
                             <div class="dropdown text-center">
                                 <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -291,7 +246,6 @@ function updateExamTable(exams) {
 window.updateExamTableAndCalendar = function(classId = '') {
     var formData = {
         class_id: classId || '',
-        section_id: '',
         date_range: ''
     };
 
@@ -314,16 +268,7 @@ window.updateExamTableAndCalendar = function(classId = '') {
 
                 updateExamTable(data.exams);
 
-                // Ne pas charger les sections si aucun class_id n'est fourni
-                if (formData.class_id) {
-                    getFilterSections(formData.class_id, formData.section_id);
-                } else {
-                    $('#section_id').html('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-                    // Réinitialiser les filtres pour afficher tous les exams
-                    $('#class_id').val('');
-                    $('#section_id').val('');
-                    $('#date_range').val('');
-                }
+              
             } catch (e) {
                 console.error('Erreur lors du parsing de la réponse:', e);
                 showNotification('error', '<?php echo get_phrase('failed_to_update_exams'); ?>');
@@ -396,7 +341,7 @@ $(document).ready(function() {
 
         var formData = {
             class_id: $('#class_id').val(),
-            section_id: $('#section_id').val(),
+          
             date_range: $('#date_range').val()
         };
 
@@ -413,11 +358,7 @@ $(document).ready(function() {
 
                 updateExamTable(data.exams);
 
-                if (formData.class_id) {
-                    getFilterSections(formData.class_id, formData.section_id);
-                } else {
-                    $('#section_id').html('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-                }
+
             },
             error: function(xhr, status, error) {
                 console.error('Filter AJAX Error:', status, error);
@@ -426,10 +367,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#class_id').on('change', function() {
-        var class_id = $(this).val();
-        getFilterSections(class_id);
-    });
+ 
 
     window.rightModal = function(url, title) {
         $.ajax({

@@ -44,9 +44,7 @@ class Crud_model extends CI_Model {
         $this->db->insert('classes', $data);
 
         $insert_id = $this->db->insert_id();
-        $section_data['name'] = 'A';
-        $section_data['class_id'] = $insert_id;
-        $this->db->insert('sections', $section_data);
+
 
         // Créer une class_room avec le même nom que la classe
         $room_data = [
@@ -140,41 +138,7 @@ class Crud_model extends CI_Model {
         return $response;
     }
 
-	public function section_update($param1 = '')
-	{
-		$section_id = html_escape($this->input->post('section_id'));
-		$section_name = html_escape($this->input->post('name'));
-		foreach($section_id as $key => $value){
-			if($value == 0){
-				$data['class_id'] = $param1;
-				$data['name'] = $section_name[$key];
-				$this->db->insert('sections', $data);
-			}
-			if($value != 0 && $value != 'delete'){
-				$data['name'] = $section_name[$key];
-				$this->db->where('class_id', $param1);
-				$this->db->where('id', $value);
-				$this->db->update('sections', $data);
-			}
 
-			$section_value = null;
-			if (strpos($value, 'delete') == true) {
-				$section_value = str_replace('delete', '', $value);
-			}
-			if($value == $section_value.'delete'){
-				$data['name'] = $section_name[$key];
-				$this->db->where('class_id', $param1);
-				$this->db->where('id', $section_value);
-				$this->db->delete('sections');
-			}
-		}
-
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('section_list_updated_successfully')
-		);
-		return json_encode($response);
-	}
 
 	public function class_delete($param1 = '')
     {
@@ -195,9 +159,7 @@ class Crud_model extends CI_Model {
         $this->db->where('id', $param1);
         $this->db->delete('classes');
 
-        // Supprimer les sections associées
-        $this->db->where('class_id', $param1);
-        $this->db->delete('sections');
+
 
         $response = array(
             'status' => true,
@@ -206,16 +168,7 @@ class Crud_model extends CI_Model {
         return $response;
     }
 
-	// Get section details by class and section id
-	public function get_section_details_by_id($type = "", $id = "") {
-		$section_details = array();
-		if ($type == 'class') {
-			$section_details = $this->db->get_where('sections', array('class_id' => $id));
-		}elseif ($type == 'section') {
-			$section_details = $this->db->get_where('sections', array('id' => $id));
-		}
-		return $section_details;
-	}
+
 
 	//get Class details by id
 	public function get_class_details_by_id($id) {
@@ -320,56 +273,11 @@ class Crud_model extends CI_Model {
 	//END MANAGE_SESSION section
 
 
-	//START SUBJECT section
-	public function subject_create()
-	{
-		$data['name'] = html_escape($this->input->post('name'));
-		$data['class_id'] = html_escape($this->input->post('class_id'));
-		$data['school_id'] = html_escape($this->input->post('school_id'));
-		$data['session'] = html_escape($this->input->post('session'));
-		$this->db->insert('subjects', $data);
 
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('subject_has_been_added_successfully')
-		);
 
-		return json_encode($response);
-	}
-
-	public function subject_update($param1 = '')
-	{
-		$data['class_id'] = html_escape($this->input->post('class_id'));
-		$data['name'] = html_escape($this->input->post('name'));
-		$this->db->where('id', $param1);
-		$this->db->update('subjects', $data);
-
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('subject_has_been_updated_successfully')
-		);
-
-		return json_encode($response);
-	}
-
-	public function subject_delete($param1 = '')
-	{
-		$this->db->where('id', $param1);
-		$this->db->delete('subjects');
-
-		$response = array(
-			'status' => true,
-			'notification' => get_phrase('subject_has_been_deleted_successfully')
-		);
-
-		return json_encode($response);
-	}
-
-	public function get_subject_by_id($subject_id = '') {
-		return $this->db->get_where('subjects', array('id' => $subject_id))->row_array();
-	}
 	
-	//END SUBJECT section
+	
+	
 
 
 
@@ -383,8 +291,8 @@ class Crud_model extends CI_Model {
 	{
 		$data['title'] = html_escape($this->input->post('title'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
-		$data['section_id'] = html_escape($this->input->post('section_id'));
-		$data['subject_id'] = html_escape($this->input->post('subject_id'));
+		
+
 		$data['session_id'] = html_escape($this->input->post('session_id'));
 		$data['school_id'] = html_escape($this->input->post('school_id'));
 		$file_ext = pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION);
@@ -421,7 +329,7 @@ class Crud_model extends CI_Model {
 	//START CLASS ROUTINE section
 	 public function routine_create()
     {
-        $section_ids = $this->input->post('section_id'); // Récupère le tableau des section_id
+        
         $data['class_id'] = html_escape($this->input->post('class_id'));
         $data['teacher_id'] = html_escape($this->input->post('teacher_id'));
         $data['room_id'] = html_escape($this->input->post('class_room_id'));
@@ -433,11 +341,9 @@ class Crud_model extends CI_Model {
         $data['school_id'] = $this->school_id;
         $data['session_id'] = $this->active_session;
 
-        // Insérer une entrée pour chaque section sélectionnée
-        foreach ($section_ids as $section_id) {
-            $data['section_id'] = html_escape($section_id);
-            $this->db->insert('routines', $data);
-        }
+
+        $this->db->insert('routines', $data);
+        
 
         return array(
             'status' => true,
@@ -448,7 +354,7 @@ class Crud_model extends CI_Model {
 	public function routine_update($param1 = '')
 {
     // Récupérer les données du formulaire
-    $section_ids = $this->input->post('section_id'); // Tableau des section_id
+    
     $data['class_id'] = html_escape($this->input->post('class_id'));
     $data['teacher_id'] = html_escape($this->input->post('teacher_id'));
     $data['room_id'] = html_escape($this->input->post('class_room_id'));
@@ -476,10 +382,9 @@ class Crud_model extends CI_Model {
     }
 
     // Insérer une nouvelle entrée pour chaque section sélectionnée
-    foreach ($section_ids as $section_id) {
-        $data['section_id'] = html_escape($section_id);
+
         $this->db->insert('routines', $data);
-    }
+    
 
     $response = array(
         'status' => true,
@@ -510,10 +415,10 @@ class Crud_model extends CI_Model {
 		$students = $this->input->post('student_id');
 		$data['timestamp'] = strtotime($this->input->post('date'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
-		$data['section_id'] = html_escape($this->input->post('section_id'));
+		
 		$data['school_id'] = $this->school_id;
 		$data['session_id'] = $this->active_session;
-		$check_data = $this->db->get_where('daily_attendances', array('timestamp' => $data['timestamp'], 'class_id' => $data['class_id'], 'section_id' => $data['section_id'], 'session_id' => $data['session_id'], 'school_id' => $data['school_id']));
+		$check_data = $this->db->get_where('daily_attendances', array('timestamp' => $data['timestamp'], 'class_id' => $data['class_id'], 'session_id' => $data['session_id'], 'school_id' => $data['school_id']));
 		if($check_data->num_rows() > 0){
 			foreach($students as $key => $student):
 				$data['status'] = $this->input->post('status-'.$student);
@@ -719,7 +624,7 @@ class Crud_model extends CI_Model {
     // Convertir datetime-local (YYYY-MM-DDTHH:MM) en timestamp
     $data['starting_date'] = $starting_date_input ? strtotime(str_replace('T', ' ', $starting_date_input)) : false;
     $data['class_id'] = html_escape($this->input->post('class_id'));
-    $data['section_id'] = html_escape($this->input->post('section_id'));
+   
     $data['school_id'] = $this->school_id;
     $data['session'] = $this->active_session;
 
@@ -738,13 +643,7 @@ class Crud_model extends CI_Model {
         );
         return json_encode($response);
     }
-    if (empty($data['section_id'])) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('section_required')
-        );
-        return json_encode($response);
-    }
+
     if (!$data['starting_date']) {
         $response = array(
             'status' => false,
@@ -763,21 +662,13 @@ class Crud_model extends CI_Model {
         return json_encode($response);
     }
 
-    // Verify section_id exists and belongs to the class
-    $section_exists = $this->db->get_where('sections', ['id' => $data['section_id'], 'class_id' => $data['class_id']])->num_rows();
-    if (!$section_exists) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('invalid_section')
-        );
-        return json_encode($response);
-    }
+
 
     // Check for duplicate exam
     $this->db->where('name', $data['name']);
     $this->db->where('starting_date', $data['starting_date']);
     $this->db->where('class_id', $data['class_id']);
-    $this->db->where('section_id', $data['section_id']);
+ 
     $this->db->where('school_id', $data['school_id']);
     $this->db->where('session', $data['session']);
     $existing_exam = $this->db->get('exams')->row_array();
@@ -804,10 +695,9 @@ class Crud_model extends CI_Model {
 
 
     // Fetch the newly created exam details
-    $this->db->select('exams.*, classes.name as class_name, sections.name as section_name');
+    $this->db->select('exams.*, classes.name as class_name');
     $this->db->from('exams');
     $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->join('sections', 'exams.section_id = sections.id', 'left');
     $this->db->where('exams.id', $exam_id);
     $exam = $this->db->get()->row_array();
 
@@ -823,7 +713,7 @@ class Crud_model extends CI_Model {
             'starting_date' => $exam['starting_date'],
             'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
             'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
-            'section_name' => $exam['section_name'] ?: get_phrase('no_section'),
+          
             'calendar_event' => array(
                 'title' => $exam['name'] ?: 'Unnamed Exam',
                 'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
@@ -841,10 +731,10 @@ public function exam_update($param1 = '')
     $data['name'] = html_escape($this->input->post('exam_name'));
     $data['starting_date'] = strtotime($this->input->post('starting_date'));
     $data['class_id'] = html_escape($this->input->post('class_id'));
-    $data['section_id'] = html_escape($this->input->post('section_id'));
+   
 
     // Validate required fields
-    if (empty($data['name']) || empty($data['class_id']) || empty($data['section_id']) || !$data['starting_date']) {
+    if (empty($data['name']) || empty($data['class_id']) || !$data['starting_date']) {
         $response = array(
             'status' => false,
             'notification' => get_phrase('all_fields_are_required')
@@ -862,25 +752,16 @@ public function exam_update($param1 = '')
         return json_encode($response);
     }
 
-    // Verify section_id exists and belongs to the class
-    $section_exists = $this->db->get_where('sections', ['id' => $data['section_id'], 'class_id' => $data['class_id']])->num_rows();
-    if (!$section_exists) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('invalid_section')
-        );
-        return json_encode($response);
-    }
+
 
     // Update the exam
     $this->db->where('id', $param1);
     $update_result = $this->db->update('exams', $data);
 
     // Fetch the updated exam details
-    $this->db->select('exams.*, classes.name as class_name, sections.name as section_name');
+    $this->db->select('exams.*, classes.name as class_name');
     $this->db->from('exams');
     $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->join('sections', 'exams.section_id = sections.id', 'left');
     $this->db->where('exams.id', $param1);
     $exam = $this->db->get()->row_array();
 
@@ -895,7 +776,7 @@ public function exam_update($param1 = '')
                 'starting_date' => $exam['starting_date'],
                 'formatted_date' => $exam['formatted_date'],
                 'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
-                'section_name' => $exam['section_name'] ?: get_phrase('no_section'),
+               
                 'calendar_event' => array(
                     'title' => $exam['name'] ?: 'Unnamed Exam',
                     'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
@@ -929,10 +810,10 @@ public function exam_update($param1 = '')
 	}
 
 	//START MARKS section
-	public function get_marks($class_id = "", $section_id = "", $exam_id = "", $school_id = "") {
+	public function get_marks($class_id = "", $exam_id = "", $school_id = "") {
 		$checker = array(
 			'class_id' => $class_id,
-			'section_id' => $section_id,			
+						
 			'exam_id' => $exam_id,
 			'school_id' => $school_id,
 			'session' => $this->active_session
@@ -940,13 +821,13 @@ public function exam_update($param1 = '')
 		$this->db->where($checker);
 		return $this->db->get('marks');
 	}
-	public function mark_insert($class_id = "", $section_id = "", $exam_id = "") {
-		$student_enrolments = $this->user_model->student_enrolment($section_id)->result_array();
+	public function mark_insert($class_id = "", $exam_id = "") {
+		$student_enrolments = $this->user_model->student_enrolment()->result_array();
 		foreach ($student_enrolments as $student_enrolment) {
 			$checker = array(
 				'student_id' => $student_enrolment['student_id'],
 				'class_id' => $class_id,
-				'section_id' => $section_id,				
+								
 				'exam_id' => $exam_id,
 				'school_id' => $this->school_id,
 				'session' => $this->active_session
@@ -962,14 +843,12 @@ public function exam_update($param1 = '')
 	public function mark_update(){
 		$data['student_id'] = html_escape($this->input->post('student_id'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
-		$data['section_id'] = html_escape($this->input->post('section_id'));
-		// $data['subject_id'] = html_escape($this->input->post('subject_id'));
 		$data['exam_id'] = html_escape($this->input->post('exam_id'));
 		$data['mark_obtained'] = html_escape($this->input->post('mark'));
 		$data['comment'] = html_escape($this->input->post('comment'));
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
-		$query = $this->db->get_where('marks', array('student_id' => $data['student_id'], 'class_id' => $data['class_id'], 'section_id' => $data['section_id'], 'exam_id' => $data['exam_id'], 'session' => $data['session'], 'school_id' => $data['school_id']));
+		$query = $this->db->get_where('marks', array('student_id' => $data['student_id'], 'class_id' => $data['class_id'], 'exam_id' => $data['exam_id'], 'session' => $data['session'], 'school_id' => $data['school_id']));
 		if($query->num_rows() > 0){
 			$update_data['mark_obtained'] = html_escape($this->input->post('mark'));
 			$update_data['comment'] = html_escape($this->input->post('comment'));
@@ -1066,8 +945,7 @@ public function exam_update($param1 = '')
 		$enroll = $this->db->get_where('enrols', array('id' => $enroll_id))->row_array();
 		$enroll['class_id'] = $class_id;
 		$enroll['session'] = $session_id;
-		$first_section_details = $this->db->get_where('sections', array('class_id' => $class_id))->row_array();
-		$enroll['section_id'] = $first_section_details['id'];
+
 		$this->db->where('id', $enroll_id);
 		$this->db->update('enrols', $enroll);
 		return true;
@@ -1202,7 +1080,7 @@ public function exam_update($param1 = '')
 			$data['updated_at'] = strtotime(date('d-M-Y'));
 		}
 
-		$enrolments = $this->user_model->get_student_details_by_id('section', htmlspecialchars($this->input->post('section_id')));
+		$enrolments = $this->user_model->get_student_details_by_id('class', htmlspecialchars($this->input->post('class_id')));
 		foreach ($enrolments as $enrolment) {
 			$data['student_id'] = $enrolment['student_id'];
 			$this->db->insert('invoices', $data);
@@ -1409,7 +1287,7 @@ public function exam_update($param1 = '')
 					// Utiliser les données
 					$data_enrols['student_id'] = $enrolment_data['student_id'];
 					$data_enrols['class_id'] = $enrolment_data['class_id'];
-					$data_enrols['section_id'] = $enrolment_data['section_id'];
+					
 					$data_enrols['school_id'] = $enrolment_data['school_id'];
 					$data_enrols['session'] = $enrolment_data['session'];
 					$this->db->insert('enrols', $data_enrols);
