@@ -526,12 +526,39 @@ $config['csrf_exclude_uris'] = array(
     'student/people',
     'student/spaces',
     'student/chat',
-    
+    'class_room/create',
+    'bigbluebutton/check_meeting_status',
+    'superadmin/calendar.*',
+    'superadmin/get_meeting_status',
+    'superadmin/get_classes_by_school',
+    'superadmin/create_event',
+    'superadmin/update_event',
+    'superadmin/get_classes_with_events',
+    'superadmin/start_meeting',
+    'admin/calendar.*',
+    'admin/get_meeting_status',
+    'admin/get_classes_by_school',
+    'admin/create_event',
+    'admin/update_event',
+    'admin/start_meeting',
+    'admin/get_classes_with_events',
+    'teacher/calendar.*',
+    'teacher/get_meeting_status',
+    'teacher/get_classes_by_school',
+    'teacher/create_event',
+    'teacher/update_event',
+    'teacher/start_meeting',
+    'teacher/get_classes_with_events',
+    'student/calendar.*',
+    'student/get_meeting_status',
+    'student/get_classes_by_school',
+    'student/get_classes_with_events',
 
     'student/filter_recordings',
      'login/set_student_just_registered',
     'home/set_guest_language/.*',
-    'class_room/create'
+    'bigbluebutton/webhook'
+
 );
  
 /*
