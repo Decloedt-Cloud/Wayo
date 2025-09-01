@@ -1789,7 +1789,7 @@ public function teacher_permission()
 		// return json_encode($response);si j'ai fait ca il va causé une error alert n'affiche pas
 	}
 }
-public function get_unread_messages_count($wayo_user_id)
+public function get_unread_messages_count($wayo_user_id)//user_model
 {
     // 1. Récupérer le HumHub ID
     $query = $this->db->get_where('users', ['id' => $wayo_user_id]);
@@ -1797,20 +1797,20 @@ public function get_unread_messages_count($wayo_user_id)
         log_message('error', 'HumHub ID introuvable pour user Wayo ID: ' . $wayo_user_id);
         return 0;
     }
-
+ 
     $humhub_id = $query->row()->humhub_id;
-// Load the humhub database
-    $humhub_db = $this->load->database('humhub', TRUE);
+ 
     $sql = "
         SELECT COUNT(*) AS count
-        FROM humhub.message m
-        JOIN humhub.user_message um ON um.message_id = m.id
+        FROM humhub_local.message m
+        JOIN humhub_local.user_message um ON um.message_id = m.id
         WHERE um.user_id = ?
           AND (m.updated_at > um.last_viewed OR um.last_viewed IS NULL)
           AND m.updated_by != ?
     ";
-
-	$result = $humhub_db->query($sql, [$humhub_id, $humhub_id]);    
+ 
+    $result = $this->db->query($sql, [$humhub_id, $humhub_id]);
+   
     return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
 }
 

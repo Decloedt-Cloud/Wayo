@@ -84,44 +84,163 @@ class Room_model extends CI_Model {
     }
 
     public function get_all_appointments() {
-
         $schoolID = school_id();
-        // die($schoolID);
-        // Sélection des colonnes nécessaires
-
         $this->db->select('
             appointments.id, 
             appointments.title, 
             appointments.start_date AS start, 
-          
+            appointments.end_date AS end, 
             appointments.description, 
-            appointments.sections_id AS section, 
             appointments.classe_id, 
-            appointments.room_id, 
-            rooms.name, 
-
+            classes.name AS class_name,
+            appointments.school_id, 
+            schools.name AS school_name,
+            appointments.recurrence_type,
+            appointments.recurrence_end_date,
+            appointments.custom_recurrence,
+            appointments.visio,
+            appointments.meeting_id
         ');
         $this->db->from('appointments');
-    
-        // Jointure avec la table rooms pour récupérer les informations des salles
-        $this->db->join('rooms', 'rooms.id = appointments.room_id', 'left');
-    
-        // Filtre : récupérer uniquement les rendez-vous actifs
+        $this->db->join('classes', 'classes.id = appointments.classe_id', 'left');
+        $this->db->join('schools', 'schools.id = appointments.school_id', 'left');
         $this->db->where('appointments.Etat', 1);
-        $this->db->where('rooms.school_id', $schoolID );
-    
-        // Exécution de la requête
+        $this->db->where('appointments.school_id', $schoolID);
         $query = $this->db->get();
         
-        // Vérification si des résultats existent
-        if ($query->num_rows() > 0) {
-            return $query->result_array(); // Retourne les résultats sous forme de tableau
-        } else {
-            return []; // Retourne un tableau vide si aucun rendez-vous trouvé
+        $appointments = $query->result_array();
+        $recurringAppointments = [];
+        $maxRecurrenceYears = 1; // Limit recurrences to 5 years if no end date is set
+
+        foreach ($appointments as $appointment) {
+            $recurringAppointments[] = $appointment;
+
+            if ($appointment['recurrence_type'] && $appointment['recurrence_type'] !== 'does_not_repeat') {
+                try {
+                    $startDate = new DateTime($appointment['start'], new DateTimeZone('UTC'));
+                    $endDate = $appointment['recurrence_end_date'] ? new DateTime($appointment['recurrence_end_date'], new DateTimeZone('UTC')) : null;
+                    $currentDate = clone $startDate;
+
+                    // Set a default end date if none is provided (5 years from start)
+                    if (!$endDate) {
+                        $endDate = (clone $startDate)->modify("+{$maxRecurrenceYears} years");
+                    }
+
+                    // Get the original day, hour, minute, and second
+                    $originalDay = (int)$startDate->format('d');
+                    $originalHour = (int)$startDate->format('H');
+                    $originalMinute = (int)$startDate->format('i');
+                    $originalSecond = (int)$startDate->format('s');
+
+                    // Handle daily recurrence
+                    if ($appointment['recurrence_type'] === 'daily') {
+                        while ($currentDate <= $endDate) {
+                            if ($currentDate > $startDate) {
+                                $newAppointment = $appointment;
+                                $newAppointment['start'] = $currentDate->format('Y-m-d H:i:s');
+                                $newAppointment['end'] = (clone $currentDate)->modify('+ ' . $this->getDuration($appointment['start'], $appointment['end']) . ' seconds')->format('Y-m-d H:i:s');
+                                $newAppointment['meeting_id'] = null; // Pas de meeting_id pour les événements récurrents
+                                $recurringAppointments[] = $newAppointment;
+                            }
+                            $currentDate->modify('+1 day');
+                        }
+                    }
+
+                    // Handle weekly recurrence
+                    if ($appointment['recurrence_type'] === 'weekly' && $appointment['custom_recurrence']) {
+                        $days = json_decode($appointment['custom_recurrence'], true);
+                        if (is_array($days)) {
+                            while ($currentDate <= $endDate) {
+                                $currentDay = $currentDate->format('l');
+                                if (in_array($currentDay, $days) && $currentDate > $startDate) {
+                                    $newAppointment = $appointment;
+                                    $newAppointment['start'] = $currentDate->format('Y-m-d H:i:s');
+                                    $newAppointment['end'] = (clone $currentDate)->modify('+ ' . $this->getDuration($appointment['start'], $appointment['end']) . ' seconds')->format('Y-m-d H:i:s');
+                                    $newAppointment['meeting_id'] = null; // Pas de meeting_id pour les événements récurrents
+                                    $recurringAppointments[] = $newAppointment;
+                                }
+                                $currentDate->modify('+1 day');
+                            }
+                        }
+                    }
+
+                    // Handle monthly recurrence
+                    if ($appointment['recurrence_type'] === 'monthly') {
+                        while ($currentDate <= $endDate) {
+                            if ($currentDate > $startDate) {
+                                $newAppointment = $appointment;
+                                $newAppointment['start'] = $currentDate->format('Y-m-d H:i:s');
+                                $newAppointment['end'] = (clone $currentDate)->modify('+ ' . $this->getDuration($appointment['start'], $appointment['end']) . ' seconds')->format('Y-m-d H:i:s');
+                                $newAppointment['meeting_id'] = null; // Pas de meeting_id pour les événements récurrents
+                                $recurringAppointments[] = $newAppointment;
+                                log_message('debug', 'Monthly event generated: ' . $newAppointment['start']);
+                            }
+                            // Move to the next month and set the exact day
+                            $currentYear = (int)$currentDate->format('Y');
+                            $currentMonth = (int)$currentDate->format('m') + 1;
+                            if ($currentMonth > 12) {
+                                $currentMonth = 1;
+                                $currentYear++;
+                            }
+                            // Get the number of days in the target month
+                            $daysInMonth = (int)(new DateTime("$currentYear-$currentMonth-01", new DateTimeZone('UTC')))->format('t');
+                            $targetDay = min($originalDay, $daysInMonth); // Use original day or last day of month
+                            $currentDate->setDate($currentYear, $currentMonth, $targetDay);
+                            $currentDate->setTime($originalHour, $originalMinute, $originalSecond);
+                            log_message('debug', 'Next monthly date: ' . $currentDate->format('Y-m-d H:i:s') . ', Target day: ' . $targetDay);
+                        }
+                    }
+
+                    // Handle yearly recurrence
+                    if ($appointment['recurrence_type'] === 'yearly') {
+                        while ($currentDate <= $endDate) {
+                            if ($currentDate > $startDate) {
+                                $newAppointment = $appointment;
+                                $newAppointment['start'] = $currentDate->format('Y-m-d H:i:s');
+                                $newAppointment['end'] = (clone $currentDate)->modify('+ ' . $this->getDuration($appointment['start'], $appointment['end']) . ' seconds')->format('Y-m-d H:i:s');
+                                $newAppointment['meeting_id'] = null; // Pas de meeting_id pour les événements récurrents
+                                $recurringAppointments[] = $newAppointment;
+                            }
+                            $currentDate->modify('+1 year');
+                        }
+                    }
+                } catch (Exception $e) {
+                    log_message('error', 'Error processing recurrence for appointment ID ' . $appointment['id'] . ': ' . $e->getMessage());
+                    continue;
+                }
+            }
         }
+
+        log_message('debug', 'SQL Query: ' . $this->db->last_query());
+        log_message('debug', 'Appointments fetched: ' . json_encode($recurringAppointments));
+
+        return $recurringAppointments;
     }
-    
-       
+
+// Helper function to calculate duration in seconds
+private function getDuration($start, $end) {
+    try {
+        $startDate = new DateTime($start, new DateTimeZone('UTC'));
+        $endDate = new DateTime($end, new DateTimeZone('UTC'));
+        $interval = $startDate->diff($endDate);
+        return ($interval->days * 24 * 3600) + ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
+    } catch (Exception $e) {
+        log_message('error', 'Error calculating duration: ' . $e->getMessage());
+        return 3600; // Default to 1 hour if calculation fails
+    }
+}
+
+    public function get_event_classes() {
+    $schoolID = school_id();
+    $this->db->select('classes.id, classes.name AS class_name');
+    $this->db->distinct();
+    $this->db->from('appointments');
+    $this->db->join('classes', 'classes.id = appointments.classe_id', 'inner');
+    $this->db->where('appointments.Etat', 1);
+    $this->db->where('appointments.school_id', $schoolID);
+    $query = $this->db->get();
+    return $query->result_array();
+}
 
     public function get_all_appointments_student() {
         $user_id = $this->session->userdata('user_id');
@@ -151,11 +270,15 @@ class Room_model extends CI_Model {
             appointments.id, 
             appointments.title, 
             appointments.start_date AS start, 
+            appointments.end_date AS end, 
             appointments.description, 
-            appointments.sections_id AS section, 
             appointments.classe_id, 
-            appointments.room_id,
-            rooms.name ,
+            appointments.room_id, 
+            rooms.name,
+            appointments.recurrence_type,
+            appointments.recurrence_end_date,
+            appointments.custom_recurrence,
+            appointments.visio
         ');
         $this->db->from('appointments');
         $this->db->join('rooms', 'rooms.id = appointments.room_id', 'left');

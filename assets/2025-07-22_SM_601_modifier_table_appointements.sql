@@ -1,0 +1,6 @@
+ALTER TABLE appointments
+DROP COLUMN room_id,
+DROP COLUMN description,
+ADD COLUMN end_date DATETIME NULL AFTER start_date,
+ADD COLUMN visio INT(11) DEFAULT 0,
+ADD COLUMN event_id INT(11) NULL AFTER id;

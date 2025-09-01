@@ -6,32 +6,34 @@ class Meeting_model extends CI_Model
     {
         parent::__construct();
         $this->load->database();
-        $this->load->model('Meeting_model', 'meeting_model');
     }
 
-    public function save_meeting($meetingID, $meetingName, $attendeePW, $moderatorPW, $schoolID, $user_ID,$classID,$room_id)
-    {
-        $data = [
-            'meeting_id' => $meetingID,
-            'name' => $meetingName,
-            'attendee_pw' => $attendeePW,
-            'moderator_pw' => $moderatorPW,
-            'school_id' => $schoolID,
-            'user_id' => $user_ID,
-            'class_id' => $classID,
-            'room_id' => $room_id
-        ];
-        
-        // 'start_time' => $start_TIME,
-        // 'end_time' => $end_TIME,
-        // 'description' => $description
-
-        return $this->db->insert('sessions_meetings', $data);
+    public function save_meeting($meetingID, $meetingName, $attendeePW, $moderatorPW, $schoolID, $user_ID, $classID, $appointment_id) {
+    // Check if a meeting already exists for this appointment
+    $existing_meeting = $this->db->get_where('sessions_meetings', ['appointment_id' => $appointment_id, 'meeting_id' => $meetingID])->row_array();
+    if ($existing_meeting) {
+        log_message('debug', 'save_meeting - Meeting already exists for appointment_id ' . $appointment_id . ' and meeting_id ' . $meetingID);
+        return true; // Meeting already exists, no need to insert
     }
+
+    $data = [
+        'meeting_id' => $meetingID,
+        'name' => $meetingName,
+        'attendee_pw' => $attendeePW,
+        'moderator_pw' => $moderatorPW,
+        'school_id' => $schoolID,
+        'user_id' => $user_ID,
+        'class_id' => $classID,
+        'appointment_id' => $appointment_id,
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    
+    return $this->db->insert('sessions_meetings', $data);
+}
 
     public function get_meetings_by_school($schoolID)
     {
-        return $this->db->get_where('meetings', ['school_id' => $schoolID])->result_array();
+        return $this->db->get_where('sessions_meetings', ['school_id' => $schoolID])->result_array();
     }
 
     public function get_meeting_by_id($meetingID)
