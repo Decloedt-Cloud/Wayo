@@ -10,13 +10,12 @@ $exam_details = $this->db->get_where('exams', array('id' => $exam_id))->row_arra
         <h4><?php echo get_phrase('manage_marks'); ?></h4>
         <span><?php echo get_phrase('Exam name'); ?> : <?php echo $this->db->get_where('exams', array('id' => $exam_id))->row('name'); ?></span><br>
         <span><?php echo get_phrase('class'); ?> : <?php echo $this->db->get_where('classes', array('id' => $class_id))->row('name'); ?></span><br>
-        <span><?php echo get_phrase('section'); ?> : <?php echo $this->db->get_where('sections', array('id' => $section_id))->row('name'); ?></span><br>
         <span><?php echo get_phrase('exam_date'); ?> : <?php echo date('D, d-M-Y H:i', $exam_details['starting_date']); ?></span>
     </div>
 </div>
 <?php
 $school_id = school_id();
-$marks = $this->crud_model->get_marks($class_id, $section_id, $exam_id, $school_id)->result_array();
+$marks = $this->crud_model->get_marks($class_id, $exam_id, $school_id)->result_array();
 ?>
 <?php if (count($marks) > 0): ?>
     <table class="table table-bordered table-responsive-sm" width="100%">
@@ -70,7 +69,7 @@ $marks = $this->crud_model->get_marks($class_id, $section_id, $exam_id, $school_
 <script>
     function comment_update(student_id) {
         var class_id = '<?php echo $class_id; ?>';
-        var section_id = '<?php echo $section_id; ?>';       
+           
         var exam_id = '<?php echo $exam_id; ?>';
         var comment = $('#comment-' + student_id).val();
         var mark_on_20 = $('#mark-' + student_id).val().split('/')[0]; // Extract mark value before /20
@@ -84,7 +83,7 @@ $marks = $this->crud_model->get_marks($class_id, $section_id, $exam_id, $school_
             data: {
                 student_id: student_id,
                 class_id: class_id,
-                section_id: section_id,
+              
                 exam_id: exam_id,
                 mark: mark,
                 comment: comment,

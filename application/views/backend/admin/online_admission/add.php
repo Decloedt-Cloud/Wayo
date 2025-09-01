@@ -13,12 +13,5 @@
 </form>
 
 <script type="text/javascript">
-    function classWiseSectionOnTakingAttendance(classId) {
-        $.ajax({
-            url: "<?php echo route('section/list/'); ?>"+classId,
-            success: function(response){
-                $('#section_id_on_taking_attendance').html(response);
-            }
-        });
-    }
+
 </script>

@@ -77,10 +77,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
     'dsn'   => '',
-    'hostname' => 'localhost',
+    'hostname' => '18.101.123.255',
     'username' => 'root',
-    'password' => '',
-    'database' => 'formation_db',
+    'password' => '123456789',
+    'database' => 'formation_preprod',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
@@ -102,10 +102,10 @@ $db['default'] = array(
 
 $db['humhub'] = array(
     'dsn'      => '',
-    'hostname' => 'localhost',
+    'hostname' => '18.101.123.255',
     'username' => 'root',
-    'password' => '',
-    'database' => 'humhub_local',
+    'password' => '123456789',
+    'database' => 'humhub',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,

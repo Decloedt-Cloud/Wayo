@@ -25,7 +25,7 @@ $classes = $this->db->get_where('classes', array('school_id' => $school_id))->re
         </div>
         <div class="form-group mb-1">
             <label for="modal_class_id"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
-            <select class="form-control" id="modal_class_id" name="class_id" onchange="getSections(this.value)" required>
+            <select class="form-control" id="modal_class_id" name="class_id"  required>
                 <option value=""><?php echo get_phrase('select_class'); ?></option>
                 <?php foreach ($classes as $class): ?>
                     <option value="<?php echo html_escape($class['id']); ?>" <?php echo $class['id'] == $exam['class_id'] ? 'selected' : ''; ?>>
@@ -35,13 +35,7 @@ $classes = $this->db->get_where('classes', array('school_id' => $school_id))->re
             </select>
             <small id="class_help" class="form-text text-muted"><?php echo get_phrase('select_a_class'); ?></small>
         </div>
-        <div class="form-group mb-1">
-            <label for="modal_section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
-            <select class="form-control" id="modal_section_id" name="section_id" required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-            <small id="section_help" class="form-text text-muted"><?php echo get_phrase('select_a_section'); ?></small>
-        </div>
+
         <div class="form-group col-md-12">
             <button class="btn btn-block btn-primary btn-l px-4 " id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_exam'); ?></button>
         </div>
@@ -67,37 +61,7 @@ $classes = $this->db->get_where('classes', array('school_id' => $school_id))->re
 
 <script>
 
-// Function to load sections dynamically
-function getSections(class_id) {
-    if (!class_id) {
-        $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-        return;
-    }
-    $.ajax({
-        url: '<?php echo site_url('admin/get_sections_by_class'); ?>',
-        type: 'POST',
-        data: { class_id: class_id },
-        dataType: 'json',
-        success: function(response) {
-            $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-            if (response.sections && response.sections.length > 0) {
-                $.each(response.sections, function(index, section) {
-                    $('#modal_section_id').append('<option value="' + section.id + '">' + section.name + '</option>');
-                });
-                var currentSectionId = '<?php echo addslashes($exam['section_id']); ?>';
-                if (currentSectionId) {
-                    $('#modal_section_id').val(currentSectionId);
-                }
-            } else {
-                showNotification('warning', '<?php echo addslashes(get_phrase('no_sections_found')); ?>');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('getSections error:', status, error, xhr.responseText);
-            showNotification('error', '<?php echo addslashes(get_phrase('failed_to_fetch_sections')); ?>');
-        }
-    });
-}
+
 
 // Function to show notifications
 function showNotification(type, message) {
@@ -123,13 +87,7 @@ $(document).ready(function() {
     $('#examEditForm').off('submit');
     $('#right-modal').off('shown.bs.modal.edit hidden.bs.modal.edit');
 
-    // Load sections when modal is shown
-    $('#right-modal').on('shown.bs.modal.edit', function() {
-        const class_id = $('#modal_class_id').val();
-        if (class_id) {
-            getSections(class_id);
-        }
-    });
+
 
     // Clean up when modal is hidden
     $('#right-modal').on('hidden.bs.modal.edit', function() {
@@ -137,10 +95,7 @@ $(document).ready(function() {
         if ($form.length) {
             $form[0].reset();
         }
-        const $sectionSelect = $('#modal_section_id');
-        if ($sectionSelect.length) {
-            $sectionSelect.html('<option value=""><?php echo addslashes(get_phrase('select_section')); ?></option>');
-        }
+
         $('body').removeClass('modal-open');
         $('.modal-backdrop').remove();
         $('body').focus();
@@ -216,8 +171,8 @@ $(document).ready(function() {
         rules: {
             exam_name: { required: true, minlength: 2 },
             starting_date: { required: true },
-            class_id: { required: true },
-            section_id: { required: true }
+            class_id: { required: true }
+           
         },
         messages: {
             exam_name: {
@@ -226,7 +181,7 @@ $(document).ready(function() {
             },
             starting_date: { required: '<?php echo addslashes(get_phrase('date_is_required')); ?>' },
             class_id: { required: '<?php echo addslashes(get_phrase('class_is_required')); ?>' },
-            section_id: { required: '<?php echo addslashes(get_phrase('section_is_required')); ?>' }
+          
         }
     });
 });

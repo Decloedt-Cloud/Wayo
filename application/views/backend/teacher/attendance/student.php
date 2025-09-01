@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
 
-<?php $check_permission = has_permission($class_id, $section_id, 'attendance'); ?>
+<?php $check_permission = has_permission($class_id, 'attendance'); ?>
 <?php if ($check_permission): ?>
     <?php $school_id = school_id(); ?>
     <div class="row" style="margin-bottom: 10px; width: 100%;">
@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php $enrols = $this->db->get_where('enrols', array('class_id' => $class_id, 'section_id' => $section_id, 'school_id' => $school_id, 'session' => active_session()))->result_array(); ?>
+                <?php $enrols = $this->db->get_where('enrols', array('class_id' => $class_id, 'school_id' => $school_id, 'session' => active_session()))->result_array(); ?>
                 <?php foreach($enrols as $enroll): ?>
                     <tr>
                         <td>
@@ -26,7 +26,7 @@
                         <td>
                             <input type="hidden" name="student_id[]" value="<?php echo $enroll['student_id']; ?>">
                             <div class="custom-control custom-radio">
-                                <?php $update_attendance = $this->db->get_where('daily_attendances', array('timestamp' => $attendance_date, 'class_id' => $class_id, 'section_id' => $section_id, 'session_id' => active_session(), 'school_id' => $school_id, 'student_id' => $enroll['student_id'])); ?>
+                                <?php $update_attendance = $this->db->get_where('daily_attendances', array('timestamp' => $attendance_date, 'class_id' => $class_id, 'session_id' => active_session(), 'school_id' => $school_id, 'student_id' => $enroll['student_id'])); ?>
                                 <?php if($update_attendance->num_rows() > 0): ?>
                                     <?php $row = $update_attendance->row(); ?>
                                     <input type="hidden" name="attendance_id[]" value="<?php echo $row->id; ?>">

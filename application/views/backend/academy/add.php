@@ -12,14 +12,7 @@
     
 
 
-    <div class="form-group row mb-3">
-        <div class="col-md-12" id = "section_content_2">
-            <label for="section_id_on_academy"><?php echo get_phrase('section'); ?></label>
-            <select name="section_id" id="section_id_on_academy" class="form-control"  required >
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-        </div>
-    </div>
+
 
     <div class="form-group col-md-12 mt-4">
         <button class="btn w-100 btn-primary" type="submit"><?php echo get_phrase('submit'); ?></button>
@@ -29,14 +22,7 @@
 <script type="text/javascript">
 
        $(document).ready(function () {
-        classWiseSectionOnAcademy($('#class_id').val());
+       
     });
-    function classWiseSectionOnAcademy(classId) {
-        $.ajax({
-            url: "<?php echo route('section_course/list/'); ?>"+classId,
-            success: function(response){
-                $('#section_id_on_academy').html(response);
-            }
-        });
-    }
+
 </script>

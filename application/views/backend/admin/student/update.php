@@ -26,14 +26,6 @@
                 }             
 
 
-                $selected_sections = $this->db->get_where('enrols', array('student_id' => $student_id))->result_array();
-                $selected_section_ids = array();
-                foreach ($selected_sections as $section) {
-                    if (!isset($selected_section_ids[$section['class_id']])) {
-                        $selected_section_ids[$section['class_id']] = array();
-                    }
-                    $selected_section_ids[$section['class_id']][] = $section['section_id'];
-                }
 
                 ?>
                 <h4 class="text-center mx-0 py-2 mt-0 mb-3 px-0 text-white bg-primary"><?php echo get_phrase('update_student_information'); ?></h4>
@@ -61,7 +53,7 @@
                         <div class="form-group row mb-3">
                                 <label class="col-md-3 col-form-label" for="class_id"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
                                 <div class="col-md-9">
-                                    <select name="class_id[]" id="class_id" class=" form-control"  onchange="classWiseSectionOnStudentEdit(this.value)" multiple="multiple" required data-live-search="true">
+                                    <select name="class_id[]" id="class_id" class=" form-control" multiple="multiple" required data-live-search="true">
                                         <option value=""><?php echo get_phrase('select_classes'); ?></option>
                                         <?php                                        
                                         $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); 
@@ -73,31 +65,6 @@
                                         
                                     </select>
                                 </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <div id="section_selects_container">
-                                <?php foreach($selected_class_ids as $class_id) {
-                                    $class_name = $this->db->get_where('classes', array('id' => $class_id))->row()->name;
-
-                                    ?>
-                                    <div class="form-group row mb-3 section-select " id="section_select_<?php echo $class_id; ?>">
-                                        <label class="col-md-3 col-form-label"><?php echo get_phrase('section_for_class') . ' ' . $class_name; ?><span class="required"> * </span></label>
-                                        <div class="col-md-9">
-                                            <select name="section_id_<?php echo $class_id; ?>"  id="section_id_<?php echo $class_id; ?>" class=" form-control" required >
-                                                <option value=""><?php echo get_phrase('select_a_section'); ?></option>
-                                                <?php 
-                                                $sections = $this->db->get_where('sections', array('class_id' => $class_id))->result_array(); 
-                                                foreach($sections as $section) { ?>
-                                                    <option value="<?php echo $section['id']; ?>" <?php if (isset($selected_section_ids[$class_id]) && in_array($section['id'], $selected_section_ids[$class_id])) echo 'selected'; ?>>
-                                                        <?php echo $section['name']; ?>
-                                                    </option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                <?php } ?>
-                            </div>
                         </div>
 
 
@@ -181,67 +148,8 @@
 </div>
 
 <script type="text/javascript">
-// var form;
-// $(".ajaxForm").submit(function(e) {
-//     form = $(this);
-//     ajaxSubmit(e, form, refreshForm);
-// });
-// var refreshForm = function () {
 
-// }
 
-function classWiseSectionOnStudentEdit() {
-        var classIds = $('#class_id').val();
-        var sectionContainer = $('#section_selects_container');
-        sectionContainer.empty();
-
-        var csrf = getCsrfToken();
-
-        if (classIds.length > 0) {
-            classIds.forEach(function(classId) {
-                var className = $('#class_id option[value="' + classId + '"]').data('class-name');
-
-                $.ajax({
-                    url: "<?php echo site_url('superadmin/get_sections_by_class'); ?>",
-                    type: 'POST',
-                    data: { class_ids: [classId], [csrf.csrfName]: csrf.csrfHash },
-                    dataType: 'json',
-                    success: function(response) {
-                        var sections = response.sections;
-                        var selectedSections = <?php echo json_encode($selected_section_ids); ?>;
-                        var sectionOptions = '<option value=""><?php echo get_phrase('select_a_section'); ?></option>';
-                        
-                        csrf = getCsrfToken();
-                        $('input[name="' + csrf.csrfName + '"]').val(csrf.csrfHash);
-
-                        if (sections.length > 0) {
-                            sections.forEach(function(section) {
-                                var selected = (selectedSections[classId] && selectedSections[classId].includes(section.id)) ? 'selected' : '';
-                                sectionOptions += '<option value="' + section.id + '" ' + selected + '>' + section.name + '</option>';
-                            });
-                        } else {
-                            sectionOptions += '<option value="" disabled><?php echo get_phrase('no_section_found'); ?></option>';
-                        }
-
-                        var sectionSelect = `
-                            <div class="form-group row mb-3 section-select" id="${classId}">
-                                <label class="col-md-3 col-form-label"><?php echo get_phrase('section_for_class'); ?> ${className}<span class="required"> * </span></label>
-                                <div class="col-md-9">
-                                    <select name="section_id_${classId}" id="section_id_${classId}" class="form-control" required>
-                                        ${sectionOptions}
-                                    </select>
-                                </div>
-                            </div>
-                        `;
-                        sectionContainer.append(sectionSelect);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Erreur pour la classe ", classId, ": ", error);
-                    }
-                });
-            });
-        }
-    }
 // Fonction pour récupérer et retourner le token CSRF
 function getCsrfToken() {
          // Récupérer le nom du token CSRF depuis le champ input caché

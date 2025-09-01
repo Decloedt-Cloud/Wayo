@@ -22,7 +22,7 @@ $exam_calendar_json = json_encode($exam_calendar);
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="school_id"><?php echo get_phrase('school'); ?></label>
                         <select class="form-control" id="school_id" name="school_id">
                             <option value=""><?php echo get_phrase('select_school'); ?></option>
@@ -31,19 +31,14 @@ $exam_calendar_json = json_encode($exam_calendar);
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="class_id"><?php echo get_phrase('class'); ?></label>
                         <select class="form-control" id="class_id" name="class_id" disabled>
                             <option value=""><?php echo get_phrase('select_class'); ?></option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label for="section_id"><?php echo get_phrase('section'); ?></label>
-                        <select class="form-control" id="section_id" name="section_id" disabled>
-                            <option value=""><?php echo get_phrase('select_section'); ?></option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
+
+                    <div class="col-md-4">
                         <label for="date_filter"><?php echo get_phrase('exam_date'); ?></label>
                         <input type="text" class="form-control" id="date_filter" name="date_filter" placeholder="<?php echo get_phrase('select_date_or_range'); ?>" disabled>
                     </div>
@@ -73,7 +68,7 @@ $exam_calendar_json = json_encode($exam_calendar);
                             <th><?php echo get_phrase('exam_name'); ?></th>
                             <th><?php echo get_phrase('date'); ?></th>
                             <th><?php echo get_phrase('class'); ?></th>
-                            <th><?php echo get_phrase('section'); ?></th>
+                          
                             <th><?php echo get_phrase('link'); ?></th>
                         </tr>
                     </thead>
@@ -212,8 +207,8 @@ $(document).ready(function() {
     function toggleDateField() {
         var school_id = $('#school_id').val();
         var class_id = $('#class_id').val();
-        var section_id = $('#section_id').val();
-        if (school_id && class_id && section_id) {
+       
+        if (school_id && class_id ) {
             $('#date_filter').prop('disabled', false);
         } else {
             $('#date_filter').prop('disabled', true).val('');
@@ -221,21 +216,21 @@ $(document).ready(function() {
     }
 
     // Appeler la fonction au changement des sélecteurs
-    $('#school_id, #class_id, #section_id').on('change', toggleDateField);
+    $('#school_id, #class_id').on('change', toggleDateField);
 
     // Fonction pour charger les examens initiaux
-    function loadInitialExams(class_id, section_id, date_filter = '') {
+    function loadInitialExams(class_id,  date_filter = '') {
         var csrf_token = $('#csrf_hash').val();
 
-        console.log('loadInitialExams appelé avec : ', { class_id, section_id, date_filter, csrf_token });
+        console.log('loadInitialExams appelé avec : ', { class_id, date_filter, csrf_token });
 
-        if (class_id && section_id) {
+        if (class_id ) {
             $.ajax({
                 url: '<?php echo site_url('student/load_initial_exams'); ?>',
                 type: 'POST',
                 data: {
                     class_id: class_id,
-                    section_id: section_id,
+                   
                     date_filter: date_filter,
                     '<?php echo $this->security->get_csrf_token_name(); ?>': csrf_token
                 },
@@ -276,8 +271,8 @@ $(document).ready(function() {
                 }
             });
         } else {
-            console.warn('Données manquantes pour loadInitialExams : ', { class_id, section_id });
-            $('#exam_table_body').html('<tr><td colspan="5"><?php echo get_phrase('please_select_class_and_section'); ?></td></tr>');
+            console.warn('Données manquantes pour loadInitialExams : ', { class_id });
+            $('#exam_table_body').html('<tr><td colspan="5"><?php echo get_phrase('please_select_class'); ?></td></tr>');
         }
     }
 
@@ -308,7 +303,6 @@ $(document).ready(function() {
                             classSelect.append('<option value=""><?php echo get_phrase('no_classes_found'); ?></option>');
                             classSelect.prop('disabled', false);
                         }
-                        $('#section_id').empty().append('<option value=""><?php echo get_phrase('select_section'); ?></option>').prop('disabled', true);
                         toggleDateField();
                     } catch (e) {
                         console.error('Erreur de parsing JSON dans get_classes_by_school : ', e);
@@ -320,69 +314,27 @@ $(document).ready(function() {
             });
         } else {
             $('#class_id').empty().append('<option value=""><?php echo get_phrase('select_class'); ?></option>').prop('disabled', true);
-            $('#section_id').empty().append('<option value=""><?php echo get_phrase('select_section'); ?></option>').prop('disabled', true);
             toggleDateField();
         }
     });
 
-    // Charger les sections lorsqu'une classe est sélectionnée
-    $('#class_id').on('change', function() {
-        var class_id = $(this).val();
-        if (class_id) {
-            $.ajax({
-                url: '<?php echo site_url('student/get_sections'); ?>',
-                type: 'POST',
-                data: {
-                    classe_id: class_id,
-                    '<?php echo $this->security->get_csrf_token_name(); ?>': $('#csrf_hash').val()
-                },
-                success: function(response) {
-                    try {
-                        var data = JSON.parse(response);
-                        $('#csrf_hash').val(data.csrf_hash || $('#csrf_hash').val());
-                        var sections = data.sections || data;
-                        var sectionSelect = $('#section_id');
-                        sectionSelect.empty().append('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-                        if (sections.length > 0) {
-                            $.each(sections, function(index, section) {
-                                sectionSelect.append('<option value="' + section.id + '">' + section.name + '</option>');
-                            });
-                            sectionSelect.prop('disabled', false);
-                        } else {
-                            sectionSelect.append('<option value=""><?php echo get_phrase('no_sections_found'); ?></option>');
-                            sectionSelect.prop('disabled', false);
-                        }
-                        toggleDateField();
-                    } catch (e) {
-                        console.error('Erreur de parsing JSON dans get_sections : ', e);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erreur AJAX get_sections : ', status, error);
-                }
-            });
-        } else {
-            $('#section_id').empty().append('<option value=""><?php echo get_phrase('select_section'); ?></option>').prop('disabled', true);
-            toggleDateField();
-        }
-    });
+  
 
     // Filtrer les examens lorsqu'on clique sur le bouton Rechercher
     $('#filter_exams').on('click', function() {
         var school_id = $('#school_id').val();
         var class_id = $('#class_id').val();
-        var section_id = $('#section_id').val();
+
         var date_filter = $('#date_filter').val();
         var csrf_token = $('#csrf_hash').val();
 
-        if (school_id && class_id && section_id) {
+        if (school_id && class_id) {
             $.ajax({
                 url: '<?php echo site_url('student/filter_exams'); ?>',
                 type: 'POST',
                 data: {
                     school_id: school_id,
                     class_id: class_id,
-                    section_id: section_id,
                     date_filter: date_filter,
                     '<?php echo $this->security->get_csrf_token_name(); ?>': csrf_token
                 },
@@ -417,8 +369,7 @@ $(document).ready(function() {
         } else {
             console.error('Données manquantes pour filter_exams : ', {
                 school_id: school_id,
-                class_id: class_id,
-                section_id: section_id
+                class_id: class_id
             });
         }
     });
@@ -543,47 +494,7 @@ $(document).ready(function() {
                         var class_id = classes[0].id;
                         console.log('Classe par défaut : ', class_id);
 
-                        $.ajax({
-                            url: '<?php echo site_url('student/get_sections'); ?>',
-                            type: 'POST',
-                            data: {
-                                classe_id: class_id,
-                                '<?php echo $this->security->get_csrf_token_name(); ?>': $('#csrf_hash').val()
-                            },
-                            success: function(response) {
-                                console.log('Réponse get_sections : ', response);
-                                try {
-                                    var data = JSON.parse(response);
-                                    $('#csrf_hash').val(data.csrf_hash || $('#csrf_hash').val());
-                                    var sections = data.sections || data;
-                                    var sectionSelect = $('#section_id');
-                                    sectionSelect.empty().append('<option value=""><?php echo get_phrase('select_section'); ?></option>');
-                                    if (sections.length > 0) {
-                                        $.each(sections, function(index, section) {
-                                            sectionSelect.append('<option value="' + section.id + '">' + section.name + '</option>');
-                                        });
-                                        sectionSelect.prop('disabled', false);
-
-                                        var section_id = sections[0].id;
-                                        console.log('Section par défaut : ', section_id);
-
-                                        loadInitialExams(class_id, section_id);
-                                    } else {
-                                        sectionSelect.append('<option value=""><?php echo get_phrase('no_sections_found'); ?></option>');
-                                        sectionSelect.prop('disabled', false);
-                                        console.warn('Aucune section trouvée pour la classe : ', class_id);
-                                        $('#exam_table_body').html('<tr><td colspan="5"><?php echo get_phrase('no_sections_found'); ?></td></tr>');
-                                    }
-                                } catch (e) {
-                                    console.error('Erreur de parsing JSON dans get_sections : ', e, response);
-                                    $('#exam_table_body').html('<tr><td colspan="5"><?php echo get_phrase('error_loading_sections'); ?></td></tr>');
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('Erreur AJAX get_sections : ', status, error, xhr.responseText);
-                                $('#exam_table_body').html('<tr><td colspan="5"><?php echo get_phrase('error_loading_sections'); ?></td></tr>');
-                            }
-                        });
+                     
                     } else {
                         classSelect.append('<option value=""><?php echo get_phrase('no_classes_found'); ?></option>');
                         classSelect.prop('disabled', false);

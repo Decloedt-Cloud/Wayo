@@ -8,99 +8,83 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="mb-3 header-title mdi mdi-library-video"> <?php echo get_phrase('online_course'); ?></h4>
-                <form class="row justify-content-center" action="javascript:void(0)" method="get">
-                    <div class="col-md-12">
-                        <div class="row justify-content-center">
-
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="school_id"><?php echo get_phrase('schools'); ?></label>
-                                    <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
-                                        <option value="<?php echo 'all'; ?>" <?php if($selected_school_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
-                                        <?php 
-                                        $user_id   = $this->session->userdata('user_id');
-                                        // $schools = $this->db->get('schools')->result_array();
-                                        // $schools = $this->crud_model->get_schools()->result_array();                            
-                                        $schools =  $this->db->select('*,schools.id as id');
-                                        $this->db->from('schools');
-                                        $this->db->join('students', 'schools.id = students.school_id', 'left');
-                                        $this->db->where('students.user_id', $user_id);
-                                        $query = $this->db->get()->result_array();
-                                        ?>
-                                        <?php foreach ($query as $school): ?>
-                                            <option value="<?php echo $school['id']; ?>" <?php if($selected_school_id == $school['id']) echo 'selected'; ?>>   <?php echo  $school['name']; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
+                <div class="row mt-4 d-print-none">
+                    <form class="row justify-content-center" action="javascript:void(0)" method="get">
+                        <div class="col-md-1 mb-2"></div>
+                        <div class="col-md-3 mb-1">
+                            <div class="form-group">
+                                                <label for="school_id"><?php echo get_phrase('schools'); ?></label>
+                                                <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
+                                                    <option value="<?php echo 'all'; ?>" <?php if($selected_school_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
+                                                    <?php 
+                                                    $user_id   = $this->session->userdata('user_id');
+                                                    // $schools = $this->db->get('schools')->result_array();
+                                                    // $schools = $this->crud_model->get_schools()->result_array();                            
+                                                    $schools =  $this->db->select('*,schools.id as id');
+                                                    $this->db->from('schools');
+                                                    $this->db->join('students', 'schools.id = students.school_id', 'left');
+                                                    $this->db->where('students.user_id', $user_id);
+                                                    $query = $this->db->get()->result_array();
+                                                    ?>
+                                                    <?php foreach ($query as $school): ?>
+                                                        <option value="<?php echo $school['id']; ?>" <?php if($selected_school_id == $school['id']) echo 'selected'; ?>>   <?php echo  $school['name']; ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
                             </div>
-                            <!-- Course Categories -->
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="class_id"><?php echo get_phrase('classes'); ?></label>
-                                    <select class="form-control"  name="class_id" id="class_id_course">
-                                        <option value="<?php echo 'all'; ?>" <?php if($selected_class_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
-                                        
+                        <div class="col-md-3 mb-1">
+                                 <div class="form-group">
+                                                <label for="class_id"><?php echo get_phrase('classes'); ?></label>
+                                                <select class="form-control"  name="class_id" id="class_id_course">
+                                                    <option value="<?php echo 'all'; ?>" <?php if($selected_class_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
+                                                    
 
-                                <?php if($selected_school_id !=""){
-                               $classes = $this->db->get_where('classes', array('school_id' => $selected_school_id))->result_array(); ?>
-                                <?php foreach($classes as $classe): ?>
-                                    <option value="<?php echo $classe['id']; ?>" <?php if($classe['id'] == $selected_class_id) echo 'selected'; ?>><?php echo $classe['name']; ?></option>
-                                <?php endforeach; ?>
-                            <?php } else { ?>
-                                <option value=""><?php echo get_phrase('select_section'); ?></option>
-                            <?php } ?>
-                                  
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-
-                            <!-- Course Teacher -->
-                                <div class="col-md-2" <?php if($this->session->userdata('teacher_login') == 1) echo 'hidden'; ?>>
-                                    <div class="form-group">
-                                        <label for="user_id"><?php echo get_phrase('instructor'); ?></label>
-                                        <select class="form-control"  name="user_id" id = 'user_id'>
-                                            <option value="all" <?php if($selected_user_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
-                                            <?php foreach ($all_teachers->result_array() as $teacher): ?>
-                                                <option value="<?php echo $teacher['id']; ?>" <?php if($selected_user_id == $teacher['id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            <!-- Course subject -->
-                                <!-- <div class="col-md-2"<?php if($this->session->userdata('student_login') != 1) echo 'hidden'; ?>>
-                                    <div class="form-group">
-                                        <?php $class_id = $this->lms_model->get_class_id_by_user($this->session->userdata('user_id'));; ?>
-                                            <?php $subjects = $this->lms_model->get_subject_by_class_id($class_id); ?>
-                                        <label for="subject_id"><?php echo get_phrase('subject'); ?>dddddd</label>
-                                        <select class="form-control"  name="subject" id = 'subject_id'>
-                                            <option value="all" <?php if($selected_subject == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
+                                                        <?php if($selected_school_id !=""){
+                                                                $classes = $this->db->get_where('classes', array('school_id' => $selected_school_id))->result_array(); ?>
+                                                        <?php foreach($classes as $classe): ?>
+                                                            <option value="<?php echo $classe['id']; ?>" <?php if($classe['id'] == $selected_class_id) echo 'selected'; ?>><?php echo $classe['name']; ?></option>
+                                                        <?php endforeach; ?>
+                                                        <?php } else { ?>
+                                                            <option value=""><?php echo get_phrase('select_section'); ?></option>
+                                                        <?php } ?>
                                             
-                                            <?php foreach($subjects as $subject){ ?>
-                                                <option value="<?php echo $subject['id']; ?>" <?php if($selected_subject == $subject['id']) echo 'selected'; ?>><?php echo $subject['name']; ?></option>
-                                            <?php } ?>
-                                            
-                                        </select>
-                                    </div>
-                                </div> -->
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for=".." class="text-white">..</label>
-                                    <button type="submit" class="btn btn-primary btn-block" onclick="filterCourse()" name="button"><?php echo get_phrase('filter'); ?></button>
-                                </div>
-                            </div>
+                                                </select>
+                                 </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="col-md-3 mb-1" <?php if($this->session->userdata('teacher_login') == 1) echo 'hidden'; ?>>
+                                <div class="form-group">
+                                                        <label for="user_id"><?php echo get_phrase('instructor'); ?></label>
+                                                        <select class="form-control"  name="user_id" id = 'user_id'>
+                                                            <option value="all" <?php if($selected_user_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
+                                                            <?php foreach ($all_teachers->result_array() as $teacher): ?>
+                                                                <option value="<?php echo $teacher['id']; ?>" <?php if($selected_user_id == $teacher['id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                </div>
+                                        
+                        </div>
+                    
+
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                                    <label for=".." class="text-white">..</label>
+                                                    <button type="submit" class="btn btn-primary btn-block" onclick="filterCourse()" name="button"><?php echo get_phrase('filter'); ?></button>
+                                </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>                                                       
+
+
+      
 
         <!-- Simple card -->
+      
+    
         <?php if (count($courses) > 0): ?>
+        
             <div class="row">
                 <?php foreach ($courses as $key => $course):
                     $teacher_details = $this->user_model->get_user_details($course['user_id']);
@@ -108,7 +92,7 @@
                     $this->db->where('id', $course['class_id']);
                     $class_details = $this->db->get('classes')->row_array();
                     $sections = $this->lms_model->get_section('course', $course['id']);
-                    $subject = $this->crud_model->get_subject_by_id($course['subject_id']);
+                
                     $lessons = $this->lms_model->get_lessons('course', $course['id']); 
 
                     $this->db->where('user_id', $user_id);
@@ -131,7 +115,7 @@
                               $course_thumbnail = base_url("uploads/course_thumbnail/placeholder.png");
                             endif; ?>
                             <div class="w-100 bg_course_thumbnail" style="background-image: url('<?php echo $course_thumbnail; ?>');">
-                                <span class="badge badge-success float-right mt-2 mr-2 p-1"><?php echo $subject['name']; ?></span>
+                                
                             </div>
                             <div class="card-body ">
                                 <h4 class="card-title"><?php echo $course['title']; ?></h4>

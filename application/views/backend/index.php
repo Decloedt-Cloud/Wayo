@@ -1,17 +1,23 @@
 <?php
+ 
+
 $user_type = $this->session->userdata('user_type');
 $user_id   = $this->session->userdata('user_id');
 $logged_in_user_details = $this->user_model->get_user_details($user_id);
 $user_name = $logged_in_user_details['name'];
 $school_id = school_id();
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+
     <!-- all the meta tags -->
     <?php include 'metas.php'; ?>
+   
     <!-- all the css files -->
     <?php include 'includes_top.php'; ?>
+  
     <style>
     body[dir="rtl"] {
         font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
@@ -45,9 +51,12 @@ $school_id = school_id();
     }
     </style>
 </head>
+
+
 <body class="loading" data-layout="detached" data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}' <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- HEADER -->
     <?php include 'header.php'; ?>
+
     <div class="container-fluid">
         <div class="wrapper">
             <!-- BEGIN CONTENT -->
@@ -60,6 +69,7 @@ $school_id = school_id();
                     <div class="loadings hidden"></div>
                     <!-- BEGIN PlACE PAGE CONTENT HERE -->
                     <?php
+               
                     if (!isset($page_name)) {
                         $page_name = "index.php";
                     }else{

@@ -41,15 +41,7 @@
                                     ?>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style="font-weight: bold;"><?php echo get_phrase('section'); ?>:</td>
-                                <td>
-                                    <?php
-                                        $section_id = $this->db->get_where('enrols', array('student_id' => $param1))->row('section_id');
-                                        echo $this->db->get_where('sections', array('id' => $section_id))->row('name');
-                                    ?>
-                                </td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>

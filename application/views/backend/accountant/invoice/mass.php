@@ -4,7 +4,7 @@
     <div class="form-row">
         <div class="form-group mb-1">
             <label for="class_id_on_create"><?php echo get_phrase('class'); ?></label>
-            <select name="class_id" id="class_id_on_create" class="form-control"   required onchange="classWiseSectionOnCreate(this.value)">
+            <select name="class_id" id="class_id_on_create" class="form-control"   required >
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->crud_model->get_classes()->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -13,12 +13,7 @@
             </select>
         </div>
 
-        <div class="form-group  col-md-12">
-            <label for="section_id_on_create"><?php echo get_phrase('section'); ?></label>
-            <select name="section_id" id = "section_id_on_create" class="form-control"  required>
-                <option value=""><?php echo get_phrase('select_section'); ?></option>
-            </select>
-        </div>
+
 
         <div class="form-group mb-1">
             <label for="title"><?php echo get_phrase('invoice_title'); ?></label>
@@ -57,15 +52,8 @@ $(".ajaxForm").submit(function(e) {
 });
 
 $(document).ready(function () {
-    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id_on_create', '#section_id_on_create', '#status']);
+    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id_on_create',  '#status']);
 });
 
-function classWiseSectionOnCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_create').html(response);
-        }
-    });
-}
+
 </script>

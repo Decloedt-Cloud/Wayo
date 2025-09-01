@@ -646,4 +646,4 @@ $config['enable_hooks'] = TRUE;
 
 
 // Dans config.php ou constants.php
-$config['humhub_url'] = 'https://humhub.wayo.site';
+$config['humhub_url'] = 'https://humhub.wayo.site/';

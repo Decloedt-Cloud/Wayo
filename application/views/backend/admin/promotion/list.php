@@ -22,15 +22,14 @@
                         <tr>
                             <th><?php echo get_phrase('image'); ?></th>
                             <th><?php echo get_phrase('student_name'); ?></th>
-                            <th><?php echo get_phrase('section'); ?></th>
+                           
                             <th><?php echo get_phrase('status'); ?></th>
                             <th><?php echo get_phrase('action'); ?></th>
                         </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($enrolments as $enrolment):
-                                  $student_details = $this->user_model->get_student_details_by_id('student', $enrolment['student_id']);
-                                  $section_details = $this->crud_model->get_section_details_by_id('section', $student_details['section_id'])->row_array(); ?>
+                                  $student_details = $this->user_model->get_student_details_by_id('student', $enrolment['student_id']); ?>
                               <tr>
                                   <td class="text-center">
                                     <img src="<?php echo $this->user_model->get_user_image($student_details['user_id']); ?>" height="50" alt=""><br>
@@ -39,9 +38,6 @@
                                     <?php echo $student_details['name']; ?>
                                     <br>
                                     <small><b><?php echo get_phrase('student_code'); ?>:</b><?php echo $student_details['code']; ?></small>
-                                  </td>
-                                  <td>
-                                    <?php echo $section_details['name']; ?>
                                   </td>
                                   <td style="text-align: center;">
                                       <span class="badge badge-info-lighten" id = "success_<?php echo $student_details['id']; ?>" style="display: none;"><?php echo get_phrase('prmoted'); ?></span>

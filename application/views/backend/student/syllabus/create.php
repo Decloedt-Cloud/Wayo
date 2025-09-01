@@ -12,7 +12,7 @@
         </div>
         <div class="form-group mb-1">
             <label for="class_id_on_create"><?php echo get_phrase('class'); ?></label>
-            <select class="form-control"  id="class_id_on_create" name="class_id" onchange="classWiseSectionOnCreate(this.value)" required>
+            <select class="form-control"  id="class_id_on_create" name="class_id"  required>
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach($classes as $class): ?>
@@ -21,19 +21,9 @@
             </select>
         </div>
 
-        <div class="form-group mb-1">
-            <label for="section_id_on_create"><?php echo get_phrase('section'); ?></label>
-            <select class="form-control"  id="section_id_on_create" name="section_id" required>
-                <option value=""><?php echo get_phrase('select_a_section'); ?></option>
-            </select>
-        </div>
 
-        <div class="form-group mb-1">
-            <label for="subject_id_on_create"><?php echo get_phrase('subject'); ?></label>
-            <select class="form-control"  id="subject_id_on_create" name="subject_id" requied>
-                <option><?php echo get_phrase('select_a_subject'); ?></option>
-            </select>
-        </div>
+
+
         <div class="form-group mb-1">
             <label for="syllabus_file"><?php echo get_phrase('upload_syllabus'); ?></label>
             <div class="custom-file-upload d-inline-block">
@@ -57,28 +47,13 @@ $(".ajaxForm").submit(function(e) {
 $('document').ready(function(){
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); 
 //     initSelect2(['#class_id_on_create',
-//                 '#section_id_on_create',
-//                 '#subject_id_on_create']);
-// });
+//            
+//               ]);
+});
 
-function classWiseSectionOnCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('section/list/'); ?>"+classId,
-        success: function(response){
-            $('#section_id_on_create').html(response);
-            classWiseSubjectOnCreate(classId);
-        }
-    });
-}
 
-function classWiseSubjectOnCreate(classId) {
-    $.ajax({
-        url: "<?php echo route('class_wise_subject/'); ?>"+classId,
-        success: function(response){
-            $('#subject_id_on_create').html(response);
-        }
-    });
-}
+
+
 </script>
 
 

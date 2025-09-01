@@ -219,18 +219,7 @@ class Teacher extends CI_Controller {
 			  // $this->db->delete('appointments');
 			  echo json_encode(["status" => "deleted"]);
 		  }
-		  public function get_sections() 
-		  {
-			$classe_id = $this->input->post('classe_id');
-		
-			if (!empty($classe_id)) {
-				$sections = $this->db->get_where('sections', array('class_id' => $classe_id))->result_array();
-			} else {
-				$sections = [];
-			}
-		
-			echo json_encode($sections);
-		  }
+
 		  public function delete_room()
 		  {
 			  $data = json_decode(file_get_contents("php://input"), true);
@@ -557,7 +546,7 @@ class Teacher extends CI_Controller {
   {
     $this->session->unset_session();
     $page_data['class_id'] = '';
-    $page_data['section_id'] = '';
+   
 
     if ($param1 == 'create') {
       //form view
@@ -606,7 +595,7 @@ class Teacher extends CI_Controller {
     } else {
         // Load the view with filtered data
         $page_data['class_id'] = html_escape($this->input->post('class_id'));
-        $page_data['section_id'] = html_escape($this->input->post('section_id'));
+      
         $page_data['working_page'] = 'filter';
         $page_data['folder_name'] = 'student';
         $page_data['page_title'] = 'student_list';
@@ -709,7 +698,7 @@ class Teacher extends CI_Controller {
 
     if ($param1 == 'filter') {
             $page_data['class_id'] = ($param2 == '' || $param2 == 'all') ? 'all' : $param2;
-            $page_data['section_id'] = ($param3 == '' || $param3 == 'all') ? 'all' : $param3;
+          
             $html_content = $this->load->view('backend/teacher/student/list', $page_data, TRUE);
             $csrf = array(
                 'csrfName' => $this->security->get_csrf_token_name(),
@@ -720,40 +709,14 @@ class Teacher extends CI_Controller {
 
         if (empty($param1)) {
             $page_data['class_id'] = 'all';
-            $page_data['section_id'] = 'all';
+          
             $page_data['working_page'] = 'filter';
             $page_data['folder_name'] = 'student';
             $page_data['page_title'] = 'student_list';
             $this->load->view('backend/index', $page_data);
         }
   }
-	//END STUDENT ADN ADMISSION section
-	public function get_sections_by_class()
-	{
-	  $class_ids = $this->input->post('class_ids');
-	  if (empty($class_ids)) {
-		echo json_encode([]);
-		return;
-	  }
-  
-	  $sections = [];
-	  foreach ($class_ids as $class_id) {
-		$this->db->where('class_id', $class_id);
-		$result = $this->db->get('sections')->result_array();
-		$sections = array_merge($sections, $result);
-	  }
-  
-		   // Prepare a new CSRF token for the response
-		   $csrf = array(
-			'csrfName' => $this->security->get_csrf_token_name(),
-			'csrfHash' => $this->security->get_csrf_hash(),
-		);
-	
-		// Return JSON response with the HTML content and new CSRF token
-		echo json_encode(array('sections' => $sections, 'csrf' => $csrf));
-	  
-	}
-	//START TEACHER section
+
 	public function teacher($param1 = '', $param2 = '', $param3 = ''){
 
 
@@ -851,18 +814,6 @@ class Teacher extends CI_Controller {
 				echo json_encode(array('status' => $response, 'csrf' => $csrf));
 		}
 
-		if($param1 == 'section'){
-			$response = $this->crud_model->section_update($param2);
-			// echo $response;
-			       // Préparer la réponse avec un nouveau jeton CSRF
-				   $csrf = array(
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-				// Renvoyer la réponse avec un nouveau jeton CSRF
-				echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
 
 		// show data from database
 		if ($param1 == 'list') {
@@ -877,46 +828,10 @@ class Teacher extends CI_Controller {
 	}
 	//END CLASS section
 
-	//	SECTION STARTED
-	public function section($action = "", $id = "") {
 
-		// PROVIDE A LIST OF SECTION ACCORDING TO CLASS ID
-		if ($action == 'list') {
-			$page_data['class_id'] = $id;
-			$this->load->view('backend/teacher/section/list', $page_data);
-		}
-	}
-	//	SECTION ENDED
 
 	//START SUBJECT section
-	public function subject($param1 = '', $param2 = ''){
-
-		if($param1 == 'create'){
-			$response = $this->crud_model->subject_create();
-			echo $response;
-		}
-
-		if($param1 == 'update'){
-			$response = $this->crud_model->subject_update($param2);
-			echo $response;
-		}
-
-		if($param1 == 'delete'){
-			$response = $this->crud_model->subject_delete($param2);
-			echo $response;
-		}
-
-		if($param1 == 'list'){
-			$page_data['class_id'] = $param2;
-			$this->load->view('backend/teacher/subject/list', $page_data);
-		}
-
-		if(empty($param1)){
-			$page_data['folder_name'] = 'subject';
-			$page_data['page_title'] = 'subject';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
+	
   // LANGUAGE SETTINGS
   public function language($param1 = "", $param2 = "")
   {
@@ -1048,7 +963,7 @@ class Teacher extends CI_Controller {
 
 		if($param1 == 'list'){
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+
 			$this->load->view('backend/teacher/syllabus/list', $page_data);
 		}
 
@@ -1104,7 +1019,6 @@ class Teacher extends CI_Controller {
 
 		if($param1 == 'filter'){
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
 			$this->load->view('backend/teacher/routine/list', $page_data);
 		}
 
@@ -1142,7 +1056,6 @@ class Teacher extends CI_Controller {
 			$date = '01 '.$this->input->post('month').' '.$this->input->post('year');
 			$page_data['attendance_date'] = strtotime($date);
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
 			$page_data['month'] = htmlspecialchars($this->input->post('month'));
 			$page_data['year'] = htmlspecialchars($this->input->post('year'));
 			// $this->load->view('backend/teacher/attendance/list', $page_data);
@@ -1162,7 +1075,6 @@ class Teacher extends CI_Controller {
 		if($param1 == 'student'){
 			$page_data['attendance_date'] = strtotime($this->input->post('date'));
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
 			// $this->load->view('backend/teacher/attendance/student', $page_data);
 			      // Charger la vue mise à jour
 			$response_html = $this->load->view('backend/teacher/attendance/student', $page_data, TRUE);
@@ -1459,10 +1371,9 @@ class Teacher extends CI_Controller {
 
 		if($param1 == 'list'){
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
 			// $page_data['subject_id'] = htmlspecialchars($this->input->post('subject'));
 			$page_data['exam_id'] = htmlspecialchars($this->input->post('exam'));
-			$this->crud_model->mark_insert($page_data['class_id'], $page_data['section_id'], $page_data['exam_id']);
+			$this->crud_model->mark_insert($page_data['class_id'], $page_data['exam_id']);
 			// $this->load->view('backend/teacher/mark/list', $page_data);
 			// Charger la vue et capturer le contenu
 			$html_content = $this->load->view('backend/teacher/mark/list', $page_data, TRUE);

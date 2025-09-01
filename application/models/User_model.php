@@ -592,14 +592,14 @@ class User_model extends CI_Model
 public function teacher_permission()
 	{
 		$class_id = html_escape($this->input->post('class_id'));
-		$section_id = html_escape($this->input->post('section_id'));
+	
 		$teacher_id = html_escape($this->input->post('teacher_id'));
 		$column_name = html_escape($this->input->post('column_name'));
 		$value = html_escape($this->input->post('value'));
 
 		$marks      = 0;
     	$assignment = 0;
-		$check_row = $this->db->get_where('teacher_permissions', array('class_id' => $class_id, 'section_id' => $section_id, 'teacher_id' => $teacher_id));
+		$check_row = $this->db->get_where('teacher_permissions', array('class_id' => $class_id, 'teacher_id' => $teacher_id));
 		if ($check_row->num_rows() > 0) {
 			// Récupère l’existant pour pouvoir conserver la 2ᵉ permission
 			$row = $check_row->row();
@@ -608,7 +608,6 @@ public function teacher_permission()
 
 			$data[$column_name] = $value;
 			$this->db->where('class_id', $class_id);
-			$this->db->where('section_id', $section_id);
 			$this->db->where('teacher_id', $teacher_id);
 			$this->db->update('teacher_permissions', $data);
 
@@ -624,7 +623,7 @@ public function teacher_permission()
 
 		} else {
 			$data['class_id'] = $class_id;
-			$data['section_id'] = $section_id;
+		
 			$data['teacher_id'] = $teacher_id;
 			$data['marks']       = ($column_name === 'marks') ? 1 : 0;
         	$data['assignment']   = ($column_name === 'assignment') ? 1 : 0;
@@ -965,7 +964,7 @@ public function teacher_permission()
 			$enroll_data = [
 				'student_id' => $student_id,
 				'class_id' => html_escape($this->input->post('class_id')),
-				'section_id' => html_escape($this->input->post('section_id')),
+			
 				'session' => $this->active_session,
 				'school_id' => $this->school_id
 			];
@@ -1029,7 +1028,7 @@ public function teacher_permission()
     {
         $duplication_counter = 0;
         $class_id = html_escape($this->input->post('class_id'));
-        $section_id = html_escape($this->input->post('section_id'));
+       
  
         $students_name = html_escape($this->input->post('name'));
         $students_email = html_escape($this->input->post('email'));
@@ -1101,7 +1100,7 @@ public function teacher_permission()
  
                 $enroll_data['student_id'] = $student_id;
                 $enroll_data['class_id'] = $class_id;
-                $enroll_data['section_id'] = $section_id;
+                
                 $enroll_data['session'] = $this->active_session;
                 $enroll_data['school_id'] = $this->school_id;
                 $this->db->insert('enrols', $enroll_data);
@@ -1136,8 +1135,9 @@ public function teacher_permission()
     }
 	public function excel_create()
 	{
+
 		$class_id = html_escape($this->input->post('class_id'));
-		$section_id = html_escape($this->input->post('section_id'));
+	
 		$school_id = $this->school_id;
 		$session_id = $this->active_session;
 		$role = 'student';
@@ -1154,7 +1154,7 @@ public function teacher_permission()
 			error_log("Erreur : Impossible de déplacer le fichier uploadé.");
 			return json_encode(array('status' => false, 'notification' => 'Erreur lors du déplacement du fichier.'));
 		}
-		
+	
 		// Vérifier si le fichier a bien été déplacé
 		if (!file_exists($upload_path)) {
 			error_log("Erreur : Fichier CSV non trouvé à l'emplacement : $upload_path");
@@ -1223,7 +1223,7 @@ public function teacher_permission()
 
 						$student_data['code'] = student_code();
 						$student_data['user_id'] = $user_id;
-						// $student_data['parent_id'] = html_escape($all_data[4]);				
+						
 						$student_data['session'] = $session_id;
 						$student_data['school_id'] = $school_id;
 						$student_data['status'] = '1';
@@ -1232,7 +1232,7 @@ public function teacher_permission()
 
 						$enroll_data['student_id'] = $student_id;
 						$enroll_data['class_id'] = $class_id;
-						$enroll_data['section_id'] = $section_id;
+				
 						$enroll_data['session'] = $session_id;
 						$enroll_data['school_id'] = $school_id;
 						$this->db->insert('enrols', $enroll_data);
@@ -1263,7 +1263,7 @@ public function teacher_permission()
 				'type'=>'success'
             );
         }
- 
+	
 		header('Content-Type: application/json');
 		echo json_encode($response);
 		exit(); 
@@ -1309,14 +1309,14 @@ public function teacher_permission()
 				
 				if (!empty($class_ids)) {
 					foreach ($class_ids as $class_id) {
-						$section_id = $this->input->post('section_id_'.$class_id);
+						
 						
 						// Verify both class_id and section_id exist before inserting
-						if (!empty($class_id) && !empty($section_id)) {
+						if (!empty($class_id) ) {
 							$data = array(
 								'student_id' => $student_id,
 								'class_id' => html_escape($class_id),
-								'section_id' => $section_id,
+								
 								'session' => $this->active_session,
 								'school_id' => $this->school_id,
 							);
@@ -1472,9 +1472,9 @@ public function teacher_permission()
 		return json_encode($response);
 	}
 
-	public function student_enrolment($section_id = "")
+	public function student_enrolment()
 	{
-		return $this->db->get_where('enrols', array('section_id' => $section_id, 'school_id' => $this->school_id, 'session' => $this->active_session));
+		return $this->db->get_where('enrols', array( 'school_id' => $this->school_id, 'session' => $this->active_session));
 	}
 
 
@@ -1482,34 +1482,7 @@ public function teacher_permission()
 	public function get_student_details_by_id($type = "", $id = "")
 	{
 		$enrol_data = array();
-		if ($type == "section") {
-			$checker = array(
-				'section_id' => $id,
-				'session' => $this->active_session,
-				'school_id' => $this->school_id
-			);
-			$enrol_data = $this->db->get_where('enrols', $checker)->result_array();
-			foreach ($enrol_data as $key => $enrol) {
-				$student_details = $this->db->get_where('students', array('id' => $enrol['student_id']))->row_array();
-				$enrol_data[$key]['code'] = $student_details['code'];
-				$enrol_data[$key]['user_id'] = $student_details['user_id'];
-
-				$user_details = $this->db->get_where('users', array('id' => $student_details['user_id']))->row_array();
-				$enrol_data[$key]['name'] = $user_details['name'];
-				$enrol_data[$key]['email'] = $user_details['email'];
-				$enrol_data[$key]['role'] = $user_details['role'];
-				$enrol_data[$key]['address'] = $user_details['address'];
-				$enrol_data[$key]['phone'] = $user_details['phone'];
-				$enrol_data[$key]['birthday'] = $user_details['birthday'];
-				$enrol_data[$key]['gender'] = $user_details['gender'];
-
-				$class_details = $this->crud_model->get_class_details_by_id($enrol['class_id'])->row_array();
-				$section_details = $this->crud_model->get_section_details_by_id('section', $enrol['section_id'])->row_array();
-
-				$enrol_data[$key]['class_name'] = $class_details['name'];
-				$enrol_data[$key]['section_name'] = $section_details['name'];
-			}
-		} elseif ($type == "class") {
+	   if ($type == "class") {
 			$checker = array(
 				'class_id' => $id,
 				'session' => $this->active_session,
@@ -1531,10 +1504,8 @@ public function teacher_permission()
 				$enrol_data[$key]['gender'] = $user_details['gender'];
 
 				$class_details = $this->crud_model->get_class_details_by_id($enrol['class_id'])->row_array();
-				$section_details = $this->crud_model->get_section_details_by_id('section', $enrol['section_id'])->row_array();
 
 				$enrol_data[$key]['class_name'] = $class_details['name'];
-				$enrol_data[$key]['section_name'] = $section_details['name'];
 			}
 		} elseif ($type == "student") {
 			$checker = array(
@@ -1557,10 +1528,8 @@ public function teacher_permission()
 			$enrol_data['gender'] = $user_details['gender'];
 
 			$class_details = $this->crud_model->get_class_details_by_id($enrol_data['class_id'])->row_array();
-			$section_details = $this->crud_model->get_section_details_by_id('section', $enrol_data['section_id'])->row_array();
 
 			$enrol_data['class_name'] = $class_details['name'];
-			$enrol_data['section_name'] = $section_details['name'];
 		}
 		return $enrol_data;
 	}
@@ -1891,13 +1860,11 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$students[$key]['birthday'] = $user_details['birthday'];
 			$students[$key]['gender'] = $user_details['gender'];
 			$students[$key]['class_id'] = $enrol_data['class_id'];
-			$students[$key]['section_id'] = $enrol_data['section_id'];
+		
 
 			$class_details = $this->crud_model->get_class_details_by_id($enrol_data['class_id'])->row_array();
-			$section_details = $this->crud_model->get_section_details_by_id('section', $enrol_data['section_id'])->row_array();
 
 			$students[$key]['class_name'] = $class_details['name'];
-			$students[$key]['section_name'] = $section_details['name'];
 		}
 		return $students;
 	}

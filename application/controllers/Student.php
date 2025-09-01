@@ -113,10 +113,7 @@ class Student extends CI_Controller {
 
 	//START CLASS secion
 	public function manage_class($param1 = '', $param2 = '', $param3 = ''){
-		if($param1 == 'section'){
-			$response = $this->crud_model->section_update($param2);
-			echo $response;
-		}
+
 
 		// show data from database
 		if ($param1 == 'list') {
@@ -130,53 +127,7 @@ class Student extends CI_Controller {
 		}
 	}
 	//END CLASS section
-	//	SECTION STARTED
-	public function section($action = "", $id = "") {
-		if ($action == 'list') {
-			$user_id = $this->session->userdata('user_id');
-			$session_id = active_session();
-	
-			// Récupérer les sections où l'étudiant est inscrit pour la classe donnée
-			$this->db->select('sections.id, sections.name');
-			$this->db->from('sections');
-			$this->db->join('enrols', 'enrols.section_id = sections.id', 'left');
-			$this->db->join('students', 'students.id = enrols.student_id', 'left');
-			$this->db->where('sections.class_id', $id);
-			$this->db->where('students.user_id', $user_id);
-			$this->db->where('enrols.session', $session_id);
-			$sections = $this->db->get()->result_array();
-	
-			$output = '<option value="">' . get_phrase('select_section') . '</option>';
-			foreach ($sections as $section) {
-				$output .= '<option value="' . $section['id'] . '">' . $section['name'] . '</option>';
-			}
-			echo $output;
-		}
-	}
-    public function section_course($action = "", $id = "") {
-		if ($action == 'list') {
-			$user_id = $this->session->userdata('user_id');
-			$session_id = active_session();
-	
-			// Récupérer les sections où l'étudiant est inscrit pour la classe donnée
-			$this->db->select('sections.id, sections.name');
-			$this->db->from('sections');
-			// $this->db->join('enrols', 'enrols.section_id = sections.id', 'left');
-			// $this->db->join('students', 'students.id = enrols.student_id', 'left');
-			$this->db->where('sections.class_id', $id);
-			// $this->db->where('students.user_id', $user_id);
-			// $this->db->where('enrols.session', $session_id);
-			$sections = $this->db->get()->result_array();
-	
-			$output = '<option value="">' . get_phrase('select_section') . '</option>';
-			foreach ($sections as $section) {
-				$output .= '<option value="' . $section['id'] . '">' . $section['name'] . '</option>';
-			}
-			echo $output;
-		}
-	}
-    
-	//	SECTION ENDED
+
       //START student Create_Join bigbleubutton 
       public function Recording($param1 = '', $param2 = '', $param3 = '')
       {
@@ -376,28 +327,8 @@ class Student extends CI_Controller {
 		}
 		//	SECTION ENDED
 
-	//START SUBJECT section
-	public function subject($param1 = '', $param2 = ''){
-
-		if($param1 == 'list'){
-			$page_data['class_id'] = $param2;
-			$this->load->view('backend/student/subject/list', $page_data);
-		}
-
-		if(empty($param1)){
-			$page_data['folder_name'] = 'subject';
-			$page_data['page_title'] = 'subject';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
-
-	public function class_wise_subject($class_id) {
-
-		// PROVIDE A LIST OF SUBJECT ACCORDING TO CLASS ID
-		$page_data['class_id'] = $class_id;
-		$this->load->view('backend/student/subject/dropdown', $page_data);
-	}
-	//END SUBJECT section
+	
+		
 
 
 	//START SYLLABUS section
@@ -405,7 +336,7 @@ class Student extends CI_Controller {
 
 		if($param1 == 'list'){
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+			
 			$this->load->view('backend/student/syllabus/list', $page_data);
 		}
 
@@ -522,7 +453,7 @@ class Student extends CI_Controller {
 
 		if($param1 == 'filter'){
 			$page_data['class_id'] = $param2;
-			$page_data['section_id'] = $param3;
+			
 			$this->load->view('backend/student/routine/list', $page_data);
 		}
 
@@ -541,7 +472,7 @@ class Student extends CI_Controller {
 			$date = '01 '.$this->input->post('month').' '.$this->input->post('year');
 			$page_data['attendance_date'] = strtotime($date);
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+			
 			$page_data['school_id'] = htmlspecialchars($this->input->post('school_id'));
 			$page_data['month'] = htmlspecialchars($this->input->post('month'));
 			$page_data['year'] = htmlspecialchars($this->input->post('year'));
@@ -586,7 +517,7 @@ class Student extends CI_Controller {
 	 // Stocker les données de l'inscription dans la session pour un accès ultérieur
 		$data['student_id'] = htmlspecialchars($this->input->post('student_id'));
 		$data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-		$data['section_id'] = htmlspecialchars($this->input->post('section_id'));
+		
 		$data['school_id'] = htmlspecialchars($this->input->post('school_id'));
 		$data['price'] = htmlspecialchars($this->input->post('price'));
 		$data['currency'] = htmlspecialchars($this->input->post('currency'));
@@ -827,10 +758,10 @@ class Student extends CI_Controller {
 
 		if($param1 == 'list'){
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
-			$page_data['section_id'] = htmlspecialchars($this->input->post('section_id'));
-			// $page_data['subject_id'] = htmlspecialchars($this->input->post('subject'));
+			
+		
 			$page_data['exam_id'] = htmlspecialchars($this->input->post('exam'));
-			// $this->crud_model->mark_insert($page_data['class_id'], $page_data['section_id'], $page_data['subject_id'], $page_data['exam_id']);
+			// $this->crud_model->mark_insert($page_data['class_id'],  $page_data['subject_id'], $page_data['exam_id']);
 			// $this->load->view('backend/student/mark/list', $page_data);
 			// Charger la vue mise à jour
 			$response_html = $this->load->view('backend/student/mark/list', $page_data, TRUE);
@@ -1118,11 +1049,10 @@ public function filter_exams() {
 
         $school_id = $this->input->post('school_id');
         $class_id = $this->input->post('class_id');
-        $section_id = $this->input->post('section_id');
         $date_filter = $this->input->post('date_filter');
         $user_id = $this->session->userdata('user_id');
 
-        if (!$school_id || !$class_id || !$section_id || !$user_id) {
+        if (!$school_id || !$class_id || !$user_id) {
             http_response_code(400);
             echo json_encode([
                 'error' => 'Données manquantes',
@@ -1149,7 +1079,7 @@ public function filter_exams() {
         $this->db->where('students.user_id', $user_id);
         $this->db->where('enrols.school_id', $school_id);
         $this->db->where('enrols.class_id', $class_id);
-        $this->db->where('enrols.section_id', $section_id);
+        
         $this->db->where('enrols.session', $session_id);
 
         $student = $this->db->get()->row_array();
@@ -1165,14 +1095,12 @@ public function filter_exams() {
 
         // Construire la requête pour récupérer les examens
         $this->db->reset_query();
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
         $this->db->where('exams.school_id', $school_id);
         $this->db->where('exams.class_id', $class_id);
-        $this->db->where('exams.section_id', $section_id);
         $this->db->where('exams.session', $session_id);
 
         // Gérer le filtre de date
@@ -1220,8 +1148,6 @@ public function filter_exams() {
             $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
             $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
             $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
-            $table_html .= '<td>' . (!empty($exam['section_name']) ? htmlspecialchars($exam['section_name']) : get_phrase('no_section')) . '</td>';
-
             // Vérifier si l'examen a déjà été soumis
             $this->db->select('id');
             $this->db->from('exam_responses');
@@ -1261,46 +1187,7 @@ public function filter_exams() {
     }
 }
 
-public function get_sections() {
-	try {
-		$class_id = $this->input->post('classe_id');
-		$user_id = $this->session->userdata('user_id');
 
-		if (!$class_id || !$user_id) {
-			log_message('error', 'class_id ou user_id manquant dans get_sections');
-			echo json_encode(['sections' => [], 'csrf_hash' => $this->security->get_csrf_hash()]);
-			return;
-		}
-
-		$session_id = active_session();
-		log_message('debug', 'Session active : ' . $session_id);
-
-		$this->db->select('sections.*');
-		$this->db->from('sections');
-		$this->db->join('enrols', 'enrols.section_id = sections.id', 'left');
-		$this->db->join('students', 'students.id = enrols.student_id', 'left');
-		$this->db->where('sections.class_id', $class_id);
-		$this->db->where('students.user_id', $user_id);
-		$this->db->where('enrols.session', $session_id);
-
-		$sections = $this->db->get()->result_array();
-
-		log_message('debug', 'Requête SQL exécutée : ' . $this->db->last_query());
-		log_message('debug', 'Sections trouvées : ' . json_encode($sections));
-
-		echo json_encode([
-			'sections' => $sections,
-			'csrf_hash' => $this->security->get_csrf_hash()
-		]);
-	} catch (Exception $e) {
-		log_message('error', 'Erreur dans get_sections : ' . $e->getMessage());
-		http_response_code(500);
-		echo json_encode([
-			'error' => 'Erreur serveur interne',
-			'csrf_hash' => $this->security->get_csrf_hash()
-		]);
-	}
-}
 
 // Dans Student.php
 public function online_exam($exam_id = "") {
@@ -1320,12 +1207,11 @@ public function online_exam($exam_id = "") {
         $session_id = active_session();
 
         // Vérifier si l'étudiant a accès à cet examen
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id AND enrols.section_id = exams.section_id', 'left');
+        $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
         $this->db->join('students', 'students.id = enrols.student_id', 'left');
         $this->db->where('exams.id', $exam_id);
         $this->db->where('students.user_id', $user_id);
@@ -1407,12 +1293,12 @@ public function submit_exam() {
         }
 
         // Vérifier si l'étudiant a le droit de soumettre cet examen
-        $this->db->select('exams.*, classes.id as class_id, sections.id as section_id, schools.id as school_id');
+        $this->db->select('exams.*, classes.id as class_id, schools.id as school_id');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
+     
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id AND enrols.section_id = exams.section_id', 'left');
+        $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
         $this->db->join('students', 'students.id = enrols.student_id', 'left');
         $this->db->where('exams.id', $exam_id);
         $this->db->where('students.user_id', $user_id);
@@ -1533,7 +1419,6 @@ public function submit_exam() {
             'student_id' => $student_data['id'],
             'exam_id' => $exam_id,
             'class_id' => $exam['class_id'],
-            'section_id' => $exam['section_id'],
             'school_id' => $exam['school_id'],
             'session' => $session_id
         ]);
@@ -1552,7 +1437,6 @@ public function submit_exam() {
                 'subject_id' => NULL, // Pas de matière pour les examens en ligne
                 'exam_id' => $exam_id,
                 'class_id' => $exam['class_id'],
-                'section_id' => $exam['section_id'],
                 'school_id' => $exam['school_id'],
                 'session' => $session_id,
                 'mark_obtained' => $mark_obtained,
@@ -1592,12 +1476,11 @@ public function exam_results($exam_id = "", $student_id = "") {
         $user_id = $this->session->userdata('user_id');
         $session_id = active_session();
 
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id AND enrols.section_id = exams.section_id', 'left');
+        $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
         $this->db->join('students', 'students.id = enrols.student_id', 'left');
         $this->db->where('exams.id', $exam_id);
         $this->db->where('students.user_id', $user_id);
@@ -1647,12 +1530,12 @@ public function get_exam_results_popup($exam_id = "", $student_id = "") {
         $session_id = active_session();
 
         // Vérifier si l'étudiant a accès à cet examen
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
+      
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id AND enrols.section_id = exams.section_id', 'left');
+        $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
         $this->db->join('students', 'students.id = enrols.student_id', 'left');
         $this->db->where('exams.id', $exam_id);
         $this->db->where('students.user_id', $user_id);
@@ -1711,11 +1594,11 @@ public function load_initial_exams() {
         log_message('debug', 'Utilisateur connecté : ' . $this->session->userdata('user_id'));
 
         $class_id = $this->input->post('class_id');
-        $section_id = $this->input->post('section_id');
+       
         $date_filter = $this->input->post('date_filter');
         $user_id = $this->session->userdata('user_id');
 
-        if (!$class_id || !$section_id || !$user_id) {
+        if (!$class_id || !$user_id) {
             http_response_code(400);
             echo json_encode([
                 'error' => 'Données manquantes',
@@ -1760,7 +1643,6 @@ public function load_initial_exams() {
         $this->db->where('students.user_id', $user_id);
         $this->db->where_in('enrols.school_id', $school_ids);
         $this->db->where('enrols.class_id', $class_id);
-        $this->db->where('enrols.section_id', $section_id);
         $this->db->where('enrols.session', $session_id);
 
         $student = $this->db->get()->row_array();
@@ -1779,14 +1661,12 @@ public function load_initial_exams() {
 
         // Construire la requête pour récupérer les examens
         $this->db->reset_query();
-        $this->db->select('exams.*, classes.name as class_name, sections.name as section_name, schools.name as school_name');
+        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
         $this->db->from('exams');
         $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('sections', 'exams.section_id = sections.id', 'left');
         $this->db->join('schools', 'exams.school_id = schools.id', 'left');
         $this->db->where_in('exams.school_id', $school_ids);
         $this->db->where('exams.class_id', $class_id);
-        $this->db->where('exams.section_id', $section_id);
         $this->db->where('exams.session', $session_id);
         $this->db->where('exams.starting_date >=', $today_start);
 
@@ -1835,7 +1715,6 @@ public function load_initial_exams() {
             $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
             $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
             $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
-            $table_html .= '<td>' . (!empty($exam['section_name']) ? htmlspecialchars($exam['section_name']) : get_phrase('no_section')) . '</td>';
 
             $this->db->select('id');
             $this->db->from('exam_responses');
