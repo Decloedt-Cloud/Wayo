@@ -366,7 +366,7 @@ const CalendarApp = {
         }
     }
 
-    this.socket = io('https://preprod.wayo.site/', { transports: ['websocket'] });
+    this.socket = io('https://preprod.wayo.site:3001', { transports: ['websocket'] });
 
     this.socket.on('connect', () => {
         $('#connectionStatus').show();
