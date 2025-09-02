@@ -1,6 +1,6 @@
 require('dotenv').config(); 
 const PORT = process.env.PORT || 8080; 
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://preprod.wayo.site/';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://preprod.wayo.site:3001';
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');

@@ -33,4 +33,3 @@ tmp/*
 .DS_Store
 Thumbs.db
 .codegpt
-.env
