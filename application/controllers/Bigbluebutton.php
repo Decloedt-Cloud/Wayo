@@ -548,7 +548,7 @@ public function webhook() {
  * @param bool $is_running
  */
 private function notify_socket_server($meeting_id, $event_type, $participant_change, $is_running) {
-    $socket_io_url = 'https://preprod.wayo.site:3001/notify';
+    $socket_io_url = 'https://preprod.wayo.site/notify';
     $data = [
         'meetingID' => $meeting_id,
         'eventType' => $event_type,
