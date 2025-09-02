@@ -86,7 +86,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 
 
 
-defined('HUMHUB_BASE_URL') OR define('HUMHUB_BASE_URL', 'http://localhost/humhub/humhub-1.17.2');
+defined('HUMHUB_BASE_URL') OR define('HUMHUB_BASE_URL', 'https://humhub.wayo.site');
  
 
 // Clé secrète pour signer les tokens JWT 
