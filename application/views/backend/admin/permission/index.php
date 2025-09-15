@@ -1,41 +1,40 @@
-<!--title-->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-account-multiple-check title_icon"></i> <?php echo get_phrase('assigned_permission_for_teacher'); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
+<div class="mb-3">
+<div class="main-card">
+        <div class="card-body">
             <div class="row mt-3">
                 <div class="col-md-3"></div>
                 <div class="col-md-4">
-                    <select name="class" id="class_id_permission" class="form-control"  required>
+                    <select name="class" id="class_id_perm" class="form-control"   required>
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                             <?php
                             $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
                             $school_id = school_id();
                             foreach($classes as $class){
-                                $this->db->where('class_id', $class['id']);
+                                $this->db->where('class_id', $class['id']); 
                                 $this->db->where('school_id', $school_id);
                                 $total_student = $this->db->get('enrols');
                             ?>
-                            <option value="<?php echo $class['id']; ?>">
-                                <?php echo $class['name']; ?>
-                                <?php echo "(".$total_student->num_rows().")"; ?>
-                            </option>
+                                <option value="<?php echo $class['id']; ?>">
+                                    <?php echo $class['name']; ?>
+                                    <?php echo "(".$total_student->num_rows().")"; ?>
+                                </option>
                             <?php } ?>
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 btncol">
                     <button class="btn btn-block btn-secondary" onclick="filter()" ><?php echo get_phrase('filter'); ?></button>
                 </div>
             </div>
@@ -48,7 +47,8 @@
             </div>
         </div>
     </div>
-</div>
+ </div>
+ 
 
 <!-- modyfy section -->
 <script>
@@ -57,12 +57,10 @@
     });
 
 
-    
 
     function filter(){
-        var class_id = $('#class_id_permission').val();
-       
-        
+        var class_id = $('#class_id_perm').val();
+ 
         if(class_id != "" ){
             $.ajax({
                 url: '<?php echo route('permission/filter/') ?>'+class_id,
@@ -86,11 +84,13 @@
         }else{
             value = 1;
         }
-        var class_id = $('#class_id_permission').val();
-     
-        // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
-        var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-        var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+           
+            // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
+            var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+            var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+            
+            var class_id = $('#class_id_perm').val();
+            
 
         $.ajax({
             type: 'POST',
@@ -98,13 +98,16 @@
             data: {class_id : class_id, teacher_id : teacher_id, column_name : column_name,  value : value , [csrfName]: csrfHash},
             dataType: 'json',
             success: function(response){
-                $('.permission_content').html(response.status);
-                success_notify('<?php echo get_phrase('permission_updated_successfully.'); ?>');
+              
+            // Injecter le nouveau contenu HTML
+            $('.permission_content').html(response.html);
+            success_notify('<?php echo get_phrase('permission_updated_successfully.'); ?>');
 
-                // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-                var newCsrfName = response.csrfName;
-                var newCsrfHash = response.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+            // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
+            var newCsrfName = response.csrfName;
+            var newCsrfHash = response.csrfHash;
+            $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+        
             }
         });
 

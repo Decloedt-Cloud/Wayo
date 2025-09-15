@@ -1,0 +1,180 @@
+.iframe-container {
+  flex: 1;
+  height: calc(100vh - 120px);
+  margin: 0;
+  padding: 0;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+.header-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-body {
+  padding: 25px 30px;
+  align-items: center;
+}
+
+/* Main Content Card */
+.main-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px 30px;
+  border-bottom: none;
+}
+
+/* Suppression complète des espaces pour mobile */
+@media (max-width: 768px) {
+  .iframe-container {
+    margin: -33px !important;
+    padding: 26px !important;
+    height: calc(100vh - 80px);
+    width: 106vw !important;
+    bottom: 3px;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw !important;
+    margin-right: -58vw !important;
+  }
+  .header-content {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start; /* This will align the flex items (like page-title) to the right */
+    gap: 10px;
+  }
+
+  .page-title {
+    margin-left: 0px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+  #basic-datatable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  #basic-datatable th,
+  #basic-datatable td {
+    font-size: 15px;
+    padding: 6px;
+  }
+  [dir="rtl"] .iframe-container {
+    margin: -33px !important;
+    padding: 26px !important;
+    height: calc(100vh - 80px);
+    width: 106vw !important;
+    bottom: 3px;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw !important;
+    margin-right: -58vw !important;
+  }
+
+  /* === Header content RTL === */
+  [dir="rtl"] .header-content {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-end; /* align items à droite pour RTL */
+    gap: 10px;
+  }
+
+  /* === Page title RTL === */
+  [dir="rtl"] .page-title {
+    margin-left: 0px;
+    margin-right: 0px; /* si nécessaire pour RTL */
+    text-align: right;
+  }
+
+  /* === Table RTL === */
+  [dir="rtl"] #basic-datatable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    direction: rtl; /* important pour que la table s’inverse en arabe */
+  }
+
+  [dir="rtl"] #basic-datatable th,
+  [dir="rtl"] #basic-datatable td {
+    font-size: 15px;
+    padding: 6px;
+    text-align: right;
+  }
+
+  [dir="rtl"] .card-body {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  .header-card,
+  .main-card {
+    border-radius: 15px;
+    margin-right: -51px;
+    margin-left: -27px;
+    margin-top: -15px;
+  }
+
+  [dir="rtl"] .header-card,
+  [dir="rtl"] .main-card {
+    margin-right: -50px;
+  }
+    [dir="rtl"] .iframe-container {
+    right: 42%;
+    margin-right: -50vw !important;
+    bottom: 10px;
+    position: relative;
+  }
+
+  .page-title {
+    margin-left: 0px;
+  }
+  #basic-datatable th,
+  #basic-datatable td {
+    font-size: 13px;
+    padding: 4px;
+  }
+
+  .table-responsive-sm {
+    width: 345px;
+  }
+}
+
+.header-card,
+.main-card {
+  animation: slideUp 0.6s ease-out;
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

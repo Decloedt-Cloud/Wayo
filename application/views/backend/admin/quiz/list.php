@@ -16,9 +16,9 @@ $school_id = school_id();
     <table class="table table-bordered table-responsive-sm" width="100%">
         <thead class="thead-dark">
             <tr>
-                <th><?php echo get_phrase('student_name'); ?></td>
-                <th><?php echo get_phrase('quiz_result'); ?></td>
-                <th><?php echo get_phrase('action'); ?></td>
+                <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student_name'); ?></td>
+                <th><i class="mdi mdi-clipboard-check-outline thead-icon"></i><?php echo get_phrase('quiz_result'); ?></td>
+                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('action'); ?></td>
             </tr>
         </thead>
         <tbody>

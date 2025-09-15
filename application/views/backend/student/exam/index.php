@@ -1,8 +1,9 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
 <!--title-->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title">
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
+                <h4 class="page-title d-inline-block">
                 <i class="mdi mdi-grease-pencil title_icon"></i> <?php echo get_phrase('Exam'); ?>
             </h4>
         </div>
@@ -10,8 +11,10 @@
 </div>
 
 <div class="row">
-    <div class="col-12">
-        <div class="card">
+  <div class="col-12">
+    <div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
             <div class="card-body exam_content">
                 <!-- Ne pas inclure list.php directement -->
                 <!-- Le contenu sera chargé via AJAX -->
@@ -19,7 +22,8 @@
         </div>
     </div>
 </div>
-
+</div>
+</div>
 <script>
 $(document).ready(function() {
     // Appeler showAllExams au chargement de la page pour charger le contenu

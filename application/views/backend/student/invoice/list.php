@@ -3,14 +3,14 @@
 <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
   <thead class="thead-dark">
     <tr>
-      <th><?php echo get_phrase('student'); ?></th>
-      <th><?php echo get_phrase('class'); ?></th>
-      <th><?php echo get_phrase('invoice_title'); ?></th>
-      <th><?php echo get_phrase('total_amount'); ?></th>
-      <th><?php echo get_phrase('paid_amount'); ?></th>
-      <th><?php echo get_phrase('status'); ?></th>
-      <th><?php echo get_phrase('creation_date'); ?></th>
-      <th><?php echo get_phrase('option'); ?></th>
+      <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student'); ?></th>
+      <th><i class="mdi mdi-school thead-icon"></i><?php echo get_phrase('class'); ?></th>
+      <th><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('invoice_title'); ?></th>
+      <th><i class="mdi mdi-currency-usd thead-icon"></i><?php echo get_phrase('total_amount'); ?></th>
+      <th><i class="mdi mdi-check-circle-outline thead-icon"></i><?php echo get_phrase('paid_amount'); ?></th>
+      <th><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
+      <th><i class="mdi mdi-calendar thead-icon"></i><?php echo get_phrase('creation_date'); ?></th>
+      <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
     </tr>
   </thead>
   <tbody>
@@ -36,14 +36,14 @@
             <div class="dropdown text-center">
               <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
               <div class="dropdown-menu dropdown-menu-end">
-                <a href="<?php echo route('payment/'.$invoice['id']); ?>" class="dropdown-item"><?php echo get_phrase('make_payment'); ?></a>
+                <a href="<?php echo route('payment/' . $invoice['id']); ?>" class="dropdown-item"><?php echo get_phrase('make_payment'); ?></a>
               </div>
             </div>
           <?php elseif (strtolower($invoice['status']) == 'paid'): ?>
             <div class="dropdown text-center">
               <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
               <div class="dropdown-menu dropdown-menu-end">
-                <a href="<?php echo route('invoice/invoice/'.$invoice['id']); ?>" class="dropdown-item" target="_blank"><?php echo get_phrase('print_invoice'); ?></a>
+                <a href="<?php echo route('invoice/invoice/' . $invoice['id']); ?>" class="dropdown-item" target="_blank"><?php echo get_phrase('print_invoice'); ?></a>
               </div>
             </div>
           <?php endif; ?>

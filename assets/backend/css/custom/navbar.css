@@ -1,23 +1,473 @@
-
-
-
-.website-button {
-    border-color: #be02e8;
+:root {
+  --wayo-orange: #f47a1f;
+  --wayo-blue: #23235b;
+  --text: #111827;
+  --ring: rgba(244, 122, 31, 0.28);
+  --border: color-mix(in oklab, #6b7280 23%, transparent);
 }
 
+.website-button {
+  /* border-color: #474747; */
+  text-decoration: none;
+  font-weight: 600;
+
+  margin-top: -5px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  color: var(--text, #111827);
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    color-mix(in oklab, #fff 88%, transparent) 100%
+  );
+  border: 1px solid var(--border, #e5e7eb);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+.website-button .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #f47a1f; /* couleur de la dot */
+  border-radius: 50%; /* rend le cercle */
+  margin-right: 8px; /* espace entre la dot et le texte */
+  animation: blink 3s infinite; /* animation clignotement */
+}
+
+/* Animation clignotante */
+@keyframes blink {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+.website-button .arrow-animate {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+body[dir="ltr"] .website-button:hover .arrow-animate {
+  transform: translateX(5px); /* LTR : glisse droite */
+}
+
+body[dir="rtl"] .website-button:hover .arrow-animate {
+  transform: translateX(-5px); /* RTL : glisse gauche */
+}
+
+.website-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(35, 35, 91, 0.08);
+  border: 1px solid var(--border, #e5e7eb);
+  /* background: linear-gradient(180deg, #fff 0%, color-mix(in oklab, #fff 92%, transparent) 100%); */
+}
+.btn-outline-dark:hover {
+  color: #000000;
+  background: none;
+}
+.website-button:active {
+  transform: translateY(0); /* annule le léger -1px du :hover */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
 .navbar-color {
-    background-color: #212121;
+  /* background-color: #212121; */
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .user-dropdown {
-    background-color: #440053 !important;
-    border-color: #32003d !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  /* background-color: #440053 !important;
+    border-color: #32003d !important; */
 }
-
-.tab-pane {
+/* .tab-pane {
     background-color: #5c5c5c !important;
+} */
+
+.lang-btn {
+  /* TRÈS IMPORTANT : Crée un contexte de positionnement pour les enfants en position absolue */
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #f3e1d6;
+  top: 17px;
+  color: #ff8a3d; /* orange Wayo */
 }
 
+/* CSS pour l'icône SVG */
+.lang-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* === NOUVEAU CODE CSS POUR LE BADGE === */
+.lang-badge {
+  /* Positionne le badge par-dessus son parent (.lang-btn) */
+  position: absolute;
+  top: -5px; /* Ajustez cette valeur pour le décalage vertical */
+  right: -5px; /* Ajustez cette valeur pour le décalage horizontal */
+  background-color: #ff8a3d; /* Fond orange */
+  color: #fff; /* Texte en blanc */
+  border-radius: 20px; /* Pour l'effet "pilule" arrondi */
+  padding: 2px 6px; /* Espace intérieur (haut/bas et gauche/droite) */
+  font-size: 10px; /* Petite taille de police */
+  font-weight: bold; /* Texte en gras */
+  line-height: 1; /* Assure un bon alignement vertical du texte */
+  /* Empêche la sélection du texte du badge */
+  user-select: none;
+}
 .nav-item {
-    background-color: #212121 !important;
+  background-color: #212121 !important;
+}
+body[dir="rtl"] .navbar-custom.topnav-navbar {
+  direction: rtl;
+  flex-direction: row-reverse !important;
+}
+
+body[dir="rtl"] .navbar-custom .container-fluid {
+  flex-direction: row-reverse !important;
+  align-items: center;
+}
+
+body[dir="rtl"] .topbar-menu.float-end {
+  float: left !important;
+}
+
+body[dir="rtl"] .app-search {
+  float: right !important;
+  text-align: right !important;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  margin-right: 10px;
+}
+
+body[dir="rtl"] .app-search .system-name {
+  order: 2;
+}
+
+body[dir="rtl"] .app-search .website-button {
+  order: 1;
+}
+
+body[dir="rtl"] .topnav-logo {
+  float: right !important;
+  text-align: right !important;
+  margin-left: 10px;
+}
+
+body[dir="rtl"] .website-button {
+  margin-right: 10px !important;
+  margin-left: 0 !important;
+  margin-top: -5px;
+}
+
+body[dir="rtl"] .topbar-menu {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  float: none !important;
+  align-items: center;
+}
+
+body[dir="rtl"] .topbar-menu .language-selector {
+  order: 2;
+}
+
+body[dir="rtl"] .topbar-menu .profile-menu {
+  order: 1;
+}
+
+body[dir="rtl"] .account-user-name {
+  font-size: 0.9rem !important;
+}
+
+body[dir="rtl"] .app-search a,
+body[dir="rtl"] .app-search .website-button {
+  font-size: 1.1rem !important;
+}
+
+.language-selector-mobile {
+  display: none; /* ou 'block' si vous préférez */
+}
+body[dir="rtl"] .lang-btn {
+  /* TRÈS IMPORTANT : Crée un contexte de positionnement pour les enfants en position absolue */
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #f3e1d6;
+  top: 0px;
+  color: #ff8a3d; /* orange Wayo */
+}
+
+/* CSS pour l'icône SVG */
+.lang-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dropdown-item-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  background-color: #f8fafc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: default;
+}
+/* === NOUVEAU CODE CSS POUR LE BADGE === */
+.lang-badge {
+  /* Positionne le badge par-dessus son parent (.lang-btn) */
+  position: absolute;
+  top: -5px; /* Ajustez cette valeur pour le décalage vertical */
+  right: -5px; /* Ajustez cette valeur pour le décalage horizontal */
+  background-color: #ff8a3d; /* Fond orange */
+  color: #fff; /* Texte en blanc */
+  border-radius: 20px; /* Pour l'effet "pilule" arrondi */
+  padding: 2px 6px; /* Espace intérieur (haut/bas et gauche/droite) */
+  font-size: 10px; /* Petite taille de police */
+  font-weight: bold; /* Texte en gras */
+  line-height: 1; /* Assure un bon alignement vertical du texte */
+  /* Empêche la sélection du texte du badge */
+  user-select: none;
+}
+body[dir="rtl"] .dropup-desktop {
+  top: 55px !important;
+  width: auto;
+}
+.dropup-desktop.show {
+  top: 72px !important;
+  width: auto;
+}
+/* Version mobile uniquement */
+@media (max-width: 768px) {
+  .navbar-custom .container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  body[dir="rtl"] .website-button {
+    width: 273px;
+    left: 47px;
+  }
+  body[dir="rtl"] .dot {
+    margin-right: 11px;
+    margin-left: 9px;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  body[dir="rtl"] .lang-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #f3e1d6;
+    top: 0px;
+    color: #ff8a3d; /* orange Wayo */
+  }
+  body[dir="rtl"] .dropup-mobile.show {
+    margin-right: 360px !important;
+    top: 17px !important;
+  }
+  .dot {
+    margin-left: -9px;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .website-button {
+    width: 273px;
+    white-space: nowrap;
+    left: 3px;
+  }
+  .lang-btn {
+    /* TRÈS IMPORTANT : Crée un contexte de positionnement pour les enfants en position absolue */
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #f3e1d6;
+    top: 0px;
+    color: #ff8a3d; /* orange Wayo */
+  }
+
+  /* CSS pour l'icône SVG */
+  .lang-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* === NOUVEAU CODE CSS POUR LE BADGE === */
+  .lang-badge {
+    /* Positionne le badge par-dessus son parent (.lang-btn) */
+    position: absolute;
+    top: -5px; /* Ajustez cette valeur pour le décalage vertical */
+    right: -5px; /* Ajustez cette valeur pour le décalage horizontal */
+    background-color: #ff8a3d; /* Fond orange */
+    color: #fff; /* Texte en blanc */
+    border-radius: 20px; /* Pour l'effet "pilule" arrondi */
+    padding: 2px 6px; /* Espace intérieur (haut/bas et gauche/droite) */
+    font-size: 10px; /* Petite taille de police */
+    font-weight: bold; /* Texte en gras */
+    line-height: 1; /* Assure un bon alignement vertical du texte */
+    /* Empêche la sélection du texte du badge */
+    user-select: none;
+  }
+
+  .nav-link,
+  .noti-icon {
+    color: #ff8a3d !important; /* orange Wayo */
+  }
+
+  .navbar-custom.topnav-navbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .lines {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .dropup-mobile1.show {
+    margin-right: 181px !important;
+    top: 19px !important;
+  }
+  .dropup-mobile.show {
+    margin-right: 330px !important;
+    top: 17px !important;
+  }
+
+  /* Logo centré */
+  .topnav-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Compte à gauche */
+  .topbar-menu .profile-menu {
+    order: 1;
+  }
+
+  /* Langue + hamburger à droite */
+  .topbar-menu .language-selector {
+    order: 2;
+  }
+  .button-menu-mobile {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    order: 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #f3e1d6;
+  }
+  .button-menu-mobile .lines span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: #4a90e2;
+    margin: 5px 0;
+    border-radius: 3px;
+    transition: all 0.4s ease;
+  }
+
+  .button-menu-mobile .lines {
+    width: 18px;
+    display: block;
+    position: relative;
+    height: 16px;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    margin-top: 8px;
+    margin-left: 9px;
+  }
+
+  .button-menu-mobile.open .lines span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .button-menu-mobile.open .lines span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .button-menu-mobile.open .lines span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+  /* .account-user-avatar {
+    margin-left: -25px;
+  } */
+
+  .language-selector-mobile {
+    margin-left: 172px;
+    display: list-item !important;
+  }
+
+  .language-selector-desktop {
+    display: none;
+  }
+  .account-user-name,
+  .account-position {
+    display: none;
+  }
+
+  body[dir="rtl"] .dropup-mobile1.show {
+    margin-right: 250px !important;
+    top: 17px !important;
+  }
+  body[dir="rtl"] .dropdown-menu {
+    transform: translate3d(223px, 55px, 0px) !important;
+  }
+  .dropdown-menu {
+    transform: translate3d(158px, 55px, 0px) !important;
+  }
+
+  body[dir="rtl"] .button-menu-mobile {
+    order: -1;
+  }
 }

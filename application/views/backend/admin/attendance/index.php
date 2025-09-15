@@ -1,12 +1,13 @@
-<!--title-->
-<div class="row d-print-none">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('daily_attendance'); ?>
         </h4>
-        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/attendance/take_attendance'); ?>', '<?php echo get_phrase('take_attendance'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('take_attendance'); ?></button>
+        <div class="action-buttons-container">
+        <button type="button" class="btn-modern btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/attendance/take_attendance'); ?>', '<?php echo get_phrase('take_attendance'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('take_attendance'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
@@ -14,7 +15,9 @@
 
 <div class="row">
   <div class="col-12">
-    <div class="card">
+    <div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
       <div class="row mt-3 d-print-none">
         <div class="col-md-1 mb-1"></div>
         <div class="col-md-2 mb-1">
@@ -44,7 +47,7 @@
           </select>
         </div>
         <div class="col-md-2 mb-1">
-          <select name="class" id="class_id_attendance" class="form-control"   required>
+          <select name="class" id="class_id_daily" class="form-control"   required>
             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
             <?php
             $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -62,7 +65,8 @@
           </select>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 btncol">
+      
           <button class="btn btn-block btn-secondary" onclick="filter_attendance()" ><?php echo get_phrase('filter'); ?></button>
         </div>
       </div>
@@ -76,19 +80,21 @@
     </div>
   </div>
 </div>
+  </div>
+</div>
 
 <script>
 $('document').ready(function(){
-  $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#month', '#year', '#class_id', ]);
+  $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#month', '#year', '#class_id', '#section_id']);
 });
 
 
 function filter_attendance(){
   var month = $('#month').val();
   var year = $('#year').val();
-  var class_id = $('#class_id_attendance').val();
+  var class_id = $('#class_id_daily').val();
  
-  if(class_id != ""  && month != "" && year != ""){
+  if(class_id != "" && month != "" && year != ""){
     getDailtyAttendance();
   }else{
     toastr.error('<?php echo get_phrase('please_select_in_all_fields !'); ?>');
@@ -98,27 +104,25 @@ function filter_attendance(){
 var getDailtyAttendance = function () {
   var month = $('#month').val();
   var year = $('#year').val();
-  var class_id = $('#class_id_attendance').val();
- 
+  var class_id = $('#class_id_daily').val();
+  
   // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
   var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
   var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-
   if(class_id != ""  && month != "" && year != ""){
     $.ajax({
       type: 'POST',
       url: '<?php echo route('attendance/filter') ?>',
-      data: {month : month, year : year, class_id : class_id, [csrfName]: csrfHash},
+      data: {month : month, year : year, class_id : class_id,  [csrfName]: csrfHash},
       dataType: 'json',
       success: function(response){
         $('.attendance_content').html(response.status);
         initDataTable('basic-datatable');
-          
-            // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-            var newCsrfName = response.csrf.csrfName;
-            var newCsrfHash = response.csrf.csrfHash;
-            $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
 
+            // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
+            var newCsrfName = response.csrfName;
+            var newCsrfHash = response.csrfHash;
+            $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
       }
     });
   }

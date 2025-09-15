@@ -14,10 +14,10 @@ if (count($expenses) > 0): ?>
   <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
     <thead class="thead-dark">
       <tr>
-        <th><?php echo get_phrase('date'); ?></th>
-        <th><?php echo get_phrase('amount'); ?></th>
-        <th><?php echo get_phrase('expense_category'); ?></th>
-        <th><?php echo get_phrase('option'); ?></th>
+        <th><i class="mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('date'); ?></th>
+        <th><i class="mdi mdi-currency-usd outline thead-icon"></i><?php echo get_phrase('amount'); ?></th>
+        <th><i class="mdi mdi-tag-outline thead-icon"></i><?php echo get_phrase('expense_category'); ?></th>
+        <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
       </tr>
     </thead>
     <tbody>

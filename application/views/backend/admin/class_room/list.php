@@ -131,7 +131,7 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
         </div>
     <?php endforeach; ?>
 </div>
-</div>
+
 
 
 
@@ -225,7 +225,7 @@ function closeModal() {
             selectHelper: true,
             editable: true,
             eventLimit: true,
-            events: "<?= base_url('admin/get_appointments'); ?>", // Charge les rendez-vous
+            events: "<?= base_url('superadmin/get_appointments'); ?>", // Charge les rendez-vous
 
             // 👉 Ouvrir la popup quand on clique sur une date
             select: function (start, end, allDay) {
@@ -257,7 +257,7 @@ function closeModal() {
          
                     // Charger les sections dynamiquement
                     $.ajax({
-                        url: "<?= base_url('admin/get_sections'); ?>",
+                        url: "<?= base_url('superadmin/get_sections'); ?>",
                         type: "POST",
                         data: { classe_id: event.classe_id },
                         success: function (response) {
@@ -308,7 +308,7 @@ function closeModal() {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
-                                url: "<?= base_url('admin/delete_appointment'); ?>",
+                                url: "<?= base_url('superadmin/delete_appointment'); ?>",
                                 type: "POST",
                                 data: { id: id },
                                 success: function () {
@@ -343,7 +343,7 @@ function closeModal() {
                 sections = section.join(','); // Convertir ["1", "2", "3"] → "1,2,3"
             }
 
-            var url = "<?= base_url('admin/update_appointment'); ?>" ;
+            var url = "<?= base_url('superadmin/update_appointment'); ?>" ;
             var successMessage =  "Rendez-vous mis à jour !";
 
 

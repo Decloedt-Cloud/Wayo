@@ -1,24 +1,27 @@
-<!--title-->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
 			<i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('class_routine'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/routine/create'); ?>', '<?php echo get_phrase('create_routine'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_class_routine'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+
 
 <div class="row">
-	<div class="col-12">
-		<div class="card">
+  <div class="col-12">
+	
+<div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
 			<div class="row mt-3">
 				<div class="col-md-3 mb-1"></div>
 				<div class="col-md-4 mb-1">
-					<select name="class" id="class_id_routine" class="form-control"  required >
+					<select name="class" id="class_id_routine" class="form-control"  required>
 						<option value=""><?php echo get_phrase('select_a_class'); ?></option>
 						<?php
 						$classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
@@ -35,8 +38,9 @@
 						<?php } ?>
 					</select>
 				</div>
-				
-				<div class="col-md-2">
+
+				<div class="col-md-4 btncol">
+					 
 					<button class="btn btn-block btn-secondary" onclick="filter_class_routine()" ><?php echo get_phrase('filter'); ?></button>
 				</div>
 			</div>
@@ -46,7 +50,8 @@
 		</div>
 	</div>
 </div>
-
+</div>
+</div>
 <script>
 
 
@@ -54,17 +59,16 @@
 function filter_class_routine(){
 	var class_id = $('#class_id_routine').val();
 	
-	
 	if(class_id != "" ){
 		getFilteredClassRoutine();
 	}else{
-		toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
+		toastr.error('<?php echo get_phrase('please_select_a_class_and_section'); ?>');
 	}
 }
 
 var getFilteredClassRoutine = function() {
 	var class_id = $('#class_id_routine').val();
-	
+
 	if(class_id != "" ){
 		$.ajax({
 			url: '<?php echo route('routine/filter/') ?>'+class_id,

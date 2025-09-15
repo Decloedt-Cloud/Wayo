@@ -28,7 +28,7 @@
 
 
 
-    <div class="row" id = "student_content" style="margin-left: 2px;">
+    <div class="row" id = "student_content" style="margin-bottom: 7px;">
     </div>
 
     <div class='row'>
@@ -36,7 +36,7 @@
             <a class="btn btn-primary btn-l px-4" id="update-btn"  onclick="getStudentList()" style="color: #fff;" disabled><i class="mdi mdi-eye"></i><?php echo get_phrase('show_student_list'); ?></a>
         </div>
     </div>
-    <div class="form-group col-md-12 mt-4" id = "updateAttendanceDiv" style="display: none;">
+    <div class="form-group col-md-12 mt-1" id = "updateAttendanceDiv" style="display: none;">
         <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_attendance'); ?></button>
     </div>
 </form>

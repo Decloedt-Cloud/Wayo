@@ -11530,7 +11530,8 @@ body.modal-open, body.show {
   font-weight: 600; }
 
 .bg-nav-pills {
-  background-color: #eef2f7; }
+  background-color: #eef2f7; 
+}
 
 .nav-tabs.nav-bordered {
   border-bottom: 2px solid rgba(152, 166, 173, 0.2); }

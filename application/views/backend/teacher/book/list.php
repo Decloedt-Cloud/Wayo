@@ -6,10 +6,10 @@ $books = $this->crud_model->get_books()->result_array();
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
       <thead class="thead-dark">
         <tr>
-          <th><?php echo get_phrase('book_name'); ?></th>
-          <th><?php echo get_phrase('author'); ?></th>
-          <th><?php echo get_phrase('copies'); ?></th>
-          <th><?php echo get_phrase('available_copies'); ?></th>
+          <th><i class="mdi mdi mdi-book-outline thead-icon"></i><?php echo get_phrase('book_name'); ?></th>
+          <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('author'); ?></th>
+          <th><i class="mdi mdi-book-multiple-outline thead-icon"></i><?php echo get_phrase('copies'); ?></th>
+          <th><i class="mdi mdi-book-check-outline thead-icon"></i><?php echo get_phrase('available_copies'); ?></th>
         </tr>
       </thead>
       <tbody>

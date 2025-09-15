@@ -1,42 +1,104 @@
-
-
 <?php
   $school_id = school_id();
 ?>
-<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<!--title-->
+
+<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
   <thead>
-    <tr style="background-color: #313a46; color: #ababab;">
-      <th><?php echo get_phrase('photo'); ?></th>
-      <th><?php echo get_phrase('name'); ?></th>
-      <th><?php echo get_phrase('email'); ?></th>
-      <th><?php echo get_phrase('options'); ?></th>
+    <tr>
+      <th><i class="mdi mdi-account-circle-outline thead-icon"></i><?php echo get_phrase('photo'); ?></th>
+      <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('name'); ?></th>
+      <th><i class="mdi mdi-email-outline thead-icon"></i><?php echo get_phrase('email'); ?></th>
+      <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
     </tr>
   </thead>
   <tbody>
     <?php
     if($applications){
     foreach($applications->result_array() as $application){
-      $student = $this->db->get_where('students', array('user_id' => $application['id']))->row_array();
+      $user = $this->db->get_where('users', array('id' => $application['user_id']))->row_array();
       ?>
       <tr>
         <td>
-          <img class="rounded-circle" width="50" src="<?php echo $this->user_model->get_user_image($application['id']); ?>">
+          <img width="50" src="<?php echo $this->user_model->get_user_image($application['id']); ?>">
         </td>
-        <td><?php echo $application['name']; ?></td>
-        <td><?php echo $application['email']; ?></td>
+        <td><?php echo $user['name'] ; ?></td>
+             <td class="modern-td">
+            <span class="desktop-description"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="<?php echo htmlspecialchars($user['email']); ?>">
+              <?php echo strlen($user['email']) > 30 ? substr($user['email'], 0, 30) . '...' : $user['email']; ?>
+            </span>
+
+            <span class="d-inline d-md-none ms-2">
+              <?php echo strlen($user['email']) > 13 ? substr($user['email'], 0, 13) . '...' : $user['email']; ?>
+            </span>
+            <button type="button" class="btn btn-sm mobile-description-btn"
+              data-description="<?php echo htmlspecialchars($user['email']); ?>"
+              onclick="showDescriptionPopup(this)">
+              <i class="mdi mdi-eye-outline"></i>
+            </button>
+          </td>
         <td>
-          <div class="dropdown text-center">
-            <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
+             <div class="dropdown text-center">
+            <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
             <div class="dropdown-menu dropdown-menu-right">
-              <a href="javascript:void(0);" class="dropdown-item"  onclick="largeModal('<?php echo site_url('modal/popup/student/profile/'.$student['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('profile'); ?></a>
+              
+              <a href="javascript:void(0);" class="dropdown-item"  onclick="largeModal('<?php echo site_url('modal/popup/student/profile/'.$application['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('profile'); ?></a>
               <!-- item-->
-              <a href="javascript:;" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$student['id'])?>', '<?php echo get_phrase('assign_class_and_section'); ?>');" class="dropdown-item"><?php echo get_phrase('approved'); ?></a>
+              <a href="javascript:;" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$application['id'])?>', '<?php echo get_phrase('approved'); ?>');" class="dropdown-item"><?php echo get_phrase('approved'); ?></a>
               <!-- item -->
-              <a href="javascript:;" class="dropdown-item" onclick="confirmModalRedirect('<?php echo site_url('admin/online_admission/delete/'.$application['id']); ?>')"><?php echo get_phrase('delete'); ?></a>
+              <a href="javascript:;" class="dropdown-item" onclick="confirmModalRedirect('<?php echo site_url('superadmin/online_admission/delete/'.$user['id']); ?>')"><?php echo get_phrase('delete'); ?></a>
             </div>
           </div>
         </td>
       </tr>
     <?php }} ?>
+       <div id="description-popup-overlay" class="description-popup-overlay"></div>
+    <div id="description-popup" class="description-popup">
+      <div class="description-popup-header">
+        <h4><?php echo get_phrase('contenu_complet'); ?></h4>
+        <button onclick="hideDescriptionPopup()" class="description-popup-close">&times;</button>
+      </div>
+      <div id="description-popup-content" class="description-popup-content">
+        <!-- Le contenu sera injecté ici par JavaScript -->
+      </div>
+    </div>
   </tbody>
 </table>
+<script>
+  // Récupérer les éléments de la popup une seule fois
+  const popup = document.getElementById('description-popup');
+  const overlay = document.getElementById('description-popup-overlay');
+  const popupContent = document.getElementById('description-popup-content');
+
+  /**
+   * Affiche la popup avec la description
+   * @param {HTMLElement} button - Le bouton sur lequel on a cliqué
+   */
+  function showDescriptionPopup(button) {
+    // Récupérer le texte depuis l'attribut data-description
+    const descriptionText = button.dataset.description;
+
+    // Mettre le texte dans la popup
+    // On utilise innerText pour la sécurité, mais si votre description contient du HTML, utilisez innerHTML
+    popupContent.innerText = descriptionText;
+
+    // Afficher la popup et l'overlay
+    popup.classList.add('is-visible');
+    overlay.classList.add('is-visible');
+  }
+
+  /**
+   * Cache la popup
+   */
+  function hideDescriptionPopup() {
+    popup.classList.remove('is-visible');
+    overlay.classList.remove('is-visible');
+  }
+
+  // Bonus : Fermer la popup en cliquant sur le fond noir
+  overlay.addEventListener('click', hideDescriptionPopup);
+</script>

@@ -1,10 +1,11 @@
+
 <?php $check_data = $this->db->get('sessions');
 // if($check_data->num_rows() > 0): 
 ?>
 
     <div class="col-sm-12 col-md-6 text-center">
-        <div class="card">
-            <div class="card-body">
+          <div class="main-card">
+        <div class="card-body">
                 <a href="javascript:void(0)" class="text-secondary">
                     <i class="dripicons-link text-muted font-size-24"></i>
                     <h3><span><?php echo $status_wise_courses['active']->num_rows(); ?></span></h3>
@@ -15,8 +16,8 @@
     </div>
 
     <div class="col-sm-12 col-md-6 text-center">
-        <div class="card">
-            <div class="card-body">
+       <div class="main-card">
+        <div class="card-body">
                 <a href="javascript:void(0)" class="text-secondary w-100">
                     <i class="dripicons-link-broken text-muted font-size-24"></i>
                     <h3><span><?php echo $status_wise_courses['inactive']->num_rows(); ?></span></h3>
@@ -27,8 +28,8 @@
     </div>
 
     <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
+      <div class="main-card-table">
+        <div class="card-body">
                 <h4 class="mb-3 header-title"><?php echo get_phrase('course_list'); ?></h4>
                 <form class="row justify-content-center" action="javascript:void(0)" method="get">
                     <div class="col-md-10">

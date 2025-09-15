@@ -1,18 +1,20 @@
-<!--title-->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-format-list-numbered title_icon"></i><?php echo get_phrase('manage_quiz'); ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
+          <i class="mdi mdi-clipboard-text-outline title_icon"></i><?php echo get_phrase('manage_quiz'); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
-<div class="row ">
-    <div class="col-12">
-        <div class="card ">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-3">
+            <div class="main-card">
+                <div class="card-body">
             <div class="row mt-3 justify-content-center">
                 <div class="col-md-1 mb-1"></div>
                 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
@@ -42,7 +44,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2 btncol">
                     <button class="btn btn-block btn-secondary" onclick="filter_attendance()" ><?php echo get_phrase('filter'); ?></button>
                 </div>
             </div>
@@ -56,7 +58,8 @@
         </div>
     </div>
 </div>
-
+   </div>
+</div>
 
 <!-- Fenêtre modale -->
 <div class="modal fade" id="quizResultModal" tabindex="-1" role="dialog" aria-labelledby="quizResultModalLabel" aria-hidden="true">

@@ -1,22 +1,26 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
 <!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title"> <i class="mdi mdi-view-dashboard title_icon"></i> <?php echo get_phrase('dashboard'); ?> </h4>
+<div class="col-xl-12">
+  <div class="header-card">
+    <div class="card-body">
+      <h4 class="page-title d-inline-block">
+         <i class="mdi mdi-view-dashboard title_icon"></i> <?php echo get_phrase('dashboard'); ?> </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+
 <!-- end page title -->
 
-<div class="row ">
-    <div class="col-xl-12">
-        <div class="row">
-            <div class="col-xl-8">
-              <div class="row">
-                  <div class="col-lg-6">
-                      <div class="card widget-flat" id="student" style="on">
+
+<div class="mb-3">
+  <div class="main-card">
+    <div class="card-body">
+
+      <div class="row">
+        <div class="container">
+          <div class="row justify-content-md-center">
+           <div class="col-lg-6">
+              <div class="card widget-flat" id="student" style="on">
                           <div class="card-body">
                               <div class="float-end">
                                   <i class="mdi mdi-account-multiple widget-icon"></i>
@@ -35,7 +39,7 @@
                       </div> <!-- end card-->
                   </div> <!-- end col-->
 
-                  <div class="col-lg-6">
+                   <div class="col-lg-6">
                       <div class="card widget-flat" id="teacher" style="on">
                           <div class="card-body">
                               <div class="float-end">
@@ -56,8 +60,7 @@
                   </div> <!-- end col-->
               </div> <!-- end row -->
 
-              <div class="row"> 
-                  <div class="col-lg-6">
+               <div class="col-sm-4">
                       <div class="card widget-flat">
                           <div class="card-body">
                               <div class="float-end">
@@ -78,9 +81,9 @@
                           </div> <!-- end card-body-->
                       </div> <!-- end card-->
                   </div> <!-- end col-->
-              </div>
+              
             </div> <!-- end col -->
-            <div class="col-xl-4">
+            <div class="col-xl-12">
                 <div class="card bg-primary">
                     <div class="card-body">
                         <h4 class="header-title text-white mb-2"><?php echo get_phrase('todays_attendance'); ?></h4>
@@ -106,16 +109,16 @@
         </div>
     </div><!-- end col-->
 </div>
+   </div>
 
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title"> <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
+<div class="col-xl-12">
+  <div class="header-card">
+    <div class="card-body">
+      <h4 class="page-title d-inline-block"> <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
       </div>
     </div> 
   </div>
-</div>
+
   <div class="iframe-container">
     
     <iframe src="<?= $iframe_url ?>"

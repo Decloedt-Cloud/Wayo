@@ -4,7 +4,6 @@ $session = active_session();
 
 // Initialize filter variables
 $class_id = isset($_POST['class_id']) ? htmlspecialchars($_POST['class_id']) : '';
-
 $date_range = isset($_POST['date_range']) && !empty($_POST['date_range']) ? htmlspecialchars($_POST['date_range']) : '';
 $date_from = '';
 $date_to = '';
@@ -19,7 +18,6 @@ if (!empty($date_range)) {
 $this->db->select('exams.*, classes.name as class_name');
 $this->db->from('exams');
 $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-
 $this->db->where('exams.school_id', $school_id);
 $this->db->where('exams.session', $session);
 if (!empty($class_id)) {
@@ -31,7 +29,6 @@ if (!empty($date_range)) {
     $this->db->where('exams.starting_date <=', $date_to);
 }
 $exams = $this->db->get()->result_array();
-
 
 // Convert exam data to JSON for the calendar
 $exam_calendar = [];
@@ -46,16 +43,16 @@ $exam_calendar_json = json_encode($exam_calendar);
 ?>
 
 <!-- Filter Form -->
-<div class="row mb-3">
+<div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <form id="filterForm">
                     <div class="row">
-                       <div class="col-md-2">
-                            
-                        </div>
                         <!-- Class Dropdown -->
+                        <div class="col-md-2">
+                       
+                        </div>
                         <div class="col-md-3">
                             <label for="class_id"><?php echo get_phrase('class'); ?></label>
                             <select name="class_id" id="class_id" class="form-control" >
@@ -69,15 +66,15 @@ $exam_calendar_json = json_encode($exam_calendar);
                                 ?>
                             </select>
                         </div>
-
+                 
                         <!-- Date Range Picker -->
                         <div class="col-md-3">
                             <label for="date_range"><?php echo get_phrase('Exam date'); ?></label>
                             <input type="text" name="date_range" id="date_range" class="form-control daterange" value="<?php echo $date_range; ?>" placeholder="Select Date Range">
                         </div>
                         <!-- Search Button -->
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary"><?php echo get_phrase('search'); ?></button>
+                        <div class="col-md-3 btncol d-flex align-items-end ">
+                            <button type="submit" class="btnsearch btn btn-primary"><?php echo get_phrase('search'); ?></button>
                         </div>
 
                     </div>
@@ -101,13 +98,13 @@ $exam_calendar_json = json_encode($exam_calendar);
             <div class="card-body">
                 <div id="exam-table-container">
                     <?php if (count($exams) > 0): ?>
-                        <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+                        <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
                             <thead>
-                                <tr style="background-color: #313a46; color: #ababab;">
-                                    <th><?php echo get_phrase('exam_name'); ?></th>
-                                    <th><?php echo get_phrase('date'); ?></th>
-                                    <th><?php echo get_phrase('class'); ?></th>
-                                    <th><?php echo get_phrase('options'); ?></th>
+                                <tr>
+                                    <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('exam_name'); ?></th>
+                                    <th><i class="mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('date'); ?></th>
+                                    <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('class'); ?></th>
+                                    <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,7 +113,6 @@ $exam_calendar_json = json_encode($exam_calendar);
                                         <td><?php echo $exam['name']; ?></td>
                                         <td><?php echo date('D, d-M-Y H:i', $exam['starting_date']); ?></td>
                                         <td><?php echo !empty($exam['class_name']) ? $exam['class_name'] : get_phrase('no_class'); ?></td>
-                                       
                                         <td>
                                             <div class="dropdown text-center">
                                                 <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -177,6 +173,7 @@ function initDataTable() {
 }
 
 
+
 function updateExamTable(exams) {
     if ($('#basic-datatable').attr('data-datatable-initialized') === 'true') {
         $('#basic-datatable').DataTable().destroy();
@@ -197,7 +194,7 @@ function updateExamTable(exams) {
                             <th><?php echo get_phrase('exam_name'); ?></th>
                             <th><?php echo get_phrase('date'); ?></th>
                             <th><?php echo get_phrase('class'); ?></th>
-                         
+                            
                             <th><?php echo get_phrase('options'); ?></th>
                         </tr>
                     </thead>
@@ -209,7 +206,7 @@ function updateExamTable(exams) {
                         <td>${exam.name || 'Unnamed Exam'}</td>
                         <td>${exam.formatted_date || 'No Date'}</td>
                         <td>${exam.class_name || '<?php echo get_phrase('no_class'); ?>'}</td>
-                        
+                      
                         <td>
                             <div class="dropdown text-center">
                                 <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -246,11 +243,12 @@ function updateExamTable(exams) {
 window.updateExamTableAndCalendar = function(classId = '') {
     var formData = {
         class_id: classId || '',
+      
         date_range: ''
     };
 
     $.ajax({
-        url: '<?php echo site_url('admin/filter_exams'); ?>',
+        url: '<?php echo site_url('superadmin/filter_exams'); ?>',
         type: 'POST',
         data: formData,
         success: function(response) {
@@ -269,6 +267,12 @@ window.updateExamTableAndCalendar = function(classId = '') {
                 updateExamTable(data.exams);
 
               
+              
+                    // Réinitialiser les filtres pour afficher tous les exams
+                    $('#class_id').val('');
+                
+                    $('#date_range').val('');
+                
             } catch (e) {
                 console.error('Erreur lors du parsing de la réponse:', e);
                 showNotification('error', '<?php echo get_phrase('failed_to_update_exams'); ?>');
@@ -346,7 +350,7 @@ $(document).ready(function() {
         };
 
         $.ajax({
-            url: '<?php echo site_url('admin/filter_exams'); ?>',
+            url: '<?php echo site_url('superadmin/filter_exams'); ?>',
             type: 'POST',
             data: formData,
             success: function(response) {
@@ -358,7 +362,7 @@ $(document).ready(function() {
 
                 updateExamTable(data.exams);
 
-
+                
             },
             error: function(xhr, status, error) {
                 console.error('Filter AJAX Error:', status, error);
@@ -367,7 +371,7 @@ $(document).ready(function() {
         });
     });
 
- 
+
 
     window.rightModal = function(url, title) {
         $.ajax({
@@ -410,3 +414,4 @@ $(document).ready(function() {
         width: 100%;
     }
 </style>
+
