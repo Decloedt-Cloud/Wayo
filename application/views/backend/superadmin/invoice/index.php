@@ -1,22 +1,25 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
 <!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-file-document title_icon"></i> <?php echo get_phrase('student_fee_manager'); ?>
         </h4>
-        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?></button>
-          <button type="button" class="btn btn-outline-success btn-rounded alignToTitle float-end my-1 between-button" style="margin-right: 10px;" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_mass_invoice'); ?></button>
-      </div> <!-- end card body-->
+         <!-- Container des boutons d'action -->
+          <div class="action-buttons-container">
+                <button type="button" class="btn-modern btn-single btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?></button>
+                <button type="button" class="btn-modern btn-mass btn btn-outline-success btn-rounded alignToTitle float-end mt-1 between-button" style="margin-right: 10px;" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_mass_invoice'); ?></button>
+          </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
 </div>
 <!-- end page title -->
 <div class="row">
   <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body">
+   <div class="mb-3">
+  <div class="main-card">
+        <div class="card-body">
         <div class="row justify-content-md-center" style="margin-bottom: 10px;">
           <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="form-group">
@@ -77,6 +80,7 @@
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
+</div>
 </div>
 
 <script>

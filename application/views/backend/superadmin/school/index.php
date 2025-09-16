@@ -1,10 +1,10 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
 <!--title-->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('school'); ?>
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
+                <h4 class="page-title d-inline-block">
+          <i class="mdi mdi-school title_icon"></i> <?php echo get_phrase('school'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded align-middle mt-1 float-end" onclick="rightModal('<?php echo site_url('modal/popup/school/create'); ?>', '<?php echo get_phrase('create_school'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_School'); ?></button>
       </div> <!-- end card body-->
@@ -14,12 +14,15 @@
 
 <div class="row">
   <div class="col-12">
-    <div class="card">
+    <div class="mb-3">
+<div class="main-card">
+        <div class="card-body">
       <div class="card-body admin_content">
         <?php include 'list.php'; ?>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script>

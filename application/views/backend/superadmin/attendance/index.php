@@ -1,12 +1,13 @@
-<!--title-->
-<div class="row d-print-none">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('daily_attendance'); ?>
         </h4>
-        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/attendance/take_attendance'); ?>', '<?php echo get_phrase('take_attendance'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('take_attendance'); ?></button>
+        <div class="action-buttons-container">
+        <button type="button" class="btn-modern btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/attendance/take_attendance'); ?>', '<?php echo get_phrase('take_attendance'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('take_attendance'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
@@ -14,7 +15,9 @@
 
 <div class="row">
   <div class="col-12">
-    <div class="card">
+    <div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
       <div class="row mt-3 d-print-none">
         <div class="col-md-1 mb-1"></div>
         <div class="col-md-2 mb-1">
@@ -62,7 +65,7 @@
           </select>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 btncol">
       
           <button class="btn btn-block btn-secondary" onclick="filter_attendance()" ><?php echo get_phrase('filter'); ?></button>
         </div>
@@ -75,6 +78,8 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
   </div>
 </div>
 

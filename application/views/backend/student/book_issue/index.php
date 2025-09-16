@@ -1,17 +1,20 @@
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title"> <i class="mdi mdi-library title_icon"></i> <?php echo get_phrase('books_issue'); ?></h4>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
+            <i class="mdi mdi-library title_icon"></i> <?php echo get_phrase('books_issue'); ?></h4>
         </div>
     </div>
-</div>
+
 <!-- end page title -->
 
-<div class="row ">
-    <div class="col-xl-12">
-        <div class="card">
-            <div class="card-body">
+<div class="row">
+  <div class="col-12">
+    <div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
                 <h4 class="header-title mt-3"><?php echo get_phrase('issues_book_list'); ?></h4>
                 <div class="table-responsive-sm book_issue_content">
                     <?php include 'list.php'; ?>
@@ -20,7 +23,7 @@
         </div> <!-- end card -->
     </div><!-- end col-->
 </div>
-
+</div>
 <script>
 var showAllBookIssues = function () {
     var url = '<?php echo route('book_issue/list'); ?>';

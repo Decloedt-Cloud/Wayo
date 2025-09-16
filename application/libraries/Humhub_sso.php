@@ -1,21 +1,22 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 require_once APPPATH . 'libraries/JWT.php';
 
-class Humhub_sso {
+class Humhub_sso
+{
     protected $ci;
     private $user;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->ci = &get_instance();
         $this->ci->load->library('session');
         $this->user = $this->ci->session->userdata('user');
-    
     }
 
-   
+
     /**
      * Envoie une requête HTTP à l'API HumHub
      * @param string $method GET|POST|PUT|DELETE
@@ -23,27 +24,28 @@ class Humhub_sso {
      * @param array|null $data Payload JSON
      * @return array|null Réponse décodée ou null en cas d'erreur
      */
-    private function httpRequest($method, $url, $data = null) {
+    private function httpRequest($method, $url, $data = null)
+    {
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer ' . HUMHUB_API_TOKEN,
             'Content-Type: application/json'
         ];
-        
+
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST  => strtoupper($method),
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_FAILONERROR    => false
         ]);
-        if (in_array(strtoupper($method), ['POST','PUT']) && $data) {
+        if (in_array(strtoupper($method), ['POST', 'PUT']) && $data) {
             $payload = json_encode($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         }
         $result   = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if (curl_errno($ch)) {
-            log_message('error', 'cURL error: '. curl_error($ch));
+            log_message('error', 'cURL error: ' . curl_error($ch));
             curl_close($ch);
             return null;
         }
@@ -57,11 +59,11 @@ class Humhub_sso {
 
     // provisionAndGetIframeUrl()
     // Objectif principal :
-    
+
     // Provisionner l’utilisateur dans HumHub (création/mise à jour du compte).
-    
+
     // Générer un lien sécurisé (via JWT) pour accéder à HumHub dans une iframe.
-    
+
     /**
      * Provisionne l'utilisateur dans HumHub via l'API ou crée s'il n'existe pas,
      * puis retourne l'URL SSO JWT pour intégrer en iframe.
@@ -78,16 +80,16 @@ class Humhub_sso {
         // HumHub, lors de la création d'un utilisateur via l'API, attend généralement un mot de passe en clair qu'il hache lui-même avec bcrypt.
         // Cela signifie que le mot de passe haché envoyé n'est pas compatible avec le système d'authentification de HumHub. 
         // Si l'utilisateur tente de se connecter manuellement (sans SSO), cela risque d'échouer.
-      
-           // Extraction explicite
-           $email = $this->user->email;
-           $name  = $this->user->name;
-           $password  = $this->user->password;
+
+        // Extraction explicite
+        $email = $this->user->email;
+        $name  = $this->user->name;
+        $password  = $this->user->password;
         //    echo $password;die;
-    
+
         try {
             // 1. Rechercher l'utilisateur HumHub
-		log_message('debug', ' email 1  : ' .$email );
+            log_message('debug', ' email 1  : ' . $email);
             // $existing = $this->httpRequest('GET', HUMHUB_BASE_URL . '/api/v1/user/get-by-email?email=' . urlencode($email));
             $existing = $this->getUserByEmail($email);
 
@@ -98,53 +100,58 @@ class Humhub_sso {
             log_message('debug', 'HUMHUB_API_TOKEN : ' . HUMHUB_API_TOKEN);
 
             if ($existing && isset($existing['id']) && isset($existing['account']['email']) && $existing['account']['email'] === $email) {
-          	
-		 $humhubId = $existing['id'];
+
+                $humhubId = $existing['id'];
                 log_message('debug', 'HumHub user exists  with ID: ' . $humhubId);
             } else {
-                 // Récupérez le mot de passe en clair depuis la session
+                // Récupérez le mot de passe en clair depuis la session
                 // $password = $this->ci->session->userdata('password');
 
-                
+
                 log_message('debug', 'Mot de passe récupéré depuis la session : ' . ($password ? 'Présent' : 'Absent'));
 
                 if (empty($password)) {
                     show_error('Mot de passe SSO manquant. Veuillez vous reconnecter.');
                 }
                 // 2. Créer un nouvel utilisateur via l'API
+
+                $firstname = $this->user->firstname ?? null;
+                $lastname  = $this->user->lastname ?? null;
+
+                if (!$firstname || !$lastname) {
+                    show_error('Informations de profil manquantes pour l’utilisateur.');
+                }
                 $newUser = [
                     'account' => [
                         'email' => $email,
                         'username' => $this->sanitizeUsername($name),
                         'newPassword' => $password,
-                        'newPasswordConfirm' => $password,
-                       // 'auth_key' => $authKey
+                        'newPasswordConfirm' => $password
                     ],
                     'profile' => [
-                        'language' => 'fr',
-                        // 'firstname' => $firstname,
-                        // 'lastname' => $lastname
+                        'firstname' => $firstname,
+                        'lastname'  => $lastname
                     ]
                 ];
-                
+
                 log_message('debug', 'Payload envoyé à HumHub: ' . json_encode($newUser));
                 $created = $this->createUser($newUser);
                 log_message('debug', "SSO HumHub – utilisateur Wayo : email={$email}, name={$name}");
-    
+
                 if (!$created || empty($created['id'])) {
                     throw new Exception('Échec de la création de l\'utilisateur HumHub.');
                 }
-    
+
                 $humhubId = $created['id'];
                 log_message('debug', 'Created new HumHub user with ID: ' . $humhubId);
-                
+
                 // 3. Hacher et insérer le mot de passe dans user_password
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
                 $this->insertUserPassword($humhubId, $hashedPassword);
                 //Sécurité : on supprime le mot de passe clair de la session
-                 $this->ci->session->unset_userdata('password');
+                $this->ci->session->unset_userdata('password');
             }
-    
+
             // 3. Génération du JWT
             $payload = [
                 'sub'            => $humhubId, // Sujet du jeton : identifiant unique de l'utilisateur
@@ -155,21 +162,22 @@ class Humhub_sso {
                 'authMode'       => 'external', // Indique à HumHub que c'est une authentification externe
                 'disableSession' => false,   // Permet à HumHub de créer une session utilisateur
             ];
-    
-            $token = JWT::encode($payload, HUMHUB_JWT_SECRET, 'HS256');//Génère  un nouveau token JWT signé avec la clé secrète et l'algorithme HS256
-          
+
+            $token = JWT::encode($payload, HUMHUB_JWT_SECRET, 'HS256'); //Génère  un nouveau token JWT signé avec la clé secrète et l'algorithme HS256
+
             // Génère une URL de connexion automatique à HumHub via JWT (sans mot de passe)
-         return HUMHUB_BASE_URL . '/user/auth/external' . '?authclient=jwt'. '&jwt=' . urlencode($token);
-    
+            return HUMHUB_BASE_URL . '/user/auth/external' . '?authclient=jwt' . '&jwt=' . urlencode($token);
         } catch (Exception $e) {
             log_message('error', 'SSO HumHub error: ' . $e->getMessage());
             return null; // Ensure a value is returned in case of an exception
         }
     }
-    public function getUserByEmail($email) {
+    public function getUserByEmail($email)
+    {
         return  $this->httpRequest('GET', HUMHUB_BASE_URL . '/api/v1/user/get-by-email?email=' . urlencode($email));
     }
-    public function getUserById($userId) {
+    public function getUserById($userId)
+    {
         return $this->httpRequest('GET', HUMHUB_BASE_URL . '/api/v1/user/' . intval($userId));
     }
     public function getSpace($spaceId)
@@ -180,15 +188,15 @@ class Humhub_sso {
     {
         return $this->httpRequest('POST', HUMHUB_BASE_URL . '/api/v1/space', $data);
     }
-    public function updateSpace($SpaceId,array $data)
+    public function updateSpace($SpaceId, array $data)
     {
-        return $this->httpRequest('PUT', HUMHUB_BASE_URL . '/api/v1/space/' . intval($SpaceId),$data);
+        return $this->httpRequest('PUT', HUMHUB_BASE_URL . '/api/v1/space/' . intval($SpaceId), $data);
     }
     public function deleteSpace($SpaceId)
     {
         return $this->httpRequest('DELETE', HUMHUB_BASE_URL . '/api/v1/space/' . intval($SpaceId));
     }
-    public function addUserSpace($SpaceId,$UserId)
+    public function addUserSpace($SpaceId, $UserId)
     {
         return $this->httpRequest('POST', HUMHUB_BASE_URL . "/api/v1/space/{$SpaceId}/membership/{$UserId}");
     }
@@ -230,24 +238,26 @@ class Humhub_sso {
 
         log_message('debug', 'Mot de passe inséré pour l\'utilisateur ID: ' . $userId);
     }
- /**
+    /**
      * Création d'un utilisateur HumHub via API
      * @param array $data ['email','username','language',...]
      * @return array|null Réponse API ou null
      */
-    public function createUser(array $data) {
+    public function createUser(array $data)
+    {
         return $this->httpRequest('POST', HUMHUB_BASE_URL . '/api/v1/user', $data);
     }
 
-   
-   
+
+
     /**
      * Mise à jour d'un utilisateur HumHub via API
      * @param int   $id   ID HumHub
      * @param array $data Champs à mettre à jour
      * @return array|null Réponse API ou null
      */
-    public function updateUser($id, array $data) {
+    public function updateUser($id, array $data)
+    {
         return $this->httpRequest('PUT', HUMHUB_BASE_URL . '/api/v1/user/' . intval($id), $data);
     }
 
@@ -256,7 +266,8 @@ class Humhub_sso {
      * @param int $id ID HumHub
      * @return bool Succès ou échec
      */
-    public function deleteUser($id) {
+    public function deleteUser($id)
+    {
         $res = $this->httpRequest('DELETE', HUMHUB_BASE_URL . '/api/v1/user/full/' . intval($id));
         return $res !== null;
     }
@@ -285,20 +296,19 @@ class Humhub_sso {
     {
         // 1) Construire l'URL avec les paramètres de requête
         $url = HUMHUB_BASE_URL . '/api/v1/user/group/' . intval($groupId) . '/member?userId=' . intval($humhubUserId);
-        
+
         // 2) Pour debug, on logue l'URL qu'on va appeler
         log_message('debug', 'URL pour ajouter user au groupe : ' . $url);
-        
+
         // 3) Appel HTTP PUT sans payload (les paramètres sont dans l'URL)
         return $this->httpRequest('PUT', $url, null);
     }
     /**
      * Sanitize a string to be a valid username
      */
-    private function sanitizeUsername($str) {
+    private function sanitizeUsername($str)
+    {
         $u = strtolower(preg_replace('/[^a-z0-9]/i', '', $str));
-        return $u ?: 'user' . rand(1000,9999);
+        return $u ?: 'user' . rand(1000, 9999);
     }
-
-  
 }

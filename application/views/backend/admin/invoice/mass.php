@@ -33,7 +33,7 @@
 
         <div class="form-group mt-2">
             <label for="status"><?php echo get_phrase('status'); ?><span class="required"> * </span></label>
-            <select name="status" id="status" class="form-control"  required >
+            <select name="status" id="status_select" class="form-control"  required >
                 <option value=""><?php echo get_phrase('select_a_status'); ?></option>
                 <option value="paid"><?php echo get_phrase('paid'); ?></option>
                 <option value="unpaid"><?php echo get_phrase('unpaid'); ?></option>
@@ -91,12 +91,12 @@ $(document).ready(function () {
                   location.reload();
                 }, 3500);// Attendre 3500ms avant de recharger la page
             } else {
-              error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
+              error_notify('<?= js_phrase(get_phrase('action_not_allowed')) ?>'.replace(/^"|"$/g, ''))
                 
             }
         },
         error: function () {
-          error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
+          error_notify('<?= js_phrase(get_phrase('an_error_occurred_during_submission')) ?>'.replace(/^"|"$/g, ''))
         }
       });
     });

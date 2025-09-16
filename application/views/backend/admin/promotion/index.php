@@ -1,23 +1,23 @@
-<!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title">
+   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-account-switch title_icon"></i><?php echo get_phrase('student_promotion'); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
-<!-- end page title -->
 
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body">
 
-        <div class="row justify-content-md-center d-print-none" style="margin-bottom: 10px;">
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-3">
+            <div class="main-card">
+                <div class="card-body">
+
+        <div class="row mt-3 justify-content-md-center d-print-none" style="margin-bottom: 10px;">
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <label for="session_from"><?php echo get_phrase('current_session'); ?></label>
             <select class="form-control"  id = "session_from" name="session_from">

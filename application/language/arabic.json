@@ -2030,5 +2030,12 @@
     "impossible_de_programmer_un_rendez-vous_dans_le_passé.": "لم أتمكن من جدولة موعد في الماضي.",
     "rendez-vous_mis_à_jour_!": "تم تحديث الموعد!",
     "rendez-vous_ajouté_avec_succès_!": "تمت إضافة الموعد بنجاح!",
-    "une_erreur_est_survenue.": "لقد حدث خطأ."
+    "une_erreur_est_survenue.": "لقد حدث خطأ.",
+    "wall": "الحائط",
+    "membres": "الأشخاص",
+    "spaces": "المساحات",
+    "contenu_complet": "المحتوى الكامل",
+    "details": "Details",
+    "people": "الأشخاص",
+    "messages": "Messages"
 }

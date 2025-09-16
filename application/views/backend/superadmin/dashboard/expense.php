@@ -6,8 +6,8 @@ $expenses = $this->crud_model->get_expense($date_from, $date_to)->result_array()
     <table class="table table-striped table-centered table-bordered mb-0 table-responsive">
         <thead>
             <tr>
-                <th width = "60%"><?php echo get_phrase('expense') ;?></th>
-                <th width = "40%"><?php echo get_phrase('amount') ;?></th>
+                <th width = "60%"><i class="mdi mdi-database thead-icon"></i><?php echo get_phrase('expense') ;?></th>
+                <th width = "40%"><i class="mdi mdi-currency-usd thead-icon thead-icon"></i><?php echo get_phrase('amount') ;?></th>
             </tr>
         </thead>
         <tbody>

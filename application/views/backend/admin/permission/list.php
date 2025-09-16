@@ -1,10 +1,11 @@
-<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+
+<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
     <thead>
-        <tr style="background-color: #313a46; color: #ababab;">
-            <th><?php echo get_phrase('teacher'); ?></th>
-            <th><?php echo get_phrase('marks'); ?></th>
+        <tr>
+            <th><i class="mdi mdi-teach thead-icon"></i><?php echo get_phrase('teacher'); ?></th>
+            <th><i class="mdi mdi-clipboard-text-outline thead-icon"></i><?php echo get_phrase('marks'); ?></th>
             <!-- <th><?php echo get_phrase('assignment'); ?></th> -->
-            <th><?php echo get_phrase('attendance'); ?></th>
+            <th><i class="mdi mdi-calendar-check-outline thead-icon"></i><?php echo get_phrase('attendance'); ?></th>
             <!-- <th><?php echo get_phrase('online_exam'); ?></th> -->
         </tr>
     </thead>
@@ -20,6 +21,8 @@
             <td>
                 <input type="checkbox" value="<?php echo $permission['marks']; ?>" id="<?php echo $teacher['id'].'1'; ?>" data-switch="success" onchange="togglePermission(this.id, 'marks', '<?php echo $teacher['id']; ?>')" <?php if($permission['marks'] == 1) echo 'checked'; ?>>
                 <label for="<?php echo $teacher['id'].'1'; ?>" data-on-label="Yes" data-off-label="No">
+                <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
             </td>
             <!-- <td>
                 <input type="checkbox" value="<?php echo $permission['assignment']; ?>" id="<?php echo $teacher['id'].'2'; ?>" data-switch="success" onchange="togglePermission(this.id, 'assignment', '<?php echo $teacher['id']; ?>')" <?php if($permission['assignment'] == 1) echo 'checked'; ?>>

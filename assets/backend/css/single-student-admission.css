@@ -1,40 +1,59 @@
-/* Modern Logo Upload Interface */
-.logo-upload-container {
-    padding: 20px 0;
-  }
-  
-  .logo-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: 100%;
-  }
-  
-  .logo-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logo-header h5 {
-    margin: 0;
-    font-weight: 600;
-    color: #333;
-    font-size: 16px;
-  }
-  
-  .logo-preview {
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+  .action-btn:hover .mdi {
+    transform: translateX(4px);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.input-wrapper {
+  position: relative;
+}
+
+.form-control {
+  width: 100%;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+  outline: none;
+}
+
+
+
+.form-control::placeholder {
+  color: #9ca3af;
+}
+ .logo-preview {
+    width: 150px;
     height: 150px;
-    position: relative;
+    border-radius: 50%;
+    margin: 0 auto 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -53,24 +72,7 @@
     object-fit: contain;
   }
   
-  .logo-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: all 0.3s ease;
-  }
-  
-  .logo-overlay i {
-    color: #ffffff;
-    font-size: 24px;
-  }
+
   
   .logo-preview:hover .logo-overlay {
     opacity: 1;
@@ -105,40 +107,175 @@
   .image-upload {
     display: none;
   }
-  
-  #update-logos-btn {
+    #update-logos-btn {
     color: #fff;
     background-color: #6c757d;
     border-color: #6c757d;
-    border: none;
-    border-radius: 16px;
+    }
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+select.form-control {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.image-upload-section {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+
+
+.image-preview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 4px solid white;
+  transition: all 0.3s ease;
+}
+
+.image-preview:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview .placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 2rem;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+}
+
+.image-upload {
+  display: none;
+}
+
+
+.floating-label {
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  background: transparent;
+  padding: 0 4px;
+  font-size: 1rem;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.form-control:focus+.floating-label,
+.form-control:not(:placeholder-shown)+.floating-label {
+  top: -8px;
+  font-size: 0.85rem;
+  color: #4f46e5;
+  background: white;
+  font-weight: 600;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    margin: 10px;
+    border-radius: 16px;
   }
-  #update-logos-btn:hover {
-    background-color: #3b5998;
+
+  .header {
+    padding: 30px 20px;
   }
-  
-  #update-logos-btn i {
-    margin-right: 8px;
+
+  .header h1 {
+    font-size: 2rem;
   }
-  
-  /* Animations for upload success */
-  @keyframes success-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+
+  .form-container {
+    padding: 30px 20px;
   }
-  .upload-highlight {
-    animation: pulse-highlight 1.5s ease-out;
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  
-  @keyframes pulse-highlight {
-    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
-    50% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+
+  .image-upload-section {
+    padding: 20px;
   }
-  
-  .preview-image {
-    transition: border-color 0.3s ease;
+}
+
+/* Animation classes */
+.upload-highlight {
+  animation: uploadSuccess 1.5s ease-out;
+}
+
+@keyframes uploadSuccess {
+  0% {
+    transform: scale(1);
   }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+

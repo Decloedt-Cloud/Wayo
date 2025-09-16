@@ -6,11 +6,11 @@ $books = $this->crud_model->get_books()->result_array();
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
       <thead class="thead-dark">
         <tr>
-          <th><?php echo get_phrase('book_name'); ?></th>
-          <th><?php echo get_phrase('author'); ?></th>
-          <th><?php echo get_phrase('copies'); ?></th>
-          <th><?php echo get_phrase('available_copies'); ?></th>
-          <th><?php echo get_phrase('option'); ?></th>
+          <th><i class="mdi mdi mdi-book-outline thead-icon"></i><?php echo get_phrase('book_name'); ?></th>
+          <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('author'); ?></th>
+          <th><i class="mdi mdi-book-multiple-outline thead-icon"></i><?php echo get_phrase('copies'); ?></th>
+          <th><i class="mdi mdi-book-check-outline thead-icon"></i><?php echo get_phrase('available_copies'); ?></th>
+          <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
         </tr>
       </thead>
       <tbody>
@@ -27,10 +27,10 @@ $books = $this->crud_model->get_books()->result_array();
             </td>
             <td>
               <div class="dropdown text-center">
-      					<button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
+      					<button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
       					<div class="dropdown-menu dropdown-menu-end">
       						<!-- item-->
-      						<a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/book/edit/'.$book['id'])?>', '<?php echo get_phrase('update_book'); ?>');"><?php echo get_phrase('edit'); ?></a>
+      						<a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/book/edit/'.$book['id'])?>', &quot;<?php echo get_phrase('update_book'); ?>&quot;)"><?php echo get_phrase('edit'); ?></a>
       						<!-- item-->
       						<a href="javascript:void(0);" class="dropdown-item" onclick="confirmModal('<?php echo route('book/delete/'.$book['id']); ?>', showAllBooks )"><?php echo get_phrase('delete'); ?></a>
       					</div>
