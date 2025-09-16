@@ -2051,5 +2051,11 @@
     "list": "List",
     "edit_event": "Edit event",
     "teacher_permission_updated": "Teacher permission updated",
-    "nombre_de_participants_:": "Number of participants :"
+    "are_you_sure?": "Are you sure?",
+    "yes,_delete_it!": "Yes, delete it!",
+    "number_of_participants": "Number of participants",
+    "nombre_de_participants_:": "Nombre de participants :",
+    "select_a_community": "Select a community",
+    "all_communities": "All communities",
+    "meeting_not_started": "Meeting not started"
 }

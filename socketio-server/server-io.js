@@ -245,6 +245,10 @@ app.post('/bbb-hook', (req, res) => {
       participantCounts.delete(meetingID);
       meetingSubscriptions.delete(meetingID);
       io.to(meetingID).emit('update_participants', { action:'update_participants', meetingID, participantCount:0, isRunning:false, ts:Date.now() });
+    } else if (type === 'meeting-created') {
+      const cur = (participantCounts.get(meetingID) || 0) + 1;
+      participantCounts.set(meetingID, cur);
+      io.to(meetingID).emit('update_participants', { action:'update_participants', meetingID, participantCount:cur, isRunning:true, ts:Date.now() });
     }
  
     res.json({ status: 'ok' });
