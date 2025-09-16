@@ -358,36 +358,6 @@ class Bigbluebutton extends CI_Controller {
     
         echo $response;
     }
-    
-    
-
-
-    public function join_meeting($meetingID)
-    {
-        // die($meetingID);
-
-        $meeting = $this->Meeting_model->get_meeting_by_id($meetingID);
-    
-        
-        if (!$meeting) {
-            show_error("Réunion introuvable ou supprimée.", 404);
-            return;
-        }
-
-        // $role = $this->session->userdata('role');die($role);
-        $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
-        $password = ($user_details['role'] === "mentor" || $user_details['role'] === "admin" || $user_details['role'] === "superadmin") ? $meeting['moderator_pw'] : $meeting['attendee_pw'];
-        $fullName =  $user_details['name'];
-        // die($this->session->userdata('user_id'));
-        $params = "fullName=" . urlencode($fullName) . "&meetingID=$meetingID&password=$password&redirect=true";
-        $checksum = sha1("join" . $params . $this->bbb_secret);
-        $join_url = $this->bbb_url . "join?" . $params . "&checksum=" . $checksum;
-        header("Location: " . $join_url);
-        exit();
-        // Afficher l'URL générée pour tester
-        // echo "Rejoindre via : " . $join_url;
-        // exit();
-    }   
     public function breakout_rooms($meetingID)
     {
         die;
@@ -478,5 +448,131 @@ public function get_active_meetings()
     echo json_encode(["active_meetings" => $active_meetings]);
 }
 
+public function join_meeting($meetingID) {
+    log_message('debug', 'join_meeting - Attempting to join meeting with ID: ' . $meetingID);
+    $meeting = $this->Meeting_model->get_meeting_by_id($meetingID);
+    
+    if (!$meeting) {
+        log_message('error', 'join_meeting - Meeting not found for ID: ' . $meetingID);
+        show_error("Réunion introuvable ou supprimée.", 404);
+        return;
+    }
+    
+    $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
+    $password = ($user_details['role'] === "teacher" || $user_details['role'] === "admin" || $user_details['role'] === "superadmin") ? $meeting['moderator_pw'] : $meeting['attendee_pw'];
+    $fullName = $user_details['name'];
+    
+    $params = "fullName=" . urlencode($fullName) . "&meetingID=" . urlencode($meetingID) . "&password=" . urlencode($password) . "&redirect=true";
+    $checksum = sha1("join" . $params . $this->bbb_secret);
+    $join_url = $this->bbb_url . "join?" . $params . "&checksum=" . $checksum;
+    
+    log_message('debug', 'join_meeting - Redirecting to: ' . $join_url);
+    header("Location: " . $join_url);
+    exit();
+}
 
+public function webhook() {
+    // Verify the request is from BBB
+    $this->load->config('bigbluebutton');
+    $bbb_secret = $this->config->item('bbb_secret');
+    $raw_post_data = file_get_contents('php://input');
+    log_message('debug', 'Webhook - Raw data received: ' . $raw_post_data);
+    $checksum = $this->input->get('checksum', true);
+
+    // Validate checksum
+    $calculated_checksum = sha1($raw_post_data . $bbb_secret);
+    if ($calculated_checksum !== $checksum) {
+        log_message('error', 'Webhook - Invalid checksum');
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid checksum']);
+        return;
+    }
+
+    // Parse the webhook data
+    $data = json_decode($raw_post_data, true);
+    if (!$data || !isset($data['event'])) {
+        log_message('error', 'Webhook - Invalid or missing event data');
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid event data']);
+        return;
+    }
+
+    $event_type = $data['event'];
+    $meeting_id = $data['data']['meeting']['meeting-id'] ?? null;
+    if (!$meeting_id) {
+        log_message('error', 'Webhook - Missing meeting_id in event data');
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Missing meeting_id']);
+        return;
+    }
+
+    // Initialize participant count from Socket.IO server (optional, for consistency)
+    // We rely on Socket.IO to maintain the count, so we don't fetch from DB
+    $participant_count = 0; // Will be updated by Socket.IO server
+    $is_running = true;
+
+    // Handle specific event types
+    switch ($event_type) {
+    case 'user-joined':
+        $participant_count = 1;
+        log_message('debug', 'Webhook - User joined meeting_id: ' . $meeting_id);
+        break;
+    case 'user-left':
+        $participant_count = -1;
+        log_message('debug', 'Webhook - User left meeting_id: ' . $meeting_id);
+        break;
+    case 'meeting-ended':
+        $participant_count = 0;
+        $is_running = false;
+        log_message('debug', 'Webhook - Meeting ended for meeting_id: ' . $meeting_id);
+        break;
+    default:
+        log_message('debug', 'Webhook - Unhandled event type: ' . $event_type);
+        http_response_code(200);
+        echo json_encode(['status' => 'success', 'message' => 'Event received but not processed']);
+        return;
+}
+
+    // Notify Socket.IO server
+    $this->notify_socket_server($meeting_id, $event_type, $participant_count, $is_running);
+
+    http_response_code(200);
+    echo json_encode(['status' => 'success', 'message' => 'Webhook processed']);
+}
+
+/**
+ * Notify the Socket.IO server of webhook events
+ * @param string $meeting_id
+ * @param string $event_type
+ * @param int $participant_change (positive for join, negative for leave, 0 for end)
+ * @param bool $is_running
+ */
+private function notify_socket_server($meeting_id, $event_type, $participant_change, $is_running) {
+    $socket_io_url = 'https://preprod.wayo.site/notify';
+    $data = [
+        'meetingID' => $meeting_id,
+        'eventType' => $event_type,
+        'participantChange' => $participant_change,
+        'isRunning' => $is_running
+    ];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $socket_io_url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+    $curl_error = curl_error($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    log_message('debug', 'notify_socket_server - Sent data: ' . json_encode($data));
+    log_message('debug', 'notify_socket_server - HTTP Code: ' . $http_code);
+    log_message('debug', 'notify_socket_server - Response: ' . $response);
+    if ($curl_error) {
+        log_message('error', 'notify_socket_server - cURL error for meeting_id: ' . $meeting_id . ': ' . $curl_error);
+    }
+}
 }

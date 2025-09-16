@@ -139,7 +139,7 @@ class Email_model extends CI_Model {
 						font-weight: bold;
 					}
 					.button:hover {
-						background-color: #B8701F;
+						background-color: #ee7626;
 					}
 					.button-container {
 						text-align: center;
@@ -308,7 +308,7 @@ class Email_model extends CI_Model {
 					font-weight: bold;
 				}
 				.button:hover {
-					background-color: #B8701F;
+					background-color: #ee7626;
 				}
 				.button-container {
 					text-align: center;
@@ -426,7 +426,7 @@ class Email_model extends CI_Model {
 		$student_details = $this->user_model->get_student_details_by_id('student', $student_id);
 		$student_name = $student_details['name'];
 		$student_code = $student_details['code'];
-		$email_message  = '<html><body><p>'.$student_name.' has been requested you, for the book.'.'</p><br><p>Student Code : '.$student_code.'</p></body></html>';
+		$email_message  = '<html><body><p>'.$student_name.' has been requested you, for the book.'.'</p><br><p>Member Code : '.$student_code.'</p></body></html>';
 		$email_sub		= 'New book issued';
 		$this->db->limit(1);
 		$librarians = $this->db->get('librarian')->result_array();
@@ -446,7 +446,7 @@ class Email_model extends CI_Model {
 		<head>
 			<meta charset="UTF-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>Registration Student</title>
+			<title>Registration Member</title>
 			<style>
 				body { 
 					margin: 0; 
@@ -509,7 +509,7 @@ class Email_model extends CI_Model {
 					font-weight: bold;
 				}
 				.button:hover {
-					background-color: #B8701F;
+					background-color: #ee7626;
 				}
 				.button-container {
 					text-align: center;
@@ -571,7 +571,7 @@ class Email_model extends CI_Model {
 				<table class="content-table">
 					<tr>
 						<td class="header">
-							<span>Registration Student</span>
+							<span>Registration Member</span>
 						</td>
 					</tr>
 					<tr>
@@ -610,7 +610,7 @@ class Email_model extends CI_Model {
 		</html>
 		HTML;
 
-		$email_sub		= 'Mentor Registration ';
+		$email_sub		= 'Member Registration ';
 		$email_to = $email;
 		
 
@@ -689,7 +689,7 @@ class Email_model extends CI_Model {
 					font-weight: bold;
 				}
 				.button:hover {
-					background-color: #B8701F;
+					background-color: #ee7626;
 				}
 				.info-container {
 					display: flex;
@@ -873,7 +873,7 @@ class Email_model extends CI_Model {
 				font-weight: bold;
 			}
 			.button:hover {
-				background-color: #B8701F;
+				background-color: #ee7626;
 			}
 			.info-container {
 				display: flex;
@@ -1064,7 +1064,7 @@ class Email_model extends CI_Model {
 							font-weight: bold;
 						}
 						.button:hover {
-							background-color: #B8701F;
+							background-color: #ee7626;
 						}
 						.info-container {
 							display: flex;
@@ -1136,9 +1136,9 @@ class Email_model extends CI_Model {
 									<div class="info-container">
 										<div class="info-content">
 											<p><strong>Confirmation of Admission</strong></p>
-											<p>Dear Student,</p>
+											<p>Dear Member,</p>
 											<p>We are pleased to inform you that your admission request to ' . $school_data['name'] . ' has been successfully approved. Below are the details of your admission:</p>
-											<p><strong>Student Code:</strong> ' . $student_code . '</p>
+											<p><strong>Member Code:</strong> ' . $student_code . '</p>
 											<p><strong>Email:</strong> ' . $student_email . '</p>
 											<p>Please log in to your account to access community details and complete any additional onboarding steps required.</p>
 											<div>
@@ -1251,7 +1251,7 @@ class Email_model extends CI_Model {
 							font-weight: bold;
 						}
 						.button:hover {
-							background-color: #B8701F;
+							background-color: #ee7626;
 						}
 						.info-container {
 							display: flex;
@@ -1325,7 +1325,7 @@ class Email_model extends CI_Model {
 											<p><strong>Join Request Confirmation</strong></p>
 											<p>Dear ' . $user_name . ',</p>
 											<p>Thank you for submitting your request to join ' . $name_school . '. Your application has been successfully received and is currently under review. Below are the details of your request:</p>
-											<p><strong>Student Code:</strong> ' . $code_student . '</p>
+											<p><strong>Member Code:</strong> ' . $code_student . '</p>
 											<p><strong>Email:</strong> ' . $email_student . '</p>
 											<p>You will be notified once your request has been reviewed and approved. In the meantime, you may log in to your account to check the status of your application or access additional information.</p>
 											<div>
@@ -1435,7 +1435,7 @@ class Email_model extends CI_Model {
 							font-weight: bold;
 						}
 						.button:hover {
-							background-color: #B8701F;
+							background-color: #ee7626;
 						}
 						.info-container {
 							display: flex;
@@ -1510,7 +1510,7 @@ class Email_model extends CI_Model {
 											<p>Dear Administrator,</p>
 											<p>We are pleased to inform you that a new registration has been submitted for ' . $name_school . '. Below are the details of the registrant:</p>
 											<p><strong>Name:</strong> ' . $user_name . '</p>
-											<p><strong>Student Code:</strong> ' . $code_student . '</p>
+											<p><strong>Member Code:</strong> ' . $code_student . '</p>
 											<p><strong>Email:</strong> ' . $email_student . '</p>
 											<p>Please log in to your account to review the registration details and take any necessary actions to process the request.</p>
 											<div>

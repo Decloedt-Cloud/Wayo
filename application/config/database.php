@@ -96,11 +96,11 @@ $db['default'] = array(
     'failover' => array(),
     'save_queries' => TRUE
  
-    
+   
 );
 
 
-$db['humhub'] = [
+$db['humhub'] = array(
     'dsn'      => '',
     'hostname' => '18.101.123.255',
     'username' => 'remote_user',
@@ -119,4 +119,4 @@ $db['humhub'] = [
     'strict_on'=> FALSE,
     'failover' => array(),
     'save_queries' => TRUE
-];
+);
