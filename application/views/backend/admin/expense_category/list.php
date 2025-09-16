@@ -4,8 +4,8 @@
         <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
             <thead class="thead-dark">
                 <tr>
-                    <th><?php echo get_phrase('name'); ?></th>
-                    <th><?php echo get_phrase('option'); ?></th>
+              <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('name'); ?></th>
+                    <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
                 </tr>
             </thead>
             <tbody>

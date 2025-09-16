@@ -1,14 +1,16 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/generalSettings.css">
 
-<div class="card">
-  <div class="card-body">
+
+<div class="mb-3">
+    <div class="main-card1">
+        <div class="card-body">
     <h4 class="header-title"><?php echo get_phrase('general_settings') ;?></h4>
     <form method="POST" class="col-12 generalSettingsAjaxForm" action="<?php echo route('website_update/general_settings') ;?>" id = "general_settings">
       <!-- Champ caché pour le jeton CSRF -->
     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
     
       <div class="row justify-content-left">
-        < class="col-12">
+     
           <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="website_title"> <?php echo get_phrase('website_title') ;?></label>
             <div class="col-md-9">

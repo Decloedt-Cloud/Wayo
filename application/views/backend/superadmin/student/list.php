@@ -9,6 +9,7 @@
   $student_count = $this->db->get_where('enrols', $where)->num_rows();
 ?>
 
+
 <!-- Student Count Card -->
 <div class="row mb-2">
   <div class="col-md-12 text-right">
@@ -18,14 +19,15 @@
   </div>
 </div>
 
-<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
-  <thead>
-    <tr style="background-color: #313a46; color: #ababab;">
-      <th><?php echo get_phrase('code'); ?></th>
-      <th><?php echo get_phrase('photo'); ?></th>
-      <th><?php echo get_phrase('name'); ?></th>
-      <th><?php echo get_phrase('status'); ?></th>
-      <th><?php echo get_phrase('options'); ?></th>
+
+<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
+    <thead>
+        <tr>
+      <th><i class="mdi mdi-file-code-outline thead-icon"></i><?php echo get_phrase('code'); ?></th>
+      <th><i class="mdi mdi-account-circle-outline thead-icon"></i><?php echo get_phrase('photo'); ?></th>
+      <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('name'); ?></th>
+      <th><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
+      <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
     </tr>
   </thead>
   <tbody>
@@ -50,7 +52,7 @@
         <td>
           <div class="dropdown text-center">
             <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
-            <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-menu dropdown-menu-end">
               <?php if(addon_status('id-card')):?>
                 <a href="javascript:void(0);" class="dropdown-item" onclick="largeModal('<?php echo site_url('modal/popup/student/id_card/'.$student['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('generate_id_card'); ?></a>
               <?php endif;?>
@@ -69,4 +71,5 @@
     <?php } ?>
   </tbody>
 </table>
+
 <script src="<?php echo base_url('assets/backend/js/common_scripts.js'); ?>"></script>

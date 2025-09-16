@@ -5,12 +5,14 @@
 ?>
 <div class="row">
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('system_currency') ;?></h4>
         <form method="POST" class="col-12 systemAjaxForm" action="<?php echo route('payment_settings/system') ;?>" id = "system_settings">
           <!-- Champ caché pour le jeton CSRF -->
-         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
           <div class="col-12">
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="system_currency"> <?php echo get_phrase('system_currency') ;?> <span class="required"> * </span></label>
@@ -22,7 +24,7 @@
                   $result = $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
                   foreach ($currencies as $currency):?>
                   <option value="<?php echo $currency['code'];?>"
-                    <?php if ($result['system_currency'] == $currency['code'])echo 'selected';?>> <?php echo $currency['code'] ;?>
+                    <?php if ($result['system_currency'] == $currency['code'])echo 'selected';?>> <?php echo $currency['code'];?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -31,7 +33,7 @@
           <div class="form-group row mb-3">
             <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
             <div class="col-md-9">
-              <select class="form-control"  id = "currency_position" name="currency_position" required>
+            <select class="form-control"  id = "currency_position" name="currency_position" required>
                 <option value="left" <?php if ($result['currency_position'] == 'left') echo 'selected';?> ><?php echo get_phrase('left'); ?></option>
                 <option value="right" <?php if ($result['currency_position'] == 'right') echo 'selected';?> ><?php echo get_phrase('right'); ?></option>
                 <option value="left-space" <?php if ($result['currency_position'] == 'left-space') echo 'selected';?> ><?php echo get_phrase('left_with_a_space'); ?></option>
@@ -53,12 +55,14 @@
   </div>
 
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('paypal_settings') ;?></h4>
         <form method="POST" class="col-12 paypalAjaxForm" action="<?php echo route('payment_settings/paypal') ;?>" id = "paypal_settings">
           <!-- Champ caché pour le jeton CSRF -->
-         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+          <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
           <div class="col-12">
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="paypal_active"> <?php echo get_phrase('active') ;?> </label>
@@ -110,9 +114,9 @@
             </div>
           </div>
           <div class="row justify-content-md-center">
-           <div class="form-group col-md-4">
-              <button type="submit" class="btn btn-primary btn-l px-4" id="update-btn" onclick="updatePaypalInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_paypal_settings') ;?></button>
-            </div>
+              <div class="form-group col-md-4">
+                <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"  onclick="updatePaypalInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_paypal_settings') ;?></button>
+              </div>
           </div>
         </div>
       </form>
@@ -120,14 +124,16 @@
     </div> <!-- end card body-->
   </div> <!-- end card -->
   </div>
-
+</div>
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('stripe_settings') ;?></h4>
         <form method="POST" class="col-12 stripeAjaxForm" action="<?php echo route('payment_settings/stripe') ;?>" id = "stripe_settings">
           <!-- Champ caché pour le jeton CSRF -->
-          <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
           <div class="col-12">
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="stripe_active"> <?php echo get_phrase('active') ;?></label>
@@ -192,16 +198,17 @@
               <input type="text" id="stripe_live_public_key" name="stripe_live_public_key" class="form-control"  value="<?php echo $stripe[0]->stripe_live_public_key;?>" required>
             </div>
           </div>
-
-          <div class="row justify-content-md-center">
+           <div class="row justify-content-md-center">
             <div class="form-group col-md-4">
-              <button type="submit" class="btn btn-primary btn-l px-4" id="update-btn" onclick="updateStripeInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_stripe_settings') ;?></button>
+              <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateStripeInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_stripe_settings') ;?></button>
             </div>
-          </div>
+           </div>         
+          
         </div>
       </form>
     </div> <!-- end card body-->
   </div> <!-- end card -->
+  </div>
   </div>
   <?php if(addon_status('payumoney') == 1): ?>
     <?php include 'payumoney_settings.php'; ?>

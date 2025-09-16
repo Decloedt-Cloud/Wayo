@@ -32,10 +32,10 @@ $marks = $this->crud_model->get_marks($class_id, $exam_id, $school_id)->result_a
     <table class="table table-bordered table-responsive-sm" width="100%">
         <thead class="thead-dark">
             <tr>
-                <th><?php echo get_phrase('student_name'); ?></th>
-                <th><?php echo get_phrase('mark'); ?></th>
-                <th><?php echo get_phrase('comment'); ?></th>
-                <th><?php echo get_phrase('result'); ?></th>
+                <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student_name'); ?></th>
+                <th><i class="mdi mdi-numeric thead-icon"></i><?php echo get_phrase('mark'); ?></th>
+                <th><i class="mdi mdi-comment-text-outline thead-icon"></i><?php echo get_phrase('comment'); ?></th>
+                <th><i class="mdi mdi-clipboard-check-outline thead-icon"></i><?php echo get_phrase('result'); ?></th>
             </tr>
         </thead>
         <tbody>

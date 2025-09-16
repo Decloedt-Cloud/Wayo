@@ -1733,7 +1733,6 @@
     "unlimited": "Onbeperkt",
     "calendar_&_events": "Kalender & evenementen",
     "social_hub": "Sociale hub",
-    "chat": "Chat",
     "live_classes": "Live klassen",
     "assessments_&_progress_tracking": "Beoordelingen & voortgangsregistratie",
     "additional_mentors": "Extra mentoren",
@@ -2366,5 +2365,7 @@
     "join_meeting": "Deelnemen aan vergadering",
     "are_you_sure?": "Weet je het zeker?",
     "yes,_delete_it!": "Ja, verwijder het!",
-    "edit_event": "Evenement bewerken"
+    "edit_event": "Evenement bewerken",
+    "chat": "Bericht",
+    "contenu_complet": "Volledige inhoud"
 }

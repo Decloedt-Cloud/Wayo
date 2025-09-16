@@ -43,7 +43,7 @@ $exam_calendar_json = json_encode($exam_calendar);
 ?>
 
 <!-- Filter Form -->
-<div class="row mb-3">
+<div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
@@ -73,8 +73,8 @@ $exam_calendar_json = json_encode($exam_calendar);
                             <input type="text" name="date_range" id="date_range" class="form-control daterange" value="<?php echo $date_range; ?>" placeholder="Select Date Range">
                         </div>
                         <!-- Search Button -->
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary"><?php echo get_phrase('search'); ?></button>
+                        <div class="col-md-3 btncol d-flex align-items-end ">
+                            <button type="submit" class="btnsearch btn btn-primary"><?php echo get_phrase('search'); ?></button>
                         </div>
 
                     </div>
@@ -98,13 +98,13 @@ $exam_calendar_json = json_encode($exam_calendar);
             <div class="card-body">
                 <div id="exam-table-container">
                     <?php if (count($exams) > 0): ?>
-                        <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+                        <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
                             <thead>
-                                <tr style="background-color: #313a46; color: #ababab;">
-                                    <th><?php echo get_phrase('exam_name'); ?></th>
-                                    <th><?php echo get_phrase('date'); ?></th>
-                                    <th><?php echo get_phrase('class'); ?></th>
-                                    <th><?php echo get_phrase('options'); ?></th>
+                                <tr>
+                                    <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('exam_name'); ?></th>
+                                    <th><i class="mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('date'); ?></th>
+                                    <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('class'); ?></th>
+                                    <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
                                 </tr>
                             </thead>
                             <tbody>

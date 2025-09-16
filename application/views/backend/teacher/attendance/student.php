@@ -47,7 +47,7 @@
         <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_attendance'); ?></button>
     </div>
 <?php else: ?>
-    <div class="col-md-12 text-center">
+    <div class="col-md-12 text-center mt-3">
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading"><?php echo get_phrase('access_denied'); ?>!</h4>
             <hr>

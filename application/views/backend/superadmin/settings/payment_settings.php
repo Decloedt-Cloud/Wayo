@@ -5,8 +5,9 @@
 ?>
 <div class="row">
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('system_currency') ;?></h4>
         <form method="POST" class="col-12 systemAjaxForm" action="<?php echo route('payment_settings/system') ;?>" id = "system_settings">
           <!-- Champ caché pour le jeton CSRF -->
@@ -54,8 +55,9 @@
   </div>
 
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('paypal_settings') ;?></h4>
         <form method="POST" class="col-12 paypalAjaxForm" action="<?php echo route('payment_settings/paypal') ;?>" id = "paypal_settings">
           <!-- Champ caché pour le jeton CSRF -->
@@ -122,10 +124,12 @@
     </div> <!-- end card body-->
   </div> <!-- end card -->
   </div>
-
+</div>
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-      <div class="card-body">
+    
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('stripe_settings') ;?></h4>
         <form method="POST" class="col-12 stripeAjaxForm" action="<?php echo route('payment_settings/stripe') ;?>" id = "stripe_settings">
           <!-- Champ caché pour le jeton CSRF -->
@@ -204,6 +208,7 @@
       </form>
     </div> <!-- end card body-->
   </div> <!-- end card -->
+  </div>
   </div>
   <?php if(addon_status('payumoney') == 1): ?>
     <?php include 'payumoney_settings.php'; ?>

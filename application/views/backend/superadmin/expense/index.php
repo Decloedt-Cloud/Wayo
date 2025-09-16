@@ -1,22 +1,25 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+
 <!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-database title_icon"></i> <?php echo get_phrase('expense'); ?>
         </h4>
-        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/expense/create'); ?>', '<?php echo get_phrase('add_new_expense'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_new_expense'); ?></button>
+        <div class="action-buttons-container">
+        <button type="button" class="btn-modern btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/expense/create'); ?>', '<?php echo get_phrase('add_new_expense'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_new_expense'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+  </div>
 <!-- end page title -->
 
 <div class="row ">
   <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body">
+    <div class="mb-3">
+      <div class="main-card">
+        <div class="card-body">
         <div class="row justify-content-md-center" style="margin-bottom: 10px;">
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0">
             <div class="form-group">
@@ -49,7 +52,7 @@
   </div> <!-- end card -->
 </div><!-- end col-->
 </div>
-
+</div>
 
 <script>
 $(document).ready(function() {
