@@ -3524,7 +3524,7 @@ public function create_event() {
         return;
     }
 
-    // Récupérer l'ID de l'école de l'utilisateur connecté
+    // Récupérer l'ID de l'école
     $user_id = $this->session->userdata('user_id');
     $user_details = $this->user_model->get_user_details($user_id);
     $school_id = $user_details['school_id'] ?? null;
@@ -3541,8 +3541,8 @@ public function create_event() {
 
     $start_date = $this->input->get('start_date', true);
     $end_date = $this->input->get('end_date', true);
-    $event_id = $this->input->get('id', true); // Récupérer l'ID de l'événement
-    $class_id = $this->input->get('class_id', true); // Récupérer l'ID de la classe
+    $event_id = $this->input->get('id', true);
+    $class_id = $this->input->get('class_id', true);
 
     // Validation des dates
     if ($start_date && $end_date) {
@@ -3551,7 +3551,7 @@ public function create_event() {
         if ($start_date_obj === false || $end_date_obj === false || $start_date_obj->format('Y-m-d') !== $start_date || $end_date_obj->format('Y-m-d') !== $end_date) {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Format de date invalide (attendu : YYYY-MM-DD)',
+                'message' => 'Invalid date format (expected: YYYY-MM-DD)',
                 'csrf' => [
                     'csrfName' => $this->security->get_csrf_token_name(),
                     'csrfHash' => $this->security->get_csrf_hash()
@@ -3564,7 +3564,7 @@ public function create_event() {
     } else {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Les paramètres start_date et end_date sont requis',
+            'message' => 'start_date and end_date are required',
             'csrf' => [
                 'csrfName' => $this->security->get_csrf_token_name(),
                 'csrfHash' => $this->security->get_csrf_hash()
@@ -3573,31 +3573,32 @@ public function create_event() {
         return;
     }
 
-    // Construction de la requête
+    // Récupérer les événements
     $this->db->select('event_calendars.*, schools.name as school_name, classes.name as class_name');
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('classes', 'event_calendars.class_id = classes.id', 'left');
-    // Filtrer par l'ID de l'école de l'utilisateur
     $this->db->where('event_calendars.school_id', $school_id);
 
-    // Filtrer par ID si fourni
     if ($event_id) {
         $this->db->where('event_calendars.id', $event_id);
     } else {
-        // Filtrer les événements qui chevauchent la période demandée
         $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
     }
 
-    // Filtrer par class_id si fourni
     if ($class_id) {
         $this->db->where('event_calendars.class_id', $class_id);
     }
 
     $events = $this->db->get()->result_array();
-    log_message('debug', 'Requête SQL : ' . $this->db->last_query());
+    log_message('debug', 'get_events - SQL query: ' . $this->db->last_query());
 
-    // Post-traitement des événements pour générer les occurrences récurrentes
+    // Charger la configuration BigBlueButton
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
+
+    // Post-traitement des événements
     $processed_events = [];
     foreach ($events as $event) {
         $event['school_name'] = $event['school_name'] ?? '';
@@ -3623,11 +3624,76 @@ public function create_event() {
             $event['recurrence_end_date'] = $recurrence_end_date_obj ? $recurrence_end_date_obj->format('Y-m-d') : null;
         }
 
-        // Vérifier si l'événement est expiré (plus de 24 heures)
+        // Vérifier si l'événement est expiré
         $event_start = DateTime::createFromFormat('Y-m-d H:i:s', $event['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
         $now = new DateTime('now', new DateTimeZone('UTC'));
         $threshold = (clone $now)->modify('-24 hours');
         $event['is_expired'] = $event_start < $threshold;
+
+        // Récupérer les occurrences pour les événements visio
+        $event['occurrences'] = [];
+        if ($event['visio'] == 1) {
+            $this->db->select('start_date, meeting_id');
+            $this->db->from('appointments');
+            $this->db->where('event_id', $event['id']);
+            $this->db->where('Etat', 1);
+            $this->db->where('DATE(start_date) >=', $start_date);
+            $this->db->where('DATE(start_date) <=', $end_date);
+            $appointments = $this->db->get()->result_array();
+            log_message('debug', 'get_events - SQL query for occurrences: ' . $this->db->last_query());
+
+            foreach ($appointments as $appointment) {
+                $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
+                $meeting_id = $appointment['meeting_id'] ?? null;
+
+                // Vérifier l'état du meeting via BBB API
+                $is_running = false;
+                $participant_count = 0;
+                if ($meeting_id) {
+                    $params = "meetingID=" . urlencode($meeting_id);
+                    $checksum = sha1("isMeetingRunning" . $params . $bbb_secret);
+                    $is_running_url = $bbb_url . "isMeetingRunning?" . $params . "&checksum=" . $checksum;
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $is_running_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    $is_running_response = curl_exec($ch);
+                    $curl_error = curl_error($ch);
+                    curl_close($ch);
+
+                    if (!$curl_error) {
+                        $is_running_xml = simplexml_load_string($is_running_response);
+                        if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
+                            $is_running = (string)$is_running_xml->running === "true";
+                            if ($is_running) {
+                                $params = "meetingID=" . urlencode($meeting_id);
+                                $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
+                                $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, $api_url);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                                $response = curl_exec($ch);
+                                curl_close($ch);
+                                $xml = simplexml_load_string($response);
+                                if ($xml && (string)$xml->returncode === "SUCCESS") {
+                                    $participant_count = (int)$xml->participantCount;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $event['occurrences'][$occurrence_date] = [
+                    'meeting_id' => $meeting_id,
+                    'is_running' => $is_running,
+                    'participant_count' => $participant_count
+                ];
+            }
+        }
 
         // Si un ID spécifique est demandé, retourner uniquement l'événement de base
         if ($event_id) {
@@ -3645,7 +3711,7 @@ public function create_event() {
             if ($event['recurrence_type'] === 'daily') {
                 $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'weekly') {
-                $interval = new DateInterval('P1D'); // Vérifier chaque jour pour les jours personnalisés
+                $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'every_weekday') {
                 $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'monthly') {
@@ -3671,18 +3737,30 @@ public function create_event() {
                 if ($is_valid_date && $current_date->format('Y-m-d') >= $start_date) {
                     $event_copy = $event;
                     $event_copy['starting_date'] = $current_date->format('Y-m-d');
-                    // Conserver la date de fin originale pour les événements récurrents
-                    $event_copy['ending_date'] = $event['ending_date'];
-                    // Vérifier si l'occurrence est expirée
+                    $event_copy['ending_date'] = $event['ending_date'] ?: $event_copy['starting_date'];
                     $occurrence_start = DateTime::createFromFormat('Y-m-d H:i:s', $event_copy['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
                     $event_copy['is_expired'] = $occurrence_start < $threshold;
+                    $occurrence_date = $current_date->format('Y-m-d');
+                    // Inclure les données de l'occurrence si disponibles
+                    if ($event['visio'] == 1 && isset($event['occurrences'][$occurrence_date])) {
+                        $event_copy['occurrences'] = [
+                            $occurrence_date => $event['occurrences'][$occurrence_date]
+                        ];
+                    } else {
+                        $event_copy['occurrences'] = [
+                            $occurrence_date => [
+                                'meeting_id' => null,
+                                'is_running' => false,
+                                'participant_count' => 0
+                            ]
+                        ];
+                    }
                     $processed_events[] = $event_copy;
                 }
 
                 $current_date->add($interval);
             }
         } else {
-            // Événement non récurrent : vérifier si la période chevauche la plage demandée
             $event_start = new DateTime($event['starting_date']);
             $event_end = $event['ending_date'] ? new DateTime($event['ending_date']) : $event_start;
             $range_start = new DateTime($start_date);
@@ -3694,6 +3772,7 @@ public function create_event() {
         }
     }
 
+    log_message('debug', 'get_events - Processed events: ' . json_encode($processed_events));
     echo json_encode([
         'status' => 'success',
         'data' => $processed_events,
@@ -3705,6 +3784,7 @@ public function create_event() {
 }
 
 public function start_meeting() {
+    // Vérifier l'authentification
     if ($this->session->userdata('admin_login') != 1) {
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
@@ -3715,6 +3795,7 @@ public function start_meeting() {
         return;
     }
 
+    // Récupérer et valider les paramètres
     $event_id = filter_var($this->input->post('event_id', true), FILTER_VALIDATE_INT);
     $occurrence_date = $this->input->post('occurrence_date', true);
     if (!$event_id || !$occurrence_date) {
@@ -3727,6 +3808,7 @@ public function start_meeting() {
         return;
     }
 
+    // Valider le format de la date
     $occurrence_date_obj = DateTime::createFromFormat('Y-m-d', $occurrence_date);
     if ($occurrence_date_obj === false || $occurrence_date_obj->format('Y-m-d') !== $occurrence_date) {
         $csrf = [
@@ -3739,6 +3821,7 @@ public function start_meeting() {
     }
     $occurrence_date = $occurrence_date_obj->format('Y-m-d');
 
+    // Charger l'événement
     $event = $this->db->get_where('event_calendars', ['id' => $event_id])->row_array();
     if (!$event) {
         $csrf = [
@@ -3750,6 +3833,7 @@ public function start_meeting() {
         return;
     }
 
+    // Vérifier si l'événement est en visio
     if ($event['visio'] != 1) {
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
@@ -3760,10 +3844,14 @@ public function start_meeting() {
         return;
     }
 
-    $this->load->config('bigbluebutton');
-    $bbb_url = $this->config->item('bbb_url');
-    $bbb_secret = $this->config->item('bbb_secret');
+    // Désactiver les autres appointments pour cet événement
+    $this->db->where('event_id', $event_id);
+    $this->db->where('DATE(start_date) !=', $occurrence_date);
+    $this->db->where('Etat', 1);
+    $this->db->update('appointments', ['Etat' => 0]);
+    log_message('debug', 'start_meeting - Deactivated other appointments for event_id: ' . $event_id . ', except for occurrence_date: ' . $occurrence_date);
 
+    // Vérifier si un appointment actif existe pour cette occurrence
     $this->db->where('event_id', $event_id);
     $this->db->where('DATE(start_date)', $occurrence_date);
     $this->db->where('Etat', 1);
@@ -3772,6 +3860,12 @@ public function start_meeting() {
 
     log_message('debug', 'start_meeting - Appointment check for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . ($appointment_id ?? 'none'));
 
+    // Charger la configuration BigBlueButton
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
+
+    // Si un appointment existe et le meeting est en cours, le rejoindre
     if ($appointment && $appointment['meeting_id']) {
         $meeting = $this->db->get_where('sessions_meetings', ['meeting_id' => $appointment['meeting_id'], 'appointment_id' => $appointment_id])->row_array();
         if ($meeting) {
@@ -3843,32 +3937,30 @@ public function start_meeting() {
                 ]);
                 return;
             } else {
-                log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', creating new appointment');
+                // Marquer l'ancien appointment comme inactif
+                log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', marking appointment as inactive');
                 $this->db->where('id', $appointment_id);
                 $this->db->update('appointments', ['Etat' => 0]);
-                $appointment = null;
             }
         }
     }
 
-    if (!$appointment) {
-        $appointment_data = [
-            'event_id' => $event_id,
-            'title' => $event['title'],
-            'start_date' => $occurrence_date . ' ' . $event['starting_time'],
-            'classe_id' => $event['class_id'],
-            'school_id' => $event['school_id'],
-            'visio' => $event['visio'],
-            'Etat' => 1,
-            'meeting_id' => null
-        ];
-        $this->db->insert('appointments', $appointment_data);
-        $appointment_id = $this->db->insert_id();
-        log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
-    } else {
-        $appointment_id = $appointment['id'];
-    }
+    // Créer un nouvel appointment pour cette occurrence
+    $appointment_data = [
+        'event_id' => $event_id,
+        'title' => $event['title'],
+        'start_date' => $occurrence_date . ' ' . $event['starting_time'],
+        'classe_id' => $event['class_id'],
+        'school_id' => $event['school_id'],
+        'visio' => $event['visio'],
+        'Etat' => 1,
+        'meeting_id' => null
+    ];
+    $this->db->insert('appointments', $appointment_data);
+    $appointment_id = $this->db->insert_id();
+    log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
 
+    // Créer un nouveau meeting BigBlueButton
     $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
     $new_meeting_id = "meeting-$appointment_id-" . time();
     $attendee_password = "ap_" . $appointment_id;
@@ -3943,6 +4035,7 @@ public function start_meeting() {
     }
 
     if ((string)$xml->returncode === "SUCCESS") {
+        // Enregistrer les détails du meeting
         $meeting_data = [
             'meeting_id' => $new_meeting_id,
             'appointment_id' => $appointment_id,
@@ -3959,9 +4052,11 @@ public function start_meeting() {
         ];
         $this->db->insert('sessions_meetings', $meeting_data);
 
+        // Mettre à jour l'appointment avec le nouveau meeting_id
         $this->db->where('id', $appointment_id);
         $this->db->update('appointments', ['meeting_id' => $new_meeting_id]);
 
+        // Vérifier si le meeting est en cours
         $is_running_params = "meetingID=" . urlencode($new_meeting_id);
         $is_running_checksum = sha1("isMeetingRunning" . $is_running_params . $bbb_secret);
         $is_running_url = $bbb_url . "isMeetingRunning?" . $is_running_params . "&checksum=" . $is_running_checksum;
@@ -4001,6 +4096,7 @@ public function start_meeting() {
             }
         }
 
+        // Générer l'URL de jointure
         $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
         $full_name = urlencode($user_details['name'] ?? 'Admin-' . rand(1000, 9999));
         $join_params = "fullName=$full_name&meetingID=" . urlencode($new_meeting_id) . "&password=$moderator_password&redirect=true";

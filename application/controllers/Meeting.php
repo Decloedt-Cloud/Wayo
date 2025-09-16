@@ -1,140 +1,97 @@
-<?php
-defined('BASEPATH') or exit('No direct script access allowed');
-
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 class Meeting extends CI_Controller {
+
+    private $bbbUrl;
+    private $bbbSecret;
+    private $appBase;
+
     public function __construct() {
         parent::__construct();
-		// require_once APPPATH . '../vendor/autoload.php';
-        $this->load->library('BigBlueButtonLibrary');
-    }
-
-    public function create() {
-	
-        $meetingID = 'demo123d';
-        $meetingName = 'Réunion Démo';
-        $moderatorPW = 'mod123';
-        $attendeePW = 'att123';
-
-        $response = $this->bigbluebuttonlibrary->createMeeting($meetingID, $meetingName, $moderatorPW, $attendeePW);
-        // var_dump($response->getReturnCode())  ;die;
-        if ($response->getReturnCode() === 'SUCCESS') {
-            echo 'Meeting successfully created!';
-        } else {
-            echo 'Error: ' . $response->getMessage();
-        }
-    }
-
-	public function join() {
-		$meetingID = 'demo123'; // Assurez-vous que c'est une chaîne et non un tableau
-		$fullName = 'Utilisateur Test';
-		$password = 'att123';
-		
-		
-		$joinURL = $this->bigbluebuttonlibrary->joinMeeting($meetingID, $fullName, $password);
-		redirect($joinURL); // Redirige l'utilisateur vers l'URL de la réunion
-	}
-
-	public function isMeetingRunning($meetingID) {
-		$response = $this->bigbluebuttonlibrary->isMeetingRunning($meetingID);
-	
-		if ($response->getReturnCode() === 'SUCCESS' && $response->isRunning()) {
-			echo 'La réunion est en cours.';
-			return true;
-		} else {
-			echo 'La réunion n’est pas encore démarrée.';
-			return false;
-		}
-	}
-	public function createAndJoinMeeting() {
-        // Étape 1 : Créer une réunion
-        $meetingID = 'demo1235ff';
-        $meetingName = 'Réunion Démo';
-        $moderatorPW = 'mod123';
-        $attendeePW = 'att123';
-
-        $response = $this->bigbluebuttonlibrary->createMeeting($meetingID, $meetingName, $moderatorPW, $attendeePW);
-		
-        if ($response->getReturnCode() === 'SUCCESS') {
-            echo 'Réunion créée avec succès !';
-            die;
-
-            // Étape 2 : Obtenez le lien pour rejoindre en tant que modérateur
-            $fullName = 'John Doe';
-            $joinURL = $this->bigbluebuttonlibrary->joinMeeting($meetingID, $fullName, $moderatorPW);
-			// $this->isMeetingRunning($meetingID);
-            // Redirigez vers la réunion
-            redirect($joinURL);
-        } else {
-            echo 'Erreur lors de la création de la réunion : ' . $response->getMessage();
-        }
-    }
-
-
-	
-    public function start()
-    { 
+        $this->config->load('bigbluebutton');
+        $this->bbbUrl    = $this->config->item('bbb_url');
+        $this->bbbSecret = $this->config->item('bbb_secret');
+        $this->appBase   = $this->config->item('app_base_url') ;
+        $this->output->set_content_type('application/json');
         
-        $meetingID   = 'testMeeting_'.uniqid(); 
-        $meetingName = 'Test Meeting';
-        $moderatorPW = 'modPW';
-        $attendeePW  = 'attPW';
+    }
 
-        $response = $this->bigbluebuttonlibrary->createMeeting($meetingID, $meetingName, $moderatorPW, $attendeePW);
+    /* ===== Helpers BBB ===== */
+    private function checksum($apiCall, $qs) {
+        // SHA-256 (BBB récent). Si votre instance exige SHA-1, utilisez: return sha1($apiCall.$qs.$this->bbbSecret);
+        return hash('sha256', $apiCall.$qs.$this->bbbSecret);
+    }
+    private function bbbCall($apiCall, $params) {
+        $qs  = http_build_query($params);
+        $sum = $this->checksum($apiCall, $qs);
+        $url = "{$this->bbbUrl}/{$apiCall}?{$qs}&checksum={$sum}";
+        $resp = @file_get_contents($url);
+        if ($resp === false) return [false, 'BBB unreachable', null];
+        $xml = @simplexml_load_string($resp);
+        if (!$xml) return [false, 'Invalid XML', $resp];
+        $ok = ((string)$xml->returncode === 'SUCCESS');
+        return [$ok, $ok ? $xml : ((string)($xml->message ?? 'BBB error')), $resp];
+    }
 
-        // die('rrrrrrr  : '.$response);
-        if ($response->getReturnCode() === 'SUCCESS') {
-            echo "Meeting successfully created!<br>";
-            echo "Meeting ID: $meetingID<br>";
-            
-            // Vérifiez si la réunion est active
-            $isRunning = $this->bigbluebuttonlibrary->isMeetingRunning($meetingID);
-            // print_r($response);
-            print_r($isRunning->isRunning());
+    private function ensureHookRegistered() {
+        // Enregistre un hook “global” (reçoit tous les events), filtrage par meetingID côté PHP.
+        $token = $this->config->item('bbb_hook_token');
+        $callback = $this->appBase . '/bbb/webhook/' . rawurlencode($token);
 
+        // getRaw=true pour avoir l’XML complet  
+        [$ok, $data] = $this->bbbCall('hooks/create', [
+            'callbackURL' => $callback,
+            'getRaw'      => 'true'            
+            // Optionnel: 'meetingID' => '...' (certaines versions supportent le filtre par meeting)
+        ]);
+        // On ignore l’échec silencieusement (si déjà créé ou version BBB sans hooks, rien ne casse le start).
+        return $ok;
+    }
 
-            if (!$isRunning->isRunning()) {
-                echo "The meeting is not running. Attempting to join as Moderator...<br>";
+    /** POST /meeting/start (name, meetingID, moderatorPW?, attendeePW?) */
+    public function start() {
+        $name = $this->input->post('name', true);
+        $meetingID = $this->input->post('meetingID', true);
+        $mpw = $this->input->post('moderatorPW', true) ?: 'mp';
+        $apw = $this->input->post('attendeePW', true)  ?: 'ap';
 
-                // Joindre en tant que modérateur pour démarrer la réunion
-                $moderatorJoinURL = $this->bigbluebuttonlibrary->joinMeeting(
-                    $meetingID,
-                    'Moderator',
-                    $moderatorPW
-                );
-                // header("Location: $moderatorJoinURL");
-                // exit;
-
-                echo "<a href='$moderatorJoinURL' target='_blank'>Join as Moderator</a><br>";
-            }
-
-            // Générer l'URL pour un participant
-            $attendeeJoinURL = $this->bigbluebuttonlibrary->joinMeeting(
-                $meetingID,
-                'Attendee',
-                $attendeePW
-            );
-
-            echo "<a href='$attendeeJoinURL' target='_blank'>Join as Attendee</a><br>";
-        } else {
-    
-            echo "Error: " . $response->getMessage();
+        if (!$name || !$meetingID) {
+            return $this->output->set_status_header(400)->set_output(json_encode(['ok'=>false,'msg'=>'Missing params']));
         }
+
+        // 1) create meeting        
+        [$ok, $data] = $this->bbbCall('create', [
+            'name'        => $name,
+            'meetingID'   => $meetingID,
+            'moderatorPW' => $mpw,
+            'attendeePW'  => $apw,
+            'record'      => 'true',
+            'allowStartStopRecording' => 'true'        ]);
+        if (!$ok) return $this->output->set_output(json_encode(['ok'=>false,'msg'=>$data]));
+
+        // 2) ensure webhook exists (best-effort)
+        $this->ensureHookRegistered();
+
+        return $this->output->set_output(json_encode(['ok'=>true,'msg'=>'created']));
     }
 
-
-    public function joinAsAttendee() {
-        $meetingID = 'test123';
-        $attendeePW = 'att123';
-
-        // Générer l'URL pour rejoindre en tant que participant
-        $attendeeJoinURL = $this->bigbluebuttonlibrary->joinMeeting(
-            $meetingID,
-            'Attendee',
-            $attendeePW
-        );
-
-        redirect($attendeeJoinURL);
+    /** GET /meeting/join-link?meetingID=...&fullName=...&role=moderator|attendee */
+    public function join_link() {
+        $meetingID = $this->input->get('meetingID', true);
+        $fullName  = $this->input->get('fullName', true);
+        $role      = $this->input->get('role', true) ?: 'attendee';
+        if (!$meetingID || !$fullName) {
+            return $this->output->set_status_header(400)->set_output(json_encode(['ok'=>false,'msg'=>'Missing params']));
+        }
+        $password = ($role === 'moderator') ? 'mp' : 'ap';
+        $apiCall  = 'join';
+        $params   = [
+            'fullName'  => $fullName,
+            'meetingID' => $meetingID,
+            'password'  => $password,
+            'redirect'  => 'true'        ];
+        $qs  = http_build_query($params);
+        $sum = $this->checksum($apiCall, $qs);
+        $url = "{$this->bbbUrl}/{$apiCall}?{$qs}&checksum={$sum}";
+        return $this->output->set_output(json_encode(['ok'=>true,'joinUrl'=>$url]));
     }
-	
-	
 }

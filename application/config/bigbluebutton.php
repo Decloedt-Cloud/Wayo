@@ -10,6 +10,11 @@ $config['bbb_url'] = 'https://visio.wayo.site/bigbluebutton/api/';
 $config['bbb_url_play'] = 'https://visio.wayo.site';
 $config['bbb_url_old'] = 'https://visio.wayo.site:80/';
 $config['bbb_secret'] = 'AnvikgYDf1o0eJwO5qzNhWYGAoatXoZfgxMfotilc';
+
+/* $config['bbb_hook_token'] = 'y7Xy-ULTRA-SECRET';                          // segment secret dans l’URL webhook
+$config['socket_emit_url']= 'https://preprod.wayo.site/emit';                 // endpoint du hub Node
+$config['socket_emit_key']= 'S3cr3t-Emit-Key';                            // clé partagée PHP→Node
+$config['app_base_url']   = 'https://votre-domaine.tld';   */ 
 // version pre production
 // $config['bbb_url'] = 'https://hawaiian-poems-based-soundtrack.trycloudflare.com/bigbluebutton/api/';
 // $config['bbb_url_play'] = 'hawaiian-poems-based-soundtrack.trycloudflare.com';
