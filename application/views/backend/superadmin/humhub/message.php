@@ -24,5 +24,7 @@ iframe {
 </div>
 
 <div class="iframe-container">
-    <iframe src="<?php echo config_item('humhub_url'); ?>mail/mail/index"></iframe>
+    <iframe   src="<?php echo config_item('humhub_url'); ?>mail/mail/index"  
+              allow="microphone *; camera *; autoplay *; clipboard-read *; clipboard-write *; fullscreen *" 
+              allowfullscreen referrerpolicy="strict-origin-when-cross-origin"  loading="lazy" ></iframe>
 </div>
