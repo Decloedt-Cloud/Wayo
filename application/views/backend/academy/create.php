@@ -1,36 +1,36 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.css">
 
-<div class="row">
-    <div class="col-xl-12">
-        <div class="card">
-            <div class="card-body py-2">
-                <h4 class="page-title">
+
+<div class="col-xl-12">
+    <div class="header-card">
+              <div class="card-body">
+                <h4 class="page-title d-inline-block">
                     <i class="mdi mdi-apple-keyboard-command title_icon"></i>
                     <?php echo get_phrase('add_new_course'); ?>
                 </h4>
             </div> <!-- end card body-->
         </div> <!-- end card -->
     </div><!-- end col-->
-</div>
 
 <!--<div class="container-fluid p-0">-->
     <!-- Main Content Container -->
-    <div class="row">
-    <div class="col-12 col-lg-10 mx-auto">
+     
+<div class="row">
+    
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
-                    <!-- Header -->
-                    <div class="header-container d-flex justify-content-between align-items-center mb-3">
+                <div class="header-container d-flex justify-content-between align-items-center mb-3">
                         <h4 class="header-title mb-0">
                             <?php echo get_phrase('course_adding_form'); ?>
                         </h4>
-                        <a href="<?php echo site_url('addons/courses'); ?>" class="btn btn-back">
-                            <i class="mdi mdi-arrow-left-circle"></i> 
-                            <?php echo get_phrase('back_to_course_list'); ?>
-                        </a>
-                    </div>
-                    
+                            <div class="action-buttons-container">
+                                <a href="<?php echo site_url('addons/courses'); ?>" class="btn-modern btn btn-back ">
+                                    <i class="mdi mdi-arrow-left-circle"></i> 
+                                    <?php echo get_phrase('back_to_course_list'); ?>
+                                </a>
+                            </div>
+                </div>
                     <div class="form-wrapper">
                 <!-- Top Navigation -->
                 <div class="course-steps-nav">
@@ -280,9 +280,9 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
-
+   
+     
 <!--JoditEditor-->
 
 <link href="<?php echo base_url(); ?>assets/backend/jodit-3.24.4/build/jodit.min.css" rel="stylesheet" type="text/css" />

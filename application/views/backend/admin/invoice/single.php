@@ -99,12 +99,12 @@ $(document).ready(function () {
                   location.reload();
                 }, 3500);// Attendre 3500ms avant de recharger la page
             } else {
-              error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
+              error_notify('<?= js_phrase(get_phrase('action_not_allowed')) ?>'.replace(/^"|"$/g, ''))
                 
             }
         },
         error: function () {
-          error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
+          error_notify('<?= js_phrase(get_phrase('an_error_occurred_during_submission')) ?>'.replace(/^"|"$/g, ''))
         }
       });
     });

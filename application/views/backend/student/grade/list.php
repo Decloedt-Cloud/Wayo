@@ -1,12 +1,12 @@
 <?php $check_data = $this->db->get_where('grades', array('school_id' => school_id(), 'session' => active_session()));
 if($check_data->num_rows() > 0):?>
-<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
     <thead>
-        <tr style="background-color: #313a46; color: #ababab;">
-            <th><?php echo get_phrase('grade'); ?></th>
-            <th><?php echo get_phrase('grade_point'); ?></th>
-            <th><?php echo get_phrase('mark_from'); ?></th>
-            <th><?php echo get_phrase('mark_upto'); ?></th>
+        <tr>
+            <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('grade'); ?></th>
+            <th><i class="mdi mdi-star-circle-outline thead-icon"></i><?php echo get_phrase('grade_point'); ?></th>
+            <th><i class="mdi mdi-arrow-collapse-right thead-icon"></i><?php echo get_phrase('mark_from'); ?></th>
+            <th><i class="mdi mdi-arrow-expand-right thead-icon"></i><?php echo get_phrase('mark_upto'); ?></th>
         </tr>
     </thead>
     <tbody>

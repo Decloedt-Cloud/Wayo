@@ -131,7 +131,7 @@ $rooms = $this->db->get_where('rooms', array('school_id' => $school_id,'Etat' =>
         </div>
     <?php endforeach; ?>
 </div>
-</div>
+
 
 
 

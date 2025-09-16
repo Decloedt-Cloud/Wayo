@@ -3,12 +3,12 @@
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
         <thead class="thead-dark">
             <tr>
-                <th><?php echo get_phrase('book_name'); ?></th>
-                <th><?php echo get_phrase('issue_date'); ?></th>
-                <th><?php echo get_phrase('student'); ?></th>
-                <th><?php echo get_phrase('class'); ?></th>
-                <th><?php echo get_phrase('status'); ?></th>
-                <th><?php echo get_phrase('option'); ?></th>
+                <th><i class="mdi mdi-book-outline thead-icon thead-icon"></i><?php echo get_phrase('book_name'); ?></th>
+                <th><i class="mdi mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('issue_date'); ?></th>
+                <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student'); ?></th>
+                <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('class'); ?></th>
+                <th><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
+                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -32,12 +32,12 @@
                         <?php if ($book_issue['status']): ?>
                             <i class="mdi mdi-circle text-success"></i> <?php echo get_phrase('returned'); ?>
                         <?php else: ?>
-                            <i class="mdi mdi-circle text-disable"></i> <?php echo get_phrase('pending'); ?>
+                            <i class="mdi mdi-circle text-warning"></i> <?php echo get_phrase('pending'); ?>
                         <?php endif; ?>
                     </td>
                     <td>
                         <div class="dropdown text-center">
-                            <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
+                            <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <?php if (!$book_issue['status']): ?>
                                     <!-- item-->
