@@ -1,0 +1,77 @@
+/* ===== Variables / Base ===== */
+:root{
+  --orange: #fc7b30;
+  --orange-dark:#d65e10;
+  --g-dark:#333;
+  --g-light:#F4F4F4;
+}
+
+*{box-sizing:border-box}
+body{font-family:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;}
+a{text-decoration:none}
+
+    /* Hero */
+
+
+  .tutorial-body{
+        background-color: #f6f7fb;
+  }
+    
+
+
+
+/* Helpers */
+.text-orange{color:var(--orange)!important}
+.text-bg-orange{background:var(--orange)!important;color:#fff!important}
+
+/* Buttons */
+.btn-orange{
+  background:var(--orange);
+  color:#fff;
+  font-weight:600;
+  border:0;
+}
+.btn-orange:hover{background:var(--orange-dark);color:#fff}
+
+.navbar .nav-link:hover{color:var(--orange)}
+.navbar .nav-link.active{color:var(--orange)}
+
+/* Tutorial body */
+.tuto-heading{line-height:1.3}
+.badge.text-bg-orange{border-radius:18px}
+.tuto-list i{margin-right:.5rem}
+.badge-tutorial{
+  padding: 10px !important;
+    position: relative !important;
+    bottom: 8px !important;
+}
+
+/* Video frame */
+.video-frame{border-radius:12px}
+
+/* Footer */
+.site-footer{background:#333}
+.link-footer{color:#fff;opacity:.85}
+.link-footer:hover{color:var(--orange)}
+.social-icon{
+  width:30px;height:30px;border-radius:50%;
+  background:#fff;color:#333;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;transition:.2s;
+}
+.social-icon:hover{background:var(--orange);color:#fff}
+
+/* Back to top */
+.btn-top{
+  position:fixed;right:24px;bottom:24px;
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg, rgba(245,124,31,.92), rgba(251,176,64,.9));
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+  opacity:0; transform:translateY(20px); transition:.3s; z-index:1050;
+  border:0;
+}
+.btn-top.show{opacity:1; transform:translateY(0)}
+.btn-top:hover{
+  transform:scale(1.06);
+  background:linear-gradient(135deg, rgba(245,124,31,1), rgba(251,176,64,1));
+}

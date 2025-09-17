@@ -1,0 +1,66 @@
+:root{
+  --wayo:#F47A1F;           /* orange Wayo */
+  --wayo-dark:#d65e10;
+  --font:'Urbanist',sans-serif;
+}
+body{
+   font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+.hero-grad{
+    margin-top: 70px !important;
+    background:linear-gradient(135deg,#fff7ef 0%,#ffdcb8 100%);
+}
+.text-wayo{color:var(--wayo)!important;}
+.bg-wayo{background:var(--wayo)!important;}
+.btn-wayo{
+    background:var(--wayo);
+    color:#fff !important;
+    border:0;
+}
+.btn-wayo:hover{background:var(--wayo-dark);color:#fff;}
+.btn-outline-wayo{border:2px solid var(--wayo);color:var(--wayo);background:#fff;}
+.btn-outline-wayo:hover{background:var(--wayo);color:#fff;}
+.border-white-10{border-color:rgba(255,255,255,.1)!important;}
+.place-items-center{place-items:center;} /* utilitaire pour l’avatar */
+
+.card-img-customer{
+  height: 545px;
+}
+
+
+/* Cards */
+.price-badge{
+  font-weight:800;
+    padding: .24rem .6rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--g-200);
+    font-size: .8rem;
+    font-weight: 800;
+    color: var(--orange);
+}
+.class-card {
+  background: #f6f6f7;
+    border: 1px solid var(--g-200);
+    border-radius: 14px;
+    display: flex ;
+}
+.class-card .fomo-badge{
+  background:linear-gradient(135deg,#ffedd5,#fed7aa);
+  color:#b45309; border:1px solid #FBD38D;
+  padding:.25rem .1rem; border-radius:10px; font-weight:800; font-size:.8rem;
+  box-shadow:0 6px 16px rgba(245,124,31,.15);
+  animation:fomoPulse 2.6s ease-in-out infinite;
+  width: 120px;
+}
+
+@keyframes fomoPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(245,124,31,.28) }
+  50%    { box-shadow:0 0 0 8px rgba(245,124,31,0) }
+}
+
+@media (max-width: 768px) {
+ .card-img-customer {
+    height: auto;
+}
+}

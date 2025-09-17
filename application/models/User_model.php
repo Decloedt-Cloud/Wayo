@@ -1580,6 +1580,8 @@ public function teacher_permission()
 		}
 	}
 
+	
+
 	// Get School Image Starts
 	public function get_school_image($school_id)
 	{
@@ -1644,6 +1646,8 @@ public function teacher_permission()
 		$result = $this->db->get('schools');
 		return $result->num_rows();
 	}
+
+
 
 	public function get_school_details($school_id = '')
 	{
@@ -1931,6 +1935,23 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			)
 		)->num_rows();
 	}
+	public function get_community_students_count($school_id)
+		{
+			$this->db->where('school_id', $school_id);
+			$this->db->where('status', 1);
+			$this->db->from('students');
+			$count = $this->db->count_all_results();
+			return $count;
+		}
+
+		public function get_school_teachers_count($school_id)
+				{
+					return $this->db->where('school_id', $school_id)
+									->from('teachers')
+									->count_all_results();
+									return $count;
+				}
+
 
 	public function get_school_admin($school_id)
 	{

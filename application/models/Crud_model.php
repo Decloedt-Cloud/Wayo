@@ -36,6 +36,22 @@ class Crud_model extends CI_Model {
 		}
 		return $query;
 	}
+
+public function get_school_classes_count($school_id)
+{
+    $this->db->from('classes');       // préciser la table
+    $this->db->where('school_id', $school_id);
+    return $this->db->count_all_results();
+}
+
+public function get_school_classes($school_id)
+{
+    $this->db->select('*');                  // toutes les colonnes
+    $this->db->from('classes');              // table classes
+    $this->db->where('school_id', $school_id);
+    $query = $this->db->get();
+    return $query->result_array();           // retourne toutes les classes sous forme de tableau
+}
 	public function class_create()
     {
         $data['name'] = html_escape($this->input->post('name'));
@@ -1546,4 +1562,5 @@ public function exam_update($param1 = '')
         }
     }
 }
+
 }

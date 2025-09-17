@@ -9,11 +9,9 @@ $system_name = get_frontend_settings('website_title');
   <nav class="navbar position-relative navbar-expand-lg container-fluid navbar-dark sticky-top sticky-nav" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container-fluid">
       <!-- Toggle Button for Mobile -->
- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-        data-bs-target="#navbarContent" aria-controls="navbarContent" 
-        aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-icon"style="background-color: #F47A1F; border-radius: 5px;"></span>
-</button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="background-color: #F47A1F; border-radius: 5px;"></span>
+      </button>
       <!-- End Toggle Button -->
 
       <!-- Navigation Links -->
@@ -118,9 +116,7 @@ $system_name = get_frontend_settings('website_title');
   </nav>
 </header>
 <!-- ========== END HEADER ========== -->
-
-   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
-
+ 
  <script>
   
  function getLanguageList() {
