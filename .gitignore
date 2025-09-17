@@ -35,6 +35,5 @@ Thumbs.db
 .codegpt
 
 .env
-/vendor3/
 /vendor/
 /composer.lock

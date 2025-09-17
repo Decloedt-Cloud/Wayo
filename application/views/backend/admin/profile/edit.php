@@ -22,7 +22,7 @@ $profile_data = $this->user_model->get_profile_data();
                         <div class="form-group row mb-3">
                             <label class="col-md-3 col-form-label" for="email"><?php echo get_phrase('email') ; ?></label>
                             <div class="col-md-9">
-                                <input type="email" id="email" name="email" class="form-control"  value="<?php echo $profile_data['email']; ?>" required>
+                                <input readonly type="email" id="email" name="email" class="form-control"  value="<?php echo $profile_data['email']; ?>" required>
                             </div>
                         </div>
 
