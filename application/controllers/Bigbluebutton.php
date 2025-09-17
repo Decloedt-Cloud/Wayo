@@ -575,4 +575,196 @@ private function notify_socket_server($meeting_id, $event_type, $participant_cha
         log_message('error', 'notify_socket_server - cURL error for meeting_id: ' . $meeting_id . ': ' . $curl_error);
     }
 }
+
+public function meeting_states()
+{
+    $csrfName = $this->security->get_csrf_token_name();
+    $csrfHash = $this->security->get_csrf_hash();
+
+    // Case 1: Handle POST request with meetingIDs
+    $meetingIDs = $this->input->post('meetingIDs', true);
+    if (is_array($meetingIDs) && !empty($meetingIDs)) {
+        $results = [];
+
+        foreach ($meetingIDs as $meetingID) {
+            $meeting = $this->Meeting_model->get_meeting_by_id($meetingID);
+            if (!$meeting) {
+                log_message('error', 'meeting_states - Meeting not found for meetingID: ' . $meetingID);
+                $results[] = [
+                    'meeting_id' => $meetingID,
+                    'status' => 'error',
+                    'message' => 'Meeting not found'
+                ];
+                continue;
+            }
+
+            $params = "meetingID=" . urlencode($meetingID);
+            $checksum = sha1("getMeetingInfo" . $params . $this->bbb_secret);
+            $api_url = $this->bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $response = curl_exec($ch);
+            $curl_error = curl_error($ch);
+            curl_close($ch);
+
+            if ($curl_error) {
+                log_message('error', 'meeting_states - cURL error for meetingID: ' . $meetingID . ': ' . $curl_error);
+                $results[] = [
+                    'meeting_id' => $meetingID,
+                    'status' => 'error',
+                    'message' => 'Failed to fetch meeting state due to server error'
+                ];
+                continue;
+            }
+
+            $xml = simplexml_load_string($response);
+            if ($xml === false || !isset($xml->returncode)) {
+                log_message('error', 'meeting_states - Invalid XML response for meetingID: ' . $meetingID . ': ' . $response);
+                $results[] = [
+                    'meeting_id' => $meetingID,
+                    'status' => 'error',
+                    'message' => 'Invalid response from BBB server'
+                ];
+                continue;
+            }
+
+            if ((string)$xml->returncode === "SUCCESS") {
+                $is_running = (string)$xml->running === "true";
+                $participant_count = (int)$xml->participantCount;
+
+                log_message('debug', 'meeting_states - Meeting state for meetingID: ' . $meetingID . ', isRunning: ' . ($is_running ? 'true' : 'false') . ', participantCount: ' . $participant_count);
+
+                $results[] = [
+                    'meeting_id' => $meetingID,
+                    'status' => 'success',
+                    'participant_count' => $participant_count,
+                    'is_running' => $is_running
+                ];
+            } else {
+                log_message('error', 'meeting_states - BBB API error for meetingID: ' . $meetingID . ': ' . (string)$xml->message);
+                $results[] = [
+                    'meeting_id' => $meetingID,
+                    'status' => 'error',
+                    'message' => 'Failed to fetch meeting state: ' . (string)$xml->message
+                ];
+            }
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $results,
+            'csrf' => ['csrfHash' => $csrfHash]
+        ]);
+        return;
+    }
+
+    // Case 2: Handle GET request with event_id and occurrence_date
+    $event_id = $this->input->get('event_id', true);
+    $occurrence_date = $this->input->get('occurrence_date', true);
+
+    if ($event_id && $occurrence_date) {
+        // Validate occurrence_date format (e.g., 'YYYY-MM-DD')
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $occurrence_date)) {
+            log_message('error', 'meeting_states - Invalid occurrence_date format: ' . $occurrence_date);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid occurrence date format',
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+            return;
+        }
+
+        // Query appointments table for matching event_id and occurrence_date
+        $this->db->where('event_id', $event_id);
+        $this->db->where('DATE(start_date)', $occurrence_date);
+        $this->db->where('Etat', 1); // Active appointment
+        $appointment = $this->db->get('appointments')->row_array();
+
+        if (!$appointment || empty($appointment['meeting_id'])) {
+            log_message('debug', 'meeting_states - No meeting found for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date);
+            echo json_encode([
+                'status' => 'success',
+                'meeting_id' => null,
+                'is_running' => false,
+                'participant_count' => 0,
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+            return;
+        }
+
+        // Meeting exists, check its state via BBB API
+        $meeting_id = $appointment['meeting_id'];
+        $params = "meetingID=" . urlencode($meeting_id);
+        $checksum = sha1("getMeetingInfo" . $params . $this->bbb_secret);
+        $api_url = $this->bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $response = curl_exec($ch);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+
+        if ($curl_error) {
+            log_message('error', 'meeting_states - cURL error for meetingID: ' . $meeting_id . ': ' . $curl_error);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to fetch meeting state due to server error',
+                'meeting_id' => $meeting_id,
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+            return;
+        }
+
+        $xml = simplexml_load_string($response);
+        if ($xml === false || !isset($xml->returncode)) {
+            log_message('error', 'meeting_states - Invalid XML response for meetingID: ' . $meeting_id . ': ' . $response);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid response from BBB server',
+                'meeting_id' => $meeting_id,
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+            return;
+        }
+
+        if ((string)$xml->returncode === "SUCCESS") {
+            $is_running = (string)$xml->running === "true";
+            $participant_count = (int)$xml->participantCount;
+
+            log_message('debug', 'meeting_states - Meeting state for meetingID: ' . $meeting_id . ', isRunning: ' . ($is_running ? 'true' : 'false') . ', participantCount: ' . $participant_count);
+
+            echo json_encode([
+                'status' => 'success',
+                'meeting_id' => $meeting_id,
+                'is_running' => $is_running,
+                'participant_count' => $participant_count,
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+        } else {
+            log_message('error', 'meeting_states - BBB API error for meetingID: ' . $meeting_id . ': ' . (string)$xml->message);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to fetch meeting state: ' . (string)$xml->message,
+                'meeting_id' => $meeting_id,
+                'csrf' => ['csrfHash' => $csrfHash]
+            ]);
+        }
+        return;
+    }
+
+    // Case 3: Invalid parameters
+    log_message('error', 'meeting_states - Missing or invalid parameters');
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Invalid parameters: either meetingIDs or event_id with occurrence_date required',
+        'csrf' => ['csrfHash' => $csrfHash]
+    ]);
+}
 }

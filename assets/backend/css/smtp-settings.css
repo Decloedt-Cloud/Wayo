@@ -27,3 +27,9 @@
     margin-right: 8px;
   }
   
+  @media (max-width: 767.98px) {
+  #update-btn {
+    display: block;
+    margin: 0 auto; /* centre horizontalement */
+  }
+}

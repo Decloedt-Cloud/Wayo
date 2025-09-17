@@ -1,29 +1,62 @@
-<!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title">
-          <i class="mdi mdi-settings title_icon"></i><?php echo ucfirst(get_phrase('website_settings')); ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
+          <i class="mdi mdi-cog title_icon"></i><?php echo ucfirst(get_phrase('website_settings')); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+
 <!-- end page title -->
 <div class="row">
-  <div class="col-md-3">
-    <a href="<?php echo route('noticeboard'); ?>" class="btn <?php if ($page_content == 'noticeboard'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('noticeboard'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/events'); ?>" class="btn <?php if ($page_content == 'events'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('events'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('teacher'); ?>" class="btn <?php if ($page_content == 'teachers'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('teachers'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/gallery'); ?>" class="btn <?php if ($page_content == 'gallery' || $page_content == 'gallery_image'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('gallery'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/about_us'); ?>" class="btn <?php if ($page_content == 'about_us'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('about_us'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/terms_and_conditions'); ?>" class="btn <?php if ($page_content == 'terms_and_conditions'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('terms_and_conditions'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/privacy_policy'); ?>" class="btn <?php if ($page_content == 'privacy_policy'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('privacy_policy'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/homepage_slider'); ?>" class="btn <?php if ($page_content == 'homepage_slider'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('homepage_slider'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/general_settings'); ?>" class="btn <?php if ($page_content == 'general_settings'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('general_settings'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
-    <a href="<?php echo route('website_settings/other_settings'); ?>" class="btn <?php if ($page_content == 'other_settings'): ?> btn-dark <?php else: ?> btn-secondary <?php endif; ?> btn-rounded d-block mb-1"><?php echo get_phrase('others'); ?> <i class="mdi mdi-arrow-right float-end"></i></a>
+<div class="col-md-3">
+  <div class="list-group">
+    <a href="<?php echo route('noticeboard'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='noticeboard') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-book-open-page-variant me-2"></i><?php echo get_phrase('noticeboard'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/events'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='events') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-calendar me-2"></i><?php echo get_phrase('events'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('teacher'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='teachers') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-account-tie me-2"></i><?php echo get_phrase('teachers'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/gallery'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='gallery' || $page_content=='gallery_image') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-image-multiple me-2"></i><?php echo get_phrase('gallery'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/about_us'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='about_us') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-information me-2"></i><?php echo get_phrase('about_us'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/terms_and_conditions'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='terms_and_conditions') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-file-document-outline me-2"></i><?php echo get_phrase('terms_and_conditions'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/privacy_policy'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='privacy_policy') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-shield-lock-outline me-2"></i><?php echo get_phrase('privacy_policy'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/homepage_slider'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='homepage_slider') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-image-filter-hdr me-2"></i><?php echo get_phrase('homepage_slider'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/general_settings'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='general_settings') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-cog-outline me-2"></i><?php echo get_phrase('general_settings'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
+    <a href="<?php echo route('website_settings/other_settings'); ?>" class="list-group-item list-group-item-action <?php if($page_content=='other_settings') echo 'active'; ?> d-flex align-items-center justify-content-between mb-1">
+      <span><i class="mdi mdi-dots-horizontal me-2"></i><?php echo get_phrase('others'); ?></span>
+      <i class="mdi mdi-chevron-right"></i>
+    </a>
   </div>
+</div>
+
   <div class="col-md-9 page_content">
     <?php include $page_content.'.php'; ?>
   </div>

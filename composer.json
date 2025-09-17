@@ -16,7 +16,8 @@
 		"mpdf/mpdf": "^8.2",
 		"bigbluebutton/bigbluebutton-api-php": "^2.3",
 		"guzzlehttp/guzzle": "^7.9",
-		"smalot/pdfparser": "^2.12"
+		"smalot/pdfparser": "^2.12",
+		"ralouphie/getallheaders": "^3.0"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

@@ -221,6 +221,14 @@ body[dir="rtl"] .badge.float-end {
                 <?php } ?>
             </li>
         <?php } ?>
+        <!-- Bouton mobile uniquement -->
+<li class="side-nav-item d-block d-md-none">
+    <a href="<?php echo site_url('home/communities'); ?>" class="side-nav-link website-button" >
+        <span class="dot"></span>
+        <?php echo get_phrase('Discover_our_communities'); ?>
+        <i class="mdi mdi-arrow-right ms-2 arrow-animate"></i>
+    </a>
+</li>
     </ul>
     <!-- End Sidebar -->
 

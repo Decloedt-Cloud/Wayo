@@ -1,3 +1,45 @@
+/* Header Card */
+        .header-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-body {
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+
+        /* Main Content Card */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-bottom: none;
+      
+        }
+
+        .card{
+    border-radius: 20px;
+        }
+
+
 /* Custom styles for the form */
 .form-wrapper {
     overflow: hidden;
@@ -109,6 +151,7 @@
     background-color: #f8f9fa;
  
 }
+
 /* Title Styling */
 .header-title {
     font-size: 1.5rem;
@@ -131,13 +174,18 @@
 /* Tab Content Area */
 .tab-content {
     background-color: #ffffff !important; /* White Background for tab content */
-    padding: 20px;
+    /* padding: 20px; */
     border-radius: 0 0 0.75rem 0.75rem;
 }
 /* Ensure tab-pane content area is transparent */
 .tab-pane {
     background-color: transparent !important;
 }
+.action-buttons-container {
+    display: contents;
+    align-items: center;
+}
+
 /* Add responsive rules for smaller screens */
 @media (max-width: 768px) {
     /* Custom navigation buttons for screens smaller than 768px */
@@ -154,12 +202,52 @@
         min-width: unset; /* Remove the minimum width constraint */
         padding: 12px 5px !important; /* Reduce horizontal padding for smaller screens */
     }
+    .card-body{
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+}
 
-    /* Version for very small screens (max-width 480px) */
+ /* Version for very small screens (max-width 480px) */
     @media (max-width: 480px) {
         .custom-navigation-buttons .btn-outline-primary {
             font-size: 12px; /* Reduce font size to fit better on small screens */
             padding: 10px 3px !important; /* Further reduce padding for even smaller screens */
         }
+        
+         .header-card, .card {
+                border-radius: 15px;
+                margin-right: -51px;
+                margin-left: -27px;
+                margin-top: -15px;
+        }
+        .header-content, .card-body {
+                padding: 3px;
+        }
+        .action-buttons-container {
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+                align-items: center;
+                flex-wrap: wrap;
+                flex-direction: column-reverse;
+                width: 100%;
+                 text-align: center;
+                  margin-top: 10px;
+        }
+    
+      
+     .header-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 10px;
+         display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
-}
+
+ }

@@ -1,26 +1,30 @@
-
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
 <!--title-->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title d-inline-block">
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
+                <h4 class="page-title d-inline-block">
           <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('Class_room'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded align-middle mt-1 float-end" onclick="rightModal('<?php echo site_url('modal/popup/class_room/create'); ?>', '<?php echo get_phrase('Class_Room'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('Class_Room'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+
+
 
 <div class="row">
   <div class="col-12">
-    <div class="card">
+    <div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
       <div class="card-body room_content">
         <?php include 'list.php'; ?>
       </div>
     </div>
   </div>
+</div>
+</div>
 </div>
 
 
@@ -216,7 +220,7 @@
                 try {
 
                     $.ajax({
-                                url: "<?= base_url('admin/delete_room'); ?>",
+                                url: "<?= base_url('superadmin/delete_room'); ?>",
                                 type: "POST",
                                 data: { selectedRoomID: selectedRoomID },
                                 success: function () {                       // ✅ Fermeture correcte du modal
@@ -240,7 +244,7 @@
                                 }
                             });
 
-                                let response = await fetch("<?= base_url('admin/delete_room'); ?>", {
+                                let response = await fetch("<?= base_url('superadmin/delete_room'); ?>", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ selectedRoomID })

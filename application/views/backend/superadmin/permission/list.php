@@ -1,10 +1,11 @@
-<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
+
+<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
     <thead>
-        <tr style="background-color: #313a46; color: #ababab;">
-            <th><?php echo get_phrase('teacher'); ?></th>
-            <th><?php echo get_phrase('marks'); ?></th>
+        <tr>
+            <th><i class="mdi mdi-teach thead-icon"></i><?php echo get_phrase('teacher'); ?></th>
+            <th><i class="mdi mdi-clipboard-text-outline thead-icon"></i><?php echo get_phrase('marks'); ?></th>
             <!-- <th><?php echo get_phrase('assignment'); ?></th> -->
-            <th><?php echo get_phrase('attendance'); ?></th>
+            <th><i class="mdi mdi-calendar-check-outline thead-icon"></i><?php echo get_phrase('attendance'); ?></th>
             <!-- <th><?php echo get_phrase('online_exam'); ?></th> -->
         </tr>
     </thead>

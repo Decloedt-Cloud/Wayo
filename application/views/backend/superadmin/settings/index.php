@@ -1,32 +1,26 @@
 <?php
 if($settings_type == 'system_settings')
 $class = 'col-xl-12';
-else if($settings_type == 'payment_settings')
-$class = 'col-xl-10 offset-xl-1';
 else if($settings_type == 'language_settings')
 $class = 'col-xl-10 offset-xl-1';
 else if($settings_type == 'sms_settings')
 $class = 'col-xl-10 offset-xl-1';
-else if($settings_type == 'smtp_settings')
-$class = 'col-xl-10 offset-xl-1';
-else if($settings_type == 'school_settings')
-$class = 'col-xl-10 offset-xl-1';
+
 else if($settings_type == 'sms_settings')
 $class = 'col-xl-10 offset-xl-1';
 ?>
-
-<!-- start page title -->
-<div class="row ">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-body py-2">
-        <h4 class="page-title">
-          <i class="mdi mdi-settings title_icon"></i><?php echo ucfirst(get_phrase($settings_type)); ?>
-        </h4>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block">
+                     <i class="mdi mdi-cog title_icon"></i><?php echo ucfirst(get_phrase($settings_type)); ?> 
+                </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
-</div>
+
 <!-- end page title -->
 <div class="row">
   <div class="<?php echo $class; ?>">

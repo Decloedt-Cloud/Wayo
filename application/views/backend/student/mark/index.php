@@ -13,21 +13,20 @@ $this->db->where('enrols.session', $session_id);
 $enrolments = $this->db->get()->result_array();
 ?>
 
-<!-- Title -->
-<div class="row ">
-    <div class="col-xl-12">
-        <div class="card">
-            <div class="card-body py-2">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<!--title-->
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="card-body">
                 <h4 class="page-title d-inline-block"> <i class="mdi mdi-format-list-numbered title_icon"></i> <?php echo get_phrase('manage_marks'); ?> </h4>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-12">
- 
-        <div class="card">
+
+<div class="mb-3">
+  <div class="main-card">
+    <div class="card-body">
             <div class="row mt-3">
                 <div class="col-md-3 mb-1"></div>
                 <div class="col-md-2 mb-1">

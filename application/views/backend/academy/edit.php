@@ -1,14 +1,13 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/editCourse.css">
 
-<div class="row ">
-    <div class="col-xl-12">
-        <div class="card">
-            <div class="card-body py-2">
-                <h4 class="page-title"> <i class="mdi mdi-apple-keyboard-command title_icon"></i> <?php echo get_phrase('edit_course'); ?></h4>
+<div class="col-xl-12">
+    <div class="header-card">
+             <div class="header-content">
+                <h4 class="page-title d-inline-block"><i class="mdi mdi-apple-keyboard-command title_icon"></i> <?php echo get_phrase('edit_course'); ?></h4>
             </div> <!-- end card body-->
         </div> <!-- end card -->
     </div><!-- end col-->
-</div>
+
 
 <div class="row">
     <div class="col-xl-12">
@@ -87,7 +86,7 @@
                                       <?php include 'curriculum.php'; ?>
                                   </div>
                                   <div class="tab-pane" id="basic">
-                                      <div class="p-4 p-lg-5">
+                                      <div class="p-lg-5">
                                           <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Course details'); ?></h4>
 
                                           <div class="mb-4">
@@ -126,7 +125,7 @@
                                   </div> <!-- end tab pane -->
 
                                   <div class="tab-pane" id="academy">
-                                      <div class="p-4 p-lg-5">
+                                      <div class="p-lg-5">
                                           <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Academic information'); ?></h4>
 
                                           <div class="mb-4">
@@ -170,7 +169,7 @@
                                   </div>
 
                                   <div class="tab-pane" id="outcomes">
-                                      <div class="p-4 p-lg-5">
+                                      <div class="p-lg-5">
                                           <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Learning outcomes'); ?></h4>
 
                                           <div class="mb-4">
@@ -203,7 +202,7 @@
 
 
                                   <div class="tab-pane" id="media">
-                                      <div class="p-4 p-lg-5">
+                                      <div class="p-lg-5">
                                           <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Course media'); ?></h4>
 
                                           <div class="row">
@@ -260,7 +259,7 @@
                                   </div>
 
                                   <div class="tab-pane" id="finish">
-                                      <div class="p-4 p-lg-5 text-center">
+                                      <div class="p-lg-5 text-center">
                                           <div class="max-w-sm mx-auto py-4">
                                               <div class="completion-check bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
                                                   <i class="mdi mdi-check-bold text-success" style="font-size: 40px;"></i>
