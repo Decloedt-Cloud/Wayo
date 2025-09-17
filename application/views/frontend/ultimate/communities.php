@@ -1,234 +1,224 @@
-<main id="content" role="main">
-<style>
-        /* Conteneur pour la barre de recherche */
-        .search-container {
-            max-width: 600px; /* Ajustez selon vos besoins */
-            margin: 20px auto;
-        }
-        .input-group {
-            border-radius: 50px; /* Coins arrondis */
-            overflow: hidden; /* Pour que les coins arrondis s'appliquent correctement */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre légère */
-        }
-        .input-group .form-control {
-            border: none !important; /* Supprimer les bordures par défaut */
-            padding: 10px 20px !important;
-            font-size: 16px !important;
-            border-radius: 0 !important; /* Pas de coins arrondis ici, géré par le conteneur */
-        }
-        .input-group .btn {
-            border: none; /* Supprimer les bordures par défaut */
-            background-color: #d4a017; /* Couleur marron de l'icône */
-            color: white;
-            border-radius: 0 50px 50px 0; /* Arrondir uniquement le côté droit */
-        }
-        /* Style pour le select (catégorie) */
-        .select_course {
-            border: none !important; /* Supprimer les bordures */
-            background-color: #f1f1f1 !important; /* Fond gris clair comme dans l'image */
-            color: #333 !important;
-            border-radius: 50px 0 0 50px !important; /* Arrondir uniquement le côté gauche */
-            padding: 10px 20px !important;
-            font-size: 16px !important;
-            min-width: 100px; /* Ajustez selon vos besoins */
-        }
-        /* Ajuster l'apparence du select pour qu'il soit cohérent */
-        .select_course:focus {
-            box-shadow: none !important; /* Supprimer l'ombre au focus */
-            outline: none !important;
-        }
-        .input-group .form-control:focus {
-            box-shadow: none !important; /* Supprimer l'ombre au focus */
-            outline: none !important;
-        }
-        /* Style pour le bouton de recherche */
-        .input-group .input-group-text {
-            border: none !important; /* Supprimer les bordures par défaut */
-            background-color: #d4a017 !important; /* Couleur marron de l'icône */
-            color: white !important;
-            border-radius: 0 50px 50px 0 !important; /* Arrondir uniquement le côté droit */
-            padding: 10px 20px !important;
-        }
-    </style>
-    <!-- Header Section -->
-    <div class="general-container container-fluid">
-        <div class="general-header align-items-center">
-            <h1 class='col-6 display-4 text_fade text-uppercase text-center  text-sm-break'>
-                <?php echo get_phrase('Discover_our_Communities'); ?>
-            </h1>
-            <!-- Div Section For Header Background Fade In-Out Animation-->
-            <div></div>
-            <div></div>
-            <div></div>
-            <!-- End Div Section-->
-        </div>
-        <img class="ct-img rellax " data-rellax-speed="1.5"
-            src="<?php echo base_url('assets/frontend/ultimate/img/online admission/oa-img-top.jpg') ?>" alt="">
-        <div class="general-container-ol"></div>
-    </div>
-    <!-- End Header Section -->
-  <!-- Contenu de votre page -->
-  <?php $this->load->view('frontend/alert_view'); ?>
-      <!-- Autres contenus de la page -->
-    <div class="container g-0 courses-section ">
-
-        <div class="row justify-content-center pt-5">
-            <form class="col-10 col-lg-8 search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
-
-
-            <div class="input-group pb-5 shadow-sm rounded">
-                <!-- Dropdown des catégories -->
-           
-                <select name="categories" id="categories" class="form-select border-0 select_course" onchange="location = this.value;">
-    <!-- Option pour "All" -->
-    <option value="<?php echo base_url('home/communities/'); ?>" <?php echo empty($selected_category) ? 'selected' : ''; ?>>
-        <?php echo get_phrase('All'); ?>
-    </option>
-
-    <!-- Boucle sur les catégories -->
-    <?php foreach ($categories as $category): ?>
-        <?php 
-        $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
-        ?>
-        <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
-            <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
-            <?php echo $category['name']; ?>
-        </option>
-    <?php endforeach; ?>
-</select>
-
-            <div style="margin-left: 10px;"></div>
-
-                <!-- Champ de recherche -->
-                <input name="search" type="search" class="form-control border-0" 
-                   placeholder="<?php echo get_phrase('Search'); ?>" 
-                   aria-label="Search" aria-describedby="search-addon" 
-                   value="<?php if ($input_search) echo ($input_search); ?>" />
-            <!-- Bouton de recherche -->
-            <button type="submit" class="input-group-text px-4 rounded-end" style="background-color:#FC7B30 !important;" id="search-addon">
-                <i class="fas fa-search"></i>
-            </button>
-            </div>
-
-
-
-
-            </form>
+<main class="mt-5">
+  <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="container hero-content py-5" data-animate>
+        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Discover our communities") ?></h1>
+       
+        <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Dynamic communities + Quality classes = Learning that takes off!") ?></p>
+      </div>
+    </section>
+  <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
+  <section class="py-4 bg-light border-top">
+    <div class="container">
+      <div class="row g-3 align-items-center">
+        <!-- Recherche (pill + icône) -->
+        <div class="col-12 col-lg-5">
+          <div class="pill-input d-flex align-items-center">
+            <i class="fa-solid fa-magnifying-glass ms-3 me-2 text-muted"></i>
+            <input id="searchInput" type="search" class="form-control border-0 bg-transparent" placeholder="<?php echo get_phrase("Search for a community…") ?>">
+          </div>
         </div>
 
-        
-        <div class="row justify-content-around">
-            <div class="row justify-content-center">
-                <div id="category-section" class="row justify-content-center category-section">
-                    <!-- <div class="col-auto g-1 d-flex align-content-center ">
-                        <a id="more-button"
-                            class="category text-capitalize font-weight-bold py-1 "><?php //echo get_phrase('more') ?>
-                            <svg class="m-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5" />
-                            </svg>
-                        </a>
-                    </div> -->
-                    <!-- <div class="col-auto g-1 ">
-                        <a id="less-button" class="category text-capitalize font-weight-bold py-1">
-                            <svg class="m-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" />
-                            </svg>
-                            <?php //echo get_phrase('less') ?>
-                        </a>
-                    </div> -->
-                    <!-- <div class="col-auto g-1 d-flex align-content-center ">
-                        <a href="<?php //echo base_url('home/courses/') ?>"
-                            class="category text-capitalize <?php // echo ($selected_category == $category['name']) ? 'active-cat' : ''; ?> py-1"><?php //echo get_phrase('All') ?></a>
-                    </div> -->
-                    <?php
+        <!-- Sélecteur catégories (pill + bordure orange + icône filtre) -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="pill-select d-flex border border-2 rounded-pill border-warning">
+            <span class="ps-3 d-inline-flex align-items-center text-muted">
+              <i class="fa-solid fa-filter"></i>
+            </span>
+            <select name="categories" id="categories" 
+                    class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark"
+                    onchange="location = this.value;">
+              
+              <!-- Option pour "All" -->
+              <option value="<?php echo base_url('home/communities/'); ?>" 
+                <?php echo empty($selected_category) ? 'selected' : ''; ?>>
+                <?php echo get_phrase('All categories'); ?>
+              </option>
 
-                    // foreach ($categories as $category) {
-                    //     $cat_formated = $this->frontend_model->get_category_formated($category['name'])
-                          
-                          ?>
-                        <!-- <div class="col-auto g-1 d-flex align-content-center ">
-                            <a href="<?php // echo base_url('home/courses/' . $cat_formated) ?>"
-                                class="category text-capitalize py-1 option <?php //echo ($selected_category == $category['name']) ? 'active-cat' : ''; ?>"><?php //echo $category['name'] ?></a>
-                        </div> -->
-                        <?php
-                    // }
-                    ?>
-                    
-
-                </div>
-            </div>
-
-        </div>
-
-
-
-
-
-
-        <div class="container mt-11">
-            <div class="row justify-content-sm-start justify-content-center">
-                <?php if ($schools == null) ?>
-                <p class="text-white text-center"><?php echo $no_courses_found ?></p>
-                <?php if ($schools != null) {
-                    $courses_array = $schools->result_array();
-                    foreach ($courses_array as $c) {
-                        ?>
-                        <!-- Course Card Start -->
-                        <a href="<?php echo base_url('home/community_details/' . $c['id']) ?>"
-                            class="col-11 col-sm-10 col-md-5 col-lg-3 pt-4 pb-4 ">
-                            <div class=" course-card row g-0 ">
-                                <div class="course-category text-break text-capitalize">
-                                    <span><?php echo $c['category'] ?></span>
-                                </div>
-                                <div class="course-access text-break">
-                                    <?php if ($c["access"] == 1)
-                                        echo get_phrase('public');
-                                    else
-                                        echo get_phrase('private'); ?>
-                                </div>
-                                <div class=course-card-overlay></div>
-                                <img class="course-card-img" src="<?php echo $this->user_model->get_school_image($c['id']); ?>"
-                                    alt="">
-                                <div class="container-fluid">
-                                    <div>
-                                        <h3 class="course-title text-uppercase text-break"><?php echo $c['name'] ?></h3>
-                                        <p class="course-description text-break"><?php echo $c['description'] ?></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <!-- Course Card Start -->
-                        <?php
-                    }
-                    ?>
-
-                </div>
-
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-auto">
-                    <?php echo $links; ?>
-                </div>
-            </div>
-            <?php
-                }
-
+              <!-- Boucle dynamique sur les catégories -->
+              <?php foreach ($categories as $category): ?>
+                <?php 
+                  $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
                 ?>
+                <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
+                  <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
+                  <?php echo $category['name']; ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+
+        <!-- Langues (boutons pastilles, actif = bleu) -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="d-flex align-items-center gap-3 justify-content-lg-end">
+            <span class="text-muted small d-none d-md-inline"><?php echo get_phrase("Language ") ?></span>
+            <div id="langFilter" class="d-flex align-items-center gap-2">
+              <button class="lang-pill active" data-lang="all"><?php echo get_phrase("All") ?></button>
+              <button class="lang-pill" data-lang="fr">FR</button>
+              <button class="lang-pill" data-lang="ar">AR</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="py-4 bg-light">
+    <div class="container">
+      <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
+        <div class="me-md-3">
+          <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket me-2"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
+          <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
+        </div>
+        <a href="#" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GRID DES COMMUNAUTÉS (20 cartes) ===== -->
+  <section class="py-5 section-communities">
+  <div class="container mt-5">
+    <div id="cardsGrid" class="row g-4">
+
+      <?php 
+      // Vérifier si des écoles existent
+      $schools_array = [];
+
+      if (!empty($schools)) {
+          if (is_object($schools) && method_exists($schools, 'result_array')) {
+              $schools_array = $schools->result_array();
+          } elseif (is_array($schools)) {
+              $schools_array = $schools;
+          }
+      }
+
+      if (empty($schools_array)): ?>
+        <p class="text-center text-muted"><?php echo $no_courses_found ?? get_phrase('0_communities_found'); ?></p>
+      <?php else: ?>
+        <?php foreach ($schools_array as $c): ?>
+          <!-- Carte cours dynamique -->
+          <div class="col-12 col-sm-6 col-lg-4 col-xxl-3 course" 
+              data-cat="<?php echo strtolower($c['category']); ?>" 
+              data-lang="<?php echo $c['language'] ?? 'fr'; ?>">
+
+            <div class="card h-100 shadow-sm border-0 rounded-3">
+
+              <!-- Image -->
+              <img class="card-img-top card-img-custom ratio ratio-16x9 object-fit-cover" 
+                  src="<?php echo $this->user_model->get_school_image($c['id']); ?>" 
+                  alt="<?php echo $c['name']; ?>" >
+
+              <div class="card-body d-flex flex-column <?php echo ($c['language'] ?? '') == 'ar' ? 'text-end' : ''; ?>" 
+                  <?php echo ($c['language'] ?? '') == 'ar' ? 'dir="rtl"' : ''; ?>>
+
+                <!-- Titre -->
+                <h3 class="h6 fw-bold text-uppercase"><?php echo $c['name']; ?></h3>
+
+                <!-- Description -->
+                <p class="small text-secondary mb-3 card-description"><?php echo $c['description']; ?></p>
+
+                <!-- Infos cours -->
+                <ul class="list-inline small text-secondary mb-3">
+                  <li class="list-inline-item me-3">
+                    <i class="fa-solid fa-users me-1 text-wayo"></i>
+                    <?php echo $c['students_count'] ?? '0'; ?>
+                  </li>
+                  <li class="list-inline-item me-3">
+                    <i class="fa-solid fa-chalkboard-user me-1 text-wayo"></i>
+                    <?php echo $c['classes_count'] ?? '0'; ?> classes
+                  </li>
+                  <li class="list-inline-item">
+                    <?php if (($c['access'] ?? 0) == 1): ?>
+                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Accès libre'); ?></span>
+                    <?php else: ?>
+                      <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Privé'); ?></span>
+                    <?php endif; ?>
+                  </li>
+                </ul>
+
+                <!-- Lien détails -->
+                <a class="btn btn-outline-wayo mt-auto" 
+                  href="<?php echo base_url('home/community_details/' . $c['id']); ?>">
+                  <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?>
+                </a>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
 
     </div>
+
+    <!-- Pagination -->
+    <div class="row justify-content-center mt-4">
+      <div class="col-auto">
+        <?php echo $links ?? ''; ?>
+      </div>
     </div>
+    
+  </div>
+</section>
 
-    <div class="general-container g-0 container-fluid mt-11">
-        <img id="img-bot" class="ct-img rellax " data-rellax-speed="1.5"
-            src="<?php echo base_url('assets/frontend/ultimate/img/online admission/oa-img-bot.jpg') ?>" alt="">
-        <div class="general-container-ol-bot"></div>
 
-    </div>
 
-    </main>
+  <!-- Scroll to top -->
+  <button id="scrollTopBtn" class="btn btn-wayo btn-lg rounded-circle shadow position-fixed" aria-label="Retour haut">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+</main>
+ <!-- Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const search   = document.getElementById("searchInput");
+  const catSel   = document.getElementById("catSelect");
+  const langBtns = document.querySelectorAll("#langFilter .lang-pill");
+  const cards    = document.querySelectorAll(".course");
+  const topBtn   = document.getElementById("scrollTopBtn");
+
+  let currentCat = "all";
+  let currentLang = "all";
+  let query = "";
+
+  function refresh(){
+    cards.forEach(card => {
+      const okCat  = (currentCat === "all" || card.dataset.cat === currentCat);
+      const okLang = (currentLang === "all" || card.dataset.lang === currentLang);
+      const okTxt  = card.textContent.toLowerCase().includes(query);
+      card.style.display = (okCat && okLang && okTxt) ? "" : "none";
+    });
+  }
+
+  // Search
+  search.addEventListener("input", () => {
+    query = search.value.trim().toLowerCase();
+    refresh();
+  });
+
+  // Category
+  catSel.addEventListener("change", () => {
+    currentCat = catSel.value;
+    refresh();
+  });
+
+  // Language pills
+  langBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      langBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLang = btn.dataset.lang;
+      refresh();
+    });
+  });
+
+  // Scroll-to-top show/hide
+  window.addEventListener("scroll", () => {
+    topBtn.style.display = window.scrollY > 600 ? "inline-flex" : "none";
+  });
+
+  // Smooth scroll top
+  topBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+});
+  </script>
+

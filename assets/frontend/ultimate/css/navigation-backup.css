@@ -4,8 +4,6 @@ Navigation Styling
 
 /* Style pour afficher/masquer le menu */
 
-
-
 .user-dropdown.active {
     display: block;
 }
@@ -51,7 +49,6 @@ Navigation Styling
 }
 
 .navbar-nav {
-    background-color: #fff;
   display: flex;
   align-items: center;
   width: 100%;
