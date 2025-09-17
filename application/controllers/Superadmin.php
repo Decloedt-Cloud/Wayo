@@ -658,33 +658,258 @@ class Superadmin extends CI_Controller
       }
 
 
-      //START TEACHER Create_Join bigbleubutton 
-      public function Recording($param1 = '', $param2 = '', $param3 = '')
-      {
-    
-        $school_id = school_id();
+      public function recording($param1 = '', $param2 = '', $param3 = '') {
+    // Check authentication
+    if ($this->session->userdata('superadmin_login') != 1) {
+        redirect(site_url('login'), 'refresh');
+    }
 
-        // Récupère les données nécessaires
-        $page_data['appointments'] = $this->room_model->get_all_appointments();
-        $page_data['classes'] = $this->db->get_where('classes', array('school_id' => $school_id))->result_array();
-        $page_data['rooms'] = $this->db->get_where('rooms', array('school_id' => $school_id, 'Etat' => 1))->result_array();
+    // Synchronize recordings (unchanged)
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
 
-        // Récupère les enregistrements pour chaque rendez-vous
-        foreach ($page_data['appointments'] as &$appointment) {
-            $appointment['recordings'] = $this->room_model->get_bbb_recording_by_appointment($appointment['id']);
-           
+    $last_sync = $this->session->userdata('last_recording_sync');
+    $current_time = time();
+    $sync_interval = 10; // Synchronize every hour
+
+    if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
+        $meetings = $this->db->get('sessions_meetings')->result_array();
+
+        foreach ($meetings as $meeting) {
+            $params = "meetingID=" . urlencode($meeting['meeting_id']);
+            $checksum = sha1("getRecordings" . $params . $bbb_secret);
+            $recordings_url = $bbb_url . "getRecordings?" . $params . "&checksum=" . $checksum;
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $recordings_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $recordings_response = curl_exec($ch);
+            $curl_error = curl_error($ch);
+            curl_close($ch);
+
+            if ($curl_error) {
+                log_message('error', 'recording - cURL error for meeting_id: ' . $meeting['meeting_id'] . ': ' . $curl_error);
+                continue;
+            }
+
+            $recordings_xml = simplexml_load_string($recordings_response);
+            if ($recordings_xml && (string)$recordings_xml->returncode === "SUCCESS") {
+                foreach ($recordings_xml->recordings->recording as $recording) {
+                    if ((string)$recording->state !== 'published') {
+                        continue;
+                    }
+                    $recording_id = (string)$recording->recordID;
+                    $recording_start_time = (string)$recording->startTime;
+                    $recording_end_time = (string)$recording->endTime;
+                    $recording_url = (string)$recording->playback->format->url;
+                    $duration = (int)(($recording_end_time - $recording_start_time) / 60000);
+
+                    $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
+                    $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
+
+                    $existing = $this->db->get_where('recordings', ['recording_id' => $recording_id])->row_array();
+                    if (!$existing) {
+                        $recording_data = [
+                            'meeting_id' => $meeting['meeting_id'],
+                            'appointment_id' => $meeting['appointment_id'],
+                            'recording_id' => $recording_id,
+                            'name' => $meeting['name'],
+                            'class_id' => $meeting['class_id'],
+                            'school_id' => $meeting['school_id'],
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                            'duration' => $duration,
+                            'recording_url' => $recording_url,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ];
+                        $this->db->insert('recordings', $recording_data);
+                        log_message('debug', 'recording - New recording saved for meeting_id: ' . $meeting['meeting_id'] . ', recording_id: ' . $recording_id);
+                    } else {
+                        $this->db->where('recording_id', $recording_id);
+                        $this->db->update('recordings', [
+                            'recording_url' => $recording_url,
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                }
+            }
         }
-        unset($appointment); // Nettoie la référence
-    
-  
-        $page_data['page_name'] = 'bigbleubutton/Recording';
-        $page_data['page_title'] = 'Recording';
 
-        $this->load->view('backend/index', $page_data);
+        $this->session->set_userdata('last_recording_sync', $current_time);
+    }
 
-   
-      }
-      //END TEACHER Create_Join bigbleubutton
+    // Initialize filters
+    $filters = [
+        'meeting_name' => $this->input->post('meeting_name', true) ?? '',
+        'date_range' => $this->input->post('date_range', true) ?? ''
+    ];
+
+    // Build query
+    $this->db->select('r.*, c.name as class_name');
+    $this->db->from('recordings r');
+    $this->db->join('classes c', 'r.class_id = c.id', 'left');
+
+    // Apply filters
+    if (!empty($filters['meeting_name'])) {
+        $this->db->like('r.name', $filters['meeting_name'], 'both');
+    }
+    if (!empty($filters['date_range'])) {
+        $dates = explode(' - ', $filters['date_range']);
+        if (count($dates) == 1) {
+            $date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+            if ($date) {
+                $this->db->where('DATE(r.start_time)', $date->format('Y-m-d'));
+            }
+        } elseif (count($dates) == 2) {
+            $date_from = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+            $date_to = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
+            if ($date_from && $date_to) {
+                $this->db->where('r.start_time >=', $date_from->format('Y-m-d 00:00:00'));
+                $this->db->where('r.start_time <=', $date_to->format('Y-m-d 23:59:59'));
+            }
+        }
+    }
+
+    $this->db->order_by('r.created_at', 'DESC');
+    $recordings = $this->db->get()->result_array();
+
+    // Handle AJAX request
+    if ($this->input->is_ajax_request()) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'recordings' => $recordings,
+            'filters' => $filters,
+            'csrf_token' => $this->security->get_csrf_hash()
+        ]);
+        return;
+    }
+
+    // Load view for non-AJAX request
+    $page_data['recordings'] = $recordings;
+    $page_data['filters'] = $filters;
+    $page_data['page_name'] = 'recording/recording';
+    $page_data['page_title'] = 'recording';
+
+    $this->load->view('backend/index', $page_data);
+}
+		   
+			public function delete_recording()
+{
+    // Vérifier l'authentification
+    if ($this->session->userdata('superadmin_login') != 1) {
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('unauthorized_access'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return;
+    }
+
+    // Récupérer l'ID de l'enregistrement depuis la requête POST
+    $recording_id = trim($this->input->post('recording_id', true));
+    log_message('debug', 'delete_recording - Received recording_id: ' . $recording_id);
+
+    if (empty($recording_id)) {
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('invalid_recording_id'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+        log_message('error', 'delete_recording - Invalid recording_id received');
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return;
+    }
+
+    // Vérifier si l'enregistrement existe dans la table recordings
+    $this->db->where('recording_id', $recording_id);
+    $existing = $this->db->get('recordings')->row_array();
+    log_message('debug', 'delete_recording - Existing record: ' . json_encode($existing));
+
+    if (!$existing) {
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('recording_not_found'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+        log_message('error', 'delete_recording - Recording not found: recording_id=' . $recording_id);
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return;
+    }
+
+    // Charger la configuration BigBlueButton
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
+
+    // Supprimer l'enregistrement de BigBlueButton
+    $params = "recordID=" . urlencode($recording_id);
+    $checksum = sha1("deleteRecordings" . $params . $bbb_secret);
+    $delete_url = $bbb_url . "deleteRecordings?" . $params . "&checksum=" . $checksum;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $delete_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $delete_response = curl_exec($ch);
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_error) {
+        log_message('error', 'delete_recording - cURL error while deleting from BBB: recording_id=' . $recording_id . ', Error: ' . $curl_error);
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('failed_to_delete_recording_from_bbb'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return;
+    }
+
+    // Vérifier la réponse de l'API BBB
+    $delete_xml = simplexml_load_string($delete_response);
+    if (!$delete_xml || (string)$delete_xml->returncode !== "SUCCESS") {
+        log_message('error', 'delete_recording - BBB API delete failed: recording_id=' . $recording_id . ', Response: ' . $delete_response);
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('failed_to_delete_recording_from_bbb'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return;
+    }
+
+    // Supprimer l'enregistrement de la table recordings
+    $this->db->where('recording_id', $recording_id);
+    $this->db->delete('recordings');
+    $db_error = $this->db->error();
+
+    log_message('debug', 'delete_recording - SQL Query: ' . $this->db->last_query());
+
+    if ($db_error['code'] == 0 && $this->db->affected_rows() > 0) {
+        log_message('debug', 'delete_recording - Recording deleted successfully: recording_id=' . $recording_id);
+        $response = [
+            'status' => 'success',
+            'message' => get_phrase('recording_deleted_successfully'),
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+    } else {
+        log_message('error', 'delete_recording - Failed to delete recording: recording_id=' . $recording_id . ', Last Query: ' . $this->db->last_query() . ', DB Error: ' . json_encode($db_error));
+        $response = [
+            'status' => 'error',
+            'message' => get_phrase('failed_to_delete_recording') . ' (DB Error: ' . $db_error['message'] . ')',
+            'csrf_token' => $this->security->get_csrf_hash()
+        ];
+    }
+
+    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+}
 
     
     

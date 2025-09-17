@@ -2052,7 +2052,7 @@
     "are_you_sure?": "Are you sure?",
     "yes,_delete_it!": "Yes, delete it!",
     "number_of_participants": "Number of participants",
-    "nombre_de_participants_:": "Nombre de participants :",
+    "nombre_de_participants_:": "Number of participants :",
     "select_a_community": "Select a community",
     "all_communities": "All communities",
     "meeting_not_started": "Meeting not started",
@@ -2070,5 +2070,18 @@
     "contenu_complet": "Full content",
     "people": "People",
     "membre": "Membre",
-    "nombre_de_participants_:": "Number of participants :"
+    "password_add_successful": "Password add successful",
+    "history": "History",
+    "failed_to_apply_filters": "Failed to apply filters",
+    "confirm_deletion": "Confirm deletion",
+    "are_you_sure_to_delete_this_recording": "Are you sure to delete this recording",
+    "recording_deleted_successfully": "Recording deleted successfully",
+    "failed_to_delete_recording": "Failed to delete recording",
+    "failed_to_clear_filters": "Failed to clear filters",
+    "please_provide_at_least_one_filter_criterion": "Please provide at least one filter criterion",
+    "are_you_sure_you_want_to_delete_this_recording?": "Are you sure you want to delete this recording?",
+    "no_recordings_found": "No recordings found",
+    "filters_applied_successfully": "Filters applied successfully",
+    "filters_cleared_successfully": "Filters cleared successfully",
+    "if_you_can't_find_your_recording,_we_are_currently_preparing_it,_and_it_will_be_ready_soon.": "If you can't find your recording, we are currently preparing it, and it will be ready soon."
 }
