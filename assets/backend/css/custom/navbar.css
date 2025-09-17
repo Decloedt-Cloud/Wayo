@@ -265,6 +265,9 @@ body[dir="rtl"] .dropup-desktop {
   top: 72px !important;
   width: auto;
 }
+.topnav-navbar-dark .topbar-menu li .show.nav-link {
+    color: #98a6ad !important;
+}
 /* Version mobile uniquement */
 @media (max-width: 768px) {
   .navbar-custom .container-fluid {

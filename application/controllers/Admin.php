@@ -2784,6 +2784,7 @@ class Admin extends CI_Controller
 	{
 		if ($param1 == 'update_profile') {
 			$response = $this->user_model->update_profile();
+			die($response);
 			echo $response;
 		}
 		if ($param1 == 'update_password') {

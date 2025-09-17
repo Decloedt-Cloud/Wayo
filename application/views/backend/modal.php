@@ -89,7 +89,7 @@ function confirmModal(delete_url, callback) {
                 console.error('Erreur AJAX : ', error);
                 console.error('Statut : ', status);
                 console.error('Réponse : ', xhr.responseText);
-                showNotification('error', '<?php echo get_phrase('failed_to_delete_exam'); ?>');
+                showNotification('error', "<?php echo get_phrase('failed_to_delete_exam'); ?>");
                 // Fermer le modal même en cas d'erreur
                 jQuery('#alert-modal').modal('hide');
             }

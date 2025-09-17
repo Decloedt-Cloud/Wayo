@@ -558,7 +558,8 @@ $config['csrf_exclude_uris'] = array(
      'login/set_student_just_registered',
     'home/set_guest_language/.*',
     'bigbluebutton/webhook',
-    'bigbluebutton/meeting_states'
+    'bigbluebutton/meeting_states',
+    'profile/update_profile'
 
 );
  

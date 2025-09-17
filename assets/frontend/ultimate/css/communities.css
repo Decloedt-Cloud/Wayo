@@ -1,0 +1,144 @@
+:root{
+  --wayo-orange:#F47A1F;
+  --wayo-orange-dark:#d65e10;
+  --blue-active:#2F6BFF;
+  --gray-900:#333;
+  --wayo-secondaire:#6c757d;
+}
+*{box-sizing:border-box}
+body{   font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;}
+.fw-800{font-weight:800}
+.letter-1{letter-spacing:.06rem}
+.object-fit-cover{object-fit:cover}
+.text-wayo{color:var(--wayo-orange)!important}
+.border-white-10{border-color:rgba(255,255,255,.12)!important}
+
+/* Brand buttons & badges */
+.btn-wayo{background:var(--wayo-orange);color:#fff;border:none}
+.btn-wayo:hover{filter:brightness(.95)}
+.btn-outline-wayo{border:2px solid var(--wayo-orange);color:var(--wayo-orange);background:transparent}
+.btn-outline-wayo:hover{background:var(--wayo-orange);color:#fff}
+.text-bg-wayo{
+    color:#fff;
+    padding: 6px !important;
+    background-color:var(--wayo-orange)!important
+}
+.text-bg-wayo-secondaire{
+    color:#fff;
+    padding: 6px !important;
+    background-color:var(--wayo-secondaire)!important
+}
+ /* Hero */
+    .hero{ position:relative; min-height:68vh; display:grid; place-items:center; color:#fff; background-image:url('https://i.postimg.cc/Qtk6hbsc/qa.png'); background-size:cover; background-position:center; }
+    .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
+    .hero .hero-content{ position:relative; text-align:center; }
+    .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
+
+    .btn-pill{ border-radius:999px; font-weight:700; padding:.8rem 1.2rem; }
+    .btn-accent{ background:var(--accent); color:#fff; box-shadow:0 8px 20px rgba(252,123,48,.25) }
+    .btn-accent:hover{ background:var(--accent-600); color:#fff; }
+    .btn-ghost{ background:#ffffff14; color:#fff; border:1px solid #ffffff40 }
+    .btn-ghost:hover{ background:#ffffff26; color:#fff; }
+
+    .section-communities{
+        background-color: #f6f7fb;
+    }
+
+/* ---- BARRE DE FILTRES : style identique au screen ---- */
+.pill-input,
+.pill-select{
+  height:48px;
+  border-radius:999px;
+  background:#fff;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+  overflow:hidden;
+}
+.pill-input:focus-within{box-shadow:0 0 0 2px rgba(244,122,31,.35), inset 0 0 0 1px var(--wayo-orange)}
+.pill-input input{height:48px;outline:none}
+
+.pill-select{
+  border:2px solid var(--wayo-orange);
+}
+.pill-select:focus-within{
+  box-shadow:0 0 0 3px rgba(244,122,31,.25);
+}
+.pill-select .form-select{
+  height:48px;
+  border-radius:999px;
+  padding-left:.75rem;
+  padding-right:2.25rem; /* place pour caret custom */
+  box-shadow:none !important;
+}
+.pill-select .dropdown-caret{
+  pointer-events:none;
+}
+
+/* Langue pills */
+.lang-pill{
+  border:0;
+  background:#f1f5ff;
+  color:#1f2a44;
+  font-weight:600;
+  padding:.5rem .9rem;
+  border-radius:12px;
+  transition:.2s;
+}
+.lang-pill:hover{filter:brightness(.97)}
+.lang-pill.active{
+  background:var(--wayo-orange-dark) !important;
+  color:#fff !important;
+}
+
+/* CTA gradient */
+.cta-gradient{
+  background:linear-gradient(90deg,#F47A1F 0%,#ffb75e 100%);
+}
+
+.card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;   /* nombre max de lignes visibles */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 60px; /* pour garder la même hauteur même si le texte est court */
+}
+.card-img-custom {
+  height: 220px;              /* fixe la hauteur de l’image */
+  object-fit: cover;          /* garde un bon cadrage */
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+}
+
+/* Scroll top */
+#scrollTopBtn{
+  width:52px;height:52px;right:24px;bottom:24px;
+  display:none; /* toggled via JS */
+  z-index:1030;
+}
+.pagination-custom .page-link {
+  border-radius: 8px;
+  margin: 0 4px;
+  border: 1px solid #212529;
+  color: #212529;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.pagination-custom .page-link:hover {
+  background-color: #212529;
+  color: #fff;
+}
+
+.pagination-custom .page-item.active .page-link {
+  background-color: #212529;
+  border-color: #212529;
+  color: #fff;
+}
+
+.pagination-custom .page-item.disabled .page-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
