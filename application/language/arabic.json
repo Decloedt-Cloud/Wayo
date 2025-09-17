@@ -2196,5 +2196,17 @@
     "are_you_sure?": "هل أنت متأكد؟",
     "yes,_delete_it!": "نعم، احذفه!",
     "edit_event": "تعديل الحدث",
-    "number_of_participants": "عدد المشاركين"
+    "number_of_participants": "عدد المشاركين",
+    "history": "التاريخ",
+    "failed_to_apply_filters": "فشل في تطبيق الفلاتر",
+    "failed_to_clear_filters": "فشل في إزالة الفلاتر",
+    "confirm_deletion": "تأكيد الحذف",
+    "are_you_sure_to_delete_this_recording": "هل أنت متأكد من حذف هذا التسجيل",
+    "failed_to_delete_recording": "فشل في حذف التسجيل",
+    "if_you_can't_find_your_recording,_we_are_currently_preparing_it,_and_it_will_be_ready_soon.": "إذا لم تتمكن من العثور على تسجيلك، فنحن نقوم بإعداده حاليًا، وسيكون جاهزًا قريبًا.",
+    "no_recordings_found": "لم يتم العثور على تسجيلات",
+    "filters_applied_successfully": "تم تطبيق الفلاتر بنجاح",
+    "filters_cleared_successfully": "تم إزالة الفلاتر بنجاح",
+    "are_you_sure_you_want_to_delete_this_recording?": "هل أنت متأكد من أنك تريد حذف هذا التسجيل؟",
+    "recording_deleted_successfully": "تم حذف التسجيل بنجاح"
 }
