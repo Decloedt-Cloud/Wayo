@@ -78,7 +78,7 @@
                           <div><?php echo get_phrase('number of participants'); ?>
                              <span id="participantCount">0</span>
                         </div>
-                        <div class="form-group mt-3 btn-group-1">
+                        <div class="form-group-calendar mt-3 btn-group-1">
                             <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Meeting Not Started') ?></button>
                         </div>
                     </div>

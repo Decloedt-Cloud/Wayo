@@ -31,7 +31,6 @@
     </div>
     <!-- FullCalendar container -->
     <div id="calendar"></div>
-    <!-- Modals remain unchanged -->
     <div class="modal fade mt-5" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -1217,65 +1216,65 @@ showEventDetails(eventId, occurrenceDate) {
                         $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>');
                         this.stopPolling();
                     } else if (isVisio) {
-                        const meetingId = occurrenceData.meeting_id;
-                        if (meetingId) {
-                            $.ajax({
-                                url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
-                                type: 'POST',
-                                data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
-                                dataType: 'json',
-                                success: (response) => {
-                                    const status = response.status ? String(response.status).trim().toLowerCase() : '';
-                                    if (status === 'success' && response.data && response.data.length > 0) {
-                                        const state = response.data[0];
-                                        if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                            this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
-                                            this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                            if (state.is_running) {
-                                                this.hasActiveMeetings = true;
-                                                this.pollActiveMeetings();
-                                            }
-                                            this.startPolling(eventId, meetingId, occurrenceDate);
-                                            csrfHash = response.csrf?.csrfHash || csrfHash;
-                                        } else {
-                                            $('#participantCount').text('0');
-                                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                            this.stopPolling();
-                                        }
-                                    } else {
-                                        $('#participantCount').text('0');
-                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        this.stopPolling();
-                                    }
-                                },
-                                error: (xhr, status, error) => {
-                                    const cachedState = this.getCachedMeetingState(meetingId);
-                                    if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                        this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
-                                        $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        if (cachedState.isRunning) {
-                                            this.hasActiveMeetings = true;
-                                            this.pollActiveMeetings();
-                                        }
-                                        this.startPolling(eventId, meetingId, occurrenceDate);
-                                    } else {
-                                        $('#participantCount').text('0');
-                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        this.stopPolling();
-                                    }
-                                }
-                            });
-                        } else {
-                            $('#participantCount').text('0');
-                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                            this.stopPolling();
+    const meetingId = occurrenceData.meeting_id;
+    if (meetingId) {
+        $.ajax({
+            url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
+            type: 'POST',
+            data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
+            dataType: 'json',
+            success: (response) => {
+                const status = response.status ? String(response.status).trim().toLowerCase() : '';
+                if (status === 'success' && response.data && response.data.length > 0) {
+                    const state = response.data[0];
+                    if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                        this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
+                        this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
+                        // Désactiver le bouton delete si la réunion est active
+                        $('#deleteevent').prop('disabled', state.is_running).toggleClass('disabled', state.is_running);
+                        $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                        if (state.is_running) {
+                            this.hasActiveMeetings = true;
+                            this.pollActiveMeetings();
                         }
+                        this.startPolling(eventId, meetingId, occurrenceDate);
+                        csrfHash = response.csrf?.csrfHash || csrfHash;
                     } else {
                         $('#participantCount').text('0');
                         $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                        this.stopPolling();
+                        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
                     }
+                } else {
+                    $('#participantCount').text('0');
+                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si erreur
+                }
+            },
+            error: (xhr, status, error) => {
+                const cachedState = this.getCachedMeetingState(meetingId);
+                if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                    this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
+                    $('#deleteevent').prop('disabled', cachedState.isRunning).toggleClass('disabled', cachedState.isRunning); // Utiliser cache pour bouton delete
+                    $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    if (cachedState.isRunning) {
+                        this.hasActiveMeetings = true;
+                        this.pollActiveMeetings();
+                    }
+                    this.startPolling(eventId, meetingId, occurrenceDate);
+                } else {
+                    $('#participantCount').text('0');
+                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de cache
+                }
+            }
+        });
+    } else {
+        $('#participantCount').text('0');
+        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de meetingId
+        this.stopPolling();
+    }
+}
           /* else if (isVisio && occurrenceData.meeting_id) {
             // Set initial state from superadmin/get_events
             $('#participantCount').text(occurrenceData.participant_count || 0);
@@ -1599,10 +1598,10 @@ stopPolling() {
   bindGlobalEvents() {
     $('#createEventModal').on('show.bs.modal', () => {
       $('#createeventEndDate').on('change', () => {
-        const startDate = $('#createeventDate').val();
+        const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
         if (startDate && endDate && endDate < startDate) {
-          this.showNotification('error', 'End date must be on or after start date');
+          CalendarApp.showNotification('error', 'End date must be on or after start date');
           $('#createeventEndDate').val('');
         }
       });
@@ -1610,6 +1609,30 @@ stopPolling() {
       const today = this.formatDate(new Date());
       $('#createeventDate').attr('min', today);
       $('#createeventEndDate').attr('min', today);
+      $('#createeventStartTime').prop('disabled', true);
+      $('#createeventEndTime').prop('disabled', true);
+      const updateTimeFields = () => {
+      const inputElement = document.getElementById('createeventDate');
+      const selectedDate = inputElement ? inputElement.value : '';
+    if (selectedDate) {
+      $('#createeventStartTime').prop('disabled', false);
+      $('#createeventEndTime').prop('disabled', false);
+      CalendarApp.generateTimeOptions($('#createeventStartTime'), selectedDate);
+      CalendarApp.generateTimeOptions($('#createeventEndTime'), selectedDate);
+    } else {
+      $('#createeventStartTime').prop('disabled', true).val('');
+      $('#createeventEndTime').prop('disabled', true).val('');
+    }
+  };
+      updateTimeFields();
+      setTimeout(() => {
+    updateTimeFields();
+  }, 2000);
+      $('#createeventDate').off('change.timeOptions input.timeOptions click.timeOptions').on('change.timeOptions input.timeOptions click.timeOptions', () => {
+    const dateValue = document.getElementById('createeventDate').value;
+    updateTimeFields();
+    $('#recurrenceStartDatePopup').val(dateValue);
+  });
       const selectedDate = $('#createeventDate').val() || today;
       this.generateTimeOptions($('#createeventStartTime'), selectedDate);
       this.generateTimeOptions($('#createeventEndTime'), selectedDate);
@@ -1942,18 +1965,19 @@ updateParticipantUI(eventId, participantCount, isRunning, occurrenceDate) {
     const modalOccurrenceDate = $('#currentOccurrenceDate').val();
     const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
 
-    // Update modal UI if open
+    // Mettre à jour l'UI du modal si ouvert
     if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
         $('#participantCount').text(participantCount || 0);
         $('#joinMeetingBtn').text(isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !isRunning);
+        $('#deleteevent').prop('disabled', isRunning).toggleClass('disabled', isRunning); // Griser/dégriser le bouton delete
     }
 
-    // Update event in calendar
+    // Mettre à jour l'événement dans le calendrier
     const event = this.calendar.getEventById(uniqueEventId);
     if (event) {
         event.setExtendedProp('isRunning', isRunning);
         event.setExtendedProp('participant_count', participantCount);
-        // Force re-render to apply/remove active-meeting class
+        // Forcer le re-rendu pour appliquer/supprimer la classe active-meeting
         const eventData = {
             id: event.id,
             title: event.title,
@@ -1964,7 +1988,7 @@ updateParticipantUI(eventId, participantCount, isRunning, occurrenceDate) {
         event.remove();
         this.calendar.addEvent(eventData);
 
-        // Update active meetings set
+        // Mettre à jour l'ensemble des réunions actives
         if (isRunning) {
             this.activeMeetings.add(JSON.stringify({ meetingId: event.extendedProps.meeting_id, eventId, occurrenceDate }));
         } else {
@@ -2366,7 +2390,6 @@ pollActiveMeetings() {
             return;
         }
 
-        // Prevent frequent requests
         const lastFetchTime = sessionStorage.getItem('lastActiveMeetingsFetch');
         const now = Date.now();
         if (lastFetchTime && now - parseInt(lastFetchTime) < 10000) {
@@ -2378,7 +2401,7 @@ pollActiveMeetings() {
         const startDate = this.formatDate(view.activeStart);
         const endDate = this.formatDate(view.activeEnd);
 
-       $.ajax({
+        $.ajax({
             url: '<?php echo site_url('superadmin/get_events'); ?>',
             type: 'GET',
             data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
@@ -2422,7 +2445,6 @@ pollActiveMeetings() {
                                     event.setExtendedProp('isRunning', false);
                                     event.setExtendedProp('participant_count', 0);
                                     sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                    // Force re-render to remove active-meeting class
                                     const eventData = {
                                         id: event.id,
                                         title: event.title,
@@ -2432,6 +2454,9 @@ pollActiveMeetings() {
                                     };
                                     event.remove();
                                     this.calendar.addEvent(eventData);
+                                }
+                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                    $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                 }
                             });
                             this.activeMeetings.clear();
@@ -2452,7 +2477,6 @@ pollActiveMeetings() {
                             }
                         });
 
-                        // Clear stale active meetings
                         this.activeMeetings.forEach(item => {
                             const parsedItem = JSON.parse(item);
                             if (!meetingIdsArray.some(m => m.meetingId === parsedItem.meetingId)) {
@@ -2463,7 +2487,6 @@ pollActiveMeetings() {
                                     event.setExtendedProp('isRunning', false);
                                     event.setExtendedProp('participant_count', 0);
                                     sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                    // Force re-render to remove active-meeting class
                                     const eventData = {
                                         id: event.id,
                                         title: event.title,
@@ -2473,6 +2496,9 @@ pollActiveMeetings() {
                                     };
                                     event.remove();
                                     this.calendar.addEvent(eventData);
+                                }
+                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                    $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                 }
                                 this.activeMeetings.delete(item);
                             }
@@ -2485,7 +2511,7 @@ pollActiveMeetings() {
                             dataType: 'json',
                             success: (response) => {
                                 if (response.status === 'success' && response.data) {
-                                  this.closeAllPopovers();
+                                    this.closeAllPopovers();
                                     let activeMeetingsFound = false;
                                     response.data.forEach(state => {
                                         const { meeting_id, status, participant_count, is_running } = state;
@@ -2500,7 +2526,6 @@ pollActiveMeetings() {
                                             if (event) {
                                                 event.setExtendedProp('isRunning', is_running);
                                                 event.setExtendedProp('participant_count', participant_count);
-                                                // Force re-render to apply active-meeting class
                                                 const eventData = {
                                                     id: event.id,
                                                     title: event.title,
@@ -2518,10 +2543,14 @@ pollActiveMeetings() {
                                                     if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                                         $('#participantCount').text(participant_count || 0);
                                                         $('#joinMeetingBtn').text(is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !is_running);
+                                                        $('#deleteevent').prop('disabled', is_running).toggleClass('disabled', is_running); // Griser si actif
                                                     }
                                                 } else {
                                                     sessionStorage.removeItem(`meeting_state_${meeting_id}`);
                                                     this.activeMeetings.delete(JSON.stringify({ meetingId: meeting_id, eventId, occurrenceDate }));
+                                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                                    }
                                                 }
                                             }
                                         } else {
@@ -2530,7 +2559,6 @@ pollActiveMeetings() {
                                                 event.setExtendedProp('isRunning', false);
                                                 event.setExtendedProp('participant_count', 0);
                                                 sessionStorage.removeItem(`meeting_state_${meeting_id}`);
-                                                // Force re-render to remove active-meeting class
                                                 const eventData = {
                                                     id: event.id,
                                                     title: event.title,
@@ -2542,6 +2570,9 @@ pollActiveMeetings() {
                                                 this.calendar.addEvent(eventData);
                                             }
                                             this.activeMeetings.delete(JSON.stringify({ meetingId: meeting_id, eventId, occurrenceDate }));
+                                            if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                            }
                                         }
                                     });
 
@@ -2551,7 +2582,6 @@ pollActiveMeetings() {
                                         if (event) {
                                             event.setExtendedProp('isRunning', isRunning);
                                             event.setExtendedProp('participant_count', participantCount);
-                                            // Force re-render to apply active-meeting class
                                             const eventData = {
                                                 id: event.id,
                                                 title: event.title,
@@ -2569,10 +2599,14 @@ pollActiveMeetings() {
                                                 if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                                     $('#participantCount').text(participantCount || 0);
                                                     $('#joinMeetingBtn').text(isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !isRunning);
+                                                    $('#deleteevent').prop('disabled', isRunning).toggleClass('disabled', isRunning); // Griser si actif
                                                 }
                                             } else {
                                                 sessionStorage.removeItem(`meeting_state_${meetingId}`);
                                                 this.activeMeetings.delete(JSON.stringify({ meetingId, eventId, occurrenceDate }));
+                                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                                }
                                             }
                                         }
                                     });
@@ -2596,7 +2630,6 @@ pollActiveMeetings() {
                                             event.setExtendedProp('isRunning', false);
                                             event.setExtendedProp('participant_count', 0);
                                             sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                            // Force re-render to remove active-meeting class
                                             const eventData = {
                                                 id: event.id,
                                                 title: event.title,
@@ -2606,6 +2639,9 @@ pollActiveMeetings() {
                                             };
                                             event.remove();
                                             this.calendar.addEvent(eventData);
+                                        }
+                                        if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                         }
                                     });
                                     this.activeMeetings.clear();
@@ -2623,7 +2659,6 @@ pollActiveMeetings() {
                                         event.setExtendedProp('isRunning', false);
                                         event.setExtendedProp('participant_count', 0);
                                         sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                        // Force re-render to remove active-meeting class
                                         const eventData = {
                                             id: event.id,
                                             title: event.title,
@@ -2633,6 +2668,9 @@ pollActiveMeetings() {
                                         };
                                         event.remove();
                                         this.calendar.addEvent(eventData);
+                                    }
+                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                     }
                                 });
                                 this.activeMeetings.clear();
@@ -2651,7 +2689,6 @@ pollActiveMeetings() {
                                 event.setExtendedProp('isRunning', false);
                                 event.setExtendedProp('participant_count', 0);
                                 sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                // Force re-render to remove active-meeting class
                                 const eventData = {
                                     id: event.id,
                                     title: event.title,
@@ -2661,6 +2698,9 @@ pollActiveMeetings() {
                                 };
                                 event.remove();
                                 this.calendar.addEvent(eventData);
+                            }
+                            if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                $('#deleteevent').prop('disabled', false).removeClass('disabled');
                             }
                         });
                         this.activeMeetings.clear();
@@ -2677,7 +2717,6 @@ pollActiveMeetings() {
                             event.setExtendedProp('isRunning', false);
                             event.setExtendedProp('participant_count', 0);
                             sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                            // Force re-render to remove active-meeting class
                             const eventData = {
                                 id: event.id,
                                 title: event.title,
@@ -2687,6 +2726,9 @@ pollActiveMeetings() {
                             };
                             event.remove();
                             this.calendar.addEvent(eventData);
+                        }
+                        if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
                         }
                     });
                     this.activeMeetings.clear();
@@ -2704,7 +2746,6 @@ pollActiveMeetings() {
                         event.setExtendedProp('isRunning', false);
                         event.setExtendedProp('participant_count', 0);
                         sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                        // Force re-render to remove active-meeting class
                         const eventData = {
                             id: event.id,
                             title: event.title,
@@ -2714,6 +2755,9 @@ pollActiveMeetings() {
                         };
                         event.remove();
                         this.calendar.addEvent(eventData);
+                    }
+                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
                     }
                 });
                 this.activeMeetings.clear();
