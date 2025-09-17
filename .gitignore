@@ -33,5 +33,7 @@ tmp/*
 .DS_Store
 Thumbs.db
 .codegpt
+
 .env
 /vendor/
+/composer.lock

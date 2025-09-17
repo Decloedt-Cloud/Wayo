@@ -16,6 +16,7 @@ class Login extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+                    log_message('error', 'Le contrôleur Login a bien été appelé.');
 
 		$this->load->database();
 		$this->load->library('Humhub_sso');

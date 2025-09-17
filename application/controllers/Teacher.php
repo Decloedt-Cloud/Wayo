@@ -1601,7 +1601,7 @@ public function create_event() {
         'title' => htmlspecialchars($this->input->post('title', true)),
         'starting_date' => $this->input->post('starting_date', true),
         'starting_time' => $this->input->post('starting_time', true),
-        'ending_date' => $this->input->post('ending_date', true) ?: null,
+		'ending_date' => $this->input->post('ending_date', true) ?: null,
         'ending_time' => $this->input->post('ending_time', true),
         'school_id' => filter_var($this->input->post('school_id', true), FILTER_VALIDATE_INT),
         'class_id' => filter_var($this->input->post('class_id', true), FILTER_VALIDATE_INT),
@@ -1656,7 +1656,7 @@ public function create_event() {
         return;
     }
 
-       if ($data['ending_date']) {
+	if ($data['ending_date']) {
     $end_date_obj = DateTime::createFromFormat('Y-m-d', $data['ending_date']);
     if ($end_date_obj === false || $end_date_obj->format('Y-m-d') !== $data['ending_date']) {
         echo json_encode([
@@ -1684,7 +1684,7 @@ public function create_event() {
         return;
     }
 }
-
+	
     if ($event_start < $now) {
         echo json_encode([
             'status' => 'error',
@@ -1901,7 +1901,7 @@ public function create_event() {
             'title' => htmlspecialchars($this->input->post('title', true)),
             'starting_date' => $this->input->post('starting_date', true),
             'starting_time' => $this->input->post('starting_time', true),
-            'ending_date' => $this->input->post('ending_date', true) ?: null,
+			'ending_date' => $this->input->post('ending_date', true) ?: null,
             'ending_time' => $this->input->post('ending_time', true),
             'school_id' => filter_var($this->input->post('school_id', true), FILTER_VALIDATE_INT),
             'class_id' => filter_var($this->input->post('class_id', true), FILTER_VALIDATE_INT),
@@ -1942,7 +1942,7 @@ public function create_event() {
             echo json_encode(['status' => 'error', 'message' => 'La date et l\'heure de début ne peuvent pas être dans le passé', 'csrf' => $csrf]);
             return;
         }
-        if ($data['ending_date']) {
+		if ($data['ending_date']) {
     $end_date_obj = DateTime::createFromFormat('Y-m-d', $data['ending_date']);
     if ($end_date_obj === false || $end_date_obj->format('Y-m-d') !== $data['ending_date']) {
         echo json_encode(['status' => 'error', 'message' => 'Format de date de fin invalide (attendu : YYYY-MM-DD)', 'csrf' => $csrf]);
@@ -1965,6 +1965,7 @@ public function create_event() {
             echo json_encode(['status' => 'error', 'message' => 'Format d\'heure de fin invalide (attendu : HH:mm:ss)', 'csrf' => $csrf]);
             return;
         }
+
 
         // Validation de school_id
         if (!$this->db->get_where('schools', ['id' => $data['school_id'], 'Etat' => 1, 'status' => 1])->row()) {
@@ -2120,8 +2121,45 @@ public function create_event() {
         return;
     }
 
-    // Récupérer l'ID de l'école de l'utilisateur connecté
+    // Récupérer l'ID de l'utilisateur connecté
     $user_id = $this->session->userdata('user_id');
+    
+    // Mapper user_id à teacher_id
+    $this->db->select('id');
+    $this->db->from('teachers');
+    $this->db->where('user_id', $user_id);
+    $teacher = $this->db->get()->row_array();
+    $teacher_id = $teacher['id'] ?? null;
+
+    if (!$teacher_id) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'get_events - No teacher_id found for user_id: ' . $user_id);
+        echo json_encode(['status' => 'error', 'message' => 'No teacher associated with this user', 'csrf' => $csrf]);
+        return;
+    }
+
+    // Récupérer les classes autorisées avec attendance = 1
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+
+    if (empty($permitted_class_ids)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'get_events - No permitted classes with attendance = 1 for teacher_id: ' . $teacher_id);
+        echo json_encode(['status' => 'error', 'message' => 'No authorized classes found', 'csrf' => $csrf]);
+        return;
+    }
+
+    // Récupérer l'ID de l'école
     $user_details = $this->user_model->get_user_details($user_id);
     $school_id = $user_details['school_id'] ?? null;
 
@@ -2137,8 +2175,8 @@ public function create_event() {
 
     $start_date = $this->input->get('start_date', true);
     $end_date = $this->input->get('end_date', true);
-    $event_id = $this->input->get('id', true); // Récupérer l'ID de l'événement
-    $class_id = $this->input->get('class_id', true); // Récupérer l'ID de la classe
+    $event_id = $this->input->get('id', true);
+    $class_id = $this->input->get('class_id', true);
 
     // Validation des dates
     if ($start_date && $end_date) {
@@ -2169,31 +2207,41 @@ public function create_event() {
         return;
     }
 
-    // Construction de la requête
+    // Construction de la requête pour les événements
     $this->db->select('event_calendars.*, schools.name as school_name, classes.name as class_name');
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('classes', 'event_calendars.class_id = classes.id', 'left');
-    // Filtrer par l'ID de l'école de l'utilisateur
     $this->db->where('event_calendars.school_id', $school_id);
+    $this->db->where_in('event_calendars.class_id', $permitted_class_ids);
 
-    // Filtrer par ID si fourni
     if ($event_id) {
         $this->db->where('event_calendars.id', $event_id);
     } else {
-        // Filtrer les événements qui chevauchent la période demandée
         $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
     }
 
-    // Filtrer par class_id si fourni
-    if ($class_id) {
+    if ($class_id && in_array($class_id, $permitted_class_ids)) {
         $this->db->where('event_calendars.class_id', $class_id);
+    } elseif ($class_id) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'get_events - Unauthorized class_id: ' . $class_id);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized class', 'csrf' => $csrf]);
+        return;
     }
 
     $events = $this->db->get()->result_array();
-    log_message('debug', 'Requête SQL : ' . $this->db->last_query());
+    log_message('debug', 'get_events - SQL query: ' . $this->db->last_query());
 
-    // Post-traitement des événements pour générer les occurrences récurrentes
+    // Charger la configuration BigBlueButton
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
+
+    // Post-traitement des événements
     $processed_events = [];
     foreach ($events as $event) {
         $event['school_name'] = $event['school_name'] ?? '';
@@ -2219,11 +2267,76 @@ public function create_event() {
             $event['recurrence_end_date'] = $recurrence_end_date_obj ? $recurrence_end_date_obj->format('Y-m-d') : null;
         }
 
-        // Vérifier si l'événement est expiré (plus de 24 heures)
+        // Vérifier si l'événement est expiré
         $event_start = DateTime::createFromFormat('Y-m-d H:i:s', $event['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
         $now = new DateTime('now', new DateTimeZone('UTC'));
         $threshold = (clone $now)->modify('-24 hours');
         $event['is_expired'] = $event_start < $threshold;
+
+        // Récupérer les occurrences pour les événements visio
+        $event['occurrences'] = [];
+        if ($event['visio'] == 1) {
+            $this->db->select('start_date, meeting_id');
+            $this->db->from('appointments');
+            $this->db->where('event_id', $event['id']);
+            $this->db->where('Etat', 1);
+            $this->db->where('DATE(start_date) >=', $start_date);
+            $this->db->where('DATE(start_date) <=', $end_date);
+            $appointments = $this->db->get()->result_array();
+            log_message('debug', 'get_events - SQL query for occurrences: ' . $this->db->last_query());
+
+            foreach ($appointments as $appointment) {
+                $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
+                $meeting_id = $appointment['meeting_id'] ?? null;
+
+                // Vérifier l'état du meeting via BBB API
+                $is_running = false;
+                $participant_count = 0;
+                if ($meeting_id) {
+                    $params = "meetingID=" . urlencode($meeting_id);
+                    $checksum = sha1("isMeetingRunning" . $params . $bbb_secret);
+                    $is_running_url = $bbb_url . "isMeetingRunning?" . $params . "&checksum=" . $checksum;
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $is_running_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    $is_running_response = curl_exec($ch);
+                    $curl_error = curl_error($ch);
+                    curl_close($ch);
+
+                    if (!$curl_error) {
+                        $is_running_xml = simplexml_load_string($is_running_response);
+                        if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
+                            $is_running = (string)$is_running_xml->running === "true";
+                            if ($is_running) {
+                                $params = "meetingID=" . urlencode($meeting_id);
+                                $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
+                                $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, $api_url);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                                $response = curl_exec($ch);
+                                curl_close($ch);
+                                $xml = simplexml_load_string($response);
+                                if ($xml && (string)$xml->returncode === "SUCCESS") {
+                                    $participant_count = (int)$xml->participantCount;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $event['occurrences'][$occurrence_date] = [
+                    'meeting_id' => $meeting_id,
+                    'is_running' => $is_running,
+                    'participant_count' => $participant_count
+                ];
+            }
+        }
 
         // Si un ID spécifique est demandé, retourner uniquement l'événement de base
         if ($event_id) {
@@ -2241,7 +2354,7 @@ public function create_event() {
             if ($event['recurrence_type'] === 'daily') {
                 $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'weekly') {
-                $interval = new DateInterval('P1D'); // Vérifier chaque jour pour les jours personnalisés
+                $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'every_weekday') {
                 $interval = new DateInterval('P1D');
             } elseif ($event['recurrence_type'] === 'monthly') {
@@ -2267,18 +2380,29 @@ public function create_event() {
                 if ($is_valid_date && $current_date->format('Y-m-d') >= $start_date) {
                     $event_copy = $event;
                     $event_copy['starting_date'] = $current_date->format('Y-m-d');
-                    // Conserver la date de fin originale pour les événements récurrents
-                    $event_copy['ending_date'] = $event['ending_date'];
-                    // Vérifier si l'occurrence est expirée
+                    $event_copy['ending_date'] = $event['ending_date'] ?: $event_copy['starting_date'];
                     $occurrence_start = DateTime::createFromFormat('Y-m-d H:i:s', $event_copy['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
                     $event_copy['is_expired'] = $occurrence_start < $threshold;
+                    $occurrence_date = $current_date->format('Y-m-d');
+                    if ($event['visio'] == 1 && isset($event['occurrences'][$occurrence_date])) {
+                        $event_copy['occurrences'] = [
+                            $occurrence_date => $event['occurrences'][$occurrence_date]
+                        ];
+                    } else {
+                        $event_copy['occurrences'] = [
+                            $occurrence_date => [
+                                'meeting_id' => null,
+                                'is_running' => false,
+                                'participant_count' => 0
+                            ]
+                        ];
+                    }
                     $processed_events[] = $event_copy;
                 }
 
                 $current_date->add($interval);
             }
         } else {
-            // Événement non récurrent : vérifier si la période chevauche la plage demandée
             $event_start = new DateTime($event['starting_date']);
             $event_end = $event['ending_date'] ? new DateTime($event['ending_date']) : $event_start;
             $range_start = new DateTime($start_date);
@@ -2290,6 +2414,7 @@ public function create_event() {
         }
     }
 
+    log_message('debug', 'get_events - Processed events: ' . json_encode($processed_events));
     echo json_encode([
         'status' => 'success',
         'data' => $processed_events,
@@ -2300,271 +2425,95 @@ public function create_event() {
     ]);
 }
 
-	public function start_meeting() {
-        if ($this->session->userdata('teacher_login') != 1) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Unauthorized access attempt. Session data: ' . json_encode($this->session->userdata()));
-            echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'csrf' => $csrf]);
-            return;
-        }
+public function start_meeting() {
+    // Vérifier l'authentification
+    if ($this->session->userdata('teacher_login') != 1) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Unauthorized access attempt. Session data: ' . json_encode($this->session->userdata()));
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'csrf' => $csrf]);
+        return;
+    }
 
-        $event_id = filter_var($this->input->post('event_id', true), FILTER_VALIDATE_INT);
-        $occurrence_date = $this->input->post('occurrence_date', true);
-        if (!$event_id || !$occurrence_date) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Invalid or missing event_id or occurrence_date');
-            echo json_encode(['status' => 'error', 'message' => 'Event ID and occurrence date are required', 'csrf' => $csrf]);
-            return;
-        }
+    // Récupérer et valider les paramètres
+    $event_id = filter_var($this->input->post('event_id', true), FILTER_VALIDATE_INT);
+    $occurrence_date = $this->input->post('occurrence_date', true);
+    if (!$event_id || !$occurrence_date) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Invalid or missing event_id or occurrence_date');
+        echo json_encode(['status' => 'error', 'message' => 'Event ID and occurrence date are required', 'csrf' => $csrf]);
+        return;
+    }
 
-        $occurrence_date_obj = DateTime::createFromFormat('Y-m-d', $occurrence_date);
-        if ($occurrence_date_obj === false || $occurrence_date_obj->format('Y-m-d') !== $occurrence_date) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Invalid occurrence_date format for event_id: ' . $event_id);
-            echo json_encode(['status' => 'error', 'message' => 'Invalid occurrence date format (expected: YYYY-MM-DD)', 'csrf' => $csrf]);
-            return;
-        }
-        $occurrence_date = $occurrence_date_obj->format('Y-m-d');
+    // Valider le format de la date
+    $occurrence_date_obj = DateTime::createFromFormat('Y-m-d', $occurrence_date);
+    if ($occurrence_date_obj === false || $occurrence_date_obj->format('Y-m-d') !== $occurrence_date) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Invalid occurrence_date format for event_id: ' . $event_id);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid occurrence date format (expected: YYYY-MM-DD)', 'csrf' => $csrf]);
+        return;
+    }
+    $occurrence_date = $occurrence_date_obj->format('Y-m-d');
 
-        $event = $this->db->get_where('event_calendars', ['id' => $event_id])->row_array();
-        if (!$event) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Event not found for event_id: ' . $event_id);
-            echo json_encode(['status' => 'error', 'message' => 'Event not found', 'csrf' => $csrf]);
-            return;
-        }
+    // Charger l'événement
+    $event = $this->db->get_where('event_calendars', ['id' => $event_id])->row_array();
+    if (!$event) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Event not found for event_id: ' . $event_id);
+        echo json_encode(['status' => 'error', 'message' => 'Event not found', 'csrf' => $csrf]);
+        return;
+    }
 
-        if ($event['visio'] != 1) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Visio not enabled for event_id: ' . $event_id);
-            echo json_encode(['status' => 'error', 'message' => 'Video conferencing is not enabled for this event', 'csrf' => $csrf]);
-            return;
-        }
+    // Vérifier si l'événement est en visio
+    if ($event['visio'] != 1) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Visio not enabled for event_id: ' . $event_id);
+        echo json_encode(['status' => 'error', 'message' => 'Video conferencing is not enabled for this event', 'csrf' => $csrf]);
+        return;
+    }
 
-        $this->load->config('bigbluebutton');
-        $bbb_url = $this->config->item('bbb_url');
-        $bbb_secret = $this->config->item('bbb_secret');
+    // Désactiver les autres appointments pour cet événement
+    $this->db->where('event_id', $event_id);
+    $this->db->where('DATE(start_date) !=', $occurrence_date);
+    $this->db->where('Etat', 1);
+    $this->db->update('appointments', ['Etat' => 0]);
+    log_message('debug', 'start_meeting - Deactivated other appointments for event_id: ' . $event_id . ', except for occurrence_date: ' . $occurrence_date);
 
-        $this->db->where('event_id', $event_id);
-        $this->db->where('DATE(start_date)', $occurrence_date);
-        $this->db->where('Etat', 1);
-        $appointment = $this->db->get('appointments')->row_array();
-        $appointment_id = $appointment ? $appointment['id'] : null;
+    // Vérifier si un appointment actif existe pour cette occurrence
+    $this->db->where('event_id', $event_id);
+    $this->db->where('DATE(start_date)', $occurrence_date);
+    $this->db->where('Etat', 1);
+    $appointment = $this->db->get('appointments')->row_array();
+    $appointment_id = $appointment ? $appointment['id'] : null;
 
-        log_message('debug', 'start_meeting - Appointment check for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . ($appointment_id ?? 'none'));
+    log_message('debug', 'start_meeting - Appointment check for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . ($appointment_id ?? 'none'));
 
-        if ($appointment && $appointment['meeting_id']) {
-            $meeting = $this->db->get_where('sessions_meetings', ['meeting_id' => $appointment['meeting_id'], 'appointment_id' => $appointment_id])->row_array();
-            if ($meeting) {
-                $params = "meetingID=" . urlencode($appointment['meeting_id']);
-                $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
-                $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+    // Charger la configuration BigBlueButton
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
 
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $api_url);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                $response = curl_exec($ch);
-                $curl_error = curl_error($ch);
-                curl_close($ch);
-
-                if ($curl_error) {
-                    log_message('error', 'start_meeting - cURL error checking meeting status for meeting_id: ' . $appointment['meeting_id'] . ': ' . $curl_error);
-                    $csrf = [
-                        'csrfName' => $this->security->get_csrf_token_name(),
-                        'csrfHash' => $this->security->get_csrf_hash(),
-                    ];
-                    echo json_encode([
-                        'status' => 'error',
-                        'message' => 'Failed to check meeting status due to server error',
-                        'csrf' => $csrf
-                    ]);
-                    return;
-                }
-
-                $xml = simplexml_load_string($response);
-                log_message('debug', 'start_meeting - BBB getMeetingInfo response for meeting_id: ' . $appointment['meeting_id'] . ': ' . $response);
-
-                if ($xml && (string)$xml->returncode === "SUCCESS" && (string)$xml->running === "true") {
-                    $participant_count = (int)$xml->participantCount;
-                    $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
-                    $full_name = urlencode($user_details['name'] ?? 'Admin-' . rand(1000, 9999));
-                    $password = $meeting['moderator_pw'];
-                    $join_params = "fullName=$full_name&meetingID=" . urlencode($appointment['meeting_id']) . "&password=$password&redirect=true";
-                    $join_checksum = sha1("join" . $join_params . $bbb_secret);
-                    $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
-                    log_message('debug', 'start_meeting - Joining existing meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $appointment['meeting_id'] . ', join_url: ' . $join_url);
-
-                    // Send participant count update via WebSocket
-                    try {
-                        require_once APPPATH . '../vendor/autoload.php';
-                        $client = new \WebSocket\Client('ws://localhost:8080/ws');
-                        $client->send(json_encode([
-                            'action' => 'update_participants',
-                            'meetingID' => $appointment['meeting_id'],
-                            'participantCount' => $participant_count,
-                            'isRunning' => true
-                        ]));
-                        log_message('debug', 'start_meeting - Sent WebSocket message for meeting_id: ' . $appointment['meeting_id'] . ', participant_count: ' . $participant_count);
-                        $client->close();
-                    } catch (Exception $e) {
-                        log_message('error', 'start_meeting - WebSocket error for meeting_id: ' . $appointment['meeting_id'] . ': ' . $e->getMessage());
-                    }
-
-                    $csrf = [
-                        'csrfName' => $this->security->get_csrf_token_name(),
-                        'csrfHash' => $this->security->get_csrf_hash(),
-                    ];
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => 'Joining existing meeting',
-                        'join_url' => $join_url,
-                        'meeting_id' => $appointment['meeting_id'],
-                        'appointment_id' => $appointment_id,
-                        'participant_count' => $participant_count,
-                        'is_running' => true,
-                        'csrf' => $csrf
-                    ]);
-                    return;
-                } else {
-                    log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', creating new appointment');
-                    $this->db->where('id', $appointment_id);
-                    $this->db->update('appointments', ['Etat' => 0]);
-                    $appointment = null;
-                }
-            }
-        }
-
-        if (!$appointment) {
-            $appointment_data = [
-                'event_id' => $event_id,
-                'title' => $event['title'],
-                'start_date' => $occurrence_date . ' ' . $event['starting_time'],
-                'classe_id' => $event['class_id'],
-                'school_id' => $event['school_id'],
-                'visio' => $event['visio'],
-                'Etat' => 1,
-                'meeting_id' => null
-            ];
-            $this->db->insert('appointments', $appointment_data);
-            $appointment_id = $this->db->insert_id();
-            log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
-        } else {
-            $appointment_id = $appointment['id'];
-        }
-
-        $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
-        $new_meeting_id = "meeting-$appointment_id-" . time();
-        $attendee_password = "ap_" . $appointment_id;
-        $moderator_password = "mp_" . $appointment_id;
-        $start_time = $occurrence_date . ' ' . $event['starting_time'];
-        $end_time = date('Y-m-d H:i:s', strtotime($start_time . ' +2 hours'));
-
-        $params = "name=" . urlencode($meeting_name) .
-                  "&meetingID=" . urlencode($new_meeting_id) .
-                  "&attendeePW=$attendee_password" .
-                  "&moderatorPW=$moderator_password" .
-                  "&record=true" .
-                  "&autoStartRecording=false" .
-                  "&allowStartStopRecording=true" .
-                  "&welcome=" . urlencode("Welcome to the meeting: " . $event['title']) .
-                  "&endWhenNoModerator=false" .
-                  "&duration=120";
-
-        $checksum = sha1("create" . $params . $bbb_secret);
-        $create_url = $bbb_url . "create?" . $params . "&checksum=" . $checksum;
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $create_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        $response = curl_exec($ch);
-        $curl_error = curl_error($ch);
-        curl_close($ch);
-
-        if ($curl_error) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - cURL error creating meeting for meeting_id: ' . $new_meeting_id . ': ' . $curl_error);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to create meeting due to server error',
-                'csrf' => $csrf
-            ]);
-            return;
-        }
-
-        if (empty($response)) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Empty response from BBB API for meeting_id: ' . $new_meeting_id);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to create meeting: No response from BBB server',
-                'csrf' => $csrf
-            ]);
-            return;
-        }
-
-        $xml = simplexml_load_string($response);
-        if ($xml === false || !isset($xml->returncode)) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - Invalid XML response from BBB API for meeting_id: ' . $new_meeting_id . ': ' . $response);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to create meeting: Invalid response from BBB server',
-                'csrf' => $csrf
-            ]);
-            return;
-        }
-
-        if ((string)$xml->returncode === "SUCCESS") {
-            $meeting_data = [
-                'meeting_id' => $new_meeting_id,
-                'appointment_id' => $appointment_id,
-                'name' => $meeting_name,
-                'start_time' => $start_time,
-                'end_time' => $end_time,
-                'attendee_pw' => $attendee_password,
-                'moderator_pw' => $moderator_password,
-                'school_id' => $event['school_id'],
-                'user_id' => $this->session->userdata('user_id'),
-                'class_id' => $event['class_id'],
-                'created_at' => date('Y-m-d H:i:s'),
-                'description' => null
-            ];
-            $this->db->insert('sessions_meetings', $meeting_data);
-
-            $this->db->where('id', $appointment_id);
-            $this->db->update('appointments', ['meeting_id' => $new_meeting_id]);
-
-            $is_running_params = "meetingID=" . urlencode($new_meeting_id);
-            $is_running_checksum = sha1("isMeetingRunning" . $is_running_params . $bbb_secret);
-            $is_running_url = $bbb_url . "isMeetingRunning?" . $is_running_params . "&checksum=" . $is_running_checksum;
+    // Si un appointment existe et le meeting est en cours, le rejoindre
+    if ($appointment && $appointment['meeting_id']) {
+        $meeting = $this->db->get_where('sessions_meetings', ['meeting_id' => $appointment['meeting_id'], 'appointment_id' => $appointment_id])->row_array();
+        if ($meeting) {
+            $params = "meetingID=" . urlencode($appointment['meeting_id']);
+            $checksum = sha1("isMeetingRunning" . $params . $bbb_secret);
+            $is_running_url = $bbb_url . "isMeetingRunning?" . $params . "&checksum=" . $checksum;
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $is_running_url);
@@ -2575,82 +2524,255 @@ public function create_event() {
             $curl_error = curl_error($ch);
             curl_close($ch);
 
-            $is_running = false;
-            $participant_count = 0;
-            if (!$curl_error) {
-                $is_running_xml = simplexml_load_string($is_running_response);
-                log_message('debug', 'start_meeting - BBB isMeetingRunning response for meeting_id: ' . $new_meeting_id . ': ' . $is_running_response);
-                if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
-                    $is_running = (string)$is_running_xml->running === "true";
-                    if ($is_running) {
-                        $params = "meetingID=" . urlencode($new_meeting_id);
-                        $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
-                        $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
-                        $ch = curl_init();
-                        curl_setopt($ch, CURLOPT_URL, $api_url);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                        $response = curl_exec($ch);
-                        curl_close($ch);
-                        $xml = simplexml_load_string($response);
-                        if ($xml && (string)$xml->returncode === "SUCCESS") {
-                            $participant_count = (int)$xml->participantCount;
-                        }
+            if ($curl_error) {
+                $csrf = [
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                ];
+                log_message('error', 'start_meeting - cURL error checking meeting status for meeting_id: ' . $appointment['meeting_id'] . ': ' . $curl_error);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Failed to check meeting status due to server error',
+                    'csrf' => $csrf
+                ]);
+                return;
+            }
+
+            $is_running_xml = simplexml_load_string($is_running_response);
+            if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS" && (string)$is_running_xml->running === "true") {
+                $params = "meetingID=" . urlencode($appointment['meeting_id']);
+                $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
+                $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $api_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                $response = curl_exec($ch);
+                curl_close($ch);
+
+                $xml = simplexml_load_string($response);
+                $participant_count = ($xml && (string)$xml->returncode === "SUCCESS") ? (int)$xml->participantCount : 0;
+
+                $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
+                $full_name = urlencode($user_details['name'] ?? 'Teacher-' . rand(1000, 9999));
+                $join_params = "fullName=$full_name&meetingID=" . urlencode($appointment['meeting_id']) . "&password=" . $meeting['moderator_pw'] . "&redirect=true";
+                $join_checksum = sha1("join" . $join_params . $bbb_secret);
+                $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
+
+                log_message('debug', 'start_meeting - Joining existing meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $appointment['meeting_id'] . ', join_url: ' . $join_url);
+
+                $csrf = [
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                ];
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Joining existing meeting',
+                    'join_url' => $join_url,
+                    'meeting_id' => $appointment['meeting_id'],
+                    'appointment_id' => $appointment_id,
+                    'participant_count' => $participant_count,
+                    'is_running' => true,
+                    'csrf' => $csrf
+                ]);
+                return;
+            } else {
+                // Marquer l'ancien appointment comme inactif
+                log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', marking appointment as inactive');
+                $this->db->where('id', $appointment_id);
+                $this->db->update('appointments', ['Etat' => 0]);
+            }
+        }
+    }
+
+    // Créer un nouvel appointment pour cette occurrence
+    $appointment_data = [
+        'event_id' => $event_id,
+        'title' => $event['title'],
+        'start_date' => $occurrence_date . ' ' . $event['starting_time'],
+        'classe_id' => $event['class_id'],
+        'school_id' => $event['school_id'],
+        'visio' => $event['visio'],
+        'Etat' => 1,
+        'meeting_id' => null
+    ];
+    $this->db->insert('appointments', $appointment_data);
+    $appointment_id = $this->db->insert_id();
+    log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
+
+    // Créer un nouveau meeting BigBlueButton
+    $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
+    $new_meeting_id = "meeting-$appointment_id-" . time();
+    $attendee_password = "ap_" . $appointment_id;
+    $moderator_password = "mp_" . $appointment_id;
+    $start_time = $occurrence_date . ' ' . $event['starting_time'];
+    $end_time = date('Y-m-d H:i:s', strtotime($start_time . ' +2 hours'));
+
+    $params = "name=" . urlencode($meeting_name) .
+              "&meetingID=" . urlencode($new_meeting_id) .
+              "&attendeePW=$attendee_password" .
+              "&moderatorPW=$moderator_password" .
+              "&record=true" .
+              "&autoStartRecording=false" .
+              "&allowStartStopRecording=true" .
+              "&welcome=" . urlencode("Welcome to the meeting: " . $event['title']) .
+              "&endWhenNoModerator=false" .
+              "&duration=120";
+
+    $checksum = sha1("create" . $params . $bbb_secret);
+    $create_url = $bbb_url . "create?" . $params . "&checksum=" . $checksum;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $create_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_error) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - cURL error creating meeting for meeting_id: ' . $new_meeting_id . ': ' . $curl_error);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to create meeting due to server error',
+            'csrf' => $csrf
+        ]);
+        return;
+    }
+
+    if (empty($response)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Empty response from BBB API for meeting_id: ' . $new_meeting_id);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to create meeting: No response from BBB server',
+            'csrf' => $csrf
+        ]);
+        return;
+    }
+
+    $xml = simplexml_load_string($response);
+    if ($xml === false || !isset($xml->returncode)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - Invalid XML response from BBB API for meeting_id: ' . $new_meeting_id . ': ' . $response);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to create meeting: Invalid response from BBB server',
+            'csrf' => $csrf
+        ]);
+        return;
+    }
+
+    if ((string)$xml->returncode === "SUCCESS") {
+        // Enregistrer les détails du meeting
+        $meeting_data = [
+            'meeting_id' => $new_meeting_id,
+            'appointment_id' => $appointment_id,
+            'name' => $meeting_name,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'attendee_pw' => $attendee_password,
+            'moderator_pw' => $moderator_password,
+            'school_id' => $event['school_id'],
+            'user_id' => $this->session->userdata('user_id'),
+            'class_id' => $event['class_id'],
+            'created_at' => date('Y-m-d H:i:s'),
+            'description' => null
+        ];
+        $this->db->insert('sessions_meetings', $meeting_data);
+
+        // Mettre à jour l'appointment avec le nouveau meeting_id
+        $this->db->where('id', $appointment_id);
+        $this->db->update('appointments', ['meeting_id' => $new_meeting_id]);
+
+        // Vérifier si le meeting est en cours
+        $is_running_params = "meetingID=" . urlencode($new_meeting_id);
+        $is_running_checksum = sha1("isMeetingRunning" . $is_running_params . $bbb_secret);
+        $is_running_url = $bbb_url . "isMeetingRunning?" . $is_running_params . "&checksum=" . $is_running_checksum;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $is_running_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $is_running_response = curl_exec($ch);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+
+        $is_running = false;
+        $participant_count = 0;
+        if (!$curl_error) {
+            $is_running_xml = simplexml_load_string($is_running_response);
+            log_message('debug', 'start_meeting - BBB isMeetingRunning response for meeting_id: ' . $new_meeting_id . ': ' . $is_running_response);
+            if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
+                $is_running = (string)$is_running_xml->running === "true";
+                if ($is_running) {
+                    $params = "meetingID=" . urlencode($new_meeting_id);
+                    $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
+                    $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $api_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
+                    $xml = simplexml_load_string($response);
+                    if ($xml && (string)$xml->returncode === "SUCCESS") {
+                        $participant_count = (int)$xml->participantCount;
                     }
                 }
             }
-
-            // Send initial participant count update via WebSocket
-            try {
-                require_once APPPATH . '../vendor/autoload.php';
-                $client = new \WebSocket\Client('ws://localhost:8080/ws');
-                $client->send(json_encode([
-                    'action' => 'update_participants',
-                    'meetingID' => $new_meeting_id,
-                    'participantCount' => $participant_count,
-                    'isRunning' => $is_running
-                ]));
-                log_message('debug', 'start_meeting - Sent WebSocket message for meeting_id: ' . $new_meeting_id . ', participant_count: ' . $participant_count);
-                $client->close();
-            } catch (Exception $e) {
-                log_message('error', 'start_meeting - WebSocket error for meeting_id: ' . $new_meeting_id . ': ' . $e->getMessage());
-            }
-
-            $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
-            $full_name = urlencode($user_details['name'] ?? 'Admin-' . rand(1000, 9999));
-            $join_params = "fullName=$full_name&meetingID=" . urlencode($new_meeting_id) . "&password=$moderator_password&redirect=true";
-            $join_checksum = sha1("join" . $join_params . $bbb_secret);
-            $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
-
-            log_message('debug', 'start_meeting - Created new meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $new_meeting_id . ', join_url: ' . $join_url);
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'New meeting created successfully',
-                'join_url' => $join_url,
-                'meeting_id' => $new_meeting_id,
-                'appointment_id' => $appointment_id,
-                'participant_count' => $participant_count,
-                'is_running' => $is_running,
-                'csrf' => $csrf
-            ]);
-        } else {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'start_meeting - BBB API error for meeting_id: ' . $new_meeting_id . ': ' . (string)$xml->message);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to create meeting: ' . (string)$xml->message,
-                'csrf' => $csrf
-            ]);
         }
+
+        // Générer l'URL de jointure
+        $user_details = $this->user_model->get_user_details($this->session->userdata('user_id'));
+        $full_name = urlencode($user_details['name'] ?? 'Teacher-' . rand(1000, 9999));
+        $join_params = "fullName=$full_name&meetingID=" . urlencode($new_meeting_id) . "&password=$moderator_password&redirect=true";
+        $join_checksum = sha1("join" . $join_params . $bbb_secret);
+        $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
+
+        log_message('debug', 'start_meeting - Created new meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $new_meeting_id . ', join_url: ' . $join_url);
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'New meeting created successfully',
+            'join_url' => $join_url,
+            'meeting_id' => $new_meeting_id,
+            'appointment_id' => $appointment_id,
+            'participant_count' => $participant_count,
+            'is_running' => $is_running,
+            'csrf' => $csrf
+        ]);
+    } else {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        log_message('error', 'start_meeting - BBB API error for meeting_id: ' . $new_meeting_id . ': ' . (string)$xml->message);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to create meeting: ' . (string)$xml->message,
+            'csrf' => $csrf
+        ]);
     }
+}
 
 public function get_classes_with_events() {
     if ($this->session->userdata('teacher_login') != 1) {
@@ -2666,7 +2788,7 @@ public function get_classes_with_events() {
     $user_id = $this->session->userdata('user_id');
     log_message('debug', 'get_classes_with_events - user_id: ' . ($user_id ?? 'null'));
 
-    // Mapper user_id à id (teacher_id) dans la table teachers
+    // Mapper user_id à teacher_id
     $this->db->select('id');
     $this->db->from('teachers');
     $this->db->where('user_id', $user_id);
@@ -2681,6 +2803,24 @@ public function get_classes_with_events() {
         ];
         log_message('error', 'get_classes_with_events - Aucun teacher_id trouvé pour user_id: ' . $user_id);
         echo json_encode(['status' => 'error', 'message' => 'Aucun enseignant associé à cet utilisateur', 'csrf' => $csrf]);
+        return;
+    }
+
+    // Récupérer les classes autorisées avec attendance = 1
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+    log_message('debug', 'get_classes_with_events - permitted_class_ids: ' . json_encode($permitted_class_ids));
+
+    if (empty($permitted_class_ids)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        echo json_encode(['status' => 'success', 'message' => 'Aucune classe autorisée pour cet enseignant', 'classes' => [], 'csrf' => $csrf]);
         return;
     }
 
@@ -2703,47 +2843,12 @@ public function get_classes_with_events() {
         return;
     }
 
-    // Vérifier les classes autorisées
-    $this->db->select('class_id');
-    $this->db->from('teacher_permissions');
-    $this->db->where('teacher_id', $teacher_id);
-    $permitted_classes = $this->db->get()->result_array();
-    $permitted_class_ids = array_column($permitted_classes, 'class_id');
-    log_message('debug', 'get_classes_with_events - permitted_class_ids: ' . json_encode($permitted_class_ids));
-
-    if (empty($permitted_class_ids)) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        echo json_encode(['status' => 'success', 'message' => 'Aucune classe autorisée pour cet enseignant', 'classes' => [], 'csrf' => $csrf]);
-        return;
-    }
-
-    // Vérifier si les class_id existent dans la table classes
-    $this->db->select('id');
-    $this->db->from('classes');
-    $this->db->where('school_id', $school_id);
-    $this->db->where_in('id', $permitted_class_ids);
-    $valid_classes = $this->db->get()->result_array();
-    $valid_class_ids = array_column($valid_classes, 'id');
-    log_message('debug', 'get_classes_with_events - valid_class_ids: ' . json_encode($valid_class_ids));
-
-    if (empty($valid_class_ids)) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        echo json_encode(['status' => 'success', 'message' => 'Aucune classe valide trouvée pour votre école', 'classes' => [], 'csrf' => $csrf]);
-        return;
-    }
-
     // Récupérer les classes avec des événements
     $this->db->select('DISTINCT(event_calendars.class_id) as class_id, classes.name');
     $this->db->from('event_calendars');
     $this->db->join('classes', 'event_calendars.class_id = classes.id');
     $this->db->where('event_calendars.school_id', $school_id);
-    $this->db->where_in('event_calendars.class_id', $valid_class_ids);
+    $this->db->where_in('event_calendars.class_id', $permitted_class_ids); // Limiter aux classes autorisées
     $this->db->where('event_calendars.starting_date >=', $start_date);
     $this->db->where('event_calendars.starting_date <=', $end_date);
     $query = $this->db->get();
@@ -2789,7 +2894,7 @@ public function get_classes_by_school() {
     $user_id = $this->session->userdata('user_id');
     log_message('debug', 'get_classes_by_school - user_id: ' . ($user_id ?? 'null'));
 
-    // Mapper user_id à id (teacher_id) dans la table teachers
+    // Mapper user_id à teacher_id
     $this->db->select('id');
     $this->db->from('teachers');
     $this->db->where('user_id', $user_id);
@@ -2807,10 +2912,11 @@ public function get_classes_by_school() {
         return;
     }
 
-    // Vérifier les classes autorisées
+    // Récupérer les classes autorisées avec attendance = 1
     $this->db->select('class_id');
     $this->db->from('teacher_permissions');
     $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
     $permitted_classes = $this->db->get()->result_array();
     $permitted_class_ids = array_column($permitted_classes, 'class_id');
     log_message('debug', 'get_classes_by_school - permitted_class_ids: ' . json_encode($permitted_class_ids));
