@@ -1683,85 +1683,246 @@ public function teacher_permission()
 
 		return json_encode($response);
 	}
-	public function update_profile()
-	{
+// 	public function update_profile()
+// 	{
 		
-		$response = array();
-		$user_id = $this->session->userdata('user_id');
-		$data['name'] = htmlspecialchars($this->input->post('name'));
-		$data['email'] = htmlspecialchars($this->input->post('email'));
-		$data['phone'] = htmlspecialchars($this->input->post('phone'));
-		$data['address'] = htmlspecialchars($this->input->post('address'));
-		// Check Duplication
-		$duplication_status = $this->check_duplication('on_update', $data['email'], $user_id);
-		if ($duplication_status) {
-			$this->db->where('id', $user_id);
-			$this->db->update('users', $data);
+// 		$response = array();
+// 		$user_id = $this->session->userdata('user_id');
+// 		$data['name'] = htmlspecialchars($this->input->post('name'));
+// 		$email= htmlspecialchars($this->input->post('email'));
+// 		$data['phone'] = htmlspecialchars($this->input->post('phone'));
+// 		$data['address'] = htmlspecialchars($this->input->post('address'));
+// 		// print_r($email);
+// 		// Check Duplication
+// 		$duplication_status = $this->check_duplication('on_update', $email, $user_id);
+// 		// print_r($duplication_status);
+// 		if ($duplication_status) {
+// 			// print_r("OK");
+// 			$this->db->where('id', $user_id);
+// 			$this->db->update('users', $data);
+
+// 			if (isset($_FILES['profile_image']) && is_uploaded_file($_FILES['profile_image']['tmp_name'])) 
+// 			{
+// 				$sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
+// 				move_uploaded_file($_FILES['profile_image']['tmp_name'],$sourceLocal);
+// 			}
 			
-			// Par défaut, succès de Wayo
-			$notification = get_phrase('profile_updated_successfully');
-			$user =$this->db->get_where('users', array('id' => $user_id))->row();
-			if(!empty($user->humhub_id))
-			{
-				$nameParts = explode(' ', $data['name'], 2);
-				$firstname = $nameParts[0];
-				$lastname = isset($nameParts[1]) ? $nameParts[1] : '';
+// 			// Par défaut, succès de Wayo
+// 			$notification = get_phrase('updated_successfully');
+// 			$user =$this->db->get_where('users', array('id' => $user_id))->row();
+// 			// if(!empty($user->humhub_id))
+// 			// {
+// 			// 	$nameParts = explode(' ', $data['name'], 2);
+// 			// 	$firstname = $nameParts[0];
+// 			// 	$lastname = isset($nameParts[1]) ? $nameParts[1] : '';
 
-				$username = $this->sanitizeUsername($data['name']);
+// 			// 	$username = $this->sanitizeUsername($data['name']);
 
-				$humhubData = [
-					'account' => [
-						'email'    => $data['email'],
-						'username' => $username
-					],
-					'profile' => [
-						'firstname' => $firstname,
-						'lastname'  => $lastname
-					]
-				];
-				$humhubResponse = $this->humhub_sso->updateUser($user->humhub_id, $humhubData);
-				log_message('debug', 'Réponse HumHub updateUser depuis update_profile: ' . json_encode($humhubResponse));
-				if (isset($_FILES['profile_image']) && is_uploaded_file($_FILES['profile_image']['tmp_name'])) {
-							$sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
-							move_uploaded_file($_FILES['profile_image']['tmp_name'],$sourceLocal);
-							// 2. Copier vers HumHub
-									$sourceImage = FCPATH . $sourceLocal;
-									$humhubUploadsPath = 'C:/xampp/htdocs/humhub/humhub-1.17.2/uploads/profile_image/';
-									$guid = $humhubResponse['guid']; 
-									$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
-									$destImage = $humhubUploadsPath . $guid . '.jpg';
+// 			// 	$humhubData = [
+// 			// 		'account' => [
+// 			// 			'email'    => $email,
+// 			// 			'username' => $username
+// 			// 		],
+// 			// 		'profile' => [
+// 			// 			'firstname' => $firstname,
+// 			// 			'lastname'  => $lastname
+// 			// 		]
+// 			// 	];
+// 			// 	$humhubResponse = $this->humhub_sso->updateUser($user->humhub_id, $humhubData);
+// 			// 	log_message('debug', 'Réponse HumHub updateUser depuis update_profile: ' . json_encode($humhubResponse));
+// 			// 	if (isset($_FILES['profile_image']) && is_uploaded_file($_FILES['profile_image']['tmp_name'])) 
+// 			// 	{
+// 			// 				// $sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
+// 			// 				// move_uploaded_file($_FILES['profile_image']['tmp_name'],$sourceLocal);
+// 			// 				// 2. Copier vers HumHub
+// 			// 						$sourceImage = FCPATH . $sourceLocal;
+// 			// 						$humhubUploadsPath = 'C:/xampp/htdocs/humhub/humhub-1.17.2/uploads/profile_image/';
+// 			// 						$guid = $humhubResponse['guid']; 
+// 			// 						$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
+// 			// 						$destImage = $humhubUploadsPath . $guid . '.jpg';
 
-								if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
-									log_message('debug', ' Image copiée vers HumHub avec succès.');
-								} else {
-									log_message('error', ' Erreur lors de la copie de l\'image vers HumHub.');
-								}
-								if (!$humhubResponse || isset($humhubResponse['code'])) {
-									$reason = isset($humhubResponse['message']) ? $humhubResponse['message'] : 'Erreur inconnue';
-									log_message('error', 'Échec HumHub dans update_profile pour user_id=' . $user_id . ' : ' . $reason);
-								}
-			}
-			$response = array(
-				'status' => true,
-				'notification' => $notification
-			);
-		} else {
-			$response = array(
-				'status' => false,
-				'notification' => get_phrase('sorry_this_email_has_been_taken')
-			);
-		}
-		$csrf = array(
-			'csrfName' => $this->security->get_csrf_token_name(),
-			'csrfHash' => $this->security->get_csrf_hash(),
-		  );
+// 			// 					if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
+// 			// 						log_message('debug', ' Image copiée vers HumHub avec succès.');
+// 			// 					} else {
+// 			// 						log_message('error', ' Erreur lors de la copie de l\'image vers HumHub.');
+// 			// 					}
+// 			// 					if (!$humhubResponse || isset($humhubResponse['code'])) {
+// 			// 						$reason = isset($humhubResponse['message']) ? $humhubResponse['message'] : 'Erreur inconnue';
+// 			// 						log_message('error', 'Échec HumHub dans update_profile pour user_id=' . $user_id . ' : ' . $reason);
+// 			// 					}
+// 			//     }
+// 			// 	$response = array(
+// 			// 		'status' => true,
+// 			// 		'notification' => $notification
+// 			// 	);
+// 			// } else {
+// 			// 	$response = array(
+// 			// 		'status' => false,
+// 			// 		'notification' => get_phrase('sorry_this_email_has_been_taken')
+// 			// 	);
+// 			// }
+// 			$response = array(
+// 				'status' => true,
+// 				'notification' => $notification
+// 			);
+// 			$csrf = array(
+// 			'csrfName' => $this->security->get_csrf_token_name(),
+// 			'csrfHash' => $this->security->get_csrf_hash(),
+// 		  );
 		
-		// Renvoyer la réponse avec un nouveau jeton CSRF
-		return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+// 		// Renvoyer la réponse avec un nouveau jeton CSRF
+// 		return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
 	
-		// return json_encode($response);si j'ai fait ca il va causé une error alert n'affiche pas
-	}
+// 		// return json_encode($response);si j'ai fait ca il va causé une error alert n'affiche pas
+// 	   }
+//    }
+
+
+public function update_profile()
+{
+    $response = array();
+    $user_id  = $this->session->userdata('user_id');
+    $data['name']    = htmlspecialchars($this->input->post('name'));
+    $email           = htmlspecialchars($this->input->post('email'));
+    $data['phone']   = htmlspecialchars($this->input->post('phone'));
+    $data['address'] = htmlspecialchars($this->input->post('address'));
+
+    // Check Duplication
+    $duplication_status = $this->check_duplication('on_update', $email, $user_id);
+
+    if ($duplication_status) {
+
+        $this->db->where('id', $user_id);
+        $this->db->update('users', $data);
+
+        // === CONTRÔLES UPLOAD (taille & extension) ===========================
+        if (isset($_FILES['profile_image']) && is_uploaded_file($_FILES['profile_image']['tmp_name'])) {
+
+            $MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2 Mo
+            $ALLOWED_EXT    = array('jpg', 'jpeg', 'png');
+            $ALLOWED_MIME   = array('image/jpeg', 'image/png');
+
+            $file = $_FILES['profile_image'];
+
+            // Erreur d'upload native PHP
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $response = array('status' => false, 'notification' => 'Erreur de téléversement (code '.$file['error'].').');
+                $csrf = array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                );
+                return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+            }
+
+            // Taille max
+            if ($file['size'] > $MAX_SIZE_BYTES) {
+                $response = array('status' => false, 'notification' => 'La photo est trop volumineuse (max 2 Mo).');
+                $csrf = array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                );
+                return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+            }
+
+            // Extension autorisée
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, $ALLOWED_EXT, true)) {
+                $response = array('status' => false, 'notification' => 'Extension non autorisée. Formats acceptés : JPG/JPEG/PNG.');
+                $csrf = array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                );
+                return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+            }
+
+            // MIME (sécurité)
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime  = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            if (!in_array($mime, $ALLOWED_MIME, true)) {
+                $response = array('status' => false, 'notification' => 'Fichier invalide (type MIME incorrect).');
+                $csrf = array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                );
+                return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+            }
+
+            // Vérifie que c’est bien une image
+            if (@getimagesize($file['tmp_name']) === false) {
+                $response = array('status' => false, 'notification' => 'Le fichier n’est pas une image valide.');
+                $csrf = array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                );
+                return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+            }
+
+            // Destination (on garde .jpg pour compatibilité front)
+            $destPath = 'uploads/users/' . $user_id . '.jpg';
+
+            if ($mime === 'image/png' || $ext === 'png') {
+                // Conversion PNG -> JPG (fond blanc pour gérer la transparence)
+                $src = @imagecreatefrompng($file['tmp_name']);
+                if ($src === false) {
+                    $response = array('status' => false, 'notification' => 'Impossible de lire l’image PNG.');
+                    $csrf = array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    );
+                    return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+                }
+                $w = imagesx($src); $h = imagesy($src);
+                $bg = imagecreatetruecolor($w, $h);
+                $white = imagecolorallocate($bg, 255, 255, 255);
+                imagefill($bg, 0, 0, $white);
+                imagealphablending($bg, true);
+                imagecopy($bg, $src, 0, 0, 0, 0, $w, $h);
+                $ok = imagejpeg($bg, $destPath, 90);
+                imagedestroy($src);
+                imagedestroy($bg);
+
+                if (!$ok) {
+                    $response = array('status' => false, 'notification' => 'Échec de la conversion PNG en JPG.');
+                    $csrf = array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    );
+                    return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+                }
+            } else {
+                // JPEG → déplacement direct
+                if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+                    $response = array('status' => false, 'notification' => 'Échec de l’enregistrement de la photo.');
+                    $csrf = array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    );
+                    return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+                }
+            }
+        }
+        // =====================================================================
+
+        // Par défaut, succès
+        $notification = get_phrase('updated_successfully');
+        $user = $this->db->get_where('users', array('id' => $user_id))->row();
+
+        $response = array(
+            'status' => true,
+            'notification' => $notification
+        );
+        $csrf = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        );
+
+        // Renvoyer la réponse avec un nouveau jeton CSRF
+        return json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+        // return json_encode($response); // resté comme noté, ça cassait ton alert
+    }
 }
+
 public function get_unread_messages_count($wayo_user_id)//user_model
 {
     // 1. Récupérer le HumHub ID
