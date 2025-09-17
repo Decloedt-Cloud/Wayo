@@ -31,7 +31,6 @@
     </div>
     <!-- FullCalendar container -->
     <div id="calendar"></div>
-    <!-- Modals remain unchanged -->
     <div class="modal fade mt-5" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -44,25 +43,25 @@
                         <input type="hidden" id="createRecurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="createRecurrenceEndDate" name="recurrence_end_date">
                         <input type="hidden" id="createCustomRecurrence" name="custom_recurrence">
-                        <div class="form-group">
+                        <div class="form-group-calendar">
                             <span class="mdi mdi-format-title"></span>
                             <label for="createeventTitle"><span class="required required-input"> * </span></label>
                             <input type="text" class="form-control" id="createeventTitle" name="title" placeholder="<?php echo get_phrase('Title'); ?>" required>
                         </div>
-                        <div class="form-group mt-3">
+                        <div class="form-group-calendar mt-3">
                             <span class="mdi mdi-text"></span>
                             <label for="createeventDescription"></label>
                             <textarea class="form-control" id="createeventDescription" name="description" rows="3" placeholder="<?php echo get_phrase('Description'); ?>"></textarea>
                         </div>
-                        <div class="form-group-community-class mt-3">
+                        <div class="form-group-calendar-community-class mt-3">
                             <span class="mdi mdi-account-multiple"></span>
                             <div class="input-container">
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="createSchoolId"><span class="required"> * </span></label>
                                     <select class="form-control" id="createSchoolId" name="school_id" required>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="createClasseId"><span class="required"> * </span></label>
                                     <select class="form-control" id="createClasseId" name="classe_id" required>
                                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
@@ -70,14 +69,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-date-time mt-3">
+                        <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="createeventDate"><span class="required"> * </span></label>
                                     <input type="date" class="form-control" id="createeventDate" name="start" required min="">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="createeventStartTime"><span class="required"> * </span></label>
                                     <select class="form-control" id="createeventStartTime" name="start_time" required>
                                         <option value=""><?php echo get_phrase('Start time'); ?></option>
@@ -85,13 +84,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-date-time mt-3">
+                        <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
-                                    <div class="form-group">
+                                    <div class="form-group-calendar">
                                         <input type="date" class="form-control" id="createeventEndDate" name="end_date" min="">
                                     </div>
-                                        <div class="form-group">
+                                        <div class="form-group-calendar">
                                             <label for="createeventEndTime"><span class="required"> * </span></label>
                                             <select class="form-control" id="createeventEndTime" name="end_time" required>
                                                 <option value=""><?php echo get_phrase('End time'); ?></option>
@@ -107,11 +106,11 @@
                                         </div>
                             </div>
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group-calendar mt-2">
                             <span class="mdi mdi-repeat"></span>
                             <button type="button" class="btn recurrence-btn" data-bs-toggle="modal" data-bs-target="#recurrenceModal"><?php echo get_phrase('Repeat') ?></button>
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group-calendar mt-2">
                             <span class="mdi mdi-video"></span>
                             <label for="createVisio" style="margin-left: 15px;"><?php echo get_phrase('Visio'); ?></label>
                             <label class="toggle-switch">
@@ -119,7 +118,7 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <div class="form-group mt-3 col-md-12">
+                        <div class="form-group-calendar mt-3 col-md-12">
                             <button type="submit" class="btn btn-primary" style="border-radius: 6px;"><?php echo get_phrase('Save') ?></button>
                         </div>
                     </form>
@@ -167,7 +166,7 @@
                         <div><?php echo get_phrase('number of participants'); ?>
                              <span id="participantCount">0</span>
                         </div>
-                        <div class="form-group mt-3 btn-group-1">
+                        <div class="form-group-calendar mt-3 btn-group-1">
                             <button type="button" class="btn btn-primary" id="editEventBtn" style="border-radius: 7px;"><?php echo get_phrase('Edit') ?></button>
                             <button type="button" class="btn btn-danger" id="deleteevent" style="border-radius: 7px;"><?php echo get_phrase('Delete') ?></button>
                             <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Start Meeting') ?></button>
@@ -178,25 +177,25 @@
                         <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="recurrenceEndDate" name="recurrence_end_date">
                         <input type="hidden" id="customRecurrence" name="custom_recurrence">
-                        <div class="form-group">
+                        <div class="form-group-calendar">
                             <span class="mdi mdi-format-title"></span>
                             <label for="eventTitleInput"><span class="required"> * </span></label>
                             <input type="text" class="form-control" id="eventTitleInput" name="title" placeholder="<?php echo get_phrase('Title') ?>" required>
                         </div>
-                        <div class="form-group mt-3">
+                        <div class="form-group-calendar mt-3">
                             <span class="mdi mdi-text"></span>
                             <label for="eventDescription"></label>
                             <textarea class="form-control" id="eventDescription" name="description" rows="3" placeholder="<?php echo get_phrase("Description") ?>"></textarea>
                         </div>
-                        <div class="form-group-community-class mt-3">
+                        <div class="form-group-calendar-community-class mt-3">
                             <span class="mdi mdi-account-multiple"></span>
                             <div class="input-container">
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="school_id"><span class="required"> * </span></label>
                                     <select class="form-control" id="school_id" name="school_id" required>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="classe_id"><span class="required"> * </span></label>
                                     <select class="form-control" id="classe_id" name="classe_id" required>
                                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
@@ -204,14 +203,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-date-time mt-3">
+                        <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="eventDate"><span class="required"> * </span></label>
                                     <input type="date" class="form-control" id="eventDate" name="start" required min="">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="eventStartTime"><span class="required"> * </span></label>
                                     <select class="form-control" id="eventStartTime" name="start_time" required>
                                         <option value=""><?php echo get_phrase('start time'); ?></option>
@@ -219,14 +218,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-date-time mt-3">
+                        <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
-                                     <div class="form-group">
+                                     <div class="form-group-calendar">
                                     <label for="eventEndDate"></label>
                                     <input type="date" class="form-control" id="eventEndDate" name="end_date" min="">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group-calendar">
                                     <label for="eventEndTime"><span class="required"> * </span></label>
                                     <select class="form-control" id="eventEndTime" name="end_time" required>
                                         <option value=""><?php echo get_phrase('End time'); ?></option>
@@ -242,11 +241,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group-calendar mt-2">
                             <span class="mdi mdi-repeat"></span>
                             <button type="button" class="btn recurrence-btn" data-bs-toggle="modal" data-bs-target="#recurrenceModal"><?php echo get_phrase('Repeat') ?></button>
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group-calendar mt-2">
                             <span class="mdi mdi-video"></span>
                             <label for="visio" style="margin-left: 15px;"><?php echo get_phrase('Visio'); ?></label>
                             <label class="toggle-switch">
@@ -254,7 +253,7 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <div class="form-group mt-3 col-md-12 btn-group-1">
+                        <div class="form-group-calendar mt-3 col-md-12 btn-group-1">
                             <button type="submit" class="btn btn-primary"><?php echo get_phrase('Save') ?></button>
                             <button type="button" class="btn btn-secondary" id="cancelEditBtn"><?php echo get_phrase('Cancel') ?></button>
                         </div>
@@ -272,7 +271,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="recurrenceForm">
-                        <div class="form-group mb-2">
+                        <div class="form-group-calendar mb-2">
                             <span class="mdi mdi-calendar-sync"></span>
                             <label for="recurrenceTypePopup"></label>
                             <select class="form-control" id="recurrenceTypePopup" name="recurrence_type">
@@ -283,12 +282,12 @@
                                 <option value="yearly"><?php echo get_phrase('year'); ?></option>
                             </select>
                         </div>
-                        <div class="form-group mb-2" id="recurrenceStartDateSection" style="display: none;">
+                        <div class="form-group-calendar mb-2" id="recurrenceStartDateSection" style="display: none;">
                         <span class="mdi mdi-calendar-start"></span>
                         <label for="recurrenceStartDatePopup"></label>
                         <input type="date" class="form-control" id="recurrenceStartDatePopup" name="recurrence_start_date">
                         </div>
-                        <div class="form-group mb-2" id="daySelection" style="display: none;">
+                        <div class="form-group-calendar mb-2" id="daySelection" style="display: none;">
                             <span class="mdi mdi-calendar-week"></span>
                             <label></label>
                             <div class="d-flex justify-content-between gap-3">
@@ -301,7 +300,7 @@
                                 <button type="button" class="btn btn-outline-primary day-btn" data-day="Sunday">S</button>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-calendar">
                         <div style="display: flex; align-items: center;">
                             <span class="mdi mdi-calendar-end"></span>
                             <input type="date" class="form-control" id="recurrenceEndDatePopup" name="recurrence_end_date">
@@ -310,11 +309,11 @@
                         <label for="recurrenceEndDatePopup" style="display: block; margin-top: 5px; margin-left: 32px; font-size: 0.8rem; color: #6c757d;">
                             <small><?php echo get_phrase('leave_blank_for_default_one_year'); ?></small>
                         </label>
-                        <div class="form-group mb-2 hidden">
+                        <div class="form-group-calendar mb-2 hidden">
                             <label for="customRecurrencePopup"><?php echo get_phrase('Day_selected'); ?></label>
                             <input type="text" class="form-control" id="customRecurrencePopup" name="custom_recurrence" placeholder="<?php echo get_phrase('exemple_cron'); ?>" readonly>
                         </div>
-                        <div class="form-group mt-2 btn-group-1">
+                        <div class="form-group-calendar mt-2 btn-group-1">
                             <button type="button" class="btn btn-primary" id="saveRecurrence"><?php echo get_phrase('save') ?></button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo get_phrase('Annuler') ?></button>
                         </div>
@@ -1218,65 +1217,65 @@ showEventDetails(eventId, occurrenceDate) {
                         $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>');
                         this.stopPolling();
                     } else if (isVisio) {
-                        const meetingId = occurrenceData.meeting_id;
-                        if (meetingId) {
-                            $.ajax({
-                                url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
-                                type: 'POST',
-                                data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
-                                dataType: 'json',
-                                success: (response) => {
-                                    const status = response.status ? String(response.status).trim().toLowerCase() : '';
-                                    if (status === 'success' && response.data && response.data.length > 0) {
-                                        const state = response.data[0];
-                                        if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                            this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
-                                            this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                            if (state.is_running) {
-                                                this.hasActiveMeetings = true;
-                                                this.pollActiveMeetings();
-                                            }
-                                            this.startPolling(eventId, meetingId, occurrenceDate);
-                                            csrfHash = response.csrf?.csrfHash || csrfHash;
-                                        } else {
-                                            $('#participantCount').text('0');
-                                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                            this.stopPolling();
-                                        }
-                                    } else {
-                                        $('#participantCount').text('0');
-                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        this.stopPolling();
-                                    }
-                                },
-                                error: (xhr, status, error) => {
-                                    const cachedState = this.getCachedMeetingState(meetingId);
-                                    if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                        this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
-                                        $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        if (cachedState.isRunning) {
-                                            this.hasActiveMeetings = true;
-                                            this.pollActiveMeetings();
-                                        }
-                                        this.startPolling(eventId, meetingId, occurrenceDate);
-                                    } else {
-                                        $('#participantCount').text('0');
-                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                                        this.stopPolling();
-                                    }
-                                }
-                            });
-                        } else {
-                            $('#participantCount').text('0');
-                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                            this.stopPolling();
+    const meetingId = occurrenceData.meeting_id;
+    if (meetingId) {
+        $.ajax({
+            url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
+            type: 'POST',
+            data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
+            dataType: 'json',
+            success: (response) => {
+                const status = response.status ? String(response.status).trim().toLowerCase() : '';
+                if (status === 'success' && response.data && response.data.length > 0) {
+                    const state = response.data[0];
+                    if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                        this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
+                        this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
+                        // Désactiver le bouton delete si la réunion est active
+                        $('#deleteevent').prop('disabled', state.is_running).toggleClass('disabled', state.is_running);
+                        $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                        if (state.is_running) {
+                            this.hasActiveMeetings = true;
+                            this.pollActiveMeetings();
                         }
+                        this.startPolling(eventId, meetingId, occurrenceDate);
+                        csrfHash = response.csrf?.csrfHash || csrfHash;
                     } else {
                         $('#participantCount').text('0');
                         $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                        this.stopPolling();
+                        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
                     }
+                } else {
+                    $('#participantCount').text('0');
+                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si erreur
+                }
+            },
+            error: (xhr, status, error) => {
+                const cachedState = this.getCachedMeetingState(meetingId);
+                if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                    this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
+                    $('#deleteevent').prop('disabled', cachedState.isRunning).toggleClass('disabled', cachedState.isRunning); // Utiliser cache pour bouton delete
+                    $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    if (cachedState.isRunning) {
+                        this.hasActiveMeetings = true;
+                        this.pollActiveMeetings();
+                    }
+                    this.startPolling(eventId, meetingId, occurrenceDate);
+                } else {
+                    $('#participantCount').text('0');
+                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de cache
+                }
+            }
+        });
+    } else {
+        $('#participantCount').text('0');
+        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de meetingId
+        this.stopPolling();
+    }
+}
           /* else if (isVisio && occurrenceData.meeting_id) {
             // Set initial state from admin/get_events
             $('#participantCount').text(occurrenceData.participant_count || 0);
@@ -1598,10 +1597,10 @@ stopPolling() {
   bindGlobalEvents() {
     $('#createEventModal').on('show.bs.modal', () => {
       $('#createeventEndDate').on('change', () => {
-        const startDate = $('#createeventDate').val();
+        const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
         if (startDate && endDate && endDate < startDate) {
-          this.showNotification('error', 'End date must be on or after start date');
+          CalendarApp.showNotification('error', 'End date must be on or after start date');
           $('#createeventEndDate').val('');
         }
       });
@@ -1609,6 +1608,30 @@ stopPolling() {
       const today = this.formatDate(new Date());
       $('#createeventDate').attr('min', today);
       $('#createeventEndDate').attr('min', today);
+      $('#createeventStartTime').prop('disabled', true);
+      $('#createeventEndTime').prop('disabled', true);
+       const updateTimeFields = () => {
+      const inputElement = document.getElementById('createeventDate');
+      const selectedDate = inputElement ? inputElement.value : '';
+    if (selectedDate) {
+      $('#createeventStartTime').prop('disabled', false);
+      $('#createeventEndTime').prop('disabled', false);
+      CalendarApp.generateTimeOptions($('#createeventStartTime'), selectedDate);
+      CalendarApp.generateTimeOptions($('#createeventEndTime'), selectedDate);
+    } else {
+      $('#createeventStartTime').prop('disabled', true).val('');
+      $('#createeventEndTime').prop('disabled', true).val('');
+    }
+  };
+      updateTimeFields();
+      setTimeout(() => {
+    updateTimeFields();
+  }, 2000);
+      $('#createeventDate').off('change.timeOptions input.timeOptions click.timeOptions').on('change.timeOptions input.timeOptions click.timeOptions', () => {
+    const dateValue = document.getElementById('createeventDate').value;
+    updateTimeFields();
+    $('#recurrenceStartDatePopup').val(dateValue);
+  });
       const selectedDate = $('#createeventDate').val() || today;
       this.generateTimeOptions($('#createeventStartTime'), selectedDate);
       this.generateTimeOptions($('#createeventEndTime'), selectedDate);
@@ -1941,18 +1964,19 @@ updateParticipantUI(eventId, participantCount, isRunning, occurrenceDate) {
     const modalOccurrenceDate = $('#currentOccurrenceDate').val();
     const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
 
-    // Update modal UI if open
+    // Mettre à jour l'UI du modal si ouvert
     if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
         $('#participantCount').text(participantCount || 0);
         $('#joinMeetingBtn').text(isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !isRunning);
+        $('#deleteevent').prop('disabled', isRunning).toggleClass('disabled', isRunning); // Griser/dégriser le bouton delete
     }
 
-    // Update event in calendar
+    // Mettre à jour l'événement dans le calendrier
     const event = this.calendar.getEventById(uniqueEventId);
     if (event) {
         event.setExtendedProp('isRunning', isRunning);
         event.setExtendedProp('participant_count', participantCount);
-        // Force re-render to apply/remove active-meeting class
+        // Forcer le re-rendu pour appliquer/supprimer la classe active-meeting
         const eventData = {
             id: event.id,
             title: event.title,
@@ -1963,7 +1987,7 @@ updateParticipantUI(eventId, participantCount, isRunning, occurrenceDate) {
         event.remove();
         this.calendar.addEvent(eventData);
 
-        // Update active meetings set
+        // Mettre à jour l'ensemble des réunions actives
         if (isRunning) {
             this.activeMeetings.add(JSON.stringify({ meetingId: event.extendedProps.meeting_id, eventId, occurrenceDate }));
         } else {
@@ -2369,7 +2393,6 @@ pollActiveMeetings() {
             return;
         }
 
-        // Prevent frequent requests
         const lastFetchTime = sessionStorage.getItem('lastActiveMeetingsFetch');
         const now = Date.now();
         if (lastFetchTime && now - parseInt(lastFetchTime) < 10000) {
@@ -2381,7 +2404,7 @@ pollActiveMeetings() {
         const startDate = this.formatDate(view.activeStart);
         const endDate = this.formatDate(view.activeEnd);
 
-       $.ajax({
+        $.ajax({
             url: '<?php echo site_url('admin/get_events'); ?>',
             type: 'GET',
             data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
@@ -2425,7 +2448,6 @@ pollActiveMeetings() {
                                     event.setExtendedProp('isRunning', false);
                                     event.setExtendedProp('participant_count', 0);
                                     sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                    // Force re-render to remove active-meeting class
                                     const eventData = {
                                         id: event.id,
                                         title: event.title,
@@ -2435,6 +2457,9 @@ pollActiveMeetings() {
                                     };
                                     event.remove();
                                     this.calendar.addEvent(eventData);
+                                }
+                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                    $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                 }
                             });
                             this.activeMeetings.clear();
@@ -2455,7 +2480,6 @@ pollActiveMeetings() {
                             }
                         });
 
-                        // Clear stale active meetings
                         this.activeMeetings.forEach(item => {
                             const parsedItem = JSON.parse(item);
                             if (!meetingIdsArray.some(m => m.meetingId === parsedItem.meetingId)) {
@@ -2466,7 +2490,6 @@ pollActiveMeetings() {
                                     event.setExtendedProp('isRunning', false);
                                     event.setExtendedProp('participant_count', 0);
                                     sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                    // Force re-render to remove active-meeting class
                                     const eventData = {
                                         id: event.id,
                                         title: event.title,
@@ -2476,6 +2499,9 @@ pollActiveMeetings() {
                                     };
                                     event.remove();
                                     this.calendar.addEvent(eventData);
+                                }
+                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                    $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                 }
                                 this.activeMeetings.delete(item);
                             }
@@ -2488,7 +2514,7 @@ pollActiveMeetings() {
                             dataType: 'json',
                             success: (response) => {
                                 if (response.status === 'success' && response.data) {
-                                  this.closeAllPopovers();
+                                    this.closeAllPopovers();
                                     let activeMeetingsFound = false;
                                     response.data.forEach(state => {
                                         const { meeting_id, status, participant_count, is_running } = state;
@@ -2503,7 +2529,6 @@ pollActiveMeetings() {
                                             if (event) {
                                                 event.setExtendedProp('isRunning', is_running);
                                                 event.setExtendedProp('participant_count', participant_count);
-                                                // Force re-render to apply active-meeting class
                                                 const eventData = {
                                                     id: event.id,
                                                     title: event.title,
@@ -2521,10 +2546,14 @@ pollActiveMeetings() {
                                                     if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                                         $('#participantCount').text(participant_count || 0);
                                                         $('#joinMeetingBtn').text(is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !is_running);
+                                                        $('#deleteevent').prop('disabled', is_running).toggleClass('disabled', is_running); // Griser si actif
                                                     }
                                                 } else {
                                                     sessionStorage.removeItem(`meeting_state_${meeting_id}`);
                                                     this.activeMeetings.delete(JSON.stringify({ meetingId: meeting_id, eventId, occurrenceDate }));
+                                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                                    }
                                                 }
                                             }
                                         } else {
@@ -2533,7 +2562,6 @@ pollActiveMeetings() {
                                                 event.setExtendedProp('isRunning', false);
                                                 event.setExtendedProp('participant_count', 0);
                                                 sessionStorage.removeItem(`meeting_state_${meeting_id}`);
-                                                // Force re-render to remove active-meeting class
                                                 const eventData = {
                                                     id: event.id,
                                                     title: event.title,
@@ -2545,6 +2573,9 @@ pollActiveMeetings() {
                                                 this.calendar.addEvent(eventData);
                                             }
                                             this.activeMeetings.delete(JSON.stringify({ meetingId: meeting_id, eventId, occurrenceDate }));
+                                            if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                            }
                                         }
                                     });
 
@@ -2554,7 +2585,6 @@ pollActiveMeetings() {
                                         if (event) {
                                             event.setExtendedProp('isRunning', isRunning);
                                             event.setExtendedProp('participant_count', participantCount);
-                                            // Force re-render to apply active-meeting class
                                             const eventData = {
                                                 id: event.id,
                                                 title: event.title,
@@ -2572,10 +2602,14 @@ pollActiveMeetings() {
                                                 if (modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                                     $('#participantCount').text(participantCount || 0);
                                                     $('#joinMeetingBtn').text(isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', !isRunning);
+                                                    $('#deleteevent').prop('disabled', isRunning).toggleClass('disabled', isRunning); // Griser si actif
                                                 }
                                             } else {
                                                 sessionStorage.removeItem(`meeting_state_${meetingId}`);
                                                 this.activeMeetings.delete(JSON.stringify({ meetingId, eventId, occurrenceDate }));
+                                                if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
+                                                }
                                             }
                                         }
                                     });
@@ -2599,7 +2633,6 @@ pollActiveMeetings() {
                                             event.setExtendedProp('isRunning', false);
                                             event.setExtendedProp('participant_count', 0);
                                             sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                            // Force re-render to remove active-meeting class
                                             const eventData = {
                                                 id: event.id,
                                                 title: event.title,
@@ -2609,6 +2642,9 @@ pollActiveMeetings() {
                                             };
                                             event.remove();
                                             this.calendar.addEvent(eventData);
+                                        }
+                                        if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                         }
                                     });
                                     this.activeMeetings.clear();
@@ -2626,7 +2662,6 @@ pollActiveMeetings() {
                                         event.setExtendedProp('isRunning', false);
                                         event.setExtendedProp('participant_count', 0);
                                         sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                        // Force re-render to remove active-meeting class
                                         const eventData = {
                                             id: event.id,
                                             title: event.title,
@@ -2636,6 +2671,9 @@ pollActiveMeetings() {
                                         };
                                         event.remove();
                                         this.calendar.addEvent(eventData);
+                                    }
+                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
                                     }
                                 });
                                 this.activeMeetings.clear();
@@ -2654,7 +2692,6 @@ pollActiveMeetings() {
                                 event.setExtendedProp('isRunning', false);
                                 event.setExtendedProp('participant_count', 0);
                                 sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                                // Force re-render to remove active-meeting class
                                 const eventData = {
                                     id: event.id,
                                     title: event.title,
@@ -2664,6 +2701,9 @@ pollActiveMeetings() {
                                 };
                                 event.remove();
                                 this.calendar.addEvent(eventData);
+                            }
+                            if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                $('#deleteevent').prop('disabled', false).removeClass('disabled');
                             }
                         });
                         this.activeMeetings.clear();
@@ -2680,7 +2720,6 @@ pollActiveMeetings() {
                             event.setExtendedProp('isRunning', false);
                             event.setExtendedProp('participant_count', 0);
                             sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                            // Force re-render to remove active-meeting class
                             const eventData = {
                                 id: event.id,
                                 title: event.title,
@@ -2690,6 +2729,9 @@ pollActiveMeetings() {
                             };
                             event.remove();
                             this.calendar.addEvent(eventData);
+                        }
+                        if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
                         }
                     });
                     this.activeMeetings.clear();
@@ -2707,7 +2749,6 @@ pollActiveMeetings() {
                         event.setExtendedProp('isRunning', false);
                         event.setExtendedProp('participant_count', 0);
                         sessionStorage.removeItem(`meeting_state_${meetingId}`);
-                        // Force re-render to remove active-meeting class
                         const eventData = {
                             id: event.id,
                             title: event.title,
@@ -2717,6 +2758,9 @@ pollActiveMeetings() {
                         };
                         event.remove();
                         this.calendar.addEvent(eventData);
+                    }
+                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
                     }
                 });
                 this.activeMeetings.clear();
