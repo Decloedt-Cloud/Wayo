@@ -69,7 +69,7 @@ $school_id = school_id();
             <?php include 'navigation.php'; ?>
 
             <!-- PAGE CONTAINER-->
-            <div class="content-page">
+            <div class="content-page" id="content-page-calendar">
                 <div class="content" style="padding-top: 30px;">
                     <div class="loadings hidden"></div>
                     <!-- BEGIN PlACE PAGE CONTENT HERE -->

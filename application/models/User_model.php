@@ -891,7 +891,7 @@ public function teacher_permission()
 				'role' => 'student',
 				'school_id' => $this->school_id,
 				'watch_history' => '[]',
-				'status' => '1',
+				'status' => 1,
 				'password' => sha1($plainPassword)
 
 			];
@@ -950,7 +950,8 @@ public function teacher_permission()
 				'code' => student_code(),
 				'user_id' => $user_id,
 				'session' => $this->active_session,
-				'school_id' => $this->school_id
+				'school_id' => $this->school_id,
+				'status' => 1
 			];
 			
 			// Insérer le profil étudiant
@@ -1048,7 +1049,7 @@ public function teacher_permission()
                 $user_data['role'] = 'student';
                 $user_data['school_id'] = $this->school_id;
                 $user_data['watch_history'] = '[]';
-                $user_data['status'] = '1';
+                $user_data['status'] = 1;
 				$user_data['password'] = sha1($plainPassword[$key]);
                 $this->db->insert('users', $user_data);
                 $user_id = $this->db->insert_id();
@@ -1094,7 +1095,7 @@ public function teacher_permission()
  
                 $student_data['session'] = $this->active_session;
                 $student_data['school_id'] = $this->school_id;
-				$student_data['status'] = '1';
+				$student_data['status'] = 1;
                 $this->db->insert('students', $student_data);
                 $student_id = $this->db->insert_id();
  
@@ -1176,7 +1177,7 @@ public function teacher_permission()
 					$user_data['password'] = sha1($plainPassword[$line]);
 					$user_data['school_id'] = $school_id;
 					$user_data['watch_history'] = '[]';
-					$user_data['status'] = '1';
+					$user_data['status'] = 1;
 
 					// check email duplication
 					$duplication_status = $this->check_duplication('on_create', $user_data['email']);
@@ -1226,7 +1227,7 @@ public function teacher_permission()
 						
 						$student_data['session'] = $session_id;
 						$student_data['school_id'] = $school_id;
-						$student_data['status'] = '1';
+						$student_data['status'] = 1;
 						$this->db->insert('students', $student_data);
 						$student_id = $this->db->insert_id();
 

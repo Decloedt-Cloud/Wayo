@@ -421,7 +421,7 @@ input:checked + .slider:before {
 }
 
 @media (max-width: 576px) {
-    body[data-layout="detached"] .content-page {
+    body[data-layout="detached"] #content-page-calendar {
         padding: 0 0px 5px 00px !important;
     }
     .fc-view-harness {
