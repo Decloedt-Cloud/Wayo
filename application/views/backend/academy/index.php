@@ -22,7 +22,8 @@
     <?php if($this->session->userdata('superadmin_login') == 1 || $this->session->userdata('admin_login') == 1 || $this->session->userdata('teacher_login') == 1): ?>
       <div class="row academy_content"> <?php include 'list.php'; ?></div> 
     <?php else: ?>
-      <?php include 'grid_view_for_student.php'; ?>
+      <div class="row academy_content"><?php include 'grid_view_for_student.php'; ?></div>
+      
     <?php endif; ?>
     
 <?php include 'common_scripts.php'; ?>

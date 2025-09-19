@@ -31,7 +31,7 @@ class Lms_model extends CI_Model {
         if($teacher_login == 1):
             return $this->filter_course_for_teacher($class_id, $user_id, $status);
         endif;
-        
+   
         if($student_login == 1):
             return $this->filter_course_for_student($class_id, $user_id, $status, $school_id);
         endif;
@@ -71,31 +71,27 @@ class Lms_model extends CI_Model {
 
         
         $schools =  $this->db->select('*,course.id as id,course.thumbnail as thumbnail');
-        $this->db->from('course');
-        $this->db->join('students', 'course.school_id = students.school_id', 'left');
-        $this->db->join('schools', 'schools.id = course.school_id', 'left');
-        $this->db->where('students.user_id', $this->session->userdata('user_id'));
-        $this->db->where('course.status', 'active');
-        $this->db->where('students.status', 1);
+    $this->db->from('course');
+    $this->db->join('students', 'course.school_id = students.school_id', 'left');
+    $this->db->join('schools', 'schools.id = course.school_id', 'left');
+     $this->db->where('students.user_id', $this->session->userdata('user_id'));
+    $this->db->where('course.status', 'active');
+    $this->db->where('students.status', 1);
 
 
-        if ($user_id != "all") {
-            $this->db->where('course.user_id', $user_id);
-        }
-        // if ($subject_id != "all") {
-        //     $this->db->where('course.subject_id', $subject_id);
-        // }
-        if ($school_id != "all") {
-            $this->db->where('course.school_id', $school_id);
-        }
-        if ($class_id != "all") {
-            $this->db->where('course.class_id', $class_id);
-        }
-        
+    if ($user_id != "all") {
+        $this->db->where('course.user_id', $user_id);
+    }
+    if ($school_id != "all") {
+        $this->db->where('course.school_id', $school_id);
+    }
+    if ($class_id != "all") {
+        $this->db->where('course.class_id', $class_id);
+    }
 
         // return $this->db->get('course')->result_array();
-        return $this->db->get()->result_array();
-    }
+    return $this->db->get()->result_array();
+}
 
     public function get_subject_by_class_id($class_id = ""){
         return $this->db->get_where('subjects', array('class_id' => $class_id))->result_array();
