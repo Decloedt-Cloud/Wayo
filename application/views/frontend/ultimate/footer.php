@@ -7,14 +7,14 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
       <a class="footer-logo" href="<?php echo base_url(); ?>">
             <img src="<?php echo $this->settings_model->get_logo_light(); ?>" style="height:65px;" />
           </a>
-      <nav class="footer-nav">
-        <ul>
-          <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase("About us") ?></a>
-          <a href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Our Communities") ?></a>
-          <a href="#"><?php echo get_phrase("Blog") ?></a>
-          <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Contact") ?></a>
-        </ul>
-      </nav>
+<nav class="footer-nav">
+  <ul class="list-unstyled d-flex flex-wrap justify-content-center justify-content-md-start">
+    <li><a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase("About us") ?></a></li>
+    <li><a href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Our Communities") ?></a></li>
+    <li><a href="<?php echo site_url('home/tutorial'); ?>"><?php echo get_phrase("Tutorial") ?></a></li>
+    <li><a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Contact") ?></a></li>
+  </ul>
+</nav>
       <div class="footer-social">
         <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank">
           <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0E7AE7" class="bi bi-facebook" viewBox="0 0 16 16">
@@ -46,16 +46,17 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
         <p>
           <strong><?php echo get_phrase("Contact") ?> :</strong><br />
           <a class="footer-phone" href="tel:<?php echo get_settings('phone'); ?>">
-              <?php echo get_settings('phone'); ?>
+              +971 50 154 8923
           </a><br />
           <a class="footer-email" href="mailto:<?php echo get_settings('system_email'); ?>">
-                <?php echo get_settings('system_email'); ?>
+                info@wayo.cloud
               </a><br />
          <a class="footer-address" href="<?php echo site_url('home/contact#map'); ?>">
-              <?php echo get_settings('address'); ?>
+              R320 Um Hurair 2, Dubai, UAE
               </a>
         </p>
       </div>
+      
       <div class="footer-links">
         <p>
         <strong><?php echo get_phrase("Useful links") ?></strong>
@@ -64,7 +65,8 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
           <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Support") ?></a>
         </p>
       </div>
-      <div class="footer-newsletter">
+      
+      <!-- <div class="footer-newsletter">
         <strong><?php echo get_phrase("Newsletter") ?></strong>
         <form action="#" method="post" class="newsletter-form">
           <input
@@ -75,7 +77,7 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
           />
           <button type="submit" class="btn btn-subscribe"><?php echo get_phrase("S'abonner") ?></button>
         </form>
-      </div>
+      </div> -->
     </div>
     <div class="container footer-credits">
       <p>©<?php echo ' ' . date('Y') . ' ' . get_phrase("All the rights reserved to Wayo Academy"); ?></p>

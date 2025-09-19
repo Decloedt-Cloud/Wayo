@@ -2368,7 +2368,18 @@
     "edit_event": "Evenement bewerken",
     "chat": "Bericht",
     "contenu_complet": "Volledige inhoud",
+
     "what_will_students_achieve?": "What will students achieve?",
     "please_review_all_information_before_submitting._your_course_details_will_be_updated.": "Please review all information before submitting. your course details will be updated.",
-    "list_specific_skills_and_knowledge_students_will_gain": "List specific skills and knowledge students will gain"
+    "list_specific_skills_and_knowledge_students_will_gain": "List specific skills and knowledge students will gain",
+    "history": "Geschiedenis",
+    "if_you_can't_find_your_recording,_we_are_currently_preparing_it,_and_it_will_be_ready_soon.": "Als u uw opname niet kunt vinden, zijn we deze momenteel aan het voorbereiden en zal deze binnenkort klaar zijn.",
+    "no_recordings_found": "Geen opnames gevonden",
+    "filters_applied_successfully": "Filters succesvol toegepast",
+    "failed_to_apply_filters": "Filters konden niet worden toegepast",
+    "filters_cleared_successfully": "Filters succesvol gewist",
+    "failed_to_clear_filters": "Filters konden niet worden gewist",
+    "are_you_sure_you_want_to_delete_this_recording?": "Weet je zeker dat je deze opname wilt verwijderen?",
+    "recording_deleted_successfully": "Opname succesvol verwijderd",
+    "failed_to_delete_recording": "Verwijderen van opname mislukt"
 }

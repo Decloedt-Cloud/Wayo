@@ -1,0 +1,82 @@
+:root{
+  --clr-orange:#fc7b30;
+  --clr-orange-d:#d65e10;
+  --clr-black:#000;
+  --clr-gray:#333;
+  --ff:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+*{box-sizing:border-box}
+body{font-family:var(--ff);color:var(--clr-gray);background:#fff;line-height:1.6}
+img{max-width:100%;display:block}
+
+/* ====== Bootstrap overrides (brand color) ====== */
+
+.text-primary{color:var(--clr-orange)!important}
+.nav-link{color:var(--clr-black)}
+.nav-link:hover{color:var(--clr-orange)}
+.active-underline{
+  position:absolute;left:0;right:0;bottom:-4px;height:3px;
+  background:var(--clr-orange);border-radius:2px;content:"";
+}
+
+.btn-wayo{
+    background-color: #fc7b30;
+    color: #fff;
+}
+
+/* ====== HERO ====== */
+.contact-hero{
+  position:relative;
+  background:linear-gradient(135deg,#fff4e8 0%,#ffd4a4 100%);
+  padding:5.5rem 0 4.5rem;
+  overflow:hidden;
+  text-align:center;
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:url("https://i.postimg.cc/Qtk6hbsc/qa.png") center/cover no-repeat;
+  opacity:.08;mix-blend-mode:multiply;
+}
+.hero-inner h1{font-size:clamp(2.4rem,5vw,3.4rem);font-weight:800;color:var(--clr-black)}
+.hero-inner p{font-size:1.1rem;color:var(--clr-gray)}
+
+/* ====== Glass effect ====== */
+.glass{
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.4);
+  border-radius:16px;
+  box-shadow:0 10px 32px rgba(0,0,0,.08);
+}
+
+/* ====== Form tweaks ====== */
+.h-150{height:150px}
+.form-note{font-size:.85rem}
+
+/* Social buttons */
+.social-btn{
+  width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--clr-orange);color:#fff;font-size:1.1rem;
+  text-decoration:none;transition:filter .25s;
+}
+.social-btn:hover{filter:brightness(.9)}
+
+/* Map */
+.map-radius {
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 250px;   /* hauteur minimale */
+  max-height: 400px;   /* limite max */
+}
+.map-radius iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Responsive footer nav on small screens */
+@media(max-width:768px){
+  .footer-nav .nav{flex-direction:column;align-items:flex-start;gap:.6rem}
+}

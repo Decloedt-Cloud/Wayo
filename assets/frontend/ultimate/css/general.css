@@ -14,7 +14,7 @@ body,
 main {
   position: relative;
   z-index: -3 !important;
-  background: #000000 !important;
+  background: #fff !important;
   font-family: var(--font-primary);
   line-height: 1.6;
 }
@@ -50,7 +50,7 @@ html {
   /* align-items: center; */
   justify-content: center;
   width: 100%;
-  background: linear-gradient(to right, #ffffff, #FFD071, #FF9F44);
+  /* background: linear-gradient(to right, #ffffff, #FFD071, #FF9F44); */
 }
 .marg_wayo {
     margin-left: 28px;

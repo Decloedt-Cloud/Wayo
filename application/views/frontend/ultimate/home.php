@@ -60,7 +60,7 @@
         </div>
     </section>
     <!-- Choose your plan -->
-  <section class="py-3 position-relative pricing" style="min-height: 120vh;">
+  <section class="py-3 position-relative pricing" style="padding-bottom:75px !important">
     <div class="container position-relative" style="z-index: 1;">
         <h2 class="text-center mb-5 mt-5" style="font-size: 45px; font-weight: bold;"><?php echo get_phrase("Choose your plan") ?></h2>
         <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
