@@ -110,6 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+function adjustBodyAttributes() {
+  if (window.matchMedia("(min-width: 591px) and (max-width: 1042px)").matches) {
+    document.body.classList.add("sidebar-enable");
+    document.body.removeAttribute("data-leftbar-compact-mode");
+  } else {
+    document.body.classList.remove("sidebar-enable");
+    // tu peux remettre l'attribut si besoin :
+    // document.body.setAttribute("data-leftbar-compact-mode", "condensed");
+  }
+}
+
+// Exécuter au chargement
+adjustBodyAttributes();
+
+// Exécuter quand on redimensionne
+window.addEventListener("resize", adjustBodyAttributes);
+
 </script>
 </body>
 

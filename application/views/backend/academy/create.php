@@ -199,7 +199,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-4">
                                         <label class="form-label fw-medium" for="course_overview_provider">
-                                            <?php echo get_phrase('Video provider'); ?> <span class="text-danger">*</span>
+                                            <?php echo get_phrase('Video provider'); ?> <span class="text-danger"></span>
                                         </label>
                                         <select class="form-select border-0 bg-light" name="course_overview_provider" id="course_overview_provider">
                                             <option value="youtube"><?php echo get_phrase('YouTube'); ?></option>
@@ -210,9 +210,9 @@
 
                                     <div class="col-md-6 mb-4">
                                         <label class="form-label fw-medium" for="course_overview_url">
-                                            <?php echo get_phrase('Video URL'); ?> <span class="text-danger">*</span>
+                                            <?php echo get_phrase('Video URL'); ?> <span class="text-danger"></span>
                                         </label>
-                                        <input type="text" class="form-control border-0 bg-light" name="course_overview_url" id="course_overview_url" placeholder="<?php echo get_phrase('https://www.youtube.com/watch?v=example'); ?>" required>
+                                        <input type="text" class="form-control border-0 bg-light" name="course_overview_url" id="course_overview_url" placeholder="<?php echo get_phrase('https://www.youtube.com/watch?v=example'); ?>">
                                     </div>
                                 </div>
 
