@@ -65,7 +65,7 @@
                             <td><?php echo htmlspecialchars($recording['name']); ?></td>
                             <td><?php echo htmlspecialchars($recording['class_name'] ?? 'N/A'); ?></td>
                             <td><?php echo date('d/m/Y H:i', strtotime($recording['created_at'])); ?></td>
-                            <td><?php echo $recording['duration'] . ' ' . get_phrase('minutes'); ?></td>
+                            <td><?php echo htmlspecialchars($recording['formatted_duration']); ?></td>
                             <td>
                                 <a href="<?php echo htmlspecialchars($recording['recording_url']); ?>" target="_blank" class="btn btn-sm btn-primary">
                                     <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td>${recording.name}</td>
                                     <td>${recording.class_name || 'N/A'}</td>
                                     <td>${moment(recording.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                    <td>${recording.duration} <?php echo get_phrase('minutes'); ?></td>
+                                    <td>${recording.formatted_duration}</td>
                                     <td>
                                         <a href="${recording.recording_url}" target="_blank" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td>${recording.name}</td>
                                     <td>${recording.class_name || 'N/A'}</td>
                                     <td>${moment(recording.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                    <td>${recording.duration} <?php echo get_phrase('minutes'); ?></td>
+                                    <td>${recording.formatted_duration}</td>
                                     <td>
                                         <a href="${recording.recording_url}" target="_blank" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
@@ -253,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             tbody.append(row);
                         });
                     }
-                    showNotification('success', '<?php echo get_phrase("Filters cleared successfully"); ?>');
                 } else {
                     showNotification('error', '<?php echo get_phrase("Failed to clear filters"); ?>: ' + (response.message || 'Unknown error'));
                 }

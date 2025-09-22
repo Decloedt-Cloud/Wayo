@@ -65,11 +65,14 @@
                             <td><?php echo htmlspecialchars($recording['name']); ?></td>
                             <td><?php echo htmlspecialchars($recording['class_name'] ?? 'N/A'); ?></td>
                             <td><?php echo date('d/m/Y H:i', strtotime($recording['created_at'])); ?></td>
-                            <td><?php echo $recording['duration'] . ' ' . get_phrase('minutes'); ?></td>
+                            <td><?php echo htmlspecialchars($recording['formatted_duration']); ?></td>
                             <td>
                                 <a href="<?php echo htmlspecialchars($recording['recording_url']); ?>" target="_blank" class="btn btn-sm btn-primary">
                                     <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
                                 </a>
+                                <button type="button" class="btn btn-sm btn-danger delete-recording" data-recording-id="<?php echo htmlspecialchars($recording['recording_id']); ?>">
+                                    <i class="mdi mdi-trash-can"></i> <?php echo get_phrase('Delete'); ?>
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -181,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td>${recording.name}</td>
                                     <td>${recording.class_name || 'N/A'}</td>
                                     <td>${moment(recording.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                    <td>${recording.duration} <?php echo get_phrase('minutes'); ?></td>
+                                    <td>${recording.formatted_duration}</td>
                                     <td>
                                         <a href="${recording.recording_url}" target="_blank" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
@@ -237,17 +240,19 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td>${recording.name}</td>
                                     <td>${recording.class_name || 'N/A'}</td>
                                     <td>${moment(recording.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                    <td>${recording.duration} <?php echo get_phrase('minutes'); ?></td>
+                                    <td>${recording.formatted_duration}</td>
                                     <td>
                                         <a href="${recording.recording_url}" target="_blank" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-play"></i> <?php echo get_phrase('View'); ?>
                                         </a>
+                                        <button type="button" class="btn btn-sm btn-danger delete-recording" data-recording-id="${recording.recording_id}">
+                                            <i class="mdi mdi-trash-can"></i> <?php echo get_phrase('Delete'); ?>
+                                        </button>
                                     </td>
                                 </tr>`;
                             tbody.append(row);
                         });
                     }
-                    showNotification('success', '<?php echo get_phrase("Filters cleared successfully"); ?>');
                 } else {
                     showNotification('error', '<?php echo get_phrase("Failed to clear filters"); ?>: ' + (response.message || 'Unknown error'));
                 }
@@ -255,6 +260,51 @@ document.addEventListener('DOMContentLoaded', function() {
             error: function(xhr, status, error) {
                 console.error('Clear filter error:', xhr, status, error);
                 showNotification('error', '<?php echo get_phrase("Failed to clear filters"); ?>');
+            }
+        });
+    });
+
+    // Handle deletion
+    $(document).on('click', 'button.delete-recording', function(event) {
+        event.preventDefault();
+        var recordingId = $(this).data('recording-id');
+
+        Swal.fire({
+            title: '<?php echo get_phrase("Are you sure?"); ?>',
+            text: '<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '<?php echo get_phrase("Delete"); ?>',
+            cancelButtonText: '<?php echo get_phrase("Cancel"); ?>'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "<?php echo site_url('student/delete_recording'); ?>",
+                    type: 'POST',
+                    data: {
+                        recording_id: recordingId,
+                        skip_sync: 1,
+                        "<?php echo $this->security->get_csrf_token_name(); ?>": $('input[name="<?php echo $this->security->get_csrf_token_name(); ?>"]').val()
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            showNotification('success', '<?php echo get_phrase("Recording deleted successfully"); ?>');
+                            $('button.delete-recording[data-recording-id="' + recordingId + '"]').closest('tr').remove();
+                            if (response.csrf_token) {
+                                $('input[name="<?php echo $this->security->get_csrf_token_name(); ?>"]').val(response.csrf_token);
+                            }
+                        } else {
+                            showNotification('error', '<?php echo get_phrase("Error"); ?>: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Delete error:', xhr, status, error);
+                        showNotification('error', '<?php echo get_phrase("Failed to delete recording"); ?>');
+                    }
+                });
             }
         });
     });
