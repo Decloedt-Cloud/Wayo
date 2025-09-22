@@ -10,7 +10,7 @@ h2 {
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 24px;
-    text-align: center;
+    /* text-align: center; */
 }
 
 .form-control {
