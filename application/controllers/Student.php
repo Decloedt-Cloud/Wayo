@@ -134,16 +134,31 @@ class Student extends CI_Controller {
         redirect(site_url('login'), 'refresh');
     }
 
-    // Synchronize recordings (unchanged)
+    // Récupérer l'ID de l'utilisateur connecté
+    $user_id = $this->session->userdata('user_id'); // Assurez-vous que 'user_id' est défini dans la session lors de la connexion
+
+    // Récupérer le school_id depuis la table users
+    $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+    if (!$user || empty($user['school_id'])) {
+        // Gérer le cas où l'utilisateur n'a pas de school_id ou n'existe pas
+        log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
+        show_error('No school associated with this user.', 403);
+        return;
+    }
+    $school_id = $user['school_id'];
+
+    // Synchronize recordings
     $this->load->config('bigbluebutton');
     $bbb_url = $this->config->item('bbb_url');
     $bbb_secret = $this->config->item('bbb_secret');
 
     $last_sync = $this->session->userdata('last_recording_sync');
     $current_time = time();
-    $sync_interval = 10; // Synchronize every hour
+    $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
 
     if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
+        // Filtrer les réunions par school_id
+        $this->db->where('school_id', $school_id);
         $meetings = $this->db->get('sessions_meetings')->result_array();
 
         foreach ($meetings as $meeting) {
@@ -174,8 +189,21 @@ class Student extends CI_Controller {
                     $recording_id = (string)$recording->recordID;
                     $recording_start_time = (string)$recording->startTime;
                     $recording_end_time = (string)$recording->endTime;
-                    $recording_url = (string)$recording->playback->format->url;
-                    $duration = (int)(($recording_end_time - $recording_start_time) / 60000);
+                    $original_recording_url = (string)$recording->playback->format->url;
+                    // Replace the domain in the recording URL
+                    $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
+                    $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
+    
+                    // Format duration
+                    $hours = floor($duration_seconds / 3600);
+                    $minutes = floor(($duration_seconds % 3600) / 60);
+                    $seconds = $duration_seconds % 60;
+                    
+                    if ($hours >= 1) {
+                        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+                    } else {
+                        $formatted_duration = sprintf("%02d:%02d", $minutes, $seconds);
+                    }
 
                     $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
                     $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
@@ -191,7 +219,8 @@ class Student extends CI_Controller {
                             'school_id' => $meeting['school_id'],
                             'start_time' => $start_time,
                             'end_time' => $end_time,
-                            'duration' => $duration,
+                            'duration' => $duration_seconds,
+                            'formatted_duration' => $formatted_duration,
                             'recording_url' => $recording_url,
                             'created_at' => date('Y-m-d H:i:s'),
                             'updated_at' => date('Y-m-d H:i:s')
@@ -222,6 +251,7 @@ class Student extends CI_Controller {
     $this->db->select('r.*, c.name as class_name');
     $this->db->from('recordings r');
     $this->db->join('classes c', 'r.class_id = c.id', 'left');
+    $this->db->where('r.school_id', $school_id);
 
     // Apply filters
     if (!empty($filters['meeting_name'])) {
