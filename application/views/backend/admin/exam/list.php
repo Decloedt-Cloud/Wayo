@@ -248,7 +248,7 @@ window.updateExamTableAndCalendar = function(classId = '') {
     };
 
     $.ajax({
-        url: '<?php echo site_url('superadmin/filter_exams'); ?>',
+        url: '<?php echo site_url('admin/filter_exams'); ?>',
         type: 'POST',
         data: formData,
         success: function(response) {
