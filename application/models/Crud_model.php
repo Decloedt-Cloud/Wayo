@@ -701,7 +701,7 @@ public function get_school_classes($school_id)
     $this->db->insert('exams', $data);
     $exam_id = $this->db->insert_id();
 
-    if (!$exam_id) {
+    if (empty($exam_id)) {
         $response = array(
             'status' => false,
             'notification' => get_phrase('failed_to_create_exam')
