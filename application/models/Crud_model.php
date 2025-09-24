@@ -477,11 +477,11 @@ public function get_school_classes($school_id)
 	public function event_calendar_create()
 	{
 		$data['title'] = html_escape($this->input->post('title'));
-		$data['starting_date'] = $this->input->post('starting_date').' 00:00:1';
-		$data['ending_date'] = $this->input->post('ending_date').' 23:59:59';
+		$data['starting_date'] = $this->input->post('starting_date');
+		$data['ending_date'] = $this->input->post('ending_date');
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
-		$this->db->insert('event_calendars', $data);
+		$this->db->insert('announcement', $data);
 
 		return array(
 			'status' => true,
@@ -496,10 +496,10 @@ public function get_school_classes($school_id)
 		$data['title'] = html_escape($this->input->post('title'));
 		$starting_date = strtotime(date('d/m/Y')) +1;
 		$ending_date = strtotime(date('d/m/Y')) -1;
-		$data['starting_date'] = $this->input->post('starting_date').' 00:00:1';
-		$data['ending_date'] = $this->input->post('ending_date').' 23:59:59';
+		$data['starting_date'] = $this->input->post('starting_date');
+		$data['ending_date'] = $this->input->post('ending_date');
 		$this->db->where('id', $param1);
-		$this->db->update('event_calendars', $data);
+		$this->db->update('announcement', $data);
 
 		$response = array(
 			'status' => true,
@@ -512,7 +512,7 @@ public function get_school_classes($school_id)
 	public function event_calendar_delete($param1 = '')
 	{
 		$this->db->where('id', $param1);
-		$this->db->delete('event_calendars');
+		$this->db->delete('announcement');
 
 		$response = array(
 			'status' => true,
@@ -532,7 +532,7 @@ public function get_school_classes($school_id)
 			foreach ($student_datas as $student_data) {
 				$enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_data['id'],'school_id' => $student_data['school_id']))->num_rows();
 				if($enrols_datas > 0){
-					$event_calendars = $this->db->get_where('event_calendars', array(
+					$event_calendars = $this->db->get_where('announcement', array(
 						'school_id' => $student_data['school_id'], 
 						'session' => $this->active_session
 					))->result_array();
@@ -543,7 +543,7 @@ public function get_school_classes($school_id)
 			return json_encode($all_event_calendars);
 		}else {
 			$school_id = $this->db->get_where('users', array('id' => $user_id))->row('school_id');
-			$event_calendars = $this->db->get_where('event_calendars', array('school_id' => $school_id, 'session' => $this->active_session))->result_array();
+			$event_calendars = $this->db->get_where('announcement', array('school_id' => $school_id, 'session' => $this->active_session))->result_array();
 			return json_encode($event_calendars);
 		}
 
@@ -554,7 +554,7 @@ public function get_school_classes($school_id)
 	public function get_current_month_events() {
 		$this->db->where('school_id', $this->school_id);
 		$this->db->where('session', $this->active_session);
-		$events = $this->db->get('event_calendars');
+		$events = $this->db->get('announcement');
 		return $events;
 	}
 	//END EVENT CALENDAR section
