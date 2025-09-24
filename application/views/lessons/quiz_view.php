@@ -83,9 +83,7 @@ $lesson_progress = lesson_progress($lesson_details['id']);
 </div>
 
 <style>
-.course_container {
-    background-color: #ffffff !important;
-}
+
 .card {
     background-color: #fff !important;
 }
@@ -204,7 +202,7 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     margin-top: 20px;
 }
 .start-exam-btn {
-    background: #2196F3;
+    background: #FC7B30;
     border: none;
     padding: 6px 6px;
     font-size: 1rem;
@@ -213,7 +211,7 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     transition: all 0.3s ease;
 }
 .start-exam-btn:hover {
-    background: #2487D5;
+    background: #ee7626;
     transform: scale(1.05);
 }
 .confirmation-container {
