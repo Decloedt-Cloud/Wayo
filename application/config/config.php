@@ -559,7 +559,8 @@ $config['csrf_exclude_uris'] = array(
     'home/set_guest_language/.*',
     'bigbluebutton/webhook',
     'bigbluebutton/meeting_states',
-    'profile/update_profile'
+    'profile/update_profile',
+    'home/contact/send'
 
 );
  

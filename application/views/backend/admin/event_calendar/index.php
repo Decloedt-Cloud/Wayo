@@ -68,4 +68,23 @@ var refreshEventCalendar = function () {
        }
    });
 }
+
+
+function showNotification(type, message) {
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        timeOut: 5000,
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut',
+    };
+    if (type === 'success') {
+        toastr.success(message);
+    } else if (type === 'error') {
+        toastr.error(message);
+    } else if (type === 'warning') {
+        toastr.warning(message);
+    }
+}
 </script>

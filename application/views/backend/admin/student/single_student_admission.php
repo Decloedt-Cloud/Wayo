@@ -65,7 +65,7 @@
 
 
         <div class="form-group ">
-            <label class="col-form-label" for="birthday"><?php echo get_phrase('birthday'); ?></label>
+            <label class="col-form-label" for="birthday"><?php echo get_phrase('birthday'); ?><span class="required"> *</span></label>
             <input type="text" class="form-control" data-provide="datepicker" id="birthday" placeholder="mm/dd/yyyy" data-date-autoclose="true" data-date-container="#datepicker4" name="birthday" value="">
         </div>
         <div class="form-group ">
@@ -75,7 +75,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-form-label" for="address"><?php echo get_phrase('address'); ?></label>
+        <label class="col-form-label" for="address"><?php echo get_phrase('address'); ?><span class="required"> *</span></label>
         <textarea class="form-control" id="address" rows="5" name="address" placeholder="address"></textarea>
     </div>
 
