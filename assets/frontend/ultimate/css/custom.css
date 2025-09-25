@@ -712,8 +712,8 @@ main [dir="rtl"] {
 .carousel-slide p {
   font-size: clamp(0.85rem, 2.5vw, 0.95rem);
   color: #333333;
-  margin-bottom: 1rem;
-  max-height: 3em; /* Added to limit text height (~2 lines) */
+  margin-bottom: 2rem;
+  max-height: 4em; /* Added to limit text height (~2 lines) */
   overflow: hidden; /* Added for truncation */
   text-overflow: ellipsis; /* Added for ellipsis */
   display: -webkit-box; /* Added for multi-line truncation */

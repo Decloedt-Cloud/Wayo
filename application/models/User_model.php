@@ -1592,6 +1592,16 @@ public function teacher_permission()
 	}
 	// Get School Image Ends
 
+	// Get School cover Starts
+	public function get_school_cover($school_id)
+	{
+		if (file_exists('uploads/communityCover/' . $school_id . '.jpg'))
+			return base_url() . 'uploads/communityCover/' . $school_id . '.jpg';
+		else
+			return base_url() . 'uploads/communityCover/placeholder.jpg';
+	}
+	// Get School Image Ends
+
 	public function check_duplication_school($action = "", $name = "")
 	{
 		$duplicate_name_check = $this->db->get_where('schools', array('name' => $name));
