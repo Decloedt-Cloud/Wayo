@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
 
-<?php $event_calendars = $this->db->get_where('event_calendars', array('id' => $param1))->result_array(); ?>
-<?php foreach($event_calendars as $event_calendar){ ?>
+<?php $announcements = $this->db->get_where('announcement', array('id' => $param1))->result_array(); ?>
+<?php foreach($announcements as $announcement){ ?>
     <form method="POST" class="d-block ajaxForm" action="<?php echo route('event_calendar/update/'.$param1); ?>">
         <!-- Champ caché pour le jeton CSRF -->
     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
@@ -9,18 +9,18 @@
         <div class="form-row">
             <div class="form-group mb-1">
                 <label for="title"><?php echo get_phrase('event_title'); ?><span class="required"> * </span></label>
-                <input type="text" class="form-control" value="<?php echo $event_calendar['title']; ?>" id="title" name = "title" required>
+                <input type="text" class="form-control" value="<?php echo $announcement['title']; ?>" id="title" name = "title" required>
                 <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_title_name'); ?></small>
             </div>
             <div class="form-group mb-1">
                 <label for="starting_date"><?php echo get_phrase('event_starting_date'); ?><span class="required"> * </span></label>
-                <input type="text" value="<?php echo date('m/d/Y', strtotime($event_calendar['starting_date'])); ?>" class="form-control" id="starting_date" name = "starting_date" data-provide = "datepicker" required>
+                <input type="date" value="<?php echo date('Y-m-d', strtotime($announcement['starting_date'])); ?>" class="form-control" id="starting_date" name = "starting_date" data-provide = "datepicker" required>
                 <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_starting_date'); ?></small>
             </div>
 
             <div class="form-group mb-1">
                 <label for="ending_date"><?php echo get_phrase('event_ending_date'); ?><span class="required"> * </span></label>
-                <input type="text" value="<?php echo date('m/d/Y', strtotime($event_calendar['ending_date'])); ?>" class="form-control" id="ending_date" name = "ending_date" data-provide = "datepicker" required>
+                <input type="date" value="<?php echo date('Y-m-d', strtotime($announcement['ending_date'])); ?>" class="form-control" id="ending_date" name = "ending_date" data-provide = "datepicker" required>
                 <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_ending_date'); ?></small>
             </div>
 

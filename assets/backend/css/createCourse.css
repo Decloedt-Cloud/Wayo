@@ -10,7 +10,7 @@
 
         .card-body {
             padding: 25px 30px;
-            display: flex;
+            /* display: flex; */
             align-items: center;
             gap: 15px;
         }

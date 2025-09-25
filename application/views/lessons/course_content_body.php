@@ -148,8 +148,8 @@
                 </div>
 
                 <div class="mt-5">
-                    <a href="<?php echo base_url().'uploads/lesson_files/'.$lesson_details['attachment']; ?>" class="btn btn-info text-white" download>
-                        <i class="fa fa-download font-size-24"></i> <?php echo get_phrase('download').' '.$lesson_details['title']; ?>
+                    <a href="<?php echo base_url().'uploads/lesson_files/'.$lesson_details['attachment']; ?>" class="btn btn-download text-white" download>
+                        <i class="fa fa-download font-size-24"></i> <?php echo get_phrase('download').' : '.$lesson_details['title']; ?>
                     </a>
                 </div>
 
@@ -158,8 +158,8 @@
     </div>
 
     <div class="margin-m" id = "lesson-summary">
-        <div class="card">
-            <div class="card-body">
+        <div class="card-instruction">
+            <div class="card-body-instruction">
                 <strong class="card-title"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('instruction') : get_phrase("note"); ?>:</strong>
                 <?php if ($lesson_details['summary'] == ""): ?>
                     <p class="card-text"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('no_instruction_found') : get_phrase("no_summary_found"); ?></p>
@@ -179,6 +179,28 @@
     .card {
         padding: 0px 0px;
         border-radius: 15px;
+    }
+    .btn-download {
+        background: #FC7B30 !important;
+        /* background: #667eea !important; */
+        color: #ffffff !important;
+        border-radius: 8px;
+        padding: 5px 19px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+    .btn-download:hover {
+        background-color: #ee7626 !important;
+        color: #ffffff !important;
+    }
+    .card-instruction {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+    }
+    .card-body-instruction {
+        padding: 20px 25px !important;
     }
 
 </style>

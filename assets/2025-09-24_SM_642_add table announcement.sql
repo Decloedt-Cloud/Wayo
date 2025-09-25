@@ -1,0 +1,9 @@
+CREATE TABLE announcement (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` LONGTEXT DEFAULT NULL,
+  `starting_date` VARCHAR(255) DEFAULT NULL,
+  `ending_date` VARCHAR(255) DEFAULT NULL,
+  `school_id` INT(10) DEFAULT NULL,
+  `session` INT(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

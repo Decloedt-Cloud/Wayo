@@ -22,10 +22,10 @@
 
 						
 					}
-					$event_calendars = $this->db->get('event_calendars')->num_rows();
+					$announcements = $this->db->get('announcement')->num_rows();
 
 				?>
-				<?php if($event_calendars > 0): ?>
+				<?php if($announcements > 0): ?>
 					<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
 						<thead>
 							<tr>
@@ -40,9 +40,9 @@
 								$enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_data['id'],'school_id' => $student_data['school_id']))->num_rows();
 								$school_name = $this->db->get_where('schools', array('id' => $student_data['school_id']))->row('name');
 								if($enrols_datas > 0){
-								$event_calendars = $this->db->get_where('event_calendars', array('school_id' => $student_data['school_id'], 'session' => active_session()))->result_array();
+								$announcements = $this->db->get_where('announcement', array('school_id' => $student_data['school_id'], 'session' => active_session()))->result_array();
 								
-								foreach($event_calendars as $event_calendar){
+								foreach($announcements as $event_calendar){
 								?>
 								<tr>
 										<td class="modern-td">

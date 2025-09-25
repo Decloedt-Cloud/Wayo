@@ -1,0 +1,21 @@
+CREATE TABLE `recordings` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `meeting_id` VARCHAR(255) NOT NULL,
+  `appointment_id` INT NOT NULL,
+  `recording_id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `class_id` INT NULL,
+  `school_id` INT UNSIGNED NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  `end_time` DATETIME NOT NULL,
+  `duration` INT NOT NULL,
+  `recording_url` TEXT NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `recording_id` (`recording_id`),
+  INDEX `idx_meeting_id` (`meeting_id`),
+  INDEX `idx_appointment_id` (`appointment_id`),
+  INDEX `idx_class_id` (`class_id`),
+  INDEX `idx_school_id` (`school_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -69,7 +69,7 @@ $school_id = school_id();
             <?php include 'navigation.php'; ?>
 
             <!-- PAGE CONTAINER-->
-            <div class="content-page">
+            <div class="content-page" id="content-page-calendar">
                 <div class="content" style="padding-top: 30px;">
                     <div class="loadings hidden"></div>
                     <!-- BEGIN PlACE PAGE CONTENT HERE -->
@@ -110,6 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+function adjustBodyAttributes() {
+  if (window.matchMedia("(min-width: 591px) and (max-width: 1042px)").matches) {
+    document.body.classList.add("sidebar-enable");
+    document.body.removeAttribute("data-leftbar-compact-mode");
+  } else {
+    document.body.classList.remove("sidebar-enable");
+    // tu peux remettre l'attribut si besoin :
+    // document.body.setAttribute("data-leftbar-compact-mode", "condensed");
+  }
+}
+
+// Exécuter au chargement
+adjustBodyAttributes();
+
+// Exécuter quand on redimensionne
+window.addEventListener("resize", adjustBodyAttributes);
+
 </script>
 </body>
 
