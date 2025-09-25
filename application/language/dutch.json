@@ -2383,5 +2383,18 @@
     "failed_to_delete_recording": "Verwijderen van opname mislukt",
     "announcement": "Mededeling",
     "actie_niet_toegestaan": "Actie niet toegestaan",
-    "er_is_een_fout_opgetreden_tijdens_het_indienen": "Er is een fout opgetreden tijdens het indienen"
+    "er_is_een_fout_opgetreden_tijdens_het_indienen": "Er is een fout opgetreden tijdens het indienen",
+    "any_questions?": "Vragen?",
+    "response_guaranteed_within_24_business_hours.": "Reactie gegarandeerd binnen 24 werkuren.",
+    "first_name*": "Voornaam*",
+    "last_name*": "Achternaam*",
+    "email*": "E-mail*",
+    "postal_address": "Postadres",
+    "city_/_country": "Stad / Land",
+    "please_write_a_message.": "Schrijf een bericht.",
+    "message*": "Bericht*",
+    "message_sent_!_thank_you": "Bericht verzonden! Bedankt",
+    "our": "Onze",
+    "contact_details": "Contactgegevens",
+    "follow_us": "Volg ons"
 }

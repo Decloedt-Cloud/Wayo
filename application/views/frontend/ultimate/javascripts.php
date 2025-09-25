@@ -148,9 +148,9 @@ if ($page_name == "home") {
 
 
   // Charger Leaflet.js pour OpenStreetMap
-  echo '<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>';
+  echo '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>';
     
-  echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />';
+  echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />';
   echo '<script>
          const base_url = " '. $base_url . '";
         </script>';
