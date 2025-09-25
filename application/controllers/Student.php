@@ -76,20 +76,17 @@ class Student extends CI_Controller {
 			
 			// 2) Récupérer les infos du user (ici : depuis la table Wayo)
 			$userId = $this->session->userdata('user_id');
-			log_message('debug', 'USER ID SESSION: ' . $userId);
 			$wUser  = $this->db->get_where('users', ['id' => $userId])->row();
 			if (empty($wUser) || ! filter_var($wUser->email, FILTER_VALIDATE_EMAIL)) {
 				log_message('error', 'Invalid Wayo user data: ' . print_r($wUser, true));
 				show_error('Impossible de retrouver votre compte Wayo pour SSO.');
 			}
-			log_message('debug', 'Wayo user data: ' . print_r($wUser, true));
 
 			// 3) Stocker temporairement cet objet pour la librairie SSO
 			$this->session->set_userdata('user', $wUser);
 
 			// 4) Générer l’URL SSO
 			$iframeUrl = $this->humhub_sso->provisionAndGetIframeUrl();
-			log_message('debug', 'Generated iframe URL: ' . $iframeUrl);
 
 			if (! $iframeUrl) {
 				show_error('Impossible de générer l’URL SSO HumHub.');
@@ -226,7 +223,6 @@ class Student extends CI_Controller {
                             'updated_at' => date('Y-m-d H:i:s')
                         ];
                         $this->db->insert('recordings', $recording_data);
-                        log_message('debug', 'recording - New recording saved for meeting_id: ' . $meeting['meeting_id'] . ', recording_id: ' . $recording_id);
                     } else {
                         $this->db->where('recording_id', $recording_id);
                         $this->db->update('recordings', [
@@ -313,7 +309,6 @@ class Student extends CI_Controller {
 
     // Récupérer l'ID de l'enregistrement depuis la requête POST
     $recording_id = trim($this->input->post('recording_id', true));
-    log_message('debug', 'delete_recording - Received recording_id: ' . $recording_id);
 
     if (empty($recording_id)) {
         $response = [
@@ -329,7 +324,6 @@ class Student extends CI_Controller {
     // Vérifier si l'enregistrement existe dans la table recordings
     $this->db->where('recording_id', $recording_id);
     $existing = $this->db->get('recordings')->row_array();
-    log_message('debug', 'delete_recording - Existing record: ' . json_encode($existing));
 
     if (!$existing) {
         $response = [
@@ -390,10 +384,8 @@ class Student extends CI_Controller {
     $this->db->delete('recordings');
     $db_error = $this->db->error();
 
-    log_message('debug', 'delete_recording - SQL Query: ' . $this->db->last_query());
 
     if ($db_error['code'] == 0 && $this->db->affected_rows() > 0) {
-        log_message('debug', 'delete_recording - Recording deleted successfully: recording_id=' . $recording_id);
         $response = [
             'status' => 'success',
             'message' => get_phrase('recording_deleted_successfully'),
@@ -1227,7 +1219,6 @@ class Student extends CI_Controller {
     }
 
     $user_id = $this->session->userdata('user_id');
-    log_message('debug', 'get_classes_by_school - user_id: ' . ($user_id ?? 'null'));
 
     // Mapper user_id à student_id dans la table students
     $this->db->select('id');
@@ -2222,7 +2213,6 @@ public function get_user_school() {
         }
 
         $events = $this->db->get()->result_array();
-        log_message('debug', 'Requête SQL pour événements : ' . $this->db->last_query());
 
         // Post-traitement des événements
         $processed_events = [];
@@ -2271,7 +2261,6 @@ public function get_user_school() {
                         $this->db->where('DATE(start_date) <=', $end_date);
                     }
                     $appointments = $this->db->get()->result_array();
-                    log_message('debug', 'Requête SQL pour occurrences : ' . $this->db->last_query());
 
                     foreach ($appointments as $appointment) {
                         $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
@@ -2407,7 +2396,6 @@ public function get_user_school() {
             }
         }
 
-        log_message('debug', 'get_events - Processed events: ' . json_encode($processed_events));
         echo json_encode([
             'status' => 'success',
             'data' => $processed_events,
@@ -2495,7 +2483,6 @@ public function start_meeting() {
     $this->db->where('DATE(start_date) !=', $occurrence_date);
     $this->db->where('Etat', 1);
     $this->db->update('appointments', ['Etat' => 0]);
-    log_message('debug', 'start_meeting - Deactivated other appointments for event_id: ' . $event_id . ', except for occurrence_date: ' . $occurrence_date);
 
     // Vérifier si un appointment actif existe pour cette occurrence
     $this->db->where('event_id', $event_id);
@@ -2504,7 +2491,6 @@ public function start_meeting() {
     $appointment = $this->db->get('appointments')->row_array();
     $appointment_id = $appointment ? $appointment['id'] : null;
 
-    log_message('debug', 'start_meeting - Appointment check for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . ($appointment_id ?? 'none'));
 
     // Charger la configuration BigBlueButton
     $this->load->config('bigbluebutton');
@@ -2565,7 +2551,6 @@ public function start_meeting() {
                 $join_checksum = sha1("join" . $join_params . $bbb_secret);
                 $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
-                log_message('debug', 'start_meeting - Joining existing meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $appointment['meeting_id'] . ', join_url: ' . $join_url);
 
                 $csrf = [
                     'csrfName' => $this->security->get_csrf_token_name(),
@@ -2584,7 +2569,6 @@ public function start_meeting() {
                 return;
             } else {
                 // Marquer l'ancien appointment comme inactif
-                log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', marking appointment as inactive');
                 $this->db->where('id', $appointment_id);
                 $this->db->update('appointments', ['Etat' => 0]);
             }
@@ -2604,7 +2588,6 @@ public function start_meeting() {
     ];
     $this->db->insert('appointments', $appointment_data);
     $appointment_id = $this->db->insert_id();
-    log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
 
     // Créer un nouveau meeting BigBlueButton
     $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
@@ -2621,7 +2604,7 @@ public function start_meeting() {
               "&record=true" .
               "&autoStartRecording=false" .
               "&allowStartStopRecording=true" .
-              "&welcome=" . urlencode("Welcome to the meeting: " . $event['title']) .
+              "&welcome=" . urlencode( get_phrase("Welcome to the meeting"). ':' . ' ' . $event['title']) .
               "&endWhenNoModerator=false" .
               "&duration=120";
 
@@ -2720,7 +2703,6 @@ public function start_meeting() {
         $participant_count = 0;
         if (!$curl_error) {
             $is_running_xml = simplexml_load_string($is_running_response);
-            log_message('debug', 'start_meeting - BBB isMeetingRunning response for meeting_id: ' . $new_meeting_id . ': ' . $is_running_response);
             if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
                 $is_running = (string)$is_running_xml->running === "true";
                 if ($is_running) {
@@ -2749,7 +2731,6 @@ public function start_meeting() {
         $join_checksum = sha1("join" . $join_params . $bbb_secret);
         $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
-        log_message('debug', 'start_meeting - Created new meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $new_meeting_id . ', join_url: ' . $join_url);
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
@@ -2790,7 +2771,6 @@ public function get_student_schools() {
     }
 
     $user_id = $this->session->userdata('user_id');
-    log_message('debug', 'get_student_schools - user_id: ' . ($user_id ?? 'null'));
 
     if (!$user_id) {
         $csrf = [
@@ -2812,9 +2792,7 @@ public function get_student_schools() {
     $this->db->where('schools.status', 1);
     $this->db->order_by('schools.name', 'ASC');
     $schools = $this->db->get()->result_array();
-    
-    log_message('debug', 'get_student_schools - SQL Query: ' . $this->db->last_query());
-    log_message('debug', 'get_student_schools - Schools found: ' . json_encode($schools));
+
 
     $csrf = [
         'csrfName' => $this->security->get_csrf_token_name(),
@@ -2841,12 +2819,10 @@ public function get_classes_with_events() {
     }
 
     $user_id = $this->session->userdata('user_id');
-    log_message('debug', 'get_classes_with_events - user_id: ' . ($user_id ?? 'null'));
 
     $school_id = $this->input->post('school_id', true);
     $start_date = $this->input->post('start_date', true);
     $end_date = $this->input->post('end_date', true);
-    log_message('debug', 'get_classes_with_events - Parameters: school_id=' . ($school_id ?? 'null') . ', start_date=' . ($start_date ?? 'null') . ', end_date=' . ($end_date ?? 'null'));
 
     if (empty($school_id) || empty($start_date) || empty($end_date)) {
         $csrf = [
@@ -2886,8 +2862,6 @@ public function get_classes_with_events() {
     $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
     $this->db->order_by('classes.name', 'ASC');
     $classes = $this->db->get()->result_array();
-    log_message('debug', 'get_classes_with_events - SQL Query: ' . $this->db->last_query());
-    log_message('debug', 'get_classes_with_events - Classes found: ' . json_encode($classes));
 
     $csrf = [
         'csrfName' => $this->security->get_csrf_token_name(),
