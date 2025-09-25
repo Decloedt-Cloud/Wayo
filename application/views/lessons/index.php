@@ -19,7 +19,7 @@ header("Pragma: no-cache");
 	<link rel="shortcut icon" href="<?php echo $this->settings_model->get_favicon(); ?>">
 	<?php include 'includes_top.php';?>
 </head>
-<body class="justify-content-center" style="background-color: #fff !important;">
+<body class="justify-content-center" style="background-color: #fafbfe !important;">
 	<?php
 		include 'lessons.php';
 		include 'includes_bottom.php';

@@ -163,7 +163,6 @@ class User_model extends CI_Model
 				'status' => true,
 				'notification' => $notification
 			);
-
 		} else {
 			$response = array(
 				'status' => false,
@@ -528,7 +527,9 @@ class User_model extends CI_Model
 				$humhubResponse = $this->humhub_sso->updateUser($user->humhub_id, $humhubData);
 				log_message('debug', 'Réponse HumHub updateUser: ' . json_encode($humhubResponse));
 				if (isset($_FILES['image_file']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
+
 					$sourceLocal = 'uploads/users/' . $param1 . '.jpg';
+
 					move_uploaded_file($_FILES['image_file']['tmp_name'], $sourceLocal);
 					// 2. Copier vers HumHub
 					$sourceImage = FCPATH . $sourceLocal;
@@ -553,7 +554,6 @@ class User_model extends CI_Model
 				'status' => true,
 				'notification' => $notification
 			);
-
 		} else {
 			$response = array(
 				'status' => false,
@@ -631,8 +631,8 @@ class User_model extends CI_Model
 		$teacher_id = html_escape($this->input->post('teacher_id'));
 		$column_name = html_escape($this->input->post('column_name'));
 		$value = html_escape($this->input->post('value'));
-
 		$marks = 0;
+
 		$assignment = 0;
 		$check_row = $this->db->get_where('teacher_permissions', array('class_id' => $class_id, 'teacher_id' => $teacher_id));
 		if ($check_row->num_rows() > 0) {
@@ -648,6 +648,7 @@ class User_model extends CI_Model
 
 			// Mets à jour la variable correspondant à la colonne modifiée
 			if ($column_name === 'marks') {
+
 				$marks = (int) $value;
 			}
 			if ($column_name === 'assignment') {
@@ -655,13 +656,12 @@ class User_model extends CI_Model
 			}
 			log_message('debug', "Après update => marks: {$marks}, assignment: {$assignment}, column_name: {$column_name}, value: {$value}");
 
-
 		} else {
 			$data['class_id'] = $class_id;
-
 			$data['teacher_id'] = $teacher_id;
 			$data['marks'] = ($column_name === 'marks') ? 1 : 0;
 			$data['assignment'] = ($column_name === 'assignment') ? 1 : 0;
+
 			$data[$column_name] = 1;
 			$this->db->insert('teacher_permissions', $data);
 			log_message('debug', 'Permission insérée : ' . json_encode($data));
@@ -761,7 +761,6 @@ class User_model extends CI_Model
 				'status' => true,
 				'notification' => get_phrase('accountant_has_been_updated_successfully')
 			);
-
 		} else {
 			$response = array(
 				'status' => false,
@@ -770,7 +769,6 @@ class User_model extends CI_Model
 		}
 
 		return json_encode($response);
-
 	}
 
 	public function accountant_delete($param1 = '')
@@ -998,19 +996,32 @@ class User_model extends CI_Model
 			$student_id = $this->db->insert_id();// Récupérer l'ID de l'étudiant créé
 
 			// Inscription à la classe
+			$class_id   = html_escape($this->input->post('class_id'));
 			$enroll_data = [
 				'student_id' => $student_id,
-				'class_id' => html_escape($this->input->post('class_id')),
+				'class_id'   => $class_id,
+				'session'    => $this->active_session,
+				'school_id'  => $this->school_id
 
-				'session' => $this->active_session,
-				'school_id' => $this->school_id
 			];
-
 			// Insérer l'inscription de l'étudiant
 			if (!$this->db->insert('enrols', $enroll_data)) {
 				$this->session->set_flashdata('error', get_phrase('enrollment_failed'));
 				throw new Exception(get_phrase('enrollment_failed'));
 			}
+
+			// Ajouter l'étudiant dans l’espace HumHub lié à la classe
+			$classRow = $this->db->get_where('classes', ['id' => $class_id])->row();
+			if ($classRow && !empty($classRow->humhub_space_id) && isset($humhubResponse['id'])) {
+				$spaceId      = $classRow->humhub_space_id;
+				$humhubUserId = $humhubResponse['id'];
+
+				$addToSpaceResult = $this->humhub_sso->addUserSpace($spaceId, $humhubUserId);
+				log_message('debug', 'Résultat ajout étudiant dans espace HumHub : ' . json_encode($addToSpaceResult));
+			} else {
+				log_message('error', 'Impossible d’ajouter étudiant dans espace HumHub : class_id=' . $class_id . ' / humhub_id=' . ($humhubResponse['id'] ?? 'null'));
+			}
+
 
 			if (isset($_FILES['student_image']) && is_uploaded_file($_FILES['student_image']['tmp_name'])) {
 				$upload_path = 'uploads/users/' . $user_id . '.jpg';
@@ -1020,7 +1031,7 @@ class User_model extends CI_Model
 					throw new Exception(get_phrase('image_upload_failed'));
 				}
 
-				// ✅ Copier vers HumHub
+				// Copier vers HumHub
 				if (isset($humhubResponse['guid'])) {
 					$guid = $humhubResponse['guid'];
 					$sourceImage = FCPATH . $upload_path;
@@ -1035,8 +1046,6 @@ class User_model extends CI_Model
 					}
 				}
 			}
-
-
 
 
 			// Envoi d'email
@@ -1141,6 +1150,19 @@ class User_model extends CI_Model
 				$enroll_data['session'] = $this->active_session;
 				$enroll_data['school_id'] = $this->school_id;
 				$this->db->insert('enrols', $enroll_data);
+
+				//Ajouter aussi étudiant dans l’espace HumHub de la classe
+				$classRow = $this->db->get_where('classes', ['id' => $class_id])->row();
+				if ($classRow && !empty($classRow->humhub_space_id) && isset($humhubResponse['id'])) {
+					$spaceId      = $classRow->humhub_space_id;
+					$humhubUserId = $humhubResponse['id'];
+
+					$addToSpaceResult = $this->humhub_sso->addUserSpace($spaceId, $humhubUserId);
+					log_message('debug', 'Résultat ajout étudiant dans espace HumHub : ' . json_encode($addToSpaceResult));
+				} else {
+					log_message('error', 'Impossible d’ajouter étudiant dans espace HumHub : class_id=' . $class_id . ' / humhub_id=' . ($humhubResponse['id'] ?? 'null'));
+				}
+
 
 				// Envoi d'email de réinitialisation du mot de passe
 				$reset_link = base_url("login/new_password_student?user_id=" . $user_id);
@@ -1273,6 +1295,18 @@ class User_model extends CI_Model
 						$enroll_data['session'] = $session_id;
 						$enroll_data['school_id'] = $school_id;
 						$this->db->insert('enrols', $enroll_data);
+						//Ajouter aussi étudiant dans l’espace HumHub de la classe
+						$classRow = $this->db->get_where('classes', ['id' => $class_id])->row();
+						if ($classRow && !empty($classRow->humhub_space_id) && isset($humhubResponse['id'])) {
+							$spaceId      = $classRow->humhub_space_id;
+							$humhubUserId = $humhubResponse['id'];
+
+							$addToSpaceResult = $this->humhub_sso->addUserSpace($spaceId, $humhubUserId);
+							log_message('debug', 'Résultat ajout étudiant dans espace HumHub : ' . json_encode($addToSpaceResult));
+						} else {
+							log_message('error', 'Impossible d’ajouter étudiant dans espace HumHub : class_id=' . $class_id . ' / humhub_id=' . ($humhubResponse['id'] ?? 'null'));
+						}
+
 						// Envoi d'email de réinitialisation du mot de passe
 						$reset_link = base_url("login/new_password_student?user_id=" . $user_id);
 						if (!$this->email_model->password_send_add_student($reset_link, $user_id)) {
@@ -1323,6 +1357,7 @@ class User_model extends CI_Model
 		// Convertir la chaîne de texte (date) en format 'Y-m-d' (année-mois-jour) pour une insertion dans la base de données
 		// - strtotime() convertit la date en timestamp Unix
 		// - date('Y-m-d', ...) formate ce timestamp en une date standardisée pour la base de données.
+
 		$user_data['birthday'] = date('Y-m-d', strtotime($posted_birthday));//Avec date('Y-m-d', strtotime(...)) : Le format stocké sera Y-m-d (ex. 2025-04-04), un format de date standard.
 
 		$user_data['gender'] = html_escape($this->input->post('gender'));
@@ -1407,13 +1442,14 @@ class User_model extends CI_Model
 							'profile' => [
 								'firstname' => $firstname,
 								'lastname' => $lastname
+
 							]
 						];
 
 						$humhubResponse = $this->humhub_sso->updateUser($user->humhub_id, $humhubData);
 						log_message('debug', 'Réponse HumHub updateUser depuis student_update: ' . json_encode($humhubResponse));
 						if (isset($_FILES['student_image']) && is_uploaded_file($_FILES['student_image']['tmp_name'])) {
-							$sourceLocal = 'uploads/users/' . $user_id . '.jpg';
+							$sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
 							move_uploaded_file($_FILES['student_image']['tmp_name'], $sourceLocal);
 							// 2. Copier vers HumHub
 							$sourceImage = FCPATH . $sourceLocal;
@@ -1488,7 +1524,6 @@ class User_model extends CI_Model
 					'notification' => get_phrase('error_deleting_humhub_user')
 				);
 				return json_encode($response);
-
 			}
 		}
 
@@ -1818,6 +1853,7 @@ class User_model extends CI_Model
 	public function update_profile()
 	{
 		$response = array();
+
 		$user_id = $this->session->userdata('user_id');
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$email = htmlspecialchars($this->input->post('email'));
@@ -1836,8 +1872,10 @@ class User_model extends CI_Model
 			if (isset($_FILES['profile_image']) && is_uploaded_file($_FILES['profile_image']['tmp_name'])) {
 
 				$MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2 Mo
+
 				$ALLOWED_EXT = array('jpg', 'jpeg', 'png');
 				$ALLOWED_MIME = array('image/jpeg', 'image/png');
+
 
 				$file = $_FILES['profile_image'];
 
@@ -1875,6 +1913,7 @@ class User_model extends CI_Model
 				// MIME (sécurité)
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mime = finfo_file($finfo, $file['tmp_name']);
+
 				finfo_close($finfo);
 				if (!in_array($mime, $ALLOWED_MIME, true)) {
 					$response = array('status' => false, 'notification' => 'Fichier invalide (type MIME incorrect).');
@@ -1961,31 +2000,30 @@ class User_model extends CI_Model
 		}
 	}
 
-	public function get_unread_messages_count($wayo_user_id)//user_model
-	{
-		// 1. Récupérer le HumHub ID
-		$query = $this->db->get_where('users', ['id' => $wayo_user_id]);
-		if ($query->num_rows() == 0 || empty($query->row()->humhub_id)) {
-			log_message('error', 'HumHub ID introuvable pour user Wayo ID: ' . $wayo_user_id);
-			return 0;
-		}
-
-		$humhub_id = $query->row()->humhub_id;
-
-		$sql = "
+public function get_unread_messages_count($wayo_user_id)//user_model
+{
+    // 1. Récupérer le HumHub ID
+    $query = $this->db->get_where('users', ['id' => $wayo_user_id]);
+    if ($query->num_rows() == 0 || empty($query->row()->humhub_id)) {
+        log_message('error', 'HumHub ID introuvable pour user Wayo ID: ' . $wayo_user_id);
+        return 0;
+    }
+ 
+    $humhub_id = $query->row()->humhub_id;
+ 
+    $sql = "
         SELECT COUNT(*) AS count
-        FROM humhub_local.message m
-        JOIN humhub_local.user_message um ON um.message_id = m.id
+        FROM humhub.message m
+        JOIN humhub.user_message um ON um.message_id = m.id
         WHERE um.user_id = ?
           AND (m.updated_at > um.last_viewed OR um.last_viewed IS NULL)
           AND m.updated_by != ?
     ";
-
-		$result = $this->db->query($sql, [$humhub_id, $humhub_id]);
-
-		return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
-	}
-
+ 
+    $result = $this->db->query($sql, [$humhub_id, $humhub_id]);
+   
+    return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
+}
 
 	public function update_password()
 	{
@@ -2259,6 +2297,7 @@ class User_model extends CI_Model
 	{
 		$emailPattern = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
 
+
 		if ($this->input->post('register_email') == '' || !preg_match($emailPattern, $this->input->post('register_email')) || $this->input->post('register_password') == '' || $this->input->post('register_first_name') == '' || $this->input->post('register_last_name') == '' || $this->input->post('register_date_of_birth') == '' || $this->input->post('register_repeat_password') == '') {
 
 			$this->session->set_flashdata('error', get_phrase('validation_error'));
@@ -2274,6 +2313,56 @@ class User_model extends CI_Model
 			}
 
 		} else {
+
+			$data['name'] = htmlspecialchars($this->input->post('register_first_name') . ' ' . $this->input->post('register_last_name'));
+			$data['email'] = htmlspecialchars($this->input->post('register_email'));
+			$data['birthday'] = htmlspecialchars($this->input->post('register_date_of_birth'));
+			$data['gender'] = htmlspecialchars($this->input->post('register_gender'));
+			$data['password'] = sha1($this->input->post('register_password'));
+			$data['role'] = 'student';
+			$data['status'] = 1;
+			$data['school_id'] = 1;
+			$data['watch_history'] = '[]';
+
+			$this->db->insert('users', $data);
+			$user_id = $this->db->insert_id();
+
+
+			if (isset($_FILES['student_image_upload']) && $_FILES['student_image_upload']['error'] == UPLOAD_ERR_OK) {
+				$upload_path = 'uploads/users/' . $user_id . '.jpg';
+				move_uploaded_file($_FILES['student_image_upload']['tmp_name'], $upload_path);
+			}
+			$this->email_model->Add_online_admission($data['email'], $user_id, $data['name']);
+			$this->session->set_userdata('user_login_type', true);
+			$this->session->set_userdata('student_login', true);
+			$this->session->set_userdata('user_id', $user_id);
+			$this->session->set_userdata('school_id', 1);
+			$this->session->set_userdata('user_name', $data['name']);
+			$this->session->set_userdata('user_type', 'student');
+			$this->session->set_flashdata('success', get_phrase('registration_successful'));
+		}
+
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+		}
+	}
+
+
+		if ($this->input->post('register_email') == '' || !preg_match($emailPattern, $this->input->post('register_email')) || $this->input->post('register_password') == '' || $this->input->post('register_first_name') == '' || $this->input->post('register_last_name') == '' || $this->input->post('register_date_of_birth') == '' || $this->input->post('register_repeat_password') == '') {
+
+
+			$this->session->set_flashdata('error', get_phrase('validation_error'));
+			if (isset($_SERVER['HTTP_REFERER'])) {
+				redirect($_SERVER['HTTP_REFERER'], 'refresh');
+			}
+		} else if ($this->db->get_where('users', array('email' => $this->input->post('register_email')))->num_rows() > 0) {
+
+			$this->session->set_flashdata('error', get_phrase('email_already_exists'));
+			if (isset($_SERVER['HTTP_REFERER'])) {
+				redirect($_SERVER['HTTP_REFERER'], 'refresh');
+			}
+		} else {
+
 
 			$data['name'] = htmlspecialchars($this->input->post('register_first_name') . ' ' . $this->input->post('register_last_name'));
 			$data['email'] = htmlspecialchars($this->input->post('register_email'));
@@ -2414,7 +2503,7 @@ class User_model extends CI_Model
 				]);
 			}
 
-			// ✅ Copier vers HumHub si GUID disponible
+			// Copier vers HumHub si GUID disponible
 			if (isset($humhubResponse['guid'])) {
 				$guid = $humhubResponse['guid'];
 				$sourceImage = FCPATH . $upload_path;
@@ -2431,6 +2520,7 @@ class User_model extends CI_Model
 				log_message('error', '❌ GUID manquant dans la réponse HumHub.');
 			}
 		}
+
 
 
 		// Envoyer un email de confirmation
@@ -2458,12 +2548,14 @@ class User_model extends CI_Model
 		]);
 	}
 
+
 	public function get_schools_count()
 	{
 		$this->db->where('status', 1);
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
+
 
 	public function get_schools_per_category_count($category)
 	{
@@ -2472,5 +2564,4 @@ class User_model extends CI_Model
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
-
 }
