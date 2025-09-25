@@ -16,7 +16,7 @@ class Login extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-                    log_message('error', 'Le contrôleur Login a bien été appelé.');
+		log_message('error', 'Le contrôleur Login a bien été appelé.');
 
 		$this->load->database();
 		$this->load->library('Humhub_sso');
@@ -53,13 +53,13 @@ class Login extends CI_Controller
 		} elseif ($this->session->userdata('parent_login') == true) {
 			redirect(route('dashboard'), 'refresh');
 		} elseif ($this->session->userdata('student_login') == true) {
-    if ($this->session->userdata('student_just_registered')) {
-        $this->session->unset_userdata('student_just_registered');
-        redirect(site_url('home/communities'), 'refresh');
-    } else {
-        redirect(site_url('student/dashboard'), 'refresh');
-    }
-} elseif ($this->session->userdata('accountant_login') == true) {
+			if ($this->session->userdata('student_just_registered')) {
+				$this->session->unset_userdata('student_just_registered');
+				redirect(site_url('home/communities'), 'refresh');
+			} else {
+				redirect(site_url('student/dashboard'), 'refresh');
+			}
+		} elseif ($this->session->userdata('accountant_login') == true) {
 			redirect(route('dashboard'), 'refresh');
 		} elseif ($this->session->userdata('librarian_login') == true) {
 			redirect(route('dashboard'), 'refresh');
@@ -76,16 +76,16 @@ class Login extends CI_Controller
 		$password = $this->input->post('password');
 		$credential = array('email' => $email, 'password' => sha1($password));
 
-		
+
 		// Checking login credential for admin
 		$query = $this->db->get_where('users', $credential);
 		if ($query->num_rows() > 0) {
 			$row = $query->row();
 
-				// On stocke l’objet complet pour la SSO
-				$this->session->set_userdata('user', $row);
-				$this->session->set_userdata('password', $password);
-			
+			// On stocke l’objet complet pour la SSO
+			$this->session->set_userdata('user', $row);
+			$this->session->set_userdata('password', $password);
+
 
 			$this->session->set_userdata('user_login_type', true);
 			if ($row->role == 'superadmin') {
@@ -94,7 +94,7 @@ class Login extends CI_Controller
 				$this->session->set_userdata('school_id', $row->school_id);
 				$this->session->set_userdata('user_name', $row->name);
 				$this->session->set_userdata('user_type', 'superadmin');
-				
+
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect(site_url('superadmin/dashboard'), 'refresh');
 			} elseif ($row->role == 'admin') {
@@ -173,9 +173,9 @@ class Login extends CI_Controller
 		if ($query->num_rows() > 0) {
 			$row = $query->row();
 			// On stocke l’objet complet pour la SSO
-				$this->session->set_userdata('user', $row);
-				$this->session->set_userdata('password', $password);
-			
+			$this->session->set_userdata('user', $row);
+			$this->session->set_userdata('password', $password);
+
 
 			$this->session->set_userdata('user_login_type', true);
 			if ($row->role == 'superadmin') {
@@ -184,8 +184,8 @@ class Login extends CI_Controller
 				$this->session->set_userdata('school_id', $row->school_id);
 				$this->session->set_userdata('user_name', $row->name);
 				$this->session->set_userdata('user_type', 'superadmin');
-			
-				
+
+
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect('/superadmin/dashboard', 'refresh');
 			} elseif ($row->role == 'admin') {
@@ -209,7 +209,7 @@ class Login extends CI_Controller
 				if ($row->status != 1) {
 					$this->session->set_flashdata('error_message', get_phrase('your_account_has_been_disabled'));
 					if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
+						redirect($_SERVER['HTTP_REFERER'], 'refresh');
 					}
 				}
 				$this->session->set_userdata('student_login', true);
@@ -320,210 +320,225 @@ class Login extends CI_Controller
 		}
 	}
 
-		// RETREIVE PASSWORD
-		public function retrieve_password_site()
-		{
-			$email = $this->input->post('email');
-			$query = $this->db->get_where('users', array('email' => $email));
-			if ($query->num_rows() > 0) {
-				$query = $query->row_array();
-				$new_password = substr(md5(rand(100000000, 20000000000)), 0, 7);
-	
-				// updating the database
-				$updater = array(
-					'password' => sha1($new_password)
-				);
-				$this->db->where('id', $query['id']);
-				$this->db->update('users', $updater);
-	
-				// sending mail to user
-				$this->email_model->password_reset_email($new_password, $query['id']);
+	// RETREIVE PASSWORD
+	public function retrieve_password_site()
+	{
+		$email = $this->input->post('email');
+		$query = $this->db->get_where('users', array('email' => $email));
+		if ($query->num_rows() > 0) {
+			$query = $query->row_array();
+			$new_password = substr(md5(rand(100000000, 20000000000)), 0, 7);
 
-				$this->session->set_flashdata('message', get_phrase('please_check_your_mail_inbox'));
-				$this->session->set_flashdata('message_type', 'success');
-			      
-            		redirect($_SERVER['HTTP_REFERER'], 'refresh');
-       				 
-			} else {
+			// updating the database
+			$updater = array(
+				'password' => sha1($new_password)
+			);
+			$this->db->where('id', $query['id']);
+			$this->db->update('users', $updater);
 
-				$this->session->set_flashdata('message', get_phrase('invalid_your_email'));
-				$this->session->set_flashdata('message_type', 'danger');
+			// sending mail to user
+			$this->email_model->password_reset_email($new_password, $query['id']);
 
-						redirect($_SERVER['HTTP_REFERER'], 'refresh');
-			
-			}
+			$this->session->set_flashdata('message', get_phrase('please_check_your_mail_inbox'));
+			$this->session->set_flashdata('message_type', 'success');
+
+			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+
+		} else {
+
+			$this->session->set_flashdata('message', get_phrase('invalid_your_email'));
+			$this->session->set_flashdata('message_type', 'danger');
+
+			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+
 		}
-		public function send_reset_link()
-		{
-			
-			$email = $this->input->post('email');
-			$query = $this->db->get_where('users', array('email' => $email));
+	}
+	public function send_reset_link()
+	{
 
-			if ($query->num_rows() > 0) {
-				$user = $query->row_array();
-				
-				// Generate a secure token
-				$token = bin2hex(random_bytes(50));
-				
-				// Set the expiration date (1 hour from now)
-				$expires_at = date("Y-m-d H:i:s", strtotime('+24 hour'));
+		$email = $this->input->post('email');
+		$query = $this->db->get_where('users', array('email' => $email));
 
-				// Update the database with the token and expiration
+		if ($query->num_rows() > 0) {
+			$user = $query->row_array();
+
+			// Generate a secure token
+			$token = bin2hex(random_bytes(50));
+
+			// Set the expiration date (1 hour from now)
+			$expires_at = date("Y-m-d H:i:s", strtotime('+24 hour'));
+
+			// Update the database with the token and expiration
+			$this->db->where('id', $user['id']);
+			$this->db->update('users', array(
+				'reset_token' => $token,
+				'reset_expires_at' => $expires_at
+			));
+
+			// Create the reset link
+			$reset_link = base_url("login/new_password?token=" . $token);
+			// print_r($reset_link);
+			// die;
+			// Send the email
+			$this->email_model->password_reset_email_link($reset_link, $user['id']);
+
+			// Vérifier si l'alerte a déjà été affichée
+			// if (!$this->session->userdata('alert_shown')) {
+			$this->session->set_flashdata('message', get_phrase('please_check_your_mail_inbox'));
+			$this->session->set_flashdata('message_type', 'success');
+
+			// }
+
+			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+
+
+		} else {
+			// If the email is not found
+			$this->session->set_flashdata('message', get_phrase('invalid_email_address'));
+			$this->session->set_flashdata('message_type', 'danger');
+			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+		}
+	}
+	public function new_password()
+	{
+		$this->load->view('reset_password');
+	}
+	public function new_password_student()
+	{
+		$this->load->view('new_password');
+	}
+	public function reset_password()
+	{
+		$token = $this->input->get('token');
+		$query = $this->db->get_where('users', array('reset_token' => $token));
+
+		if ($query->num_rows() > 0) {
+			$user = $query->row_array();
+			// Vérifier si le jeton n'a pas expiré
+			if (strtotime($user['reset_expires_at']) > time()) {
+				$new_password = $this->input->post('new_password');
+				$confirm_password = $this->input->post('confirm_password');
+
+				if ($new_password === $confirm_password) {
+
+					// Mettre à jour le mot de passe
+					$this->db->where('id', $user['id']);
+					$this->db->update('users', array(
+						'password' => sha1($new_password),
+						'reset_token' => NULL,
+						'reset_expires_at' => NULL
+					));
+
+					// Message de succès
+					$this->session->set_flashdata('message', get_phrase('password_reset_successful'));
+					$this->session->set_flashdata('message_type', 'success');
+					redirect('login');
+				} else {
+					// Les mots de passe ne correspondent pas
+					$this->session->set_flashdata('message', get_phrase('passwords_do_not_match'));
+					$this->session->set_flashdata('message_type', 'danger');
+					redirect($_SERVER['HTTP_REFERER'], 'refresh');
+				}
+			} else {
+				// Jeton expiré
+				$this->session->set_flashdata('message', get_phrase('reset_link_expired'));
+				$this->session->set_flashdata('message_type', 'danger');
+				redirect('login/new_password');
+			}
+		} else {
+			// Jeton invalide
+			$this->session->set_flashdata('message', get_phrase('invalid_reset_link'));
+			$this->session->set_flashdata('message_type', 'danger');
+			redirect('login/new_password');
+		}
+	}
+
+	public function add_new_password()
+	{
+		$user_id = $this->input->get('user_id');
+		$query = $this->db->get_where('users', array('id' => $user_id));
+
+		if ($query->num_rows() > 0) {
+			$user = $query->row_array();
+			// Vérifier si le jeton n'a pas expiré
+
+			$new_password = $this->input->post('new_password');
+			$confirm_password = $this->input->post('confirm_password');
+
+			if ($new_password === $confirm_password) {
+
+				// Mettre à jour le mot de passe
 				$this->db->where('id', $user['id']);
 				$this->db->update('users', array(
-					'reset_token' => $token,
-					'reset_expires_at' => $expires_at
+					'password' => sha1($new_password),
+
+
 				));
 
-				// Create the reset link
-				$reset_link = base_url("login/new_password?token=" . $token);
-				// print_r($reset_link);
-				// die;
-				// Send the email
-				$this->email_model->password_reset_email_link($reset_link,$user['id']);
-
-				// Vérifier si l'alerte a déjà été affichée
-				// if (!$this->session->userdata('alert_shown')) {
-					$this->session->set_flashdata('message', get_phrase('please_check_your_mail_inbox'));
-					$this->session->set_flashdata('message_type', 'success');
-					
-				// }
-
-            		redirect($_SERVER['HTTP_REFERER'], 'refresh');
-
-			
+				// Message de succès
+				$this->session->set_flashdata('message', get_phrase('password_add_successful'));
+				$this->session->set_flashdata('message_type', 'success');
+				redirect('login');
 			} else {
-				// If the email is not found
-				$this->session->set_flashdata('message', get_phrase('invalid_email_address'));
+				// Les mots de passe ne correspondent pas
+				$this->session->set_flashdata('message', get_phrase('passwords_do_not_match'));
 				$this->session->set_flashdata('message_type', 'danger');
 				redirect($_SERVER['HTTP_REFERER'], 'refresh');
 			}
+
+		} else {
+			// Jeton invalide
+			$this->session->set_flashdata('message', get_phrase('invalid_reset_link'));
+			$this->session->set_flashdata('message_type', 'danger');
+			redirect('login/new_password');
 		}
-		public function new_password(){
-			$this->load->view('reset_password');
-		}
-		public function new_password_student(){
-			$this->load->view('new_password');
-		}
-		public function reset_password()
-		{
-			$token = $this->input->get('token');
-			$query = $this->db->get_where('users', array('reset_token' => $token));
+	}
 
-			if ($query->num_rows() > 0) {
-				$user = $query->row_array();
-				// Vérifier si le jeton n'a pas expiré
-				if (strtotime($user['reset_expires_at']) > time()) {
-					$new_password = $this->input->post('new_password');
-					$confirm_password = $this->input->post('confirm_password');
 
-					if ($new_password === $confirm_password) {
+	public function validate_credentials()
+	{
+		$email = $this->input->post('email');
+		$password = $this->input->post('password');
+		$query = $this->db->get_where('users', array('email' => $email, 'password' => sha1($password)));
+		$user = $query->row();
 
-						// Mettre à jour le mot de passe
-						$this->db->where('id', $user['id']);
-						$this->db->update('users', array(
-							'password' => sha1($new_password),
-							'reset_token' => NULL,
-							'reset_expires_at' => NULL
-						));
 
-						// Message de succès
-						$this->session->set_flashdata('message', get_phrase('password_reset_successful'));
-						$this->session->set_flashdata('message_type', 'success');
-						redirect('login');
-					} else {
-						// Les mots de passe ne correspondent pas
-						$this->session->set_flashdata('message', get_phrase('passwords_do_not_match'));
-						$this->session->set_flashdata('message_type', 'danger');
-						redirect($_SERVER['HTTP_REFERER'], 'refresh');
-					}
-				} else {
-					// Jeton expiré
-					$this->session->set_flashdata('message', get_phrase('reset_link_expired'));
-					$this->session->set_flashdata('message_type', 'danger');
-					redirect('login/new_password');
-				}
+		// Préparer le nouveau jeton CSRF
+		$csrf = array(
+			'csrfName' => $this->security->get_csrf_token_name(),
+			'csrfHash' => $this->security->get_csrf_hash(),
+		);
+
+		if ($user) {
+			if ($user->status == 0) {
+				// Compte désactivé
+				echo json_encode(array(
+					'status' => false,
+					'message' => get_phrase('your_account_has_been_deactivated'),
+					'csrf' => $csrf
+				));
 			} else {
-				// Jeton invalide
-				$this->session->set_flashdata('message', get_phrase('invalid_reset_link'));
-				$this->session->set_flashdata('message_type', 'danger');
-				redirect('login/new_password');
+				//  Connexion réussie
+				echo json_encode(array(
+					'status' => true,
+					'message' => get_phrase('welcome'),
+					'csrf' => $csrf
+				));
 			}
+		} else {
+			//  Email ou mot de passe invalide
+			echo json_encode(array(
+				'status' => false,
+				'message' => get_phrase('invalid_email_or_password'),
+				'csrf' => $csrf
+			));
 		}
-
-		public function add_new_password()
-		{
-			$user_id = $this->input->get('user_id');
-			$query = $this->db->get_where('users', array('id' => $user_id));
-
-			if ($query->num_rows() > 0) {
-				$user = $query->row_array();
-				// Vérifier si le jeton n'a pas expiré
-				
-					$new_password = $this->input->post('new_password');
-					$confirm_password = $this->input->post('confirm_password');
-
-					if ($new_password === $confirm_password) {
-
-						// Mettre à jour le mot de passe
-						$this->db->where('id', $user['id']);
-						$this->db->update('users', array(
-							'password' => sha1($new_password),
-							
-							
-						));
-
-						// Message de succès
-						$this->session->set_flashdata('message', get_phrase('password_add_successful'));
-						$this->session->set_flashdata('message_type', 'success');
-						redirect('login');
-					} else {
-						// Les mots de passe ne correspondent pas
-						$this->session->set_flashdata('message', get_phrase('passwords_do_not_match'));
-						$this->session->set_flashdata('message_type', 'danger');
-						redirect($_SERVER['HTTP_REFERER'], 'refresh');
-					}
-				
-			} else {
-				// Jeton invalide
-				$this->session->set_flashdata('message', get_phrase('invalid_reset_link'));
-				$this->session->set_flashdata('message_type', 'danger');
-				redirect('login/new_password');
-			}
-		}
-
-
-		 public function validate_credentials()
-			{
-				$email = $this->input->post('email');
-				$password = $this->input->post('password');
-				$query = $this->db->get_where('users', array('email' => $email, 'password' => sha1($password)));
-				$num_rows = $query->num_rows();
-
-				// Préparer le nouveau jeton CSRF
-				$csrf = array(
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash(),
-				);
-
-				if ($num_rows > 0) {
-					echo json_encode(array(
-						'status' => true,
-						'message' => get_phrase('welcome'),
-						'csrf' => $csrf
-					));
-				} else {
-					echo json_encode(array(
-						'status' => false,
-						'message' => get_phrase('invalid_email_or_password'),
-						'csrf' => $csrf
-					));
-				}
-			}
-	public function validate_code() {
+	}
+	public function validate_code()
+	{
 		$user_id = $this->input->post('user_id');
 		$code = $this->input->post('validation_code');
-	
+
 		$query = $this->db->get_where('users', array('id' => $user_id))->row_array();
 		if (sizeof($query) > 0) {
 			// Check if the code matches and if it's still valid
@@ -540,54 +555,57 @@ class Login extends CI_Controller
 			$this->session->set_flashdata('message', 'User not found');
 			$this->session->set_flashdata('message_type', 'danger');
 		}
-	
+
 		redirect($_SERVER['HTTP_REFERER'], 'refresh');
 	}
-	
 
-	public function check_email_exists() {
-    $email = $this->input->post('email');
-    $query = $this->db->get_where('users', array('email' => $email));
-    
-    $response = array(
-        'exists' => $query->num_rows() > 0,
-        'csrf' => array(
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-        )
-    );
-    
-    echo json_encode($response);
-}
 
-public function check_school_name_exists() {
-    $school_name = $this->input->post('school_name');
-    $query = $this->db->get_where('schools', array('name' => $school_name));
-    
-    $response = array(
-        'exists' => $query->num_rows() > 0,
-        'csrf' => array(
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-        )
-    );
-    
-    echo json_encode($response);
-}
+	public function check_email_exists()
+	{
+		$email = $this->input->post('email');
+		$query = $this->db->get_where('users', array('email' => $email));
 
-public function get_csrf_token()
-{
-    $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode([
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-        ]));
-}
+		$response = array(
+			'exists' => $query->num_rows() > 0,
+			'csrf' => array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash()
+			)
+		);
 
-public function set_student_just_registered() {
-    $this->session->set_userdata('student_just_registered', true);
-    echo json_encode(['status' => 'ok']);
-}
+		echo json_encode($response);
+	}
+
+	public function check_school_name_exists()
+	{
+		$school_name = $this->input->post('school_name');
+		$query = $this->db->get_where('schools', array('name' => $school_name));
+
+		$response = array(
+			'exists' => $query->num_rows() > 0,
+			'csrf' => array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash()
+			)
+		);
+
+		echo json_encode($response);
+	}
+
+	public function get_csrf_token()
+	{
+		$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode([
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash()
+			]));
+	}
+
+	public function set_student_just_registered()
+	{
+		$this->session->set_userdata('student_just_registered', true);
+		echo json_encode(['status' => 'ok']);
+	}
 
 }

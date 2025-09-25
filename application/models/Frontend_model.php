@@ -791,7 +791,7 @@ $infouser = [
     // Créer l’espace HumHub
     $spaceData = [
         'name'        => $school_data['name'],
-        'description' => 'Espace de l\'école ' . $school_data['name'] . ' créé depuis Wayo Academy',
+        'description' => !empty($school_data['description'])? $school_data['description'] : 'Aucune description fournie',
         'join_policy' => 0,
         'visibility'  => ($school_data['access'] === 'public' ? 2 : 1),
     ];
