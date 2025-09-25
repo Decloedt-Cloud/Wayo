@@ -376,26 +376,57 @@ class Frontend_model extends CI_Model
   }
 
   // send message from contact form
-  function send_contact_message()
-  {
+  public function send_contact_message()
+{
+    // Start output buffering to capture any unintended output
+    ob_start();
+
+    $this->load->library('form_validation');
+
+    // Set validation rules
+    $this->form_validation->set_rules('first_name', 'First Name', 'required|trim');
+    $this->form_validation->set_rules('last_name', 'Last Name', 'required|trim');
+    $this->form_validation->set_rules('email', 'Email', 'required|valid_email|trim');
+    $this->form_validation->set_rules('comment', 'Message', 'required|trim|min_length[5]');
+    $this->form_validation->set_rules('phone', 'Phone', 'trim|regex_match[/^\+[0-9]{10,15}$/]', ['regex_match' => 'The Phone field must start with "+" followed by 10 to 15 digits.']);
+
+    // Set JSON header
+    header('Content-Type: application/json; charset=utf-8');
+
+    // Check CSRF token
+    if (!$this->security->csrf_verify()) {
+        ob_end_clean();
+        echo json_encode(['status' => 0, 'message' => get_phrase('Invalid CSRF token')]);
+        exit;
+    }
+
+    // Run form validation
+    if ($this->form_validation->run() == FALSE) {
+        ob_end_clean();
+        echo json_encode(['status' => 0, 'message' => strip_tags(validation_errors())]);
+        exit;
+    }
+
+    // Get and sanitize input
     $first_name = html_escape($this->input->post('first_name'));
     $last_name = html_escape($this->input->post('last_name'));
     $email = html_escape($this->input->post('email'));
-    $phone = html_escape($this->input->post('phone'));
     $address = html_escape($this->input->post('address'));
+    $phone = html_escape($this->input->post('phone'));
+    $localisation = html_escape($this->input->post('localisation'));
     $comment = html_escape($this->input->post('comment'));
-    $hour = date('H');
-      if ($hour < 12) {
-          $salutation = 'Good Morning';
-      } elseif ($hour < 18) {
-          $salutation = 'Good Afternoon';
-      } else {
-          $salutation = 'Good Evening';
-      }
 
-    // $receiver_email = $this->db->get_where('users', array('role' => 'superadmin'))->row('email');
-    $receiver_email = get_settings('system_email');
-    $msg = '';
+    // Determine salutation based on time
+    $hour = date('H');
+    if ($hour < 12) {
+        $salutation = 'Good Morning';
+    } elseif ($hour < 18) {
+        $salutation = 'Good Afternoon';
+    } else {
+        $salutation = 'Good Evening';
+    }
+
+    // Build email content
     $msg = "<!DOCTYPE html>";
     $msg .= "<html lang='en'>";
     $msg .= "<head>";
@@ -435,8 +466,15 @@ class Frontend_model extends CI_Model
     $msg .= "<span><strong>From:</strong> {$first_name} {$last_name}</span>";
     $msg .= "<span style='margin-top: 20px;'><strong>Message:</strong> " . nl2br($comment) . "</span>";
     $msg .= "<span><strong>Email:</strong> <a href='mailto:{$email}'>{$email}</a></span>";
-    $msg .= "<span><strong>Phone:</strong> <a href='tel:{$phone}'>{$phone}</a></span>";
-    $msg .= "<span><strong>Address:</strong> {$address}</span>";
+    if (!empty($phone)) {
+        $msg .= "<span><strong>Phone:</strong> <a href='tel:{$phone}'>{$phone}</a></span>";
+    }
+    if (!empty($address)) {
+        $msg .= "<span><strong>Postal address:</strong> {$address}</span>";
+    }
+    if (!empty($localisation)) {
+        $msg .= "<span><strong>City / Country:</strong> {$localisation}</span>";
+    }
     $msg .= "</td>";
     $msg .= "</tr>";
     $msg .= "<tr>";
@@ -456,16 +494,19 @@ class Frontend_model extends CI_Model
     $msg .= "</div>";
     $msg .= "</body>";
     $msg .= "</html>";
-    // $this->email_model->contact_message_email($email, $receiver_email, $msg);
-    // return json_encode(array('status' => 1, 'message' => get_phrase('successfully_has_been_recoded_your_request') ));
-    try {
-      $this->email_model->contact_message_email($email, $receiver_email, $msg);
-      $this->session->set_flashdata('toast_message', ['type' => 'success', 'message' => get_phrase('Your message has been sent successfully.')]);
-  } catch (Exception $e) {
-      $this->session->set_flashdata('toast_message', ['type' => 'error', 'message' => get_phrase('Failed to send your message. Please try again later.')]);
-  }
 
-  }
+    try {
+        $receiver_email = get_settings('system_email');
+        $this->email_model->contact_message_email($email, $receiver_email, $msg);
+        ob_end_clean();
+        echo json_encode(['status' => 1, 'message' => get_phrase('Your message has been sent successfully.')]);
+        exit;
+    } catch (Exception $e) {
+        ob_end_clean();
+        echo json_encode(['status' => 0, 'message' => get_phrase('Failed to send your message: ') . $e->getMessage()]);
+        exit;
+    }
+}
 
   // update slider images
   function update_homepage_slider()
@@ -791,7 +832,7 @@ $infouser = [
     // Créer l’espace HumHub
     $spaceData = [
         'name'        => $school_data['name'],
-        'description' => 'Espace de l\'école ' . $school_data['name'] . ' créé depuis Wayo Academy',
+        'description' => !empty($school_data['description'])? $school_data['description'] : 'Aucune description fournie',
         'join_policy' => 0,
         'visibility'  => ($school_data['access'] === 'public' ? 2 : 1),
     ];

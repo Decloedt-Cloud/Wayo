@@ -403,7 +403,7 @@ class Email_model extends CI_Model {
 }
 
 	function contact_message_email($email_from, $email_to, $email_message) {
-		$email_sub = "Message from School Website";
+		$email_sub = "Message from Contact us";
 
 		if (get_smtp('mail_sender') == 'php_mailer') {
 			$this->send_mail_using_php_mailer($email_message, $email_sub, $email_to, $email_from);

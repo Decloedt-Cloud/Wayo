@@ -2233,5 +2233,6 @@
     "filters_cleared_successfully": "Filters cleared successfully",
     "if_you_can't_find_your_recording,_we_are_currently_preparing_it,_and_it_will_be_ready_soon.": "If you can't find your recording, we are currently preparing it, and it will be ready soon.",
     "announcement": "Announcement",
-    "welcome_to_the_meeting": "Welcome to the meeting"
+    "welcome_to_the_meeting": "Welcome to the meeting",
+    "message_sent_!_thank_you": "Message sent ! thank you"
 }
