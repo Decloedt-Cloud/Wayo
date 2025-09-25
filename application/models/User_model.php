@@ -2510,7 +2510,6 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 		]);
 	}
 
-
 	public function get_schools_count()
 	{
 		$this->db->where('status', 1);
@@ -2519,7 +2518,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 	}
 
 
-	public function get_schools_per_category_count($category)
+      public function get_schools_per_category_count($category)
 	{
 		$this->db->where('category', $category);
 		$this->db->where('status', 1);
