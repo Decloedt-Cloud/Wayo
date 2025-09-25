@@ -2383,5 +2383,6 @@
     "failed_to_delete_recording": "Verwijderen van opname mislukt",
     "announcement": "Mededeling",
     "actie_niet_toegestaan": "Actie niet toegestaan",
-    "er_is_een_fout_opgetreden_tijdens_het_indienen": "Er is een fout opgetreden tijdens het indienen"
+    "er_is_een_fout_opgetreden_tijdens_het_indienen": "Er is een fout opgetreden tijdens het indienen",
+    "welcome_to_the_meeting": "Welkom op de vergadering"
 }

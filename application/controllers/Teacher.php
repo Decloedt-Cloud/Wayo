@@ -327,7 +327,6 @@ class Teacher extends CI_Controller {
                             'updated_at' => date('Y-m-d H:i:s')
                         ];
                         $this->db->insert('recordings', $recording_data);
-                        log_message('debug', 'recording - New recording saved for meeting_id: ' . $meeting['meeting_id'] . ', recording_id: ' . $recording_id);
                     } else {
                         $this->db->where('recording_id', $recording_id);
                         $this->db->update('recordings', [
@@ -414,7 +413,6 @@ class Teacher extends CI_Controller {
 
     // Récupérer l'ID de l'enregistrement depuis la requête POST
     $recording_id = trim($this->input->post('recording_id', true));
-    log_message('debug', 'delete_recording - Received recording_id: ' . $recording_id);
 
     if (empty($recording_id)) {
         $response = [
@@ -430,7 +428,6 @@ class Teacher extends CI_Controller {
     // Vérifier si l'enregistrement existe dans la table recordings
     $this->db->where('recording_id', $recording_id);
     $existing = $this->db->get('recordings')->row_array();
-    log_message('debug', 'delete_recording - Existing record: ' . json_encode($existing));
 
     if (!$existing) {
         $response = [
@@ -491,10 +488,8 @@ class Teacher extends CI_Controller {
     $this->db->delete('recordings');
     $db_error = $this->db->error();
 
-    log_message('debug', 'delete_recording - SQL Query: ' . $this->db->last_query());
 
     if ($db_error['code'] == 0 && $this->db->affected_rows() > 0) {
-        log_message('debug', 'delete_recording - Recording deleted successfully: recording_id=' . $recording_id);
         $response = [
             'status' => 'success',
             'message' => get_phrase('recording_deleted_successfully'),
@@ -2097,7 +2092,6 @@ public function create_event() {
     try {
         $this->db->insert('event_calendars', $data);
         $event_id = $this->db->insert_id();
-        log_message('debug', 'Événement créé avec les données : ' . json_encode($data));
         echo json_encode([
             'status' => 'success',
             'message' => 'Événement créé avec succès',
@@ -2488,7 +2482,6 @@ public function create_event() {
     }
 
     $events = $this->db->get()->result_array();
-    log_message('debug', 'get_events - SQL query: ' . $this->db->last_query());
 
     // Charger la configuration BigBlueButton
     $this->load->config('bigbluebutton');
@@ -2537,7 +2530,6 @@ public function create_event() {
             $this->db->where('DATE(start_date) >=', $start_date);
             $this->db->where('DATE(start_date) <=', $end_date);
             $appointments = $this->db->get()->result_array();
-            log_message('debug', 'get_events - SQL query for occurrences: ' . $this->db->last_query());
 
             foreach ($appointments as $appointment) {
                 $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
@@ -2668,7 +2660,6 @@ public function create_event() {
         }
     }
 
-    log_message('debug', 'get_events - Processed events: ' . json_encode($processed_events));
     echo json_encode([
         'status' => 'success',
         'data' => $processed_events,
@@ -2745,16 +2736,13 @@ public function start_meeting() {
     $this->db->where('DATE(start_date) !=', $occurrence_date);
     $this->db->where('Etat', 1);
     $this->db->update('appointments', ['Etat' => 0]);
-    log_message('debug', 'start_meeting - Deactivated other appointments for event_id: ' . $event_id . ', except for occurrence_date: ' . $occurrence_date);
-
+    
     // Vérifier si un appointment actif existe pour cette occurrence
     $this->db->where('event_id', $event_id);
     $this->db->where('DATE(start_date)', $occurrence_date);
     $this->db->where('Etat', 1);
     $appointment = $this->db->get('appointments')->row_array();
     $appointment_id = $appointment ? $appointment['id'] : null;
-
-    log_message('debug', 'start_meeting - Appointment check for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . ($appointment_id ?? 'none'));
 
     // Charger la configuration BigBlueButton
     $this->load->config('bigbluebutton');
@@ -2815,7 +2803,6 @@ public function start_meeting() {
                 $join_checksum = sha1("join" . $join_params . $bbb_secret);
                 $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
-                log_message('debug', 'start_meeting - Joining existing meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $appointment['meeting_id'] . ', join_url: ' . $join_url);
 
                 $csrf = [
                     'csrfName' => $this->security->get_csrf_token_name(),
@@ -2834,7 +2821,6 @@ public function start_meeting() {
                 return;
             } else {
                 // Marquer l'ancien appointment comme inactif
-                log_message('debug', 'start_meeting - Meeting ended or not found for meeting_id: ' . $appointment['meeting_id'] . ', marking appointment as inactive');
                 $this->db->where('id', $appointment_id);
                 $this->db->update('appointments', ['Etat' => 0]);
             }
@@ -2854,7 +2840,6 @@ public function start_meeting() {
     ];
     $this->db->insert('appointments', $appointment_data);
     $appointment_id = $this->db->insert_id();
-    log_message('debug', 'start_meeting - Created new appointment for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', appointment_id: ' . $appointment_id);
 
     // Créer un nouveau meeting BigBlueButton
     $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
@@ -2871,7 +2856,7 @@ public function start_meeting() {
               "&record=true" .
               "&autoStartRecording=false" .
               "&allowStartStopRecording=true" .
-              "&welcome=" . urlencode("Welcome to the meeting: " . $event['title']) .
+              "&welcome=" . urlencode( get_phrase("Welcome to the meeting"). ':' . ' ' . $event['title']) .
               "&endWhenNoModerator=false" .
               "&duration=120";
 
@@ -2970,7 +2955,6 @@ public function start_meeting() {
         $participant_count = 0;
         if (!$curl_error) {
             $is_running_xml = simplexml_load_string($is_running_response);
-            log_message('debug', 'start_meeting - BBB isMeetingRunning response for meeting_id: ' . $new_meeting_id . ': ' . $is_running_response);
             if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
                 $is_running = (string)$is_running_xml->running === "true";
                 if ($is_running) {
@@ -2999,7 +2983,6 @@ public function start_meeting() {
         $join_checksum = sha1("join" . $join_params . $bbb_secret);
         $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
-        log_message('debug', 'start_meeting - Created new meeting for event_id: ' . $event_id . ', occurrence_date: ' . $occurrence_date . ', meeting_id: ' . $new_meeting_id . ', join_url: ' . $join_url);
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
@@ -3040,7 +3023,6 @@ public function get_classes_with_events() {
     }
 
     $user_id = $this->session->userdata('user_id');
-    log_message('debug', 'get_classes_with_events - user_id: ' . ($user_id ?? 'null'));
 
     // Mapper user_id à teacher_id
     $this->db->select('id');
@@ -3048,7 +3030,6 @@ public function get_classes_with_events() {
     $this->db->where('user_id', $user_id);
     $teacher = $this->db->get()->row_array();
     $teacher_id = $teacher['id'] ?? null;
-    log_message('debug', 'get_classes_with_events - teacher_id: ' . ($teacher_id ?? 'null'));
 
     if (!$teacher_id) {
         $csrf = [
@@ -3067,7 +3048,6 @@ public function get_classes_with_events() {
     $this->db->where('attendance', 1);
     $permitted_classes = $this->db->get()->result_array();
     $permitted_class_ids = array_column($permitted_classes, 'class_id');
-    log_message('debug', 'get_classes_with_events - permitted_class_ids: ' . json_encode($permitted_class_ids));
 
     if (empty($permitted_class_ids)) {
         $csrf = [
@@ -3080,12 +3060,10 @@ public function get_classes_with_events() {
 
     $user_details = $this->user_model->get_user_details($user_id);
     $user_school_id = $user_details['school_id'] ?? null;
-    log_message('debug', 'get_classes_with_events - school_id: ' . ($user_school_id ?? 'null'));
 
     $school_id = $this->input->post('school_id', true);
     $start_date = $this->input->post('start_date', true);
     $end_date = $this->input->post('end_date', true);
-    log_message('debug', 'get_classes_with_events - Paramètres: school_id=' . ($school_id ?? 'null') . ', start_date=' . ($start_date ?? 'null') . ', end_date=' . ($end_date ?? 'null'));
 
     if (empty($school_id) || empty($start_date) || empty($end_date) || $school_id != $user_school_id) {
         $csrf = [
@@ -3106,7 +3084,6 @@ public function get_classes_with_events() {
     $this->db->where('event_calendars.starting_date >=', $start_date);
     $this->db->where('event_calendars.starting_date <=', $end_date);
     $query = $this->db->get();
-    log_message('debug', 'get_classes_with_events - SQL Query: ' . $this->db->last_query());
 
     $classes = $query->result_array();
 
@@ -3135,7 +3112,6 @@ public function get_classes_by_school() {
     }
 
     $school_id = $this->input->post('school_id', true);
-    log_message('debug', 'get_classes_by_school - school_id: ' . ($school_id ?? 'null'));
     if (empty($school_id)) {
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
@@ -3146,7 +3122,6 @@ public function get_classes_by_school() {
     }
 
     $user_id = $this->session->userdata('user_id');
-    log_message('debug', 'get_classes_by_school - user_id: ' . ($user_id ?? 'null'));
 
     // Mapper user_id à teacher_id
     $this->db->select('id');
@@ -3154,7 +3129,6 @@ public function get_classes_by_school() {
     $this->db->where('user_id', $user_id);
     $teacher = $this->db->get()->row_array();
     $teacher_id = $teacher['id'] ?? null;
-    log_message('debug', 'get_classes_by_school - teacher_id: ' . ($teacher_id ?? 'null'));
 
     if (!$teacher_id) {
         $csrf = [
@@ -3173,7 +3147,6 @@ public function get_classes_by_school() {
     $this->db->where('attendance', 1);
     $permitted_classes = $this->db->get()->result_array();
     $permitted_class_ids = array_column($permitted_classes, 'class_id');
-    log_message('debug', 'get_classes_by_school - permitted_class_ids: ' . json_encode($permitted_class_ids));
 
     if (empty($permitted_class_ids)) {
         $csrf = [
@@ -3190,7 +3163,6 @@ public function get_classes_by_school() {
     $this->db->where('school_id', $school_id);
     $this->db->where_in('id', $permitted_class_ids);
     $classes = $this->db->get()->result_array();
-    log_message('debug', 'get_classes_by_school - SQL Query: ' . $this->db->last_query());
 
     $csrf = [
         'csrfName' => $this->security->get_csrf_token_name(),

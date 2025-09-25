@@ -2208,5 +2208,6 @@
     "filters_cleared_successfully": "تم إزالة الفلاتر بنجاح",
     "are_you_sure_you_want_to_delete_this_recording?": "هل أنت متأكد من أنك تريد حذف هذا التسجيل؟",
     "recording_deleted_successfully": "تم حذف التسجيل بنجاح",
-    "announcement": "إشعار"
+    "announcement": "إشعار",
+    "welcome_to_the_meeting": "مرحبًا بالاجتماع"
 }
