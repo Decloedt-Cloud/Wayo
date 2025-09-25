@@ -75,9 +75,10 @@ public function get_school_classes($school_id)
         // Créer un espace correspondant dans HumHub
         $spaceData = [
             'name' => $data['name'],
-            'description' => 'Classe créée depuis Wayo Academy',
+            'description' => '',
             'join_policy' => 0, // 0 = Ouvert : tout le monde peut rejoindre l’espace sans validation
             'visibility' => 2,  // 2 = Public : visible par tout le monde
+			
         ];
 
         $humhubResponse = $this->humhub_sso->createSpace($spaceData);
@@ -122,7 +123,7 @@ public function get_school_classes($school_id)
         if ($room) {
             $room_data = [
                 'name' => $data['name'],
-                'description' => 'Salle de classe pour ' . $data['name']
+                'description' => ''
             ];
             $this->db->where('class_id', $param1);
             $this->db->update('rooms', $room_data);
@@ -135,7 +136,7 @@ public function get_school_classes($school_id)
             if ($existing) {
                 $spaceUpdate = [
                     'name' => $data['name'],
-                    'description' => 'Classe mise à jour depuis Wayo Academy',
+                    'description' => '',
                     'defaultStreamSort' => $existing['defaultStreamSort'],
                 ];
                 log_message('debug', 'Données envoyées à HumHub updateSpace: ' . json_encode($spaceUpdate));

@@ -135,9 +135,35 @@ class Settings_model extends CI_Model
     $data['description'] = htmlspecialchars($this->input->post('description'));
     $data['access'] = htmlspecialchars($this->input->post('access'));
     $data['category'] = htmlspecialchars_decode($this->input->post('category'));
+    $schoolId = school_id();
+
     $this->db->where('id', school_id());
     $this->db->update('schools', $data);
     move_uploaded_file($_FILES['school_image']['tmp_name'], 'uploads/schools/' . school_id() . '.jpg');
+
+
+    // Récupérer l’école mise à jour
+    $school = $this->db->get_where('schools', ['id' => $schoolId])->row();
+
+    // Synchronisation avec HumHub
+    if (!empty($school->humhub_space_id)) {
+        $existing = $this->humhub_sso->getSpace($school->humhub_space_id);
+
+        if ($existing) {
+            $spaceUpdate = [
+                'name'             => $data['name'],
+                'description'      => $data['description'],
+                'defaultStreamSort'=> $existing['defaultStreamSort'], 
+            ];
+
+            log_message('debug', 'Données envoyées à HumHub updateSpace: ' . json_encode($spaceUpdate));
+            $this->humhub_sso->updateSpace($school->humhub_space_id, $spaceUpdate);
+        } else {
+            log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$school->humhub_space_id}");
+        }
+    } else {
+        log_message('error', "ID HumHub manquant pour l’école ID {$schoolId}");
+    }
     $response = array(
       'status' => true,
       'notification' => get_phrase('school_settings_updated_successfully')
