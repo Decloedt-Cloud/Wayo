@@ -1,77 +1,131 @@
-/* ===== Variables / Base ===== */
+/* ========== Variables & base ========== */
 :root{
-  --orange: #fc7b30;
-  --orange-dark:#d65e10;
-  --g-dark:#333;
-  --g-light:#F4F4F4;
+  --white:#fff; --black:#000;
+  --orange:#fc7b30; --orange-dark:#d65e10; --blue:#23235B;
+  --g-dark:#333; --g-light:#F4F4F4;
+  --text:#11131a; --muted:#6b7180;
+  --line:rgba(0,0,0,.08); --card:#fff;
+  --shadow:0 8px 28px rgba(0,0,0,.07);
+  --radius:18px;
+  --font:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
 }
+*,::before,::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--g-dark);background:var(--white);line-height:1.6}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+/* .container{width:90%;max-width:1200px;margin-inline:auto} */
 
-*{box-sizing:border-box}
-body{font-family:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;}
-a{text-decoration:none}
 
-    /* Hero */
+/* ========== Buttons ========== */
+/* .btn{display:inline-block;padding:.45rem 1.2rem;font-size:.9rem;font-weight:700;transition:.25s} */
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{filter:brightness(.93)}
 
+/* ========== Tutorial body (hero simple) ========== */
+.tutorial-body{display:grid;grid-template-columns: repeat(auto-fit,minmax(300px,1fr));gap:3rem;padding:3.2rem 0 4rem}
+.tuto-heading{margin:0 0 1.2rem;font-size:clamp(1.6rem,4vw,2rem);font-weight:800}
+.tag{display:inline-block;margin-right:.6rem;padding:.25rem .7rem;background:var(--orange);color:#fff;border-radius:18px;font-size:.8rem;text-transform:uppercase;vertical-align:middle}
+.tuto-list{margin:1rem 0 1.6rem;display:grid;gap:.7rem}
+.tuto-list li{position:relative;padding-left:1.4rem;font-size:.95rem}
+.tuto-list li::before{content:"✔";position:absolute;left:0;color:var(--orange);font-weight:700}
+.tuto-author{font-size:.9rem;color:#555}
+.tuto-author i{margin-right:.45rem;color:var(--orange)}
+.video-frame{position:relative;padding-top:56.25%;box-shadow:0 8px 24px rgba(0,0,0,.08);border-radius:12px;overflow:hidden}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px}
 
-  .tutorial-body{
-        background-color: #f6f7fb;
+/* ========== COMMENT ÇA MARCHE — Style Stepper (obi-*) ========== */
+.obi{padding:72px 20px;background:linear-gradient(180deg,#fff,#f7f8fb)}
+.obi-shell{max-width:1100px;margin:0 auto}
+.obi-head{text-align:center;margin-bottom:28px}
+.obi-kicker{display:inline-block;background:#fff5ec;color:var(--blue);font:700 12px/1.1 Urbanist,system-ui;padding:6px 10px;border:1px solid #ffe3cc;border-radius:999px;letter-spacing:.35px}
+.obi-head h2{margin:12px 0 8px;font:800 32px/1.15 Urbanist,system-ui;color:var(--text)}
+.obi-head p{color:var(--muted);max-width:680px;margin:0 auto}
+
+/* Stepper ribbon */
+.obi-ribbon{margin:18px 0 22px}
+.obi-ribbon__track{height:8px;background:#eceffd;border-radius:10px;position:relative;overflow:hidden}
+.obi-ribbon__fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#ffb780,var(--orange));border-radius:10px;width:var(--progress,25%)}
+.obi-ribbon__steps{display:flex;justify-content:space-between;margin:8px 2px 0;padding:0;list-style:none;font:700 12px Urbanist,system-ui;color:#3b4052;gap:6px}
+.obi-ribbon__steps li{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size: 15px;}
+.obi-ribbon__steps li span{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:999px;background:#fff;border:1px solid #ffd8be;color:#c04f00}
+.obi-ribbon__steps li.is-active span{background:var(--orange);border-color:var(--orange);color:#fff}
+
+/* Cards */
+.obi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:12px}
+@media(max-width:900px){
+  .obi-grid{
+    grid-template-columns:1fr
   }
-    
-
-
-
-/* Helpers */
-.text-orange{color:var(--orange)!important}
-.text-bg-orange{background:var(--orange)!important;color:#fff!important}
-
-/* Buttons */
-.btn-orange{
-  background:var(--orange);
+}
+@media(max-width:768px){
+  .obi-num{
+  left:  292px !important;
+  }
+}
+.obi-card{
+  background:#fff;border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--shadow);padding:20px 18px;position:relative;overflow:hidden;
+  transform:translateY(12px);opacity:0;transition:.6s ease;
+}
+.obi-card.revealed{transform:none;opacity:1}
+.obi-num{
+  position:absolute;
+  top:32px;
+  left:  472px;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;place-items:center;
+  background:var(--orange-dark);
   color:#fff;
-  font-weight:600;
-  border:0;
+  /* font:800 16px Urbanist,system-ui; */
+  box-shadow:0 10px 22px rgba(35,35,91,.25);
 }
-.btn-orange:hover{background:var(--orange-dark);color:#fff}
-
-.navbar .nav-link:hover{color:var(--orange)}
-.navbar .nav-link.active{color:var(--orange)}
-
-/* Tutorial body */
-.tuto-heading{line-height:1.3}
-.badge.text-bg-orange{border-radius:18px}
-.tuto-list i{margin-right:.5rem}
-.badge-tutorial{
-  padding: 10px !important;
-    position: relative !important;
-    bottom: 8px !important;
+.obi-icon{
+  width:56px;height:56px;border-radius:14px;display:grid;place-items:center;margin-bottom:10px;
+  background:#fff5ec;color:var(--orange);border:1px solid #ffe3cc;font-size:22px;
 }
+.obi-card h3{margin:2px 0 8px;font:800 18px/1.25 Urbanist,system-ui;color:var(--text)}
+.obi-card p{margin:0 0 8px;color:var(--muted)}
 
-/* Video frame */
-.video-frame{border-radius:12px}
+.obi-bullets{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;color:#4d5466;font-size:.95rem}
+.obi-bullets i{color:var(--orange);margin-right:8px}
 
-/* Footer */
-.site-footer{background:#333}
-.link-footer{color:#fff;opacity:.85}
-.link-footer:hover{color:var(--orange)}
-.social-icon{
-  width:30px;height:30px;border-radius:50%;
-  background:#fff;color:#333;display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;font-weight:700;transition:.2s;
-}
+.obi-hint{margin-top:8px;border:1px dashed #ffd2ad;background:#fff8f1;border-radius:12px;padding:10px 12px}
+.obi-hint summary{cursor:pointer;color:#b04b00;font-weight:700;list-style:none}
+.obi-hint summary::-webkit-details-marker{display:none}
+
+/* CTA */
+.obi-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.obi-btn{appearance:none;border:none;cursor:pointer;background:var(--orange);color:#fff;padding:12px 18px;border-radius:14px;font:800 15px Urbanist,system-ui;display:inline-flex;gap:8px;align-items:center;transition:.25s;text-decoration:none}
+.obi-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(244,122,31,.25);;background:var(--orange);color:#fff !important;}
+.obi-btn--ghost{background:#fff;color:var(--blue);border:1px solid #dfe2ff}
+.obi-btn--ghost:hover{box-shadow:0 10px 22px rgba(35,35,91,.12)}
+
+/* Modal vidéo */
+.obi-modal{position:fixed;inset:0;display:none;z-index:70}
+.obi-modal.is-open{display:block}
+.obi-modal__backdrop{position:absolute;inset:0;background:rgba(16,18,27,.55);backdrop-filter:blur(2px)}
+.obi-modal__dialog{position:relative;width:min(920px,96vw);margin:6vh auto;background:#000;border-radius:18px;overflow:hidden;z-index:1;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.obi-modal__body{aspect-ratio:16/9}
+.obi-modal__body iframe{width:100%;height:100%;border:0;display:block}
+.obi-modal__close{position:absolute;top:8px;right:10px;width:36px;height:36px;border-radius:10px;border:none;background:#fff;color:#111;font-size:24px;line-height:1;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+
+/* ========== Footer (existant) ========== */
+.site-footer{background:var(--g-dark);color:#fff;padding:1.5rem 0;font-size:.9rem}
+.footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:1.3rem;margin-bottom:1.2rem}
+.footer-logo img{max-width:130px}
+.footer-nav ul{display:flex;gap:1.4rem}
+.footer-nav a:hover{color:var(--orange)}
+.footer-social{display:flex;gap:.9rem}
+.social-icon{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--g-dark);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;transition:.2s}
 .social-icon:hover{background:var(--orange);color:#fff}
+.footer-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.5rem;margin-bottom:1rem}
+.footer-links h4{color:var(--orange);margin:.3rem 0}
+.footer-links a:hover{color:var(--orange)}
+.footer-credits{text-align:center;font-size:.78rem;color:rgba(255,255,255,.7)}
 
-/* Back to top */
-.btn-top{
-  position:fixed;right:24px;bottom:24px;
-  width:52px;height:52px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg, rgba(245,124,31,.92), rgba(251,176,64,.9));
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
-  opacity:0; transform:translateY(20px); transition:.3s; z-index:1050;
-  border:0;
-}
-.btn-top.show{opacity:1; transform:translateY(0)}
-.btn-top:hover{
-  transform:scale(1.06);
-  background:linear-gradient(135deg, rgba(245,124,31,1), rgba(251,176,64,1));
+.tutorial-body{
+  margin-top: 80px;
+  background-color: #f6f7fb !important;
 }

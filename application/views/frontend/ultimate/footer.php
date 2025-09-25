@@ -1,6 +1,4 @@
-<?php
-$logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
-?>
+
 <!-- ========== FOOTER ========== -->
 <footer class="site-footer" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container footer-top">
@@ -46,13 +44,13 @@ $logo_dark = base_url('uploads/images/decloedt/logo/white-logo.png');
         <p>
           <strong><?php echo get_phrase("Contact") ?> :</strong><br />
           <a class="footer-phone" href="tel:<?php echo get_settings('phone'); ?>">
-              +971 50 154 8923
+              <?php echo get_settings('phone'); ?>
           </a><br />
           <a class="footer-email" href="mailto:<?php echo get_settings('system_email'); ?>">
-                info@wayo.cloud
+                <?php echo get_settings('system_email'); ?>
               </a><br />
          <a class="footer-address" href="<?php echo site_url('home/contact#map'); ?>">
-              R320 Um Hurair 2, Dubai, UAE
+              <?php echo get_settings('address'); ?>
               </a>
         </p>
       </div>

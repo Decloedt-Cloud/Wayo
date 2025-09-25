@@ -84,6 +84,14 @@ class Home extends CI_Controller
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
+		// TUTORIAL PAGE
+	function faq()
+	{
+		$page_data['page_name'] = 'faq';
+		$page_data['page_title'] = get_phrase('faq');
+		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
+	}
+
 	// TEACHERS PAGE
 	function teachers()
 	{

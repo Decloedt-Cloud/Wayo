@@ -242,7 +242,7 @@ label div:last-child {
 
 .login-dropdown {
   position: absolute;
-  height: 270px !important;
+  height: 380px !important;
   width: 300px;
   top: 40px;
   padding-left: 20px;
@@ -274,7 +274,7 @@ label div:last-child {
 }
 
 .login-dropdown.has-error {
-  height: 320px !important;
+  height: 440px !important;
 }
 
 .login-form.has-error {
@@ -283,8 +283,8 @@ label div:last-child {
 
 .register-dropdown {
   position: absolute;
-  height: 350px !important;
-  width: 400px;
+  height: 480px !important;
+  width: 480px !important;
   top: 60px;
   right: 0;
   padding-left: 50px;
@@ -297,7 +297,7 @@ label div:last-child {
 }
 .forget-dropdown {
   position: absolute;
-  height: 200px !important;
+  height: 360px !important;
   width: 320px;
   top: 60px;
   right: 0;

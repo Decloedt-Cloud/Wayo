@@ -72,7 +72,7 @@
           <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket me-2"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
           <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
         </div>
-        <a href="#" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
+        <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
       </div>
     </div>
   </section>
@@ -107,7 +107,7 @@
 
               <!-- Image -->
               <img class="card-img-top card-img-custom ratio ratio-16x9 object-fit-cover" 
-                  src="<?php echo $this->user_model->get_school_image($c['id']); ?>" 
+                  src="<?php echo $this->user_model->get_school_cover($c['id']); ?>" 
                   alt="<?php echo $c['name']; ?>" >
 
               <div class="card-body d-flex flex-column <?php echo ($c['language'] ?? '') == 'ar' ? 'text-end' : ''; ?>" 
@@ -131,9 +131,9 @@
                   </li>
                   <li class="list-inline-item">
                     <?php if (($c['access'] ?? 0) == 1): ?>
-                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Accès libre'); ?></span>
-                    <?php else: ?>
                       <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Privé'); ?></span>
+                    <?php else: ?>
+                       <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Accès libre'); ?></span>
                     <?php endif; ?>
                   </li>
                 </ul>

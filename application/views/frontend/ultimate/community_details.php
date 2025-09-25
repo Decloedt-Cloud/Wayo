@@ -8,8 +8,8 @@
 <!-- ===== HERO ===== -->
 <section class="py-5 border-bottom hero-grad text-center">
   <div class="container">
-    <h1 class="display-5 fw-bold mb-2">Marketing Digital 2025</h1>
-    <p class="lead mb-0">La communauté n° 1 pour apprendre, pratiquer et networker !</p>
+    <h1 class="display-5 fw-bold mb-2"><?php echo $school["name"] ?></h1>
+    <p class="lead mb-0"><?php echo get_phrase("The No. 1 community to learn, practice, and network!") ?></p>
   </div>
 </section>
 
@@ -17,9 +17,9 @@
 <section class="py-2 bg-wayo text-white text-uppercase fw-semibold small">
   <div class="container">
     <div class="d-flex justify-content-center gap-5">
-      <div><strong class="d-block fs-5"><?php echo $school["course_students_count"] ?></strong><span>Membres</span></div>
-      <div><strong class="d-block fs-5"><?php echo $school["teachers_count"] ?></strong><span>Mentors</span></div>
-      <div><strong class="d-block fs-5"><?php echo $school['classes_count']?></strong><span>Classes</span></div>
+      <div><strong class="d-block fs-5"><?php echo $school["course_students_count"] ?></strong><span><?php echo get_phrase("Members") ?></span></div>
+      <div><strong class="d-block fs-5"><?php echo $school["teachers_count"] ?></strong><span><?php echo get_phrase("Mentors") ?></span></div>
+      <div><strong class="d-block fs-5"><?php echo $school['classes_count']?></strong><span><?php echo get_phrase("Classes") ?></span></div>
     </div>
   </div>
 </section>
@@ -30,11 +30,10 @@
     <div class="d-flex align-items-center gap-3 flex-wrap">
       <div class="fs-1">🤝</div>
       <div class="flex-grow-1">
-        <h2 class="h5 fw-bold mb-1">Pourquoi rejoindre notre communauté ?</h2>
-        <p class="mb-0">Accédez à <strong>6 classes privatives</strong> (SEO, Social Ads, Content, Growth, E-commerce, Automation) et échangez avec plus de <strong>6 000 market(eur·se)s</strong>.</p>
+        <h2 class="h5 fw-bold mb-1"><?php echo get_phrase("Why join our community?") ?></h2>
+        <p class="mb-0"><?php echo get_phrase("Access to") ?> <strong><?php echo get_phrase("6 private classes") ?></strong> <?php echo get_phrase("(SEO, Social Ads, Content, Growth, E-commerce, Automation) and connect with over") ?> <strong><?php echo get_phrase("6,000 marketers") ?></strong>.</p>
       </div>
-      <a href="#" class="btn btn-wayo ms-auto">S’inscrire</a>
-    </div>
+      <a href="#" class="btn btn-wayo ms-auto"><?php echo get_phrase("Sign up") ?></a>
   </div>
 </section>
 
@@ -45,7 +44,7 @@
       <!-- Main card -->
       <div class="col-lg-8">
         <div class="card shadow-sm border-0">
-          <img class="card-img-top card-img-customer" src="<?php echo $this->user_model->get_school_image($school_id); ?>">
+          <img class="card-img-top card-img-customer" src="<?php echo $this->user_model->get_school_cover($school_id); ?>">
           <div class="card-body p-4">
             <div class="d-flex align-items-center gap-3 mb-3">
               <div class="rounded-circle bg-light text-wayo d-grid place-items-center" style="width:54px;height:54px;">
@@ -56,24 +55,24 @@
 
             <ul class="list-inline small text-muted mb-3">
                <?php if ($school["access"] > 0) { ?>
-                  
-                 <li class="list-inline-item me-3"><i class="fa-solid fa-lock-open text-wayo me-1"></i>Public</li>
+                  <!-- <i class="fa-solid fa-lock text-wayo me-1"> -->
+                 <li class="list-inline-item me-3"><i class="fa-solid fa-lock text-wayo me-1"></i><?php echo get_phrase("Private") ?></li>
                 <?php } else { ?>
                   
-                  <li class="list-inline-item me-3"><i class="fa-solid fa-lock text-wayo me-1"></i>Privée</li>
+                  <li class="list-inline-item me-3"><i class="fa-solid fa-lock-open text-wayo me-1"></i><?php echo get_phrase("Public") ?></li>
                 <?php } ?>
               <li class="list-inline-item me-3"><i class="fa-solid fa-bullhorn text-wayo me-1"></i><?php echo $school['category'] ?></li>
-              <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i>Gratuit</li>
-              <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php echo $school["course_students_count"] ?> membres</li>
+              <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i><?php echo get_phrase("Free") ?></li>
+              <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php echo $school["course_students_count"] ?> <?php echo get_phrase("Members") ?></li>
 
-              <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i>Aymane</li>
+              <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php echo get_phrase("Aymane") ?></li>
             </ul>
 
             <p class="mb-4">
               <?php echo $school["description"] ?>
             </p>
 
-            <h3 class="h6 fw-bold mb-3">Programme des classes</h3>
+            <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
@@ -94,9 +93,6 @@
                         data-end="<?php echo isset($class['end_date']) ? htmlspecialchars($class['end_date']) : ''; ?>"
                         data-video="<?php echo isset($class['video']) ? htmlspecialchars($class['video']) : ''; ?>">
 
-                        
-            
-
                       <div class="card-body d-flex flex-column gap-2">
                         <div class="d-flex justify-content-between align-items-center">
                           <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
@@ -112,9 +108,9 @@
                           </span>
                           
                         </div>
-                        <span class="fomo-badge">🔥 Offre limitée</span>
+                        <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
 
-                        <p class="small mb-1">description de classe</p>
+                        <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
 
                         <div class="text-secondary small d-flex align-items-center gap-2">
                           <i class="fa-regular fa-calendar text-brand"></i>
@@ -129,8 +125,8 @@
                           25 places gratuites
                         </div>
                         <div class="d-flex gap-2 mt-2">
-                            <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal">Voir plus</button>
-                            <button class="btn btn-wayo btn-sm flex-fill btn-apply">S’inscrire</button>
+                            <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
+                            <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button>
                           </div>
                       </div>
                     </div>
@@ -138,7 +134,7 @@
                 <?php endforeach; ?>
               <?php else: ?>
                 <div class="col-12">
-                  <p>Aucune classe disponible pour cette communauté.</p>
+                  <p><?php echo get_phrase("Aucune classe disponible pour cette communauté.") ?></p>
                 </div>
               <?php endif; ?>
             </div>
@@ -154,18 +150,27 @@
                     allowfullscreen></iframe>
           </div>
            <div class="card-body">
-            <h3 class="h6 fw-bold">Accès communauté</h3>
+            <h3 class="h6 fw-bold"><?php echo get_phrase("Accès communauté") ?></h3>
             <ul class="list-unstyled small text-muted mb-3">
-              <li class="d-flex justify-content-between"><span>Membres :</span><span class="text-dark"><?php echo $school["course_students_count"] ?></span></li>
-              <li class="d-flex justify-content-between"><span>Classes :</span><span class="text-dark"><?php echo $school['classes_count'] ?> </span></li>
-              <li class="d-flex justify-content-between"><span>Prix :</span><span class="text-wayo fw-bold">Gratuit</span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Members:") ?></span><span class="text-dark"><?php echo $school["course_students_count"] ?></span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Classes :") ?></span><span class="text-dark"><?php echo $school['classes_count'] ?> </span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold">Gratuit</span></li>
             </ul>
-            <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a>
+            <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
+             <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+            <form action="<?php echo base_url('home/join_school/' . $school_id); ?>" method="post">
+                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+            </form>
+                <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
           </div>
           <div class="text-center py-3">
-            <img src="https://i.postimg.cc/Z5Vjh9Fn/Logo-removebg-preview.png" alt="Logo communauté" style="max-width:120px">
+            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" style="max-width:120px">
           </div>
         </div>
+        <div class="row justify-content-center">
+            
+    </div>
       </aside>
 
     </div>
@@ -207,26 +212,26 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content rounded-4">
         <div class="modal-header">
-          <h5 class="modal-title fw-bold" id="modalTitle">Titre</h5>
+          <h5 class="modal-title fw-bold" id="modalTitle"><?php echo get_phrase("Title") ?></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
           <div class="ratio ratio-16x9 rounded-3 overflow-hidden mb-3" id="modalVideoWrap"></div>
 
           <ul class="list-inline small text-muted mb-3">
-          <li class="list-inline-item me-3"><i class="fa-regular fa-user text-wayo me-1"></i><span id="modalMentor">Mentor</span></li>
-          <li class="list-inline-item me-3"><i class="fa-regular fa-clock text-wayo me-1"></i><span id="modalDuration">Durée</span></li>
-          <li class="list-inline-item"><i class="fa-solid fa-ranking-star text-wayo me-1"></i><span id="modalLevel">Niveau</span></li>
+          <li class="list-inline-item me-3"><i class="fa-regular fa-user text-wayo me-1"></i><span id="modalMentor"><?php echo get_phrase("Mentor") ?></span></li>
+          <li class="list-inline-item me-3"><i class="fa-regular fa-clock text-wayo me-1"></i><span id="modalDuration"><?php echo get_phrase("Duration") ?></span></li>
+          <li class="list-inline-item"><i class="fa-solid fa-ranking-star text-wayo me-1"></i><span id="modalLevel"><?php echo get_phrase("Niveau") ?></span></li>
         </ul>
           <div class="fw-semibold mb-2"><i class="fa-regular fa-calendar text-brand me-1"></i>
-            Du <span id="modalStart">—</span> au <span id="modalEnd">—</span>
+            <?php echo get_phrase("From") ?> <span id="modalStart">—</span> <?php echo get_phrase("to") ?> <span id="modalEnd">—</span>
           </div>
 
           <p id="modalDesc" class="mb-0">Description…</p>
         </div>
         <div class="modal-footer d-flex justify-content-between">
           <span class="fw-bold text-brand" id="modalPrice">—</span>
-          <button class="btn btn-brand fw-bold" id="modalApplyBtn" type="button">S’inscrire</button>
+          <button class="btn btn-brand fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
         </div>
       </div>
     </div>
@@ -305,3 +310,81 @@ window.addEventListener('scroll', () => {
 });
 topBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 </script>
+
+
+<script>
+  if (document.getElementById("login-join-button")) {
+    document.getElementById("login-join-button").addEventListener("click", function () {
+      document.querySelector('.login-toggle').click();
+    });
+  }
+
+  $(document).ready(function () {
+  $('.courses-slider').slick({
+    fade: true,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    arrows: false,
+    infinite: true,
+    pauseOnFocus: false,
+    adaptiveHeight: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: false, /* No centering to avoid gaps */
+    variableWidth: false /* Consistent full width */
+  });
+
+  const descs = document.querySelectorAll(".course-slider-description");
+  descs.forEach(desc => {
+    const pars = desc.getElementsByTagName("p");
+    Array.from(pars).forEach(par => {
+      par.classList.add("text-white");
+      par.classList.add("text-center");
+    });
+  });
+});
+</script>
+
+<script>
+  $(document).ready(function () {
+    function updateButton() {
+      $.ajax({
+            url: "<?php echo base_url('home/check_student_status_ajax/' . $school_id); ?>",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var button = $("#join-button");
+                var loginButton = $("#login-join-button");
+                var dashboardCommunityAppButton = $("#dashboard-community-app-button");
+
+          if (response.status === null) {
+                    loginButton.show();
+                    button.hide();
+                    dashboardCommunityAppButton.hide();
+                } else {
+                    loginButton.hide();
+                    button.show();
+                    if (response.status == 1) {
+                        button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('enrolled')); ?>");
+                        dashboardCommunityAppButton.show();
+                    } else {
+                        button.show();
+                        dashboardCommunityAppButton.hide();
+                        if (response.status == 0) {
+                            button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('pending')); ?>");
+                        } else if (response.status == 2) {
+                            button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
+                        } else {
+                            button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join')); ?>");
+                        }
+                    }
+                }
+            }
+      });
+    }
+
+    updateButton();
+    setInterval(updateButton, 5000);
+  });
+</script>
+

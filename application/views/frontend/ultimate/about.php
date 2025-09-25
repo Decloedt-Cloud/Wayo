@@ -182,7 +182,7 @@
         <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("A community of experts and learners united to turn skills into opportunities.") ?></p>
     <div class="row g-2 justify-content-center">
       <div class="col-12 col-md-auto">
-        <a class="btn btn-accent btn-pill w-100" href="#mission">
+        <a class="btn btn-accent btn-pill w-100" href="<?php echo site_url('home/communities'); ?>">
           <?php echo get_phrase("Join the community ") ?>
         </a>
       </div>
@@ -479,7 +479,9 @@
         <div class="text-center">
           <h2 class="h2 mb-2 p-cta"><?php echo get_phrase("Ready to join the community?") ?></h2>
           <p class="mb-3"><?php echo get_phrase("Become a mentor or learner, and grow with Wayo.") ?></p>
-          <a class="btn btn-accent btn-pill" href="#"><?php echo get_phrase("Create my account") ?></a>
+            <a class="btn btn-accent btn-pill" href="<?php echo site_url('admission/online_admission'); ?>">
+              <?php echo get_phrase("Create my account ") ?>
+            </a>
         </div>
       </div>
     </section>

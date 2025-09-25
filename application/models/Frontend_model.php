@@ -665,6 +665,7 @@ class Frontend_model extends CI_Model
 
   function online_admission_school()
 {
+ 
     $emailPattern = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
 
     // Validate required fields
@@ -676,6 +677,7 @@ class Frontend_model extends CI_Model
         $this->input->post('school_name') == '' ||
         $this->input->post('repeat-password') == ''
     ) {
+      
         return json_encode([
             'status' => false,
             'message' => get_phrase('validation_error'),
@@ -724,13 +726,14 @@ class Frontend_model extends CI_Model
     }
 
     // Prepare school data
+    $access = $this->input->post('visibility') ? 1 : 0;
     $school_data = [
         'name' => htmlspecialchars($this->input->post('school_name')),
         'address' => htmlspecialchars($this->input->post('school_adress')),
         'phone' => htmlspecialchars($this->input->post('school_phone')),
         'status' => 0, // School pending approval
         'description' => htmlspecialchars($this->input->post('school_description')),
-        'access' => htmlspecialchars($this->input->post('visibility')),
+        'access' => $access,
         'category' => htmlspecialchars($this->input->post('category'))
     ];
 
@@ -769,12 +772,18 @@ class Frontend_model extends CI_Model
         'email' => htmlspecialchars($this->input->post('email')),
         'gender' => htmlspecialchars($this->input->post('gender')),
         'phone' => htmlspecialchars($this->input->post('phone')),
+        'language' => htmlspecialchars($this->input->post('communityLang')),
         'password' => sha1($plainPassword), // hashé pour Wayo
         'role' => 'admin',
         'school_id' => $school_id,
         'status' => 3, // Pending status
         'watch_history' => '[]'
     ];
+
+//     var_dump($this->input->post('name')); 
+// // ou
+// echo "Name reçu : " . $this->input->post('name');
+// exit; // arrêter l'exécution pour voir le résultat
 
     // Insert user
     $this->db->insert('users', $admin_data);
@@ -795,6 +804,22 @@ class Frontend_model extends CI_Model
             ]);
         }
     }
+
+        // Handle school cover upload
+    if (isset($_FILES['communityCover']) && $_FILES['communityCover']['error'] == UPLOAD_ERR_OK) {
+        $upload_path = 'Uploads/communityCover/' . $school_id . '.jpg';
+        if (!move_uploaded_file($_FILES['communityCover']['tmp_name'], $upload_path)) {
+            return json_encode([
+                'status' => false,
+                'message' => get_phrase('image_upload_failed'),
+                'csrf' => [
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash()
+                ]
+            ]);
+        }
+    }
+
 
     // Send confirmation emails
     $this->email_model->School_online_admission($admin_data['email'], $school_data['name'], $admin_data['name']);
