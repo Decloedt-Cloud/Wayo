@@ -65,7 +65,7 @@
               <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i><?php echo get_phrase("Free") ?></li>
               <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php echo $school["course_students_count"] ?> <?php echo get_phrase("Members") ?></li>
 
-              <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php echo get_phrase("Aymane") ?></li>
+              <!-- <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php echo get_phrase("Aymane") ?></li> -->
             </ul>
 
             <p class="mb-4">
@@ -144,28 +144,30 @@
       <!-- Side card -->
       <aside class="col-lg-4">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-          <div class="ratio ratio-16x9">
+          <!-- <div class="ratio ratio-16x9">
             <iframe src="https://www.youtube.com/embed/r8cCk-HXcMQ?rel=0&modestbranding=1"
                     title="Présentation Wayo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen></iframe>
+          </div> -->
+          <div class="text-center py-3 bg-logo-communaute">
+            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute" >
           </div>
            <div class="card-body">
             <h3 class="h6 fw-bold"><?php echo get_phrase("Accès communauté") ?></h3>
             <ul class="list-unstyled small text-muted mb-3">
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Members:") ?></span><span class="text-dark"><?php echo $school["course_students_count"] ?></span></li>
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Classes :") ?></span><span class="text-dark"><?php echo $school['classes_count'] ?> </span></li>
-              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold">Gratuit</span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold"><?php echo get_phrase("Free") ?></span></li>
             </ul>
             <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
-             <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+             <div class="community-app-button">
+              <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+             </div>
             <form action="<?php echo base_url('home/join_school/' . $school_id); ?>" method="post">
                 <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
                 <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
             </form>
                 <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
-          </div>
-          <div class="text-center py-3">
-            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" style="max-width:120px">
           </div>
         </div>
         <div class="row justify-content-center">

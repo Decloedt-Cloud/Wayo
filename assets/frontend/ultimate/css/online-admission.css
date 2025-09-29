@@ -196,6 +196,22 @@ img { max-width:100%; display:block; }
 }
 
 /* -------- Switch checkbox -------- */
+@media (max-width: 768px) {
+  .switch-emph .info::after {
+    left: auto;
+    right: 0;
+    transform: none;
+    max-width: 90vw; /* jamais dépasser la largeur de l'écran */
+  }
+
+  .switch-emph .info::before {
+    left: auto;
+    right: 10px; /* ajuster pour le petit triangle */
+    transform: none;
+  }
+}
+
+/* -------- Switch checkbox -------- */
 .switch-emph {
   display: flex;
   align-items: center;

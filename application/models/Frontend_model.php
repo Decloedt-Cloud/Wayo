@@ -728,7 +728,7 @@ class Frontend_model extends CI_Model
     // Prepare school data
     $access = $this->input->post('visibility') ? 1 : 0;
     $school_data = [
-        'name' => htmlspecialchars($this->input->post('school_name')),
+        'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
         'address' => htmlspecialchars($this->input->post('school_adress')),
         'phone' => htmlspecialchars($this->input->post('school_phone')),
         'status' => 0, // School pending approval

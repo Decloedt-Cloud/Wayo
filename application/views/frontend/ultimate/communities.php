@@ -131,9 +131,9 @@
                   </li>
                   <li class="list-inline-item">
                     <?php if (($c['access'] ?? 0) == 1): ?>
-                      <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Privé'); ?></span>
+                      <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Private'); ?></span>
                     <?php else: ?>
-                       <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Accès libre'); ?></span>
+                       <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Free access'); ?></span>
                     <?php endif; ?>
                   </li>
                 </ul>
