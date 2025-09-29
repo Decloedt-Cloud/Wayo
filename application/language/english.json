@@ -1708,7 +1708,7 @@
     "social": "Social",
     "chat": "Chat",
     "messages": "Messages",
-    "spaces": "Spaces",
+    "espaces": "Spaces",
     "session_has_been_deleted_successfully": "Session has been deleted successfully",
     "deleting": "Deleting",
     "export_csv": "Export csv",
@@ -2216,7 +2216,7 @@
     "mark_has_been_updated_successfully": "Mark has been updated successfully",
     "mark_field_is_required": "Mark field is required",
     "contenu_complet": "Full content",
-    "people": "People",
+    "people": "Members",
     "membre": "Membre",
     "start_with_your_profile,_then_create_your_community,_set_the_price,_and_publish.": "Start with your profile, then create your community, set the price, and publish.",
     "digital_marketing_2025": "Digital marketing 2025",
@@ -2466,5 +2466,6 @@
     "upload_a_logo_(png,_256×256)_and_a_cover_image_(jpg/png,_1600×600)_to_make_your_page_look_professional.": "Upload a logo (png, 256×256) and a cover image (jpg/png, 1600×600) to make your page look professional.",
     "start_with_your_profile": "Start with your profile, then create your community, set the price, and publish.",
     "invalid_file_type": "Invalid file type",
-    "file_size_exceeds_10mb": "File size exceeds 10mb"
+    "file_size_exceeds_10mb": "File size exceeds 10mb",
+    "spaces": "Spaces"
 }
