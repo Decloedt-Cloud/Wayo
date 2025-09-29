@@ -188,7 +188,7 @@
       </div>
       <div class="col-12 col-md-auto">
         <a class="btn btn-ghost btn-pill w-100" href="#histoire" aria-label="Aller à notre histoire">
-          <?php echo get_phrase("Découvrir l’histoire ") ?>
+          <?php echo get_phrase("Discover the story ") ?>
         </a>
       </div>
     </div>
@@ -241,10 +241,9 @@
     </section>
 
     <!-- HISTOIRE -->
-     <section class="section-timeline py-5">
-        <div class="container  ">
+     <section class="section-timeline py-5" id="histoire">
+        <div class="container">
           <div class="text-center histoire mb-5">
-            <!-- <h2 class="fw-bold">L’histoire de Wayo</h2> -->
             <h2 class="social-media-main-text">
                <?php echo get_phrase("The story of") ?>
                 <span style="color: #FC7B30;"><?php echo get_phrase("Wayo academy") ?></span>
@@ -255,8 +254,6 @@
           </div>
 
           <div class="timeline">
-
-            <!-- Le déclic (gauche) -->
             <div class="timeline-item row">
               <div class="col-md-6 timeline-left d-flex justify-content-end">
                 <div class="card-timeline">
@@ -269,7 +266,6 @@
               <div class="col-md-6"></div>
             </div>
 
-            <!-- La vision (droite) -->
             <div class="timeline-item row">
               <div class="col-md-6"></div>
               <div class="col-md-6 timeline-right">
@@ -282,7 +278,6 @@
               </div>
             </div>
 
-            <!-- La mission (gauche) -->
             <div class="timeline-item row">
               <div class="col-md-6 timeline-left d-flex justify-content-end">
                 <div class="card-timeline">
@@ -300,6 +295,7 @@
           </div>
         </div>
     </section>
+    
 
     <!-- ÉQUIPE -->
     <!-- <section id="equipe" class="py-5">
@@ -439,7 +435,8 @@
           <div class="col-12 col-lg-8" data-animate>
             <article class="p-3 bg-white rounded-4 shadow-sm h-100">
               <div class="map-embed rounded-3">
-                <iframe title="Wayo Academy – R320 Um Hurair 2, Dubai, UAE" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen src="https://www.google.com/maps?q=R320%20Um%20Hurair%202,%20Dubai,%20UAE&output=embed"></iframe>
+                <!-- <iframe title="Wayo Academy – R320 Um Hurair 2, Dubai, UAE" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen src="https://www.google.com/maps?q=R320%20Um%20Hurair%202,%20Dubai,%20UAE&output=embed"></iframe> -->
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.773591177115!2d55.306372586657815!3d25.24454967224629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42d392745e8d%3A0x263aa4ef8ed1cdb8!2sUmm%20Hurair%20Rd%20-%20Dubai%20-%20%C3%89mirats%20arabes%20unis!5e0!3m2!1sfr!2sma!4v1759136094142!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
               </div>
               <!-- <div class="d-flex justify-content-end mt-2">
                 <a class="btn btn-accent btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=R320%20Um%20Hurair%202%2C%20Dubai%2C%20UAE">Ouvrir dans Google Maps</a>

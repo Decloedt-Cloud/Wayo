@@ -154,7 +154,7 @@
             <ul class="list-unstyled small text-muted mb-3">
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Members:") ?></span><span class="text-dark"><?php echo $school["course_students_count"] ?></span></li>
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Classes :") ?></span><span class="text-dark"><?php echo $school['classes_count'] ?> </span></li>
-              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold">Gratuit</span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold"><?php echo get_phrase("Free") ?></span></li>
             </ul>
             <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
              <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
@@ -165,7 +165,7 @@
                 <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
           </div>
           <div class="text-center py-3">
-            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" style="max-width:120px">
+            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute" >
           </div>
         </div>
         <div class="row justify-content-center">
