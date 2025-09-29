@@ -306,15 +306,30 @@ public function get_school_classes($school_id)
 	//START SYLLABUS section
 	public function syllabus_create($param1 = '')
 	{
+		$max_size = 10 * 1024 * 1024; // 10 Mo en bytes
+		if ($_FILES['syllabus_file']['size'] > $max_size) {
+			return array(
+				'status' => false,
+				'notification' => get_phrase('file_size_exceeds_10mb')
+			);
+		}
+
+		$allowed_extensions = array('pdf', 'doc', 'docx', 'txt');
+    	$file_ext = strtolower(pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION));
+		if (!in_array($file_ext, $allowed_extensions)) {
+			return array(
+				'status' => false,
+				'notification' => get_phrase('invalid_file_type')
+			);
+		}
+
 		$data['title'] = html_escape($this->input->post('title'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
-		
-
 		$data['session_id'] = html_escape($this->input->post('session_id'));
 		$data['school_id'] = html_escape($this->input->post('school_id'));
 		$file_ext = pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION);
-		$data['file'] = md5(rand(10000000, 20000000)).'.'.$file_ext;
-		move_uploaded_file($_FILES['syllabus_file']['tmp_name'], 'uploads/syllabus/'.$data['file']);
+    	$data['file'] = md5(rand(10000000, 20000000)).'.'.$file_ext;
+    	move_uploaded_file($_FILES['syllabus_file']['tmp_name'], 'uploads/syllabus/'.$data['file']);
 		$this->db->insert('syllabuses', $data);
 
 		return array(

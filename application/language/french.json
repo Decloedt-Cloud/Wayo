@@ -2206,6 +2206,7 @@
     "announcement": "Annonce",
     "welcome_to_the_meeting": "Bienvenue à la réunion",
     "message_sent_!_thank_you": "Message envoyé ! merci",
-    "i'm_a_member": "Je suis un membre",
-    "i'm_a_mentor": "Je suis un mentor"
+    "invalid_file_type": "Type de fichier invalide",
+    "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo"
+
 }

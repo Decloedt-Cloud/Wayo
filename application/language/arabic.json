@@ -2393,6 +2393,7 @@
     "recording_deleted_successfully": "تم حذف التسجيل بنجاح",
     "announcement": "إشعار",
     "welcome_to_the_meeting": "مرحبًا بالاجتماع",
-    "message_sent_!_thank_you": "تم إرسال الرسالة! شكرًا"
-
+    "message_sent_!_thank_you": "تم إرسال الرسالة! شكرًا",
+    "invalid_file_type": "نوع الملف غير صالح",
+    "file_size_exceeds_10mb": "حجم الملف يتجاوز 10 ميجا بايت"
 }
