@@ -101,7 +101,7 @@
           </ul>
           <details class="obi-hint">
             <summary><?php echo get_phrase("Visual tips") ?></summary>
-            <div><?php echo get_phrase("256×256 PNG logo & 1600×600 JPG/PNG cover for a professional page.") ?></div>
+            <div style="color:#878787 ; font-size:13px"><?php echo get_phrase("Upload a logo (PNG, 256×256) and a cover image (JPG/PNG, 1600×600) to make your page look professional.") ?></div>
           </details>
         </article>
 

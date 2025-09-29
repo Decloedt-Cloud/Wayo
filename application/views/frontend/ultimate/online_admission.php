@@ -25,18 +25,18 @@
   <!-- HERO -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>
-        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Créer une communauté") ?></h1>
-        <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Débutez par votre profil, puis créez votre communauté, définissez le prix et publiez.") ?></p>
+        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Create_a_community") ?></h1>
+        <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Start_with_your_profile") ?></p>
       </div>
     </section>
   <section class="">
   <div class="container py">
     <!-- Stepper -->
     <ol class="stepper" role="list" aria-label="Étapes">
-      <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl">Profil</span></li>
-      <li class="step-create-commaunaute" data-stepnav="2"><span class="num">2</span><span class="lbl">Communauté</span></li>
-      <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl">Prix</span></li>
-      <li class="step-create-commaunaute" data-stepnav="4"><span class="num">4</span><span class="lbl">Résumé</span></li>
+      <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
+      <li class="step-create-commaunaute" data-stepnav="2"><span class="num">2</span><span class="lbl"><?php echo get_phrase("Community") ?></span></li>
+      <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl"><?php echo get_phrase("Price") ?></span></li>
+      <li class="step-create-commaunaute" data-stepnav="4"><span class="num">4</span><span class="lbl"><?php echo get_phrase("Summary") ?></span></li>
     </ol>
       <!-- <form  id="communityForm"  action="<?php echo site_url('admission/online_admission/submit/school'); ?>" method="post" id="schoolform"
       class="js-validate studentform realtime-form container" enctype="multipart/form-data"  novalidate> -->
@@ -47,13 +47,13 @@
       <!-- STEP 1 : PROFIL -->
       <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1">
         <div class="panel-head">
-          <h2 id="title-step1">Création de profil</h2>
-          <span class="legend-required"><span class="req">*</span> champs obligatoires</span>
+          <h2 id="title-step1"><?php echo get_phrase("Profile_creation") ?></h2>
+          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
           <label class="field">
-            <span class="field-label">Nom <span class="req">*</span></span>
+            <span class="field-label"><?php echo get_phrase("Name") ?> <span class="req">*</span></span>
             <!-- <input id="profileName" type="text" placeholder="Votre nom" required aria-required="true" autocomplete="name"> -->
             <input id="profileName" type="text" placeholder="<?php echo get_phrase('full_name'); ?>"
                 class="form-control shadow-none rounded-end text-capitalize" name="name" required
@@ -63,7 +63,7 @@
           </label>
 
           <label class="field">
-            <span class="field-label">Email <span class="req">*</span></span>
+            <span class="field-label"><?php echo get_phrase("Email") ?> <span class="req">*</span></span>
             <!-- <input id="profileEmail" type="email" placeholder="exemple@email.com" required aria-required="true" autocomplete="email"> -->
             <input id="profileEmail" type="email" placeholder="<?php echo get_phrase('email'); ?>"
                 class="form-control rounded-end shadow-none" name="email" required aria-required="true" autocomplete="email"
@@ -75,7 +75,7 @@
 
         <div class="grid-2">
           <label class="field">
-            <span class="field-label">Téléphone <span class="req">*</span></span>
+            <span class="field-label"><?php echo get_phrase("Phone") ?> <span class="req">*</span></span>
             <!-- <input id="profilePhone" type="tel" placeholder="+212 600 00 00 00" required aria-required="true" autocomplete="tel"> -->
             <input id="profilePhone" type="tel" pattern="\+?\d{1,3}\s?(\d{1,4}\s?){4}" placeholder="+212 600 00 00 00"
                 class="form-control rounded-end shadow-none" name="phone" data-msg="Please enter a valid phone number."
@@ -83,19 +83,19 @@
             <div class="error" data-for="profilePhone"></div>
           </label>
           <label class="field">
-                <span class="field-label">Langue principale <span class="req">*</span></span>
+                <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
                 <select id="communityLang" name="communityLang" required aria-required="true">
-                  <option value="french">Français (FR)</option>
-                  <option value="english">English (En)</option>
-                  <option value="deutsch">Deutsch (De)</option>
-                  <option value="arabe">Arabe (Ar)</option>
+                  <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
+                  <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
+                  <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
+                  <option value="arabe"><?php echo get_phrase("Arabic_(AR)") ?></option>
                 </select>
                 <div class="error" data-for="communityLang"></div>
               </label>
         </div>
 
         <label class="field">
-          <span class="field-label">Mot de passe <span class="req">*</span></span>
+          <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
           <!-- <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
           <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
                 data-msg="Please enter a password" data-error-class="u-has-error" data-success-class="u-has-success">
@@ -103,7 +103,7 @@
         </label>
 
         <label class="field">
-          <span class="field-label">Confirmer le mot de passe <span class="req">*</span></span>
+          <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
           <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
           <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
                 name="repeat-password" required data-msg="Please repeat your password" data-error-class="u-has-error"
@@ -112,49 +112,49 @@
         </label>
 
         <div class="panel-actions">
-          <button type="button" class="btn btn-secondary prev" disabled>Retour</button>
-          <button type="button" class="btn btn-primary next">Continuer</button>
+          <button type="button" class="btn btn-secondary prev" disabled><?php echo get_phrase("Back") ?></button>
+          <button type="button" class="btn btn-primary next"><?php echo get_phrase("Continue") ?></button>
         </div>
       </section>
 
       <!-- STEP 2 : COMMUNAUTÉ -->
       <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2">
         <div class="panel-head">
-          <h2 id="title-step2">Détails de la communauté</h2>
-          <span class="legend-required"><span class="req">*</span> champs obligatoires</span>
+          <h2 id="title-step2"><?php echo get_phrase("Community details") ?></h2>
+          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
           <div class="stack">
             <label class="field">
-              <span class="field-label">Nom de la communauté <span class="req">*</span></span>
+              <span class="field-label"><?php echo get_phrase("Community_name") ?> <span class="req">*</span></span>
               <!-- <input id="communityName" type="text" placeholder="Ex. Digital Marketing" required maxlength="80" aria-required="true"> -->
-               <input id="communityName" type="text" placeholder="Ex. Digital Marketing" required maxlength="80" aria-required="true"
+               <input id="communityName" type="text" placeholder="<?php echo get_phrase("Ex._Digital_Marketing") ?>" required maxlength="80" aria-required="true"
                 class="form-control shadow-none rounded-end text-capitalize" name="school_name" required
                 data-msg="Please enter your first name." data-error-class="u-has-error"
                 data-success-class="u-has-success">
-              <small class="help">Max. 80 caractères</small>
+              <small class="help"><?php echo get_phrase("Max._80_characters") ?></small>
               <div class="error" data-for="communityName"></div>
             </label>
 
             <label class="field">
               <span class="field-label">
-                Description <span class="req">*</span>
-                <span class="info" data-tooltip="1) Objectif en une phrase  •  2) Pour qui  •  3) Bénéfices (3–5)  •  4) Rythme/règles. Min. 40 caractères.">
+                <?php echo get_phrase("Description") ?> <span class="req">*</span>
+                <span class="info" data-tooltip="<?php echo get_phrase("Goal_in_one_sentence_•_2)_For_whom_•_3)_Benefits_(3–5)_•_4)_Pace/rules._Min._40_characters.") ?>">
                   <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                 </span>
               </span>
               <!-- <textarea id="communityDesc" rows="6" placeholder="Décrivez l’objectif et la valeur…" required aria-required="true"></textarea> -->
-              <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description" placeholder="Décrivez l’objectif et la valeur…" required
+              <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description" placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
                 data-msg="Please enter a description." data-error-class="u-has-error"
                 data-success-class="u-has-success"></textarea>
-              <small class="help">Au moins 40 caractères.</small>
+              <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
               <div class="error" data-for="communityDesc"></div>
             </label>
 
             <div class="grid-2">
               <label class="field">
-                <span class="field-label">Catégorie <span class="req">*</span></span>
+                <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
                 <select id="communityCat" aria-required="true" name="category" class=""
                  required>
                 <option value=""><?php echo get_phrase('select_a_category'); ?></option>
@@ -171,9 +171,9 @@
                 <input id="isPrivate" name="visibility" type="checkbox" value="1"/>
                 <span class="switch-emph">
                   <i class="fa-solid fa-lock"></i>
-                  <strong>Communauté privée</strong> 
-                  <em>(accès sur approbation)</em>
-                  <span class="info field-label" data-tooltip="Une communauté privée signifie que l’accès n’est pas libre. Les personnes intéressées devront envoyer une demande d’accès. L’administrateur pourra accepter ou refuser.">
+                  <strong><?php echo get_phrase("Private_community") ?></strong> 
+                  <em><?php echo get_phrase("(access_upon_approval)") ?></em>
+                  <span class="info field-label" data-tooltip="<?php echo get_phrase("(A_private_community_means_that_access_is_not_open._Interested_people_will_need_to_send_a_request_for_access._The_administrator_can_accept_or_reject_it.)") ?>">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                   </span>
                 </span>
@@ -183,8 +183,8 @@
           <div class="stack">
             <!-- Logo -->
              <span class="field-label">
-                Logo (1:1)
-                <span class="info" data-tooltip="Taille optimale : 512×512 px (1:1) • PNG/JPG • fond transparent recommandé • &lt; 1 Mo.">
+                <?php echo get_phrase("Logo (1:1)") ?>
+                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_512×512_px_(1:1)_•_PNG/JPG_•_transparent_background_recommended_•_&lt;_1_Mo") ?>">
                   <i class="fa-solid fa-circle-info"></i>
                 </span>
               </span>
@@ -193,7 +193,7 @@
             <input id="communityLogo" type="file"  name="school_image" accept="image/*">
             <div class="uploader-content">
               <i class="fa-solid fa-upload"></i>
-              <p>Upload or drag a logo</p>
+              <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
             </div>
             <div class="preview" id="logoPreview"></div>
             <div class="error" data-for="communityLogo"></div>
@@ -201,8 +201,8 @@
 
             <!-- Cover -->
              <span class="field-label">
-                Couverture (16:9)
-                <span class="info" data-tooltip="Taille optimale : 1600×900 px • PNG/JPG • fond transparent non recommandé • &lt; 2 Mo.">
+                <?php echo get_phrase("Cover_(16:9)") ?>
+                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
                   <i class="fa-solid fa-circle-info"></i>
                 </span>
               </span>
@@ -210,7 +210,7 @@
             <input type="file" id="communityCover" name="communityCover" accept="image/*">
             <div class="uploader-content">
               <i class="fa-solid fa-image"></i>
-              <p>Upload or drag a cover photo</p>
+              <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
             </div>
             <div class="preview" id="coverPreview"></div>
             <div class="error" data-for="communityCover"></div>
@@ -219,15 +219,15 @@
         </div>
 
         <div class="panel-actions">
-          <button type="button" class="btn btn-secondary prev">Retour</button>
-          <button type="button" class="btn btn-primary next">Continuer</button>
+          <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
+          <button type="button" class="btn btn-primary next"><?php echo get_phrase("Continue") ?></button>
         </div>
       </section>
 
       <!-- STEP 3 : PRIX -->
       <section class="card panel step-pane" data-step="3" aria-labelledby="title-step3">
         <div class="panel-head">
-          <h2 id="title-step3">Tarification et accès</h2>
+          <h2 id="title-step3"><?php echo get_phrase("Pricing_and_access") ?></h2>
         </div>
         
         <div class="grid-3 price-grid">
@@ -235,8 +235,8 @@
             <input id="price" type="radio" name="communityPriceType" value="free" checked>
             <div class="tile" data-price-tile="free">
               <i class="fa-solid fa-gift"></i>
-              <strong>Gratuit</strong>
-              <span>Accès libre</span>
+              <strong><?php echo get_phrase("Free") ?></strong>
+              <span><?php echo get_phrase("Free_access") ?></span>
             </div>
           </label>
 
@@ -244,8 +244,8 @@
             <input type="radio" name="communityPriceType" value="oneoff" disabled>
             <div class="tile tile-disabled" data-coming="true">
               <i class="fa-solid fa-hand-holding-dollar"></i>
-              <strong>Payant (one-shot)</strong>
-              <span>Coming soon</span>
+              <strong><?php echo get_phrase("Paid_(one-time)") ?></strong>
+              <span><?php echo get_phrase("Coming_soon") ?></span>
             </div>
           </label>
 
@@ -253,8 +253,8 @@
             <input type="radio" name="communityPriceType" value="subscription" disabled>
             <div class="tile tile-disabled" data-coming="true">
               <i class="fa-solid fa-arrows-rotate"></i>
-              <strong>Abonnement</strong>
-              <span>Coming soon</span>
+              <strong><?php echo get_phrase("Subscription") ?></strong>
+              <span><?php echo get_phrase("Coming_soon") ?></span>
             </div>
           </label>
         </div>
@@ -268,23 +268,23 @@
       </label> -->
 
         <div class="panel-actions">
-          <button type="button" class="btn btn-secondary prev">Retour</button>
-          <button type="button" class="btn btn-primary next">Continuer</button>
+          <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
+          <button type="button" class="btn btn-primary next"><?php echo get_phrase("Continue") ?></button>
         </div>
       </section>
 
       <!-- STEP 4 : RÉSUMÉ -->
       <section class="card panel step-pane" data-step="4" aria-labelledby="title-step4">
         <div class="panel-head">
-          <h2 id="title-step4">Résumé & publication</h2>
+          <h2 id="title-step4"><?php echo get_phrase("Summary_&_publishing") ?></h2>
         </div>
 
         <div class="summary">
-          <p>Vérifiez vos informations et cliquez sur <strong>Publier</strong>.</p>
+          <p><?php echo get_phrase("Check_your_information_and_click_on") ?> <strong><?php echo get_phrase("Publish") ?></strong>.</p>
         </div>
 
         <div class="panel-actions">
-          <button type="button" class="btn btn-secondary prev">Retour</button>
+          <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
           <!-- <button type="submit" class="btn btn-success">Publier</button> -->
           <button type="submit" id="submitBtnSchool"
           class="btn btn btn-success text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
