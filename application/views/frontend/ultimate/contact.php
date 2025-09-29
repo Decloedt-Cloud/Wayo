@@ -124,11 +124,24 @@
         </div>
       </aside>
     </div>
-    <div class="container-fluid location-container mt-5">
+    <!-- <div class="container-fluid location-container mt-5">
     <div class="row">
       <div id="map" class="g-0 col-12"></div>
     </div>
-  </div>
+    </div> -->
+       <!-- OÙ NOUS TROUVER -->
+    <section id="contact" class="contact py-5">
+      <div class="container">
+        <div class="row g-3 align-items-stretch">
+          <div class="col-12 col-lg-12" data-animate>
+            <article class="p-3 bg-white rounded-4 shadow-sm h-100">
+              <div class="map-embed rounded-3">
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.773591177115!2d55.306372586657815!3d25.24454967224629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42d392745e8d%3A0x263aa4ef8ed1cdb8!2sUmm%20Hurair%20Rd%20-%20Dubai%20-%20%C3%89mirats%20arabes%20unis!5e0!3m2!1sfr!2sma!4v1759136094142!5m2!1sfr!2sma" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
 <script>

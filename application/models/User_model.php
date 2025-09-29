@@ -1670,7 +1670,7 @@ class User_model extends CI_Model
 		if (file_exists('uploads/communityCover/' . $school_id . '.jpg'))
 			return base_url() . 'uploads/communityCover/' . $school_id . '.jpg';
 		else
-			return base_url() . 'uploads/communityCover/placeholder.png';
+			return base_url() . 'uploads/communityCover/placeholder.jpg';
 	}
 	// Get School Image Ends
 

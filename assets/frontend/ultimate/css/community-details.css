@@ -46,6 +46,10 @@ body{
 .card-img-customer{
   height: 545px;
 }
+.logo-communaute{
+  border-radius: 10px !important;
+  max-width:120px;
+}
 
 
 /* Cards */
