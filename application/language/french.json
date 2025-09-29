@@ -223,7 +223,6 @@
     "download": "Télécharger",
     "event_calendar": "Annonce",
     "event_title": "Titre de annonce",
-
     "from": "De",
     "to": "À",
     "invoice": "Facture",
@@ -493,7 +492,6 @@
     "email_preview": "Aperçu de l'email",
     "instruction": "Instruction",
     "before_sending_marks_to_the_receivers_please_make_sure_that_you_have_set_up_mail_settings_perfectly": "Avant d'envoyer les notes aux destinataires, assurez-vous que les paramètres de messagerie sont correctement configurés",
-
     "you_can_set_mail_settings": "Vous pouvez configurer les paramètres de messagerie",
     "here": "Ici",
     "please_select_the_fields": "Veuillez sélectionner les champs",
@@ -1843,9 +1841,7 @@
     "for_mentors_(coaches):": "Pour les mentors (coachs) :",
     "mentors_retain_full_ownership_of_their_course_content.": "Les mentors conservent la pleine propriété de leur contenu de cours.",
     "wayo_academy_will_not_distribute,_sell,_or_alter_any_content_provided_by_the_mentors.": "Wayo Academy ne distribuera, ne vendra ni ne modifiera aucun contenu fourni par les mentors.",
-
     "mentors_have_the_right_to_pursue_legal_actions_against_any_user_violating_their_content_rights.": "Les mentors ont le droit d'engager des actions judiciaires contre tout utilisateur violant leurs droits sur le contenu.",
-
     "for_members:": "Pour les membres :",
     "members_must_follow_training_programs_diligently_and_respect_the_intellectual_property_rights_of_their_coaches.": "Les membres doivent suivre les programmes de formation avec diligence et respecter les droits de propriété intellectuelle de leurs coachs.",
     "members_acknowledge_that_violating_content_protection_rules_(copying,_sharing,_or_redistributing_materials)_may_result_in_immediate_account_suspension_and_potential_legal_actions.": "Les membres reconnaissent que la violation des règles de protection du contenu (copie, partage ou redistribution de matériels) peut entraîner une suspension immédiate du compte et des actions judiciaires potentielles.",
@@ -1945,7 +1941,6 @@
     "correct_your_data:": "Corriger vos données :",
     "update_any_inaccuracies_in_your_information.": "Mettre à jour toute inexactitude dans vos informations.",
     "delete_your_data:": "Supprimer vos données :",
-
     "request_deletion_of_your_personal_information,_subject_to_regulatory_or_legitimate_business_exceptions.": "Demander la suppression de vos informations personnelles, sous réserve d'exceptions réglementaires ou commerciales légitimes.",
     "portability_of_data:": "Portabilité des données :",
     "coaches_can_export_their_content_and_personal_data_if_they_choose_to_leave_the_platform.": "Les coachs peuvent exporter leur contenu et leurs données personnelles s'ils choisissent de quitter la plateforme.",
@@ -2210,5 +2205,7 @@
     "create_my_community": "Créer ma communauté",
     "announcement": "Annonce",
     "welcome_to_the_meeting": "Bienvenue à la réunion",
-    "message_sent_!_thank_you": "Message envoyé ! merci"
+    "message_sent_!_thank_you": "Message envoyé ! merci",
+    "invalid_file_type": "Type de fichier invalide",
+    "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo"
 }
