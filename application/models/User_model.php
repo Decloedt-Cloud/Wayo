@@ -42,7 +42,7 @@ class User_model extends CI_Model
 	public function create_admin()
 	{
 		$data['school_id'] = html_escape($this->input->post('school_id'));
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['email'] = html_escape($this->input->post('email'));
 		$plainPassword = $this->input->post('password'); // <- mot de passe en clair
 		$data['password'] = sha1($plainPassword);
@@ -113,7 +113,7 @@ class User_model extends CI_Model
 
 	public function update_admin($param1 = '')
 	{
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['email'] = html_escape($this->input->post('email'));
 		$data['phone'] = html_escape($this->input->post('phone'));
 		$data['gender'] = html_escape($this->input->post('gender'));
@@ -216,7 +216,7 @@ class User_model extends CI_Model
 	public function create_school()
 	{
 		// $data['school_id'] = html_escape($this->input->post('school_id'));
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['phone'] = html_escape($this->input->post('phone'));
 		// $data['email'] = html_escape($this->input->post('email'));
 		$data['description'] = html_escape($this->input->post('description'));
@@ -283,7 +283,7 @@ class User_model extends CI_Model
 
 	public function update_school($param1 = '')
 	{
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['phone'] = html_escape($this->input->post('phone'));
 		// $data['email'] = html_escape($this->input->post('email'));
 		$data['description'] = html_escape($this->input->post('description'));
@@ -366,7 +366,7 @@ class User_model extends CI_Model
 	public function create_teacher()
 	{
 		$data['school_id'] = html_escape($this->input->post('school_id'));
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['email'] = html_escape($this->input->post('email'));
 		$plainPassword = $this->input->post('password'); // <- mot de passe en clair
 		$data['password'] = sha1($plainPassword); // stocké dans ta BDD locale
@@ -475,7 +475,7 @@ class User_model extends CI_Model
 
 	public function update_teacher($param1 = '')
 	{
-		$data['name'] = html_escape($this->input->post('name'));
+		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['email'] = html_escape($this->input->post('email'));
 		$data['phone'] = html_escape($this->input->post('phone'));
 		$data['gender'] = html_escape($this->input->post('gender'));
@@ -915,7 +915,7 @@ class User_model extends CI_Model
 			$plainPassword = $this->input->post('password'); // Mot de passe en clair pour HumHub
 			// Préparation des données utilisateur
 			$user_data = [
-				'name' => html_escape($this->input->post('name')),
+				'name' => html_entity_decode(html_escape($this->input->post('name'))),
 				'email' => html_escape($this->input->post('email')),
 				//'birthday' => strtotime(html_escape($this->input->post('birthday'))),
 				'birthday' => date('Y-m-d', strtotime(html_escape($this->input->post('birthday')))),
@@ -1087,7 +1087,7 @@ class User_model extends CI_Model
 			// check email duplication
 			$duplication_status = $this->check_duplication('on_create', $students_email[$key]);
 			if ($duplication_status) {
-				$user_data['name'] = $students_name[$key];
+				$user_data['name'] = html_entity_decode($students_name[$key]);
 				$user_data['email'] = $students_email[$key];
 				// $user_data['password'] = sha1($students_password[$key]);
 				$user_data['gender'] = $students_gender[$key];
@@ -1227,7 +1227,7 @@ class User_model extends CI_Model
 				$all_data = explode(',', $line); // Diviser la ligne en utilisant la virgule comme séparateur
 
 				if ($count > 0) {
-					$user_data['name'] = str_replace('"', '', trim($all_data[0]));
+					$user_data['name'] = html_entity_decode(str_replace('"', '', trim($all_data[0])));
 					$user_data['email'] = html_escape($all_data[1]);
 					$user_data['phone'] = trim(html_escape($all_data[2]));
 					$user_data['gender'] = str_replace('"', '', trim($all_data[3]));
@@ -1342,7 +1342,7 @@ class User_model extends CI_Model
 
 	public function student_update($student_id = '', $user_id = '')
 	{
-		$user_data['name'] = html_escape($this->input->post('name'));
+		$user_data['name'] = html_entity_decode($this->input->post('name'));
 		$user_data['email'] = html_escape($this->input->post('email'));
 
 		//Avec strtotime(...) : Le format stocké sera un timestamp Unix, c'est-à-dire un entier représentant le nombre de secondes depuis le 1er janvier 1970 (ex. 1617513600).
@@ -2399,7 +2399,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 
 		// Préparer les données de l'utilisateur
 		$data = [
-			'name' => htmlspecialchars($this->input->post('first_name') . ' ' . $this->input->post('last_name')),
+			'name' => html_entity_decode(htmlspecialchars($this->input->post('first_name') . ' ' . $this->input->post('last_name'))),
 			'email' => htmlspecialchars($this->input->post('student_email')),
 			'birthday' => htmlspecialchars($this->input->post('date_of_birth')),
 			'password' => sha1($this->input->post('password-student')),
