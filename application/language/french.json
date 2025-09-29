@@ -471,6 +471,8 @@
     "upload_alumni_photo": "Télécharger la photo de l'ancien élève",
     "version": "Version",
     "remove": "Supprimer",
+    "i'm_a_member": "Je suis un membre",
+    "i'm_a_mentor": "Je suis un mentor",
     "upload_addons_zip_file": "Télécharger le fichier zip des extensions",
     "install_addon": "Installer une extension",
     "no_addon_found": "Aucune extension trouvée",
@@ -2432,4 +2434,5 @@
     "invalid_file_type": "Type de fichier invalide",
     "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
     "espaces": "Espaces"
+
 }

@@ -388,3 +388,95 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+        // Charger les données des devises depuis le fichier JSON
+        async function loadCurrencyData() {
+            try {
+                const response = await fetch('assets/frontend/ultimate/js/currencies.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Erreur lors du chargement des données de devises:', error);
+                // Fallback en cas d'erreur de chargement du JSON
+                return {
+                   countryToCurrency: {
+                'US': 'USD', 'GB': 'GBP', 'JP': 'JPY', 'FR': 'EUR', 'DE': 'EUR',
+                'CA': 'CAD', 'AU': 'AUD', 'MA': 'MAD', 'BR': 'BRL', 'IN': 'INR',
+                'CN': 'CNY', 'RU': 'RUB', 'MX': 'MXN', 'ZA': 'ZAR', 'KR': 'KRW',
+                'IT': 'EUR', 'ES': 'EUR', 'NL': 'EUR', 'SE': 'SEK', 'CH': 'CHF',
+                'SG': 'SGD', 'NZ': 'NZD', 'AR': 'ARS', 'CL': 'CLP', 'CO': 'COP',
+                'EG': 'EGP', 'NG': 'NGN', 'SA': 'SAR', 'AE': 'AED', 'TR': 'TRY',
+                'PL': 'PLN', 'ID': 'IDR', 'TH': 'THB', 'MY': 'MYR', 'PH': 'PHP',
+                'VN': 'VND', 'PK': 'PKR', 'BD': 'BDT', 'HK': 'HKD', 'TW': 'TWD',
+                'KW': 'KWD', 'QA': 'QAR', 'IL': 'ILS', 'UA': 'UAH', 'CZ': 'CZK',
+                'NO': 'NOK', 'DK': 'DKK', 'KE': 'KES', 'GH': 'GHS', 'SN': 'XOF',
+                'CM': 'XAF', 'PE': 'PEN', 'VE': 'VES', 'LK': 'LKR', 'KZ': 'KZT'
+            },
+            currencySymbols: {
+                'EUR': '€', 'USD': '$', 'GBP': '£', 'JPY': '¥', 'CAD': 'C$',
+                'AUD': 'A$', 'MAD': 'MAD', 'BRL': 'R$', 'INR': '₹', 'CNY': '¥',
+                'RUB': '₽', 'MXN': '$', 'ZAR': 'R', 'KRW': '₩', 'SEK': 'kr',
+                'CHF': 'CHF', 'SGD': 'S$', 'NZD': 'NZ$', 'ARS': '$', 'CLP': '$',
+                'COP': '$', 'EGP': '£', 'NGN': '₦', 'SAR': '﷼', 'AED': 'د.إ',
+                'TRY': '₺', 'PLN': 'zł', 'IDR': 'Rp', 'THB': '฿', 'MYR': 'RM',
+                'PHP': '₱', 'VND': '₫', 'PKR': '₨', 'BDT': '৳', 'HKD': 'HK$',
+                'TWD': 'NT$', 'KWD': 'KD', 'QAR': 'QR', 'ILS': '₪', 'UAH': '₴',
+                'CZK': 'Kč', 'NOK': 'kr', 'DKK': 'kr', 'KES': 'KSh', 'GHS': '₵',
+                'XOF': 'CFA', 'XAF': 'CFA', 'PEN': 'S/', 'VES': 'Bs', 'LKR': 'Rs',
+                'KZT': '₸'
+            }
+                };
+            }
+        }
+
+        // Récupérer la devise à partir de l'IP avec IPinfo Lite
+        async function getCurrencyFromIP(currencyData) {
+            try {
+                const response = await fetch('https://ipinfo.io/json?token=6767edf58cb8da');
+                const data = await response.json();
+                return currencyData.countryToCurrency[data.country] || 'EUR'; // Devise par défaut : EUR
+            } catch (error) {
+                console.error('Erreur lors de la détection IP:', error);
+                return 'EUR'; // Devise par défaut en cas d'erreur
+            }
+        }
+
+        // Récupérer les taux de change avec Currency-API
+        async function getExchangeRates() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.min.json');
+                const data = await response.json();
+                return data.eur; // Taux de change par rapport à l'EUR
+            } catch (error) {
+                console.error('Erreur lors de la récupération des taux de change:', error);
+                return { 
+                    usd: 1.1, gbp: 0.85, jpy: 150, cad: 1.5, aud: 1.6, mad: 10.5, 
+                    brl: 5.5, inr: 90, cny: 7.1, rub: 100, mxn: 20, zar: 18, 
+                    krw: 1400, sek: 11, chf: 0.95, sgd: 1.35, nzd: 1.65, 
+                    ars: 1000, clp: 950, cop: 4500, egp: 50, ngn: 1600, 
+                    sar: 4.1, aed: 4.0, try: 34, pln: 4.3, idr: 16000, 
+                    thb: 35, myr: 4.8, php: 60, vnd: 27000, pkr: 300, 
+                    bdt: 120, hkd: 8.5, twd: 33 
+                }; // Taux de secours
+            }
+        }
+
+        // Mettre à jour les prix affichés
+        async function updatePrices() {
+            const currencyData = await loadCurrencyData();
+            const selectedCurrency = await getCurrencyFromIP(currencyData);
+            const rates = await getExchangeRates();
+            const priceCells = document.querySelectorAll('.price-row td[data-price]');
+
+            priceCells.forEach(cell => {
+                const basePrice = parseFloat(cell.getAttribute('data-price'));
+                const convertedPrice = (basePrice * rates[selectedCurrency.toLowerCase()]).toFixed(2);
+                cell.textContent = `${currencyData.currencySymbols[selectedCurrency]} ${convertedPrice}/${window.translations.month}`;
+                if (basePrice === 0) {
+                    cell.textContent = `${currencyData.currencySymbols[selectedCurrency]}0`;
+                }
+            });
+        }
+
+        // Initialiser les prix au chargement de la page
+        document.addEventListener('DOMContentLoaded', updatePrices);

@@ -142,9 +142,9 @@
                     </tr>
                     <tr class="price-row">
                         <td class="feature"><?php echo get_phrase("Price") ?></td>
-                        <td>€0</td>
-                        <td>€20 / <?php echo get_phrase("month") ?></td>
-                        <td>€27 / <?php echo get_phrase("month") ?></td>
+                        <td><?php echo get_phrase("free") ?></td>
+                        <td data-price="69" data-currency="EUR"><?php echo get_phrase("month") ?></td>
+                        <td data-price="79" data-currency="EUR"><?php echo get_phrase("month") ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -365,3 +365,8 @@
     <!------------------------------------------------------------------------------------------------>
 </main>
 <!-- ========== END MAIN ========== -->
+ <script>
+  window.translations = {
+        month: '<?php echo get_phrase("month"); ?>'
+    };
+ </script>
