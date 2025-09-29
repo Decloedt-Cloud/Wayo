@@ -25,8 +25,8 @@
   <!-- HERO -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>
-        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Create a community") ?></h1>
-        <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Start with your profile, then create your community, set the price, and publish.") ?></p>
+        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Create_a_community") ?></h1>
+        <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Start_with_your_profile") ?></p>
       </div>
     </section>
   <section class="">
@@ -47,8 +47,8 @@
       <!-- STEP 1 : PROFIL -->
       <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1">
         <div class="panel-head">
-          <h2 id="title-step1"><?php echo get_phrase("Profile creation") ?></h2>
-          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required fields") ?></span>
+          <h2 id="title-step1"><?php echo get_phrase("Profile_creation") ?></h2>
+          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
@@ -83,12 +83,12 @@
             <div class="error" data-for="profilePhone"></div>
           </label>
           <label class="field">
-                <span class="field-label"><?php echo get_phrase("Primary language") ?> <span class="req">*</span></span>
+                <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
                 <select id="communityLang" name="communityLang" required aria-required="true">
-                  <option value="french"><?php echo get_phrase("French (FR)") ?></option>
-                  <option value="english"><?php echo get_phrase("Anglais (EN)") ?></option>
-                  <option value="deutsch"><?php echo get_phrase("Allemand (DE)") ?></option>
-                  <option value="arabe"><?php echo get_phrase("Arabic (AR)") ?></option>
+                  <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
+                  <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
+                  <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
+                  <option value="arabe"><?php echo get_phrase("Arabic_(AR)") ?></option>
                 </select>
                 <div class="error" data-for="communityLang"></div>
               </label>
@@ -103,7 +103,7 @@
         </label>
 
         <label class="field">
-          <span class="field-label"><?php echo get_phrase("Confirm password") ?> <span class="req">*</span></span>
+          <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
           <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
           <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
                 name="repeat-password" required data-msg="Please repeat your password" data-error-class="u-has-error"
@@ -121,34 +121,34 @@
       <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2">
         <div class="panel-head">
           <h2 id="title-step2"><?php echo get_phrase("Community details") ?></h2>
-          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required fields") ?></span>
+          <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
           <div class="stack">
             <label class="field">
-              <span class="field-label"><?php echo get_phrase("Community name") ?> <span class="req">*</span></span>
+              <span class="field-label"><?php echo get_phrase("Community_name") ?> <span class="req">*</span></span>
               <!-- <input id="communityName" type="text" placeholder="Ex. Digital Marketing" required maxlength="80" aria-required="true"> -->
-               <input id="communityName" type="text" placeholder="<?php echo get_phrase("Ex. Digital Marketing") ?>" required maxlength="80" aria-required="true"
+               <input id="communityName" type="text" placeholder="<?php echo get_phrase("Ex._Digital_Marketing") ?>" required maxlength="80" aria-required="true"
                 class="form-control shadow-none rounded-end text-capitalize" name="school_name" required
                 data-msg="Please enter your first name." data-error-class="u-has-error"
                 data-success-class="u-has-success">
-              <small class="help"><?php echo get_phrase("Max. 80 characters") ?></small>
+              <small class="help"><?php echo get_phrase("Max._80_characters") ?></small>
               <div class="error" data-for="communityName"></div>
             </label>
 
             <label class="field">
               <span class="field-label">
                 <?php echo get_phrase("Description") ?> <span class="req">*</span>
-                <span class="info" data-tooltip="<?php echo get_phrase("Goal in one sentence • 2) For whom • 3) Benefits (3–5) • 4) Pace/rules. Min. 40 characters.") ?>">
+                <span class="info" data-tooltip="<?php echo get_phrase("Goal_in_one_sentence_•_2)_For_whom_•_3)_Benefits_(3–5)_•_4)_Pace/rules._Min._40_characters.") ?>">
                   <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                 </span>
               </span>
               <!-- <textarea id="communityDesc" rows="6" placeholder="Décrivez l’objectif et la valeur…" required aria-required="true"></textarea> -->
-              <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description" placeholder="<?php echo get_phrase("Describe the goal and the value…") ?>" required
+              <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description" placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
                 data-msg="Please enter a description." data-error-class="u-has-error"
                 data-success-class="u-has-success"></textarea>
-              <small class="help"><?php echo get_phrase("At least 40 characters.") ?></small>
+              <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
               <div class="error" data-for="communityDesc"></div>
             </label>
 
@@ -171,9 +171,9 @@
                 <input id="isPrivate" name="visibility" type="checkbox" value="1"/>
                 <span class="switch-emph">
                   <i class="fa-solid fa-lock"></i>
-                  <strong><?php echo get_phrase("Private community") ?></strong> 
-                  <em><?php echo get_phrase("(access upon approval)") ?></em>
-                  <span class="info field-label" data-tooltip="<?php echo get_phrase("(A private community means that access is not open. Interested people will need to send a request for access. The administrator can accept or reject it.)") ?>">
+                  <strong><?php echo get_phrase("Private_community") ?></strong> 
+                  <em><?php echo get_phrase("(access_upon_approval)") ?></em>
+                  <span class="info field-label" data-tooltip="<?php echo get_phrase("(A_private_community_means_that_access_is_not_open._Interested_people_will_need_to_send_a_request_for_access._The_administrator_can_accept_or_reject_it.)") ?>">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
                   </span>
                 </span>
@@ -184,7 +184,7 @@
             <!-- Logo -->
              <span class="field-label">
                 <?php echo get_phrase("Logo (1:1)") ?>
-                <span class="info" data-tooltip="<?php echo get_phrase("Optimal size: 512×512 px (1:1) • PNG/JPG • transparent background recommended • &lt; 1 Mo") ?>">
+                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_512×512_px_(1:1)_•_PNG/JPG_•_transparent_background_recommended_•_&lt;_1_Mo") ?>">
                   <i class="fa-solid fa-circle-info"></i>
                 </span>
               </span>
@@ -193,7 +193,7 @@
             <input id="communityLogo" type="file"  name="school_image" accept="image/*">
             <div class="uploader-content">
               <i class="fa-solid fa-upload"></i>
-              <p><?php echo get_phrase("Upload or drag a logo") ?></p>
+              <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
             </div>
             <div class="preview" id="logoPreview"></div>
             <div class="error" data-for="communityLogo"></div>
@@ -201,8 +201,8 @@
 
             <!-- Cover -->
              <span class="field-label">
-                <?php echo get_phrase("Cover (16:9)") ?>
-                <span class="info" data-tooltip="<?php echo get_phrase("Optimal size: 1600×900 px • PNG/JPG • transparent background not recommended • &lt; 2 Mo.") ?> ">
+                <?php echo get_phrase("Cover_(16:9)") ?>
+                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
                   <i class="fa-solid fa-circle-info"></i>
                 </span>
               </span>
@@ -210,7 +210,7 @@
             <input type="file" id="communityCover" name="communityCover" accept="image/*">
             <div class="uploader-content">
               <i class="fa-solid fa-image"></i>
-              <p><?php echo get_phrase("Upload or drag a cover photo") ?></p>
+              <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
             </div>
             <div class="preview" id="coverPreview"></div>
             <div class="error" data-for="communityCover"></div>
@@ -227,7 +227,7 @@
       <!-- STEP 3 : PRIX -->
       <section class="card panel step-pane" data-step="3" aria-labelledby="title-step3">
         <div class="panel-head">
-          <h2 id="title-step3"><?php echo get_phrase("Pricing and access") ?></h2>
+          <h2 id="title-step3"><?php echo get_phrase("Pricing_and_access") ?></h2>
         </div>
         
         <div class="grid-3 price-grid">
@@ -236,7 +236,7 @@
             <div class="tile" data-price-tile="free">
               <i class="fa-solid fa-gift"></i>
               <strong><?php echo get_phrase("Free") ?></strong>
-              <span><?php echo get_phrase("Free access") ?></span>
+              <span><?php echo get_phrase("Free_access") ?></span>
             </div>
           </label>
 
@@ -244,8 +244,8 @@
             <input type="radio" name="communityPriceType" value="oneoff" disabled>
             <div class="tile tile-disabled" data-coming="true">
               <i class="fa-solid fa-hand-holding-dollar"></i>
-              <strong><?php echo get_phrase("Paid (one-time)") ?></strong>
-              <span><?php echo get_phrase("Coming soon") ?></span>
+              <strong><?php echo get_phrase("Paid_(one-time)") ?></strong>
+              <span><?php echo get_phrase("Coming_soon") ?></span>
             </div>
           </label>
 
@@ -254,7 +254,7 @@
             <div class="tile tile-disabled" data-coming="true">
               <i class="fa-solid fa-arrows-rotate"></i>
               <strong><?php echo get_phrase("Subscription") ?></strong>
-              <span><?php echo get_phrase("Coming soon") ?></span>
+              <span><?php echo get_phrase("Coming_soon") ?></span>
             </div>
           </label>
         </div>
@@ -276,11 +276,11 @@
       <!-- STEP 4 : RÉSUMÉ -->
       <section class="card panel step-pane" data-step="4" aria-labelledby="title-step4">
         <div class="panel-head">
-          <h2 id="title-step4"><?php echo get_phrase("Summary & publishing") ?></h2>
+          <h2 id="title-step4"><?php echo get_phrase("Summary_&_publishing") ?></h2>
         </div>
 
         <div class="summary">
-          <p><?php echo get_phrase("Check your information and click on") ?> <strong><?php echo get_phrase("Publish") ?></strong>.</p>
+          <p><?php echo get_phrase("Check_your_information_and_click_on") ?> <strong><?php echo get_phrase("Publish") ?></strong>.</p>
         </div>
 
         <div class="panel-actions">

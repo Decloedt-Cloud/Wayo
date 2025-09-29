@@ -188,7 +188,7 @@
       </div>
       <div class="col-12 col-md-auto">
         <a class="btn btn-ghost btn-pill w-100" href="#histoire" aria-label="Aller à notre histoire">
-          <?php echo get_phrase("Discover the story ") ?>
+          <?php echo get_phrase("Discover_the_story ") ?>
         </a>
       </div>
     </div>
