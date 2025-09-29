@@ -46,9 +46,17 @@ body{
 .card-img-customer{
   height: 545px;
 }
-.logo-communaute{
-  border-radius: 10px !important;
-  max-width:120px;
+.bg-logo-communaute{
+  background-color:#ffdcb8 ;
+}
+.logo-communaute {
+  border-radius: 50%;       /* pour faire un cercle */
+  width: 170px;             /* largeur fixe ou adaptative */
+  height: 170px;            /* hauteur identique à la largeur pour un cercle parfait */
+  object-fit: cover;        /* recadre l'image pour remplir le cercle sans déformation */
+  display: block;
+  margin: 0 auto;
+  border: 2px solid #fc7b30;           /* centre horizontalement */
 }
 
 
