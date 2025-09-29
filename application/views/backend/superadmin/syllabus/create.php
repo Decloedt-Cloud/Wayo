@@ -47,8 +47,7 @@ $('document').ready(function(){
         e.preventDefault(); // Bloque le comportement normal
         var form = $(this);
 
-        // Vérification de la taille du fichier (2 Mo = 2 * 1024 * 1024 bytes)
-        var maxSize = 10 * 1024 * 1024; // 2 Mo en bytes
+        var maxSize = 10 * 1024 * 1024; // 10 Mo en bytes
         var syllabusFile = $('#syllabus_file')[0].files[0];
         if (syllabusFile && syllabusFile.size > maxSize) {
             error_notify('<?php echo js_phrase(get_phrase('file_size_exceeds_10mb')); ?>');

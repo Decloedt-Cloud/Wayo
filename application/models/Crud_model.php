@@ -306,7 +306,7 @@ public function get_school_classes($school_id)
 	//START SYLLABUS section
 	public function syllabus_create($param1 = '')
 	{
-		$max_size = 10 * 1024 * 1024; // 2 Mo en bytes
+		$max_size = 10 * 1024 * 1024; // 10 Mo en bytes
 		if ($_FILES['syllabus_file']['size'] > $max_size) {
 			return array(
 				'status' => false,
