@@ -157,7 +157,9 @@
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold">Gratuit</span></li>
             </ul>
             <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
-             <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+             <div class="community-app-button">
+              <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
+             </div>
             <form action="<?php echo base_url('home/join_school/' . $school_id); ?>" method="post">
                 <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
                 <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
