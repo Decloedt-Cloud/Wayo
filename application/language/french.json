@@ -1708,7 +1708,7 @@
     "votre_inscription_a_été_effectuée_avec_succès.": "Votre inscription a été effectuée avec succès.",
     "your_account_has_been_disabled": "Votre compte a été désactivé",
     "error_deleting_humhub_user": "Erreur lors de la suppression de l'utilisateur humhub",
-    "wall": "Wall",
+    "wall": "Mur",
     "this_school_name_and_email_already_exist": "Ce nom de Communauté et cet email existent déjà",
     "0_courses_found_in_category": "0 cours trouvés dans la catégorie",
     "upcoming_events": "Annonces à venir",
@@ -2019,7 +2019,7 @@
     "contenu_complet": "Contenu complet",
     "une_erreur_s'est_produite": "Une erreur s'est produite",
     "une_erreur_s'est_produite_lors_de_la_soumission": "Une erreur s'est produite lors de la soumission",
-    "people": "People",
+    "people": "Membres",
     "visio": "Visio",
     "event_details": "Détails evenement",
     "community": "Communauté",
@@ -2205,7 +2205,7 @@
     "create_my_community": "Créer ma communauté",
     "announcement": "Annonce",
     "welcome_to_the_meeting": "Bienvenue à la réunion",
-    "message_sent_!_thank_you": "Message envoyé ! Merci",
+    "message_sent_!_thank_you": "Message envoyé ! merci",
     "free_access": "Accès libre",
     "create_a_community": "Créer une communauté",
     "start_with_your_profile,_then_create_your_community,_set_the_price,_and_publish.": "Commencez par votre profil, puis créez votre communauté, définissez le prix et publiez.",
@@ -2429,9 +2429,7 @@
     "niveau": "Niveau",
     "upload_a_logo_(png,_256×256)_and_a_cover_image_(jpg/png,_1600×600)_to_make_your_page_look_professional.": "Téléchargez un logo (PNG, 256×256) et une image de couverture (JPG/PNG, 1600×600) pour donner un aspect professionnel à votre page.",
     "start_with_your_profile": "Start with your profile",
-    "message_sent_!_thank_you": "Message envoyé ! merci",
     "invalid_file_type": "Type de fichier invalide",
-    "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo"
-
-
+    "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
+    "espaces": "Espaces"
 }

@@ -375,7 +375,7 @@ class User_model extends CI_Model
 		$data['address'] = html_escape($this->input->post('address'));
 		$data['role'] = 'teacher';
 		$data['watch_history'] = '[]';
-
+		$data['status'] = 1; // Active by default
 		// check email duplication
 		$duplication_status = $this->check_duplication('on_create', $data['email']);
 		if ($duplication_status) {
@@ -2034,7 +2034,6 @@ public function get_unread_messages_count($wayo_user_id)//user_model
    
     return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
 }
-
 	public function update_password()
 	{
 		$user_id = $this->session->userdata('user_id');
