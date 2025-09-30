@@ -2197,6 +2197,24 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 		return $count;
 	}
 
+	public function get_all_schools_with_counts()
+	{
+	return $this->db->where('school_id', $school_id)
+			->from('students')
+			->count_all_results();
+		return $count;
+	}
+
+	public function get_all_classes_with_counts()
+	{
+	return $this->db->where('school_id', $school_id)
+			->from('classes')
+			->count_all_results();
+		return $count;
+	}
+
+
+
 
 	public function get_school_admin($school_id)
 	{

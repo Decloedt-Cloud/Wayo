@@ -471,8 +471,8 @@
     "upload_alumni_photo": "Télécharger la photo de l'ancien élève",
     "version": "Version",
     "remove": "Supprimer",
-    "i'm_a_member": "Je suis un membre",
-    "i'm_a_mentor": "Je suis un mentor",
+    "i'm_a_member": "Je suis membre",
+    "i'm_a_mentor": "Je suis mentor",
     "upload_addons_zip_file": "Télécharger le fichier zip des extensions",
     "install_addon": "Installer une extension",
     "no_addon_found": "Aucune extension trouvée",
@@ -2282,8 +2282,6 @@
     "views,_completions,_revenue_(dashboard)": "Vues, complétions, revenus (tableau de bord)",
     "start_now": "Commencez maintenant",
     "watch_a_demo": "Regarder une démo",
-    "i'm_a_member": "Je suis membre",
-    "i'm_a_mentor": "Je suis mentor",
     "create_my_account_": "Créer mon compte ",
     "discover_the_story_": "Découvrir l’histoire ",
     "faq": "Faq",
@@ -2433,6 +2431,8 @@
     "start_with_your_profile": "Start with your profile",
     "invalid_file_type": "Type de fichier invalide",
     "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
-    "espaces": "Espaces"
-
+    "espaces": "Espaces",
+    "limited_offer": "Limited offer",
+    "class_description": "Class description",
+    "see_more": "See more"
 }
