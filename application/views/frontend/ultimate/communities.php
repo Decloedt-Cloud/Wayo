@@ -98,6 +98,7 @@
         <p class="text-center text-muted"><?php echo $no_courses_found ?? get_phrase('0_communities_found'); ?></p>
       <?php else: ?>
         <?php foreach ($schools_array as $c): ?>
+     
           <!-- Carte cours dynamique -->
           <div class="col-12 col-sm-6 col-lg-4 col-xxl-3 course" 
               data-cat="<?php echo strtolower($c['category']); ?>" 
@@ -123,11 +124,27 @@
                 <ul class="list-inline small text-secondary mb-3">
                   <li class="list-inline-item me-3">
                     <i class="fa-solid fa-users me-1 text-wayo"></i>
-                    <?php echo $c['students_count'] ?? '0'; ?>
+                   
+                  <?php 
+                  // Compte filtré par status = 1
+                $student_count = $this->db->get_where('students', array(
+                      'school_id' => $c['id'],
+                      'status'    => 1
+                  ))->num_rows();
+                  echo $student_count;
+                    ?>
                   </li>
                   <li class="list-inline-item me-3">
                     <i class="fa-solid fa-chalkboard-user me-1 text-wayo"></i>
-                    <?php echo $c['classes_count'] ?? '0'; ?> classes
+                    <?php 
+                  // Compte filtré par status = 1
+                $classes_count = $this->db->get_where('classes', array(
+                      'school_id' => $c['id'],
+                  ))->num_rows();
+                  echo $classes_count;
+                    ?>
+                    
+                    classes
                   </li>
                   <li class="list-inline-item">
                     <?php if (($c['access'] ?? 0) == 1): ?>
