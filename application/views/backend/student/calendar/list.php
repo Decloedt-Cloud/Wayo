@@ -1072,7 +1072,7 @@ const CalendarApp = {
                                         this.cacheMeetingState(data.meeting_id, data.participant_count, data.is_running);
                                         if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                             this.updateParticipantUI(eventId, data.participant_count, data.is_running, occurrenceDate);
-                                            $('#joinMeetingBtn').text(data.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', false);
+                                            $('#joinMeetingBtn').hide();
                                         }
 
                                         const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
@@ -1112,25 +1112,41 @@ const CalendarApp = {
                                         const newWindow = window.open(joinUrl, '_blank');
                                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                                             this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
+                                            $('#joinMeetingBtn').show();
                                         } else {
                                             this.showNotification('success', 'Starting meeting...');
+                                            // Monitor window close to show the button again
+                                            const checkWindowClosed = setInterval(() => {
+                                                if (newWindow.closed) {
+                                                    clearInterval(checkWindowClosed);
+                                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                                        $('#joinMeetingBtn').show(); // Show the button when the window is closed
+                                                    }
+                                                    this.stopPolling();
+                                                    if (this.hasActiveMeetings && document.visibilityState === 'visible') {
+                                                        this.pollActiveMeetings();
+                                                    }
+                                                }
+                                            }, 1000);
                                         }
                                     } else {
                                         this.showNotification('error', data.message || 'Failed to Meeting Not Started');
+                                         $('#joinMeetingBtn').show();
                                     }
                                 } catch (e) {
-                                    console.error('start_meeting parse error:', e, response);
                                     this.showNotification('error', 'Invalid server response');
+                                     $('#joinMeetingBtn').show();
                                 }
                             },
                             error: (xhr) => {
-                                console.error('start_meeting AJAX error:', xhr.status, xhr.statusText);
                                 this.showNotification('error', 'Error starting meeting. Please check server connectivity.');
+                                 $('#joinMeetingBtn').show();
                             }
                         });
                     } else if (buttonText === '<?php echo get_phrase('Join Meeting'); ?>') {
                         if (!occurrenceData.meeting_id) {
                             this.showNotification('error', 'No meeting ID available for joining');
+                             $('#joinMeetingBtn').show();
                             return;
                         }
 
@@ -1151,7 +1167,7 @@ const CalendarApp = {
                                         this.cacheMeetingState(occurrenceData.meeting_id, state.participant_count, state.is_running);
                                         if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                             this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', false);
+                                            $('#joinMeetingBtn').hide();
                                         }
                                         const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
                                         const calendarEvent = this.calendar.getEventById(uniqueEventId);
@@ -1179,15 +1195,18 @@ const CalendarApp = {
                                         this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
                                     } else {
                                         this.showNotification('error', state.message || 'Meeting is not active');
+                                        $('#joinMeetingBtn').show();
                                         return;
                                     }
                                 } else {
                                     this.showNotification('error', 'Failed to verify meeting state');
+                                    $('#joinMeetingBtn').show();
                                     return;
                                 }
                             },
                             error: (xhr, status, error) => {
                                 this.showNotification('error', 'Failed to verify meeting state');
+                                $('#joinMeetingBtn').show();
                                 return;
                             }
                         });
@@ -1196,22 +1215,38 @@ const CalendarApp = {
                         const newWindow = window.open(joinUrl, '_blank');
                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                             this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
+                            $('#joinMeetingBtn').show();
                         } else {
                             this.showNotification('success', 'Joining meeting...');
                             this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
+                             // Monitor window close to show the button again
+                            const checkWindowClosed = setInterval(() => {
+                                if (newWindow.closed) {
+                                    clearInterval(checkWindowClosed);
+                                    if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                        $('#joinMeetingBtn').show(); // Show the button when the window is closed
+                                    }
+                                    this.stopPolling();
+                                    if (this.hasActiveMeetings && document.visibilityState === 'visible') {
+                                        this.pollActiveMeetings();
+                                    }
+                                }
+                            }, 1000);
                         }
                     }
                     csrfHash = data.csrf.csrfHash;
                 } else {
                     this.showNotification('error', data.message || 'Failed to load event');
+                    $('#joinMeetingBtn').show(); 
                 }
             } catch (e) {
                 this.showNotification('error', 'Invalid server response');
+                $('#joinMeetingBtn').show(); 
             }
         },
         error: (xhr) => {
-            console.error('AJAX error fetching event', xhr.status, xhr.statusText);
             this.showNotification('error', 'Failed to load event');
+            $('#joinMeetingBtn').show(); 
         }
     });
 },
