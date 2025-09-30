@@ -93,8 +93,7 @@
               $schools_array = $schools;
           }
       }
-      // print_r($schools_array);
-      // die("mouhssine");
+
       if (empty($schools_array)): ?>
         <p class="text-center text-muted"><?php echo $no_courses_found ?? get_phrase('0_communities_found'); ?></p>
       <?php else: ?>
