@@ -208,7 +208,6 @@
     "please_select_a_class": "Selecteer een klas",
     "create_syllabus": "Syllabus maken",
     "add_syllabus": "Syllabus toevoegen",
-    "tittle": "Titel",
     "select_a_subject": "Selecteer een vak",
     "upload_syllabus": "Syllabus uploaden",
     "routine": "Rooster",
@@ -2684,5 +2683,7 @@
     "invalid_file_type": "Ongeldig bestandstype",
     "file_size_exceeds_10mb": "Bestandsgrootte is groter dan 10 MB",
     "membres": "Mensen",
-    "espaces": "Ruimtes"
+    "espaces": "Ruimtes",
+    "bestandsgrootte_is_groter_dan_10_mb": "Bestandsgrootte is groter dan 10 mb",
+    "ongeldig_bestandstype": "Ongeldig bestandstype"
 }
