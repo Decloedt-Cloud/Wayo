@@ -44,101 +44,6 @@
     .value-card{ background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); transition:transform .2s, box-shadow .2s; height:100%; }
     .value-card:hover{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,.12) }
 
-
-    /* ====== TEAM CAROUSEL (2 cartes, non-centre en gris) ====== */
-      #equipe { position: relative; overflow: visible; }
-      #equipe .about-title{
-        font-family: 'Poppins', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        font-size: clamp(2rem, 7vw, 4rem);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        margin: 0 0 12px;
-        text-align: center;
-        background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, #0000) 0%, #0000 90%);
-        -webkit-background-clip: text; background-clip: text; color: transparent;
-      }
-      #equipe .carousel-container{
-        width: 100%; max-width: 1120px; height: 440px;
-        position: relative; perspective: 1000px; margin: 28px auto 0;
-      }
-      #equipe .carousel-track{
-        width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;
-        position: relative; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.25,.46,.45,.94);
-      }
-      #equipe .card{
-        position: absolute; width: 280px; height: 380px; background: var(--card);
-        border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
-        border: 1px solid rgba(0,0,0,.06); transition: all .8s cubic-bezier(.25,.46,.45,.94);
-        cursor: pointer; will-change: transform, opacity, box-shadow;
-      }
-      #equipe .card img{ width:100%; height:100%; object-fit:cover; transition:inherit; }
-
-      /* Icônes sociales */
-      #equipe .card .card-actions{
-        position:absolute; right:10px; bottom:10px; display:flex; gap:8px;
-        background:rgba(0,0,0,.28); padding:6px; border-radius:999px; backdrop-filter: blur(4px);
-      }
-      #equipe .card .card-actions .action{
-        width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
-        background:#fff; color:#0a66c2; text-decoration:none; transition:transform .2s, box-shadow .2s, background .2s;
-        box-shadow: 0 2px 6px rgba(0,0,0,.18);
-      }
-      #equipe .card .card-actions .action:hover{ transform: translateY(-2px); }
-      #equipe .card .card-actions .action + .action{ color:#111; }
-
-      /* Positions 3D */
-      #equipe .card.center{ z-index:10; transform: scale(1.06) translateZ(0);
-        box-shadow: 0 14px 32px rgba(0,0,0,.12), 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
-      #equipe .card.left-1{ z-index:5; transform: translateX(-200px) scale(.92) translateZ(-120px); opacity:.95; }
-      #equipe .card.right-1{ z-index:5; transform: translateX(200px) scale(.92) translateZ(-120px); opacity:.95; }
-      #equipe .card.left-2{ z-index:1; transform: translateX(-400px) scale(.82) translateZ(-300px); opacity:.7; }
-      #equipe .card.right-2{ z-index:1; transform: translateX(400px) scale(.82) translateZ(-300px); opacity:.7; }
-
-      /* Gris pour cartes non centrées */
-      #equipe .card:not(.center) img{ filter: grayscale(100%); }
-
-      /* Légende sous le carrousel */
-      #equipe .member-info{ text-align:center; margin-top: 24px; transition: all .4s ease-out; }
-      #equipe .member-name{
-        font-family:'Poppins','Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-        color: var(--text); font-size: clamp(1.35rem, 3vw, 2.1rem); font-weight: 700; margin: 0 0 6px;
-        position: relative; display: inline-block;
-      }
-      #equipe .member-name::before, #equipe .member-name::after{
-        content:""; position:absolute; top:100%; width:84px; height:2px; background: var(--accent); opacity:.8;
-      }
-      #equipe .member-name::before{ left:-100px; }
-      #equipe .member-name::after{ right:-100px; }
-      #equipe .member-role{
-        font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-        color:#848696; font-size:clamp(.95rem, 2.2vw, 1.1rem); font-weight:600;
-        letter-spacing:.08em; text-transform:uppercase; padding-top:6px; margin:0;
-      }
-
-      /* Dots + Flèches */
-      #equipe .dots{ display:flex; justify-content:center; gap:10px; margin-top: 28px; }
-      #equipe .dot{
-        width:12px; height:12px; border-radius:50%;
-        background: color-mix(in srgb, var(--accent) 25%, #0000);
-        cursor:pointer; transition: transform .2s, background .2s, box-shadow .2s; border:0;
-        box-shadow: 0 2px 6px rgba(0,0,0,.06);
-      }
-      #equipe .dot:hover{ transform: scale(1.12); }
-      #equipe .dot.active{ background: var(--accent); transform: scale(1.18);
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, #0000); }
-      #equipe .nav-arrow{
-        position:absolute; top:50%; transform: translateY(-50%);
-        background: var(--accent); color:#fff; width:42px; height:42px; border-radius: 999px;
-        display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:20;
-        transition: transform .2s, background .2s, box-shadow .2s; font-size:1.35rem; border:none; outline:none;
-      }
-      #equipe .nav-arrow:hover{ background: var(--accent-600); transform: translateY(-50%) scale(1.06); box-shadow: 0 8px 18px rgba(0,0,0,.12); }
-      #equipe .nav-arrow:focus-visible{ box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, #0000); }
-      #equipe .nav-arrow.left{ left:6px; }
-      #equipe .nav-arrow.right{ right:6px; }
-
-         /* ======END TEAM CAROUSEL (2 cartes, non-centre en gris) ====== */
-
    
     @media (min-width: 992px){
      
@@ -147,15 +52,7 @@
      
     }
 
-    /* Team Carousel */
-    #teamCarousel .carousel-item{ height:420px; }
-    #teamCarousel .card{ width:280px; height:380px; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.06); margin-inline:auto; }
-    #teamCarousel .card img{ width:100%; height:100%; object-fit:cover; }
-    #teamCarousel .card-actions{ position:absolute; right:10px; bottom:10px; display:flex; gap:8px; background:rgba(0,0,0,.28); padding:6px; border-radius:999px; backdrop-filter: blur(4px); }
-    #teamCarousel .action{ width:28px; height:28px; border-radius:999px; display:grid; place-items:center; background:#fff; color:#0a66c2; text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.18); }
-    #teamCarousel .action + .action{ color:#111; }
-    .member-legend h3{ font-family:'Poppins',sans-serif; font-weight:700; }
-    .member-legend p{ color:#848696; letter-spacing:.08em; text-transform:uppercase; font-weight:600; }
+    
 
     /* Where */
     .map-embed{ aspect-ratio:16/9; overflow:hidden; border-radius:calc(var(--radius) - 4px); box-shadow:0 8px 24px rgba(0,0,0,.08); }
@@ -295,133 +192,242 @@
           </div>
         </div>
     </section>
-    
 
-    <!-- ÉQUIPE -->
-    <!-- <section id="equipe" class="py-5">
-      <div class="container">
-        <h2 class="display-5 fw-bold text-center mb-1" style="background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, #0000) 0%, #0000 90%); -webkit-background-clip:text; background-clip:text; color:transparent;">Notre équipe</h2>
+    <!-- caroussel -->
 
-        <div id="teamCarousel" class="carousel slide" data-bs-ride="false" aria-label="Carrousel équipe">
-          <div class="carousel-indicators">
-            <button type="button" data-bs-target="#teamCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Mohamed"></button>
-            <button type="button" data-bs-target="#teamCarousel" data-bs-slide-to="1" aria-label="Stéphanie"></button>
-          </div>
-
-          <div class="carousel-inner py-3" role="listbox">
-            <div class="carousel-item active" role="option" aria-selected="true">
-              <div class="position-relative card">
-                <img src="https://i.postimg.cc/Bb3qk7Fj/moha.jpg" alt="Mohamed – CEO Wayo Academy" width="280" height="380" loading="eager" decoding="async">
-                <div class="card-actions">
-                  <a class="action" href="https://www.linkedin.com/in/mohamed-bouhouti/" target="_blank" rel="noopener" title="LinkedIn de Mohamed" aria-label="LinkedIn de Mohamed">
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8.5h5V24H0V8.5zM8 8.5h4.8v2.1h.07c.67-1.2 2.3-2.46 4.73-2.46 5.06 0 6 3.33 6 7.67V24h-5v-6.65c0-1.58-.03-3.62-2.2-3.62-2.2 0-2.54 1.72-2.54 3.5V24H8V8.5z" fill="currentColor"/></svg>
-                  </a>
-                  <a class="action" href="https://moscaling.ae/" target="_blank" rel="noopener" title="Site web de Mohamed" aria-label="Site web de Mohamed">
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.94 9h-3.17a15.9 15.9 0 00-1.2-5.02A8.02 8.02 0 0119.94 11zM12 4c.92 0 2.33 1.86 3.06 5H8.94C9.67 5.86 11.08 4 12 4zM6.43 6.98A15.9 15.9 0 005.23 11H2.06a8.02 8.02 0 014.37-4.02zM4.06 13h3.17c.25 1.77.74 3.52 1.2 5.02A8.02 8.02 0 014.06 13zM12 20c-.92 0-2.33-1.86-3.06-5h6.12C14.33 18.14 12.92 20 12 20zm5.51-1.98A15.9 15.9 0 0018.77 13h3.17a8.02 8.02 0 01-4.43 5.02z" fill="currentColor"/></svg>
-                  </a>
+     <section class="team-section py-5">
+        <div class="histoire">
+            <h2 class="social-media-main-text">
+               Our teams
+            </h2>
+        </div>
+        <div class="slider-container">
+            <div class="slider-wrapper" id="sliderWrapper">
+                <!-- Team Member 1 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/aboulfath.jpg" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Ahmed Aboulfath</h3>
+                    <div class="position">Digital Marketing Manager</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="text-center member-legend mt-3">
-                <h3 class="h4 m-0">Mohamed</h3>
-                <p class="m-0 small">CEO – Wayo Academy</p>
-              </div>
-            </div>
-            <div class="carousel-item" role="option" aria-selected="false">
-              <div class="position-relative card">
-                <img src="https://i.postimg.cc/nh71Pcgx/1719021039126.jpg" alt="Stéphanie Decloedt – Co-fondatrice" width="280" height="380" loading="lazy" decoding="async">
-                <div class="card-actions">
-                  <a class="action" href="https://www.linkedin.com/in/st%C3%A9phanie-decloedt-040259161/" target="_blank" rel="noopener" title="LinkedIn de Stéphanie Decloedt" aria-label="LinkedIn de Stéphanie Decloedt">
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8.5h5V24H0V8.5zM8 8.5h4.8v2.1h.07c.67-1.2 2.3-2.46 4.73-2.46 5.06 0 6 3.33 6 7.67V24h-5v-6.65c0-1.58-.03-3.62-2.2-3.62-2.2 0-2.54 1.72-2.54 3.5V24H8V8.5z" fill="currentColor"/></svg>
-                  </a>
+
+                <!-- Team Member 2 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/bouhouti.jpg" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Mohamed Bouhouti</h3>
+                    <div class="position">CEO – Wayo Academy</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class=" fas fa-link"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="text-center member-legend mt-3">
-                <h3 class="h4 m-0">Stéphanie Decloedt</h3>
-                <p class="m-0 small">Co-fondatrice</p>
-              </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/decloedt.jpg" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Stéphanie Decloedt</h3>
+                    <div class="position">Co-founder</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class=" fas fa-link"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/naji.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Aymane Naji</h3>
+                    <div class="position">Digital Marketing Specialist</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 5 -->
+                 <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/sandale.jpg" alt="Zakaria Sandal">
+                  </div>
+                  <div class="card-content">
+                    <h3>Zakaria Sandal</h3>
+                    <div class="position"> Senior Programmatic Analyst</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+                
+
+                <!-- Team Member 6 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/tchoubi.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Mouhssine Tchoubi</h3>
+                    <div class="position">Full-Stack Web Developer</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 7 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/bastor.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Hamza Bastor</h3>
+                    <div class="position">Software Engineer</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 8 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/abbaoui.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Khalil Abbaoui</h3>
+                    <div class="position">Software Engineer</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 9 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/zmane.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Ilyas Zmane</h3>
+
+                    <div class="position">Web Developer</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 10 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/maski.png" alt="John Doe">
+                  </div>
+                  <div class="card-content">
+                    <h3>Aymen Maski </h3>
+                    <div class="position">AI Software Engineer </div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 11 -->
+                <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/fakir.png" alt="Abdelazyz Fakir">
+                  </div>
+                  <div class="card-content">
+                    <h3>Abdelazyz Fakir</h3>
+                    <div class="position">Full-Stack Developer</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 12 -->
+               <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/khiat.png" alt="Mehdi El khiat">
+                  </div>
+                  <div class="card-content">
+                    <h3>Mehdi El khiat</h3>
+                    <div class="position">Product Owner</div>
+                    <div class="social-links">
+                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Team Member 13 -->
+                <div class="team-card">
+                    <div class="card-image">
+                        <i class="fas fa-user-headset"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Daniel Harris</h3>
+                        <div class="position">Support Lead</div>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <button class="carousel-control-prev" type="button" data-bs-target="#teamCarousel" data-bs-slide="prev" aria-label="Précédent">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Précédent</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#teamCarousel" data-bs-slide="next" aria-label="Suivant">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Suivant</span>
-          </button>
-        </div>
-      </div>
-    </section> -->
-
-      <!-- ÉQUIPE (2 personnes) -->
-    <section id="equipe" class="section py-5" aria-labelledby="team-title">
-      <div class="container">
-        <h1 id="team-title" class="about-title"><?php echo get_phrase("Our team") ?></h1>
-
-        <div class="carousel-container" data-animate>
-          <button class="nav-arrow left" aria-label="Précédent">‹</button>
-
-          <div class="carousel-track" role="listbox" aria-label="Carrousel équipe">
-            <!-- Mohamed (centre) -->
-            <div class="card" data-index="0" role="option" aria-selected="true">
-              <img
-                src="https://i.postimg.cc/Bb3qk7Fj/moha.jpg"
-                alt="Mohamed – CEO Wayo Academy"
-                width="280" height="380"
-                fetchpriority="high"
-                decoding="async"
-                style="aspect-ratio: 280 / 380; object-fit: cover; object-position: center;"
-              >
-              <div class="card-actions" aria-label="Liens de Mohamed">
-                <a class="action" href="https://www.linkedin.com/in/mohamed-bouhouti/" target="_blank" rel="noopener" title="LinkedIn de Mohamed" aria-label="LinkedIn de Mohamed">
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8.5h5V24H0V8.5zM8 8.5h4.8v2.1h.07c.67-1.2 2.3-2.46 4.73-2.46 5.06 0 6 3.33 6 7.67V24h-5v-6.65c0-1.58-.03-3.62-2.2-3.62-2.2 0-2.54 1.72-2.54 3.5V24H8V8.5z" fill="currentColor"/>
-                  </svg>
-                </a>
-                <a class="action" href="https://moscaling.ae/" target="_blank" rel="noopener" title="Site web de Mohamed" aria-label="Site web de Mohamed">
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.94 9h-3.17a15.9 15.9 0 00-1.2-5.02A8.02 8.02 0 0119.94 11zM12 4c.92 0 2.33 1.86 3.06 5H8.94C9.67 5.86 11.08 4 12 4zM6.43 6.98A15.9 15.9 0 005.23 11H2.06a8.02 8.02 0 014.37-4.02zM4.06 13h3.17c.25 1.77.74 3.52 1.2 5.02A8.02 8.02 0 014.06 13zM12 20c-.92 0-2.33-1.86-3.06-5h6.12C14.33 18.14 12.92 20 12 20zm5.51-1.98A15.9 15.9 0 0018.77 13h3.17a8.02 8.02 0 01-4.43 5.02z" fill="currentColor"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            <!-- Stéphanie (gauche de Mohamed) -->
-            <div class="card" data-index="1" role="option" aria-selected="false">
-              <img
-                src="https://i.postimg.cc/nh71Pcgx/1719021039126.jpg"
-                alt="Stéphanie Decloedt – Co-fondatrice"
-                width="280" height="380"
-                loading="lazy" decoding="async"
-                style="aspect-ratio: 280 / 380; object-fit: cover; object-position: center;"
-              >
-              <div class="card-actions" aria-label="Liens de Stéphanie Decloedt">
-                <a class="action" href="https://www.linkedin.com/in/st%C3%A9phanie-decloedt-040259161/" target="_blank" rel="noopener" title="LinkedIn de Stéphanie Decloedt" aria-label="LinkedIn de Stéphanie Decloedt">
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8.5h5V24H0V8.5zM8 8.5h4.8v2.1h.07c.67-1.2 2.3-2.46 4.73-2.46 5.06 0 6 3.33 6 7.67V24h-5v-6.65c0-1.58-.03-3.62-2.2-3.62-2.2 0-2.54 1.72-2.54 3.5V24H8V8.5z" fill="currentColor"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <button class="nav-arrow right" aria-label="Suivant">›</button>
         </div>
 
-        <!-- Légende dynamique sous le carrousel -->
-        <div class="member-info" aria-live="polite">
-          <h2 class="member-name"><?php echo get_phrase("Mohamed") ?></h2>
-          <p class="member-role"><?php echo get_phrase("CEO – Wayo Academy") ?></p>
+        <div class="slider-controls">
+            <button class="slider-btn" id="prevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-btn" id="nextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
 
-        <div class="dots" role="tablist" aria-label="Navigation membres">
-          <button class="dot active" data-index="0" role="tab" aria-selected="true"></button>
-          <button class="dot" data-index="1" role="tab" aria-selected="false"></button>
-        </div>
-      </div>
-    </section>
+        <div class="slider-dots" id="dotsContainer"></div>
+  </section>
 
+   
 
     <!-- OÙ NOUS TROUVER -->
     <section id="contact" class="contact py-5">
@@ -541,99 +547,65 @@
   menuToggle?.addEventListener('click', ()=> navLinks?.classList.toggle('show'));
 })();
 
-// === TEAM CAROUSEL (2 cartes : Mohamed centre, Stéphanie à gauche) ===
-(function(){
-  const root = document.getElementById('equipe');
-  if(!root) return;
+    // caroussel
 
-  const teamMembers = [
-    { name: "Mohamed", role: "CEO – Wayo Academy" },
-    { name: "Stéphanie Decloedt", role: "Co-fondatrice" }
-  ];
 
-  const cards = root.querySelectorAll(".card");
-  const dots = root.querySelectorAll(".dot");
-  const memberName = root.querySelector(".member-name");
-  const memberRole = root.querySelector(".member-role");
-  const leftArrow = root.querySelector(".nav-arrow.left");
-  const rightArrow = root.querySelector(".nav-arrow.right");
+        const wrapper = document.getElementById('sliderWrapper');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotsContainer = document.getElementById('dotsContainer');
+        const cards = document.querySelectorAll('.team-card');
+        
+        let currentIndex = 0;
+        const totalCards = cards.length;
+        const cardsPerView = window.innerWidth <= 768 ? 1 : window.innerWidth <= 992 ? 2 : 3;
+        const maxIndex = Math.ceil(totalCards / cardsPerView) - 1;
 
-  let currentIndex = 0;
-  let isAnimating = false;
+        // Create dots
+        for (let i = 0; i <= maxIndex; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
 
-  function updateCarousel(newIndex) {
-    if (isAnimating) return;
-    isAnimating = true;
+        const dots = document.querySelectorAll('.dot');
 
-    currentIndex = (newIndex + cards.length) % cards.length;
+        function updateSlider() {
+            const cardWidth = cards[0].offsetWidth;
+            const gap = 30;
+            const offset = currentIndex * (cardWidth + gap) * cardsPerView;
+            wrapper.style.transform = `translateX(-${offset}px)`;
 
-    cards.forEach((card, i) => {
-      const offset = (i - currentIndex + cards.length) % cards.length;
-      card.classList.remove("center","left-1","left-2","right-1","right-2","hidden");
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
 
-      // Ordre pour bien placer la carte précédente à gauche (cas 2 cartes)
-      if (offset === 0) {
-        card.classList.add("center");
-      } else if (offset === cards.length - 1) {
-        card.classList.add("left-1");
-      } else if (offset === 1) {
-        card.classList.add("right-1");
-      } else if (offset === 2) {
-        card.classList.add("right-2");
-      } else if (offset === cards.length - 2) {
-        card.classList.add("left-2");
-      } else {
-        card.classList.add("hidden");
-      }
+        function nextSlide() {
+            currentIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
+            updateSlider();
+        }
 
-      card.setAttribute("aria-selected", offset === 0 ? "true" : "false");
-    });
+        function prevSlide() {
+            currentIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
+            updateSlider();
+        }
 
-    dots.forEach((dot, i) => {
-      dot.classList.toggle("active", i === currentIndex);
-      dot.setAttribute("aria-selected", i === currentIndex ? "true" : "false");
-    });
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlider();
+        }
 
-    // Légende sous le carrousel
-    memberName.style.opacity = "0";
-    memberRole.style.opacity = "0";
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
 
-    setTimeout(() => {
-      memberName.textContent = teamMembers[currentIndex].name;
-      memberRole.textContent = teamMembers[currentIndex].role;
-      memberName.style.opacity = "1";
-      memberRole.style.opacity = "1";
-    }, 300);
+        // Auto-play
+        // setInterval(nextSlide, 5000);
 
-    setTimeout(() => { isAnimating = false; }, 800);
-  }
+        // Responsive handling
+        window.addEventListener('resize', updateSlider);
 
-  leftArrow?.addEventListener("click", () => updateCarousel(currentIndex - 1));
-  rightArrow?.addEventListener("click", () => updateCarousel(currentIndex + 1));
-  dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
-  cards.forEach((card, i) => card.addEventListener("click", () => updateCarousel(i)));
 
-  // Navigation clavier (focus dans la section)
-  document.addEventListener("keydown", (e) => {
-    if(!root.contains(document.activeElement)) return;
-    if (e.key === "ArrowLeft") updateCarousel(currentIndex - 1);
-    if (e.key === "ArrowRight") updateCarousel(currentIndex + 1);
-  });
-
-  // Gestes tactiles
-  let touchStartX = 0, touchEndX = 0;
-  root.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
-  root.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    const diff = touchStartX - touchEndX;
-    const swipeThreshold = 50;
-    if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0) updateCarousel(currentIndex + 1);
-      else updateCarousel(currentIndex - 1);
-    }
-  }, {passive:true});
-
-  // Init
-  updateCarousel(0);
-})();
 </script>
