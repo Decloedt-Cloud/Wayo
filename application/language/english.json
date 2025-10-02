@@ -2466,5 +2466,6 @@
     "invalid_file_type": "Invalid file type",
     "file_size_exceeds_10mb": "File size exceeds 10mb",
     "spaces": "Spaces",
+    "0_communities_found_for_search": "0 communities found for search"
     "launch_and_monetize": "Launch and monetize"
 }
