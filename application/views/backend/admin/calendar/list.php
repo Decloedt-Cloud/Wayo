@@ -13,9 +13,8 @@
                     <h2 class="month-nav mb-0" id="monthYear"></h2>
                 </div>
             </div>
-            <div class="col-md-6 text-end">
-                <div class="d-flex align-items-center justify-content-end">
-                    <select class="class-filter me-3" id="classFilter">
+            <div class="text-end">
+              <select class="class-filter me-3" id="classFilter">
                         <option value=""><?php echo get_phrase('All classes'); ?></option>
                     </select>
                     <select class="view-filter me-3" id="viewFilter">
@@ -25,7 +24,6 @@
                         <option value="listMonth"><?php echo get_phrase('List'); ?></option>
                     </select>
                     <button class="add-event-btn" data-bs-toggle="modal" data-bs-target="#createEventModal"><i class="mdi mdi-plus"></i><?php echo get_phrase('New_Event'); ?></button>
-                </div>
             </div>
         </div>
     </div>
