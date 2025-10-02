@@ -123,7 +123,7 @@
         <article class="obi-card" data-animate data-step="4">
           <div class="obi-num">4</div>
           <div class="obi-icon"><i class="fa-solid fa-rocket"></i></div>
-          <h3><?php echo get_phrase("Launch and grow") ?></h3>
+          <h3><?php echo get_phrase("Launch and monetize") ?></h3>
           <p><?php echo get_phrase("Publish your community, promote it, and track your metrics.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-regular fa-paper-plane"></i> <strong><?php echo get_phrase("Publishing & sharing") ?></strong> : <?php echo get_phrase("social networks, email, QR") ?></li>

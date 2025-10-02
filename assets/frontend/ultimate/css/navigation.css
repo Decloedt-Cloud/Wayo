@@ -845,7 +845,7 @@ Responsive Styling
   .register-dropdown,
   .forget-dropdown {
     position: fixed; /* Use fixed positioning to keep it within the viewport */
-    top: -89px; /* Increase top spacing to account for expanded navbar height */
+    top: -320px; /* Increase top spacing to account for expanded navbar height */
     left: 50%;
     transform: translateX(-50%);
     width: 90%;

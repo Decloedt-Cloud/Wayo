@@ -2277,7 +2277,6 @@
     "(per_unit)_or": "(per unit) or",
     "included": "Included",
     "in_the_subscription": "In the subscription",
-    "launch_and_grow": "Launch and grow",
     "publish_your_community,_promote_it,_and_track_your_metrics.": "Publish your community, promote it, and track your metrics.",
     "publishing_&_sharing": "Publishing & sharing",
     "social_networks,_email,_qr": "Social networks, email, qr",
@@ -2469,4 +2468,5 @@
     "file_size_exceeds_10mb": "File size exceeds 10mb",
     "spaces": "Spaces",
     "0_communities_found_for_search": "0 communities found for search"
+    "launch_and_monetize": "Launch and monetize"
 }
