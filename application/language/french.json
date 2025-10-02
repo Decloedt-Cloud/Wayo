@@ -2430,8 +2430,10 @@
     "mentor": "Mentor",
     "niveau": "Niveau",
     "upload_a_logo_(png,_256×256)_and_a_cover_image_(jpg/png,_1600×600)_to_make_your_page_look_professional.": "Téléchargez un logo (PNG, 256×256) et une image de couverture (JPG/PNG, 1600×600) pour donner un aspect professionnel à votre page.",
-    "start_with_your_profile": "Commencez par votre profil",
+    "start_with_your_profile": "Start with your profile",
     "invalid_file_type": "Type de fichier invalide",
     "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
-    "espaces": "Espaces"
+    "espaces": "Espaces",
+    "launch_and_monetize": "Lancer et monétiser"
+
 }
