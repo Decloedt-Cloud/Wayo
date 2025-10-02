@@ -211,7 +211,6 @@
     "please_select_a_class": "Veuillez sélectionner une classe",
     "create_syllabus": "Créer un programme",
     "add_syllabus": "Ajouter un programme",
-    "tittle": "Titre",
     "select_a_subject": "Sélectionner une matière",
     "upload_syllabus": "Télécharger le programme",
     "routine": "Routine",
@@ -2276,6 +2275,7 @@
     "(per_unit)_or": "(par unité) ou",
     "included": "Inclus",
     "in_the_subscription": "Dans l’abonnement",
+    "launch_and_grow": "Lancer et développer",
     "publish_your_community,_promote_it,_and_track_your_metrics.": "Publiez votre communauté, faites sa promotion et suivez vos indicateurs.",
     "publishing_&_sharing": "Publication & partage",
     "social_networks,_email,_qr": "Réseaux sociaux, email, QR",
@@ -2435,4 +2435,5 @@
     "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
     "espaces": "Espaces",
     "launch_and_monetize": "Lancer et monétiser"
+
 }
