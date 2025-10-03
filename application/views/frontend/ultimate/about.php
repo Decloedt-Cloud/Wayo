@@ -198,219 +198,232 @@
      <section class="team-section py-5">
         <div class="histoire">
             <h2 class="social-media-main-text">
-               Our teams
+               <?php echo get_phrase("Our_teams") ?>
             </h2>
         </div>
         <div class="slider-container">
             <div class="slider-wrapper" id="sliderWrapper">
                 <!-- Team Member 1 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/aboulfath.jpg" alt="John Doe">
+                    <img src="../uploads/teams/bouhouti.jpg" alt="Mohamed Bouhouti<?php echo get_phrase("Our_teams") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Ahmed Aboulfath</h3>
-                    <div class="position">Digital Marketing Manager</div>
+                    <h3><?php echo get_phrase("Mohamed_Bouhouti") ?></h3>
+                    <div class="position"><?php echo get_phrase("CEO_–_Wayo_Academy") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/mohamed-bouhouti/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://moscaling.ae/"><i class=" fas fa-link"></i></a>
+                      <a href="mailto:contact@exemple.com"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
-
+              
                 <!-- Team Member 2 -->
                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/bouhouti.jpg" alt="John Doe">
+                    <img src="../uploads/teams/decloedt.jpg" alt="<?php echo get_phrase("decloedt") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Mohamed Bouhouti</h3>
-                    <div class="position">CEO – Wayo Academy</div>
+                    <h3><?php echo get_phrase("Stéphanie_Decloedt") ?></h3>
+                    <div class="position"><?php echo get_phrase("Co-founder") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class=" fas fa-link"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/st%C3%A9phanie-decloedt-040259161/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Stephanie@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
 
                 <!-- Team Member 3 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/decloedt.jpg" alt="John Doe">
+                    <img src="../uploads/teams/bennani.jpg" alt="<?php echo get_phrase("Fatine_Bennani") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Stéphanie Decloedt</h3>
-                    <div class="position">Co-founder</div>
+                    <h3><?php echo get_phrase("Fatine_Bennani") ?></h3>
+                    <div class="position"><?php echo get_phrase("Human_Resources") ?></div>   
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class=" fas fa-link"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/fatine-bennani-21b029144/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:fatine.bennani@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
 
                 <!-- Team Member 4 -->
-                <div class="team-card">
+                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/naji.png" alt="John Doe">
+                    <img src="../uploads/teams/aboulfath.jpg" alt="<?php echo get_phrase("Ahmed Aboulfath") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Aymane Naji</h3>
-                    <div class="position">Digital Marketing Specialist</div>
+                    <h3><?php echo get_phrase("Ahmed_Aboulfath") ?></h3>
+                    <div class="position"><?php echo get_phrase("Digital_Marketing_Manager") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Team Member 5 -->
-                 <div class="team-card">
-                  <div class="card-image">
-                    <img src="../uploads/teams/sandale.jpg" alt="Zakaria Sandal">
-                  </div>
-                  <div class="card-content">
-                    <h3>Zakaria Sandal</h3>
-                    <div class="position"> Senior Programmatic Analyst</div>
-                    <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/ahmed-aboulfath-2156a6162/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:ahmed.aboulfath@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
                 
 
-                <!-- Team Member 6 -->
-                <div class="team-card">
+                <!-- Team Member 5 -->
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/tchoubi.png" alt="John Doe">
+                    <img src="../uploads/teams/naji.png" alt="naji">
                   </div>
                   <div class="card-content">
-                    <h3>Mouhssine Tchoubi</h3>
-                    <div class="position">Full-Stack Web Developer</div>
+                    <h3><?php echo get_phrase("Aymane_Naji") ?></h3>
+                    <div class="position"><?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/aymane-naji-743753297/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:aymane.naji@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
+                 
+                
+
+                <!-- Team Member 6 -->
+                 <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/sandale.jpg" alt="<?php echo get_phrase("Zakaria_Sandal") ?>">
+                  </div>
+                  <div class="card-content">
+                    <h3><?php echo get_phrase("Zakaria_Sandal") ?></h3>
+                    <div class="position"> <?php echo get_phrase("Senior_Programmatic_Analyst") ?></div>
+                    <div class="social-links">
+                      <a href="https://www.linkedin.com/in/ziko-zakaria/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:zakaria.sandal@decloedt.cloud"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+                
 
                 <!-- Team Member 7 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/bastor.png" alt="John Doe">
+                    <img src="../uploads/teams/khiat.png" alt="<?php echo get_phrase("Mehdi El khiat") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Hamza Bastor</h3>
-                    <div class="position">Software Engineer</div>
+                    <h3><?php echo get_phrase("Mehdi El khiat") ?></h3>
+                    <div class="position"><?php echo get_phrase("Product Owner") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/mehdi-elkhiat-4138aa15b/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Mehdi.elkhiat@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
+                 
+                
 
                 <!-- Team Member 8 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/abbaoui.png" alt="John Doe">
+                    <img src="../uploads/teams/allam.png" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Khalil Abbaoui</h3>
-                    <div class="position">Software Engineer</div>
+                    <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>
+                    <div class="position"><?php echo get_phrase("Senior Developer") ?></div>   
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/abdelfattah-allam-654b92160/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:abdelfattah.allam@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
+                 
+                
 
                 <!-- Team Member 9 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/zmane.png" alt="John Doe">
+                    <img src="../uploads/teams/tchoubi.png" alt="<?php echo get_phrase("Mouhssine_Tchoubi") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Ilyas Zmane</h3>
-
-                    <div class="position">Web Developer</div>
+                    <h3><?php echo get_phrase("Mouhssine_Tchoubi") ?></h3>
+                    <div class="position"><?php echo get_phrase("Full-Stack_Web_Developer") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/mouhssine-tchoubi-8a2b02176/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Mouhssine.Tchoubi@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
+                
 
                 <!-- Team Member 10 -->
-                <div class="team-card">
+                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/maski.png" alt="John Doe">
+                    <img src="../uploads/teams/bastor.png" alt="<?php echo get_phrase("Hamza_Bastor") ?>">
                   </div>
                   <div class="card-content">
-                    <h3>Aymen Maski </h3>
-                    <div class="position">AI Software Engineer </div>
+                    <h3><?php echo get_phrase("Hamza_Bastor") ?></h3>
+                    <div class="position"><?php echo get_phrase("Software_Engineer") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/hamza-bastor-5b6215231/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Hamza.Bastor@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
+               
 
                 <!-- Team Member 11 -->
-                <div class="team-card">
+                 <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/abbaoui.png" alt="<?php echo get_phrase("Khalil_Abbaoui") ?>">
+                  </div>
+                  <div class="card-content">
+                    <h3><?php echo get_phrase("Khalil_Abbaoui") ?></h3>
+                    <div class="position"><?php echo get_phrase("Software_Engineer") ?></div>
+                    <div class="social-links">
+                      <a href="https://www.linkedin.com/in/khalil-abbaoui-537873268/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:khalil.abbaoui@decloedt.cloud"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+                
+
+                <!-- Team Member 12 -->
+                 <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/maski.png" alt="<?php echo get_phrase("Aymen_Maski") ?>">
+                  </div>
+                  <div class="card-content">
+                    <h3><?php echo get_phrase("Aymen_Maski") ?> </h3>
+                    <div class="position"><?php echo get_phrase("AI_Software_Engineer") ?> </div>
+                    <div class="social-links">
+                      <a href="https://www.linkedin.com/in/free-palestine-%F0%9F%87%B5%F0%9F%87%B8-56488125b/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Maski.Aymen@decloedt.cloud"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+                
+                
+                <!-- Team Member 13 -->
+                 <div class="team-card">
+                  <div class="card-image">
+                    <img src="../uploads/teams/zmane.png" alt="<?php echo get_phrase("Ilyas Zmane") ?>">
+                  </div>
+                  <div class="card-content">
+                    <h3><?php echo get_phrase("Ilyas Zmane") ?></h3>
+
+                    <div class="position"><?php echo get_phrase("Web Developer") ?></div>
+                    <div class="social-links">
+                      <a href="https://www.linkedin.com/in/ilyas-zmane-0483691bb/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Ilyas.Zmane@decloedt.cloud"><i class="fas fa-envelope"></i></a>
+                    </div>
+                  </div>
+                </div>
+                <!-- Team Member 14 -->
+                  <div class="team-card">
                   <div class="card-image">
                     <img src="../uploads/teams/fakir.png" alt="Abdelazyz Fakir">
                   </div>
                   <div class="card-content">
-                    <h3>Abdelazyz Fakir</h3>
-                    <div class="position">Full-Stack Developer</div>
+                    <h3><?php echo get_phrase("Abdelazyz_Fakir") ?></h3>
+                    <div class="position"><?php echo get_phrase("Full-Stack_Developer") ?></div>
                     <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
+                      <a href="https://www.linkedin.com/in/fakir-aziz/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="mailto:Abdelazyz.fakir@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
-                </div>
-
-                <!-- Team Member 12 -->
-               <div class="team-card">
-                  <div class="card-image">
-                    <img src="../uploads/teams/khiat.png" alt="Mehdi El khiat">
-                  </div>
-                  <div class="card-content">
-                    <h3>Mehdi El khiat</h3>
-                    <div class="position">Product Owner</div>
-                    <div class="social-links">
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Team Member 13 -->
-                <div class="team-card">
-                    <div class="card-image">
-                        <i class="fas fa-user-headset"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Daniel Harris</h3>
-                        <div class="position">Support Lead</div>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

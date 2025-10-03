@@ -358,4 +358,12 @@ background: #f6f7fb;
                 background: none;
             }
          }
+         @media screen and (max-width: 1366px) {
+            .card-image {
+                height: 388px;
+            }
+            .content {
+                width: 100%;
+            }
+        }
    
