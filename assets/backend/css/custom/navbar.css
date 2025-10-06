@@ -309,7 +309,7 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
     top: 17px !important;
   }
   .dot {
-    margin-left: -9px;
+    margin-left: -25px;
     font-size: 20px;
     line-height: 1;
   }
@@ -479,4 +479,9 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
   body[dir="rtl"] .button-menu-mobile {
     order: -1;
   }
+}
+@media (max-width: 375px) {
+    .navbar-custom.topnav-navbar .button-menu-mobile {
+        width: 35px!important;
+    }
 }
