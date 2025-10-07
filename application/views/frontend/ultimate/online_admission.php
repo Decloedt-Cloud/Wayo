@@ -1,4 +1,3 @@
-
 <?php if (get_common_settings('recaptcha_status')): ?>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <?php endif; ?>
@@ -120,12 +119,27 @@
       <!-- STEP 2 : COMMUNAUTÉ -->
       <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2">
         <div class="panel-head">
-          <h2 id="title-step2"><?php echo get_phrase("Community details") ?></h2>
+          <h2 id="title-step2"><?php echo get_phrase("Community_details") ?></h2>
           <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
           <div class="stack">
+
+              <label class="field">
+              <span class="field-label"><?php echo get_phrase("I_am") ?> <span class="req">*</span></span>
+              <select id="i_am" aria-required="true" name="i_am" class="form-control shadow-none" required
+              data-msg="Please select your tax residence." data-error-class="u-has-error" data-success-class="u-has-success">
+              <option value=""><?php echo get_phrase('select_a_status'); ?></option>
+
+              <option value="Entreprise"> <?php echo get_phrase("Entreprise") ?></option>
+              <option value="Freelancer"> <?php echo get_phrase("Freelancer") ?> </option>
+              <option value="Autoentrepreneur"> <?php echo get_phrase("Autoentrepreneur") ?> </option>
+              <option value="Particulier"> <?php echo get_phrase("Particulier") ?> </option>
+        
+              </select>
+             <div class="error" data-for="i_am"></div>
+            </label>
             <label class="field">
               <span class="field-label"><?php echo get_phrase("Community_name") ?> <span class="req">*</span></span>
               <!-- <input id="communityName" type="text" placeholder="Ex. Digital Marketing" required maxlength="80" aria-required="true"> -->
@@ -152,20 +166,50 @@
               <div class="error" data-for="communityDesc"></div>
             </label>
 
-            <div class="grid-2">
+          <div class="address-zone">
+                <div class="grid-2" style="display: grid; grid-template-columns: 66% 30%;">
+                  <div>
+                      <label class="field">
+                        <span class="field-label"> <?php echo get_phrase("Rue") ?> <span class="req">*</span></span>
+                        <input id="communityStreet" type="text" placeholder="Rue" class="form-control shadow-none" name="street" required
+                          data-msg="Veuillez entrer la rue." data-error-class="u-has-error" data-success-class="u-has-success">
+                        <div class="error" data-for="communityStreet"></div>
+                      </label>
+                  </div>
+                    <div>
+                      <label class="field">
+                        <span class="field-label"><?php echo get_phrase("Numéro") ?> <span class="req">*</span></span>
+                        <input id="communityNumber" type="text" placeholder="Numéro" class="form-control shadow-none" name="number" required
+                          data-msg="Veuillez entrer le numéro." data-error-class="u-has-error" data-success-class="u-has-success">
+                        <div class="error" data-for="communityNumber"></div>
+                      </label>
+                    </div>
+                      
+
+                </div>
+                 <div class="grid-2">
+                <label class="field">
+                  <span class="field-label"> <?php echo get_phrase("Ville") ?><span class="req">*</span></span>
+                  <input id="communityCity" type="text" placeholder="Ville" class="form-control shadow-none" name="city" required
+                    data-msg="Veuillez entrer la ville." data-error-class="u-has-error" data-success-class="u-has-success">
+                  <div class="error" data-for="communityCity"></div>
+                </label>
+              
+            
               <label class="field">
-                <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
-                <select id="communityCat" aria-required="true" name="category" class=""
-                 required>
-                <option value=""><?php echo get_phrase('select_a_category'); ?></option>
-                <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
-                <?php foreach ($categories as $categorie): ?>
-                  <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
-                <?php endforeach; ?>
-                </select>
-                <div class="error" data-for="communityCat"></div>
+                <span class="field-label"> <?php echo get_phrase("code_postal") ?><span class="req">*</span></span>
+                <input id="communityPostalCode" type="text" placeholder="postal code" class="form-control shadow-none" name="postal_code" required
+                  data-msg="Veuillez entrer le postal code." data-error-class="u-has-error" data-success-class="u-has-success">
+                <div class="error" data-for="communityPostalCode"></div>
               </label>
-            </div>
+      </div>
+</div>
+          
+
+     
+
+
+
               <label class="switch emph">
                 <input type="hidden" name="visibility" value="0">
                 <input id="isPrivate" name="visibility" type="checkbox" value="1"/>
@@ -189,32 +233,68 @@
                 </span>
               </span>
             <div class="uploader" data-kind="logo">
-            <!-- <input type="file" id="communityLogo" accept="image/*"> -->
-            <input id="communityLogo" type="file"  name="school_image" accept="image/*">
-            <div class="uploader-content">
-              <i class="fa-solid fa-upload"></i>
-              <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
-            </div>
-            <div class="preview" id="logoPreview"></div>
-            <div class="error" data-for="communityLogo"></div>
+              <!-- <input type="file" id="communityLogo" accept="image/*"> -->
+              <input id="communityLogo" type="file"  name="school_image" accept="image/*">
+              <div class="uploader-content">
+                <i class="fa-solid fa-upload"></i>
+                <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
+              </div>
+              <div class="preview" id="logoPreview"></div>
+              <div class="error" data-for="communityLogo"></div>
             </div>
 
             <!-- Cover -->
-             <span class="field-label">
-                <?php echo get_phrase("Cover_(16:9)") ?>
-                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
-                  <i class="fa-solid fa-circle-info"></i>
+           
+                <span class="field-label">
+                    <?php echo get_phrase("Cover_(16:9)") ?>
+                    <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
+                      <i class="fa-solid fa-circle-info"></i>
+                    </span>
                 </span>
-              </span>
-            <div class="uploader" data-kind="cover">
-            <input type="file" id="communityCover" name="communityCover" accept="image/*">
-            <div class="uploader-content">
-              <i class="fa-solid fa-image"></i>
-              <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
-            </div>
-            <div class="preview" id="coverPreview"></div>
-            <div class="error" data-for="communityCover"></div>
-          </div>
+                <div class="uploader" data-kind="cover">
+                  <input type="file" id="communityCover" name="communityCover" accept="image/*">
+                  <div class="uploader-content">
+                    <i class="fa-solid fa-image"></i>
+                    <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
+                  </div>
+                  <div class="preview" id="coverPreview"></div>
+                  <div class="error" data-for="communityCover"></div>
+                </div>
+            
+        
+
+
+
+
+                <div class="grid-2">
+                  <label class="field">
+                      <span class="field-label"><?php echo get_phrase("Tax_residence") ?> <span class="req">*</span></span>
+                      <select id="Tax_residence" aria-required="true" name="Tax_residence" class="form-control shadow-none" required
+                      data-msg="Please select your tax residence." data-error-class="u-has-error" data-success-class="u-has-success">
+                      <option value=""><?php echo get_phrase('select_a_Tax_residence'); ?></option>
+
+                      <option value="MA"> <?php echo get_phrase("Morocco") ?></option>
+                      <option value="UAE"> <?php echo get_phrase("United_Arab_Emirates") ?> </option>
+                
+                      </select>
+                      <div class="error" data-for="Tax_residence"></div>
+                    </label>
+                </div>
+                <div class="grid-2">
+                  <label class="field">
+                    <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
+                    <select id="communityCat" aria-required="true" name="category" class=""
+                    required>
+                    <option value=""><?php echo get_phrase('select_a_category'); ?></option>
+                    <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
+                    <?php foreach ($categories as $categorie): ?>
+                      <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <div class="error" data-for="communityCat"></div>
+                 </label>
+                </div>
+
           </div>
         </div>
 
@@ -383,11 +463,22 @@
     // STEP 2 : Communauté
     if(pane.dataset.step=="2"){
       const name = $('#communityName'), desc = $('#communityDesc'),
-            cat = $('#communityCat'), lang = $('#communityLang');
+      adresse = $('#communityAdresse'),Tax_residence = $('#Tax_residence'),
+      cat = $('#communityCat'), lang = $('#communityLang'),
+       street = $('#communityStreet') , number = $('#communityNumber') , 
+       city = $('#communityCity'), postalCode = $('#communityPostalCode'), i_am = $('#i_am');
+
       if(!name.value.trim() || name.value.trim().length<2) ok = setInvalid(name,'Nom obligatoire (2 caractères min)') && ok; else clearInvalid(name);
       if(!desc.value.trim() || desc.value.trim().length<40) ok = setInvalid(desc,'Description obligatoire (40 caractères min)') && ok; else clearInvalid(desc);
       if(!cat.value) ok = setInvalid(cat,'Catégorie obligatoire') && ok; else clearInvalid(cat);
+      if(!Tax_residence.value) ok = setInvalid(Tax_residence,'Tax residence obligatoire') && ok; else clearInvalid(Tax_residence);
       if(!lang.value) ok = setInvalid(lang,'Langue obligatoire') && ok; else clearInvalid(lang);
+      
+      if(!street.value.trim() || street.value.trim().length < 3) ok = setInvalid(street,'Rue invalide (3 caractères min)') && ok; else clearInvalid(street);
+      if(!/^[0-9]+$/.test(number.value.trim())) ok = setInvalid(number,'Numéro invalide (uniquement des chiffres)') && ok; else clearInvalid(number);
+      if(!city.value.trim() || city.value.trim().length < 2) ok = setInvalid(city,'Ville invalide (2 caractères min)') && ok; else clearInvalid(city);
+      if(!i_am.value.trim() ) ok = setInvalid(i_am,'obligatoire)') && ok; else clearInvalid(i_am);
+      if(!/^[0-9]{4,5}$/.test(postalCode.value.trim())) ok = setInvalid(postalCode,'Code postal invalide (4 à 5 chiffres)') && ok; else clearInvalid(postalCode);
     }
 
     // STEP 3 : Prix
@@ -430,6 +521,12 @@
     const communityName = $('#communityName')?.value || '—';
     const desc = $('#communityDesc')?.value || '—';
     const cat = $('#communityCat')?.value || '—';
+    const communityStreet = $('#communityStreet')?.value || '—';
+    const communityNumber = $('#communityNumber')?.value || '—';
+    const communityCity = $('#communityCity')?.value || '—';
+    const communityPostalCode = $('#communityPostalCode')?.value || '—';
+    const Tax_residence = $('#Tax_residence')?.value || '—';
+    const i_am = $('#i_am')?.value || '—';
     const lang = $('#communityLang')?.value || '—';
     const price = $('#price')?.value || '—';
     const isPrivate = $('#isPrivate')?.checked ? 1 : 0;
@@ -442,7 +539,7 @@
       <h3>Profil</h3>
       <p>Nom : ${profileName}<br>Email : ${profileEmail}<br>Téléphone : ${phone}<br>Langue : ${lang}</p>
       <h3>Communauté</h3>
-      <p>Nom : ${communityName}<br>Description : ${desc}<br>Catégorie : ${cat}</p>
+      <p>I'am : ${i_am}<br>Nom : ${communityName}<br>Description : ${desc}<br>Catégorie : ${cat}<br>Adresse : ${communityStreet} , ${communityNumber} , ${communityCity} , ${communityPostalCode}<br>Tax Residence : ${Tax_residence}</p>
       <h3>Médias</h3>
       <p>Logo : ${logoHtml}<br>Cover : ${coverHtml}</p>
       <h3>Prix</h3>
@@ -542,4 +639,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // }
 });
 </script>
+
 

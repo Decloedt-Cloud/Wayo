@@ -241,7 +241,7 @@ img { max-width:100%; display:block; }
 .switch-emph { display:flex; align-items:center; gap:0.25rem; font-weight:600; color:#333; }
 
 /* ----------------- Uploader ----------------- */
-.uploader { border:2px dashed #ccc; padding:1rem; border-radius:4px; text-align:center; cursor:pointer; position:relative; }
+.uploader { border:4px dashed #ccc; padding:2.3rem; border-radius:4px; text-align:center; cursor:pointer; position:relative; }
 .uploader input[type="file"] { position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; }
 .uploader .preview { margin-top:1rem; }
 .uploader img { max-width:120px; border-radius:4px; }
