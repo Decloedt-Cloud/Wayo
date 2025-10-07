@@ -2489,6 +2489,19 @@
     "select_vat": "اختر الضريبة",
     "update_vat": "تحديث الضريبة",
     "veuillez_télécharger_une_attestation_fiscale_marocaine.": "يرجى رفع شهادة ضريبية مغربية.",
-    "launch_and_monetize": "الإطلاق وتحقيق الدخل"
+    "please_select_your_status": "يرجى اختيار حالتك",
+    "please_enter_your_first_name": "يرجى إدخال اسمك الأول",
+    "steps": "الخطوات",
+    "please_enter_your_full_name": "يرجى إدخال اسمك الكامل",
+    "please_enter_a_valid_phone_number": "يرجى إدخال رقم هاتف صالح",
+    "please_select_a_language": "يرجى اختيار لغة",
+    "please_enter_a_password": "يرجى إدخال كلمة المرور",
+    "please_repeat_your_password": "يرجى تكرار كلمة المرور",
+    "please_enter_a_description": "يرجى إدخال وصف",
+    "veuillez_entrer_la_rue": "يرجى إدخال اسم الشارع",
+    "veuillez_entrer_le_numéro": "يرجى إدخال الرقم",
+    "veuillez_entrer_la_ville": "يرجى إدخال اسم المدينة",
+    "veuillez_entrer_le_postal_code": "يرجى إدخال الرمز البريدي",
+    "please_select_your_tax_residence": "يرجى اختيار مقر الإقامة الضريبية"
 
 }
