@@ -171,7 +171,7 @@
                   <div>
                       <label class="field">
                         <span class="field-label"> <?php echo get_phrase("Rue") ?> <span class="req">*</span></span>
-                        <input id="communityStreet" type="text" placeholder="Rue" class="form-control shadow-none" name="street" required
+                        <input id="communityStreet" type="text" placeholder="<?php echo get_phrase("Rue") ?>" class="form-control shadow-none" name="street" required
                           data-msg="Veuillez entrer la rue." data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="communityStreet"></div>
                       </label>
@@ -179,7 +179,7 @@
                     <div>
                       <label class="field">
                         <span class="field-label"><?php echo get_phrase("Numéro") ?> <span class="req">*</span></span>
-                        <input id="communityNumber" type="text" placeholder="Numéro" class="form-control shadow-none" name="number" required
+                        <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" name="number" required
                           data-msg="Veuillez entrer le numéro." data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="communityNumber"></div>
                       </label>
@@ -190,7 +190,7 @@
                  <div class="grid-2">
                 <label class="field">
                   <span class="field-label"> <?php echo get_phrase("Ville") ?><span class="req">*</span></span>
-                  <input id="communityCity" type="text" placeholder="Ville" class="form-control shadow-none" name="city" required
+                  <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" required
                     data-msg="Veuillez entrer la ville." data-error-class="u-has-error" data-success-class="u-has-success">
                   <div class="error" data-for="communityCity"></div>
                 </label>
@@ -198,7 +198,7 @@
             
               <label class="field">
                 <span class="field-label"> <?php echo get_phrase("code_postal") ?><span class="req">*</span></span>
-                <input id="communityPostalCode" type="text" placeholder="postal code" class="form-control shadow-none" name="postal_code" required
+                <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" required
                   data-msg="Veuillez entrer le postal code." data-error-class="u-has-error" data-success-class="u-has-success">
                 <div class="error" data-for="communityPostalCode"></div>
               </label>
