@@ -477,7 +477,7 @@
       if(!street.value.trim() || street.value.trim().length < 3) ok = setInvalid(street,'Rue invalide (3 caractères min)') && ok; else clearInvalid(street);
       if(!/^[0-9]+$/.test(number.value.trim())) ok = setInvalid(number,'Numéro invalide (uniquement des chiffres)') && ok; else clearInvalid(number);
       if(!city.value.trim() || city.value.trim().length < 2) ok = setInvalid(city,'Ville invalide (2 caractères min)') && ok; else clearInvalid(city);
-      if(!i_am.value.trim() ) ok = setInvalid(i_am,'obligatoire)') && ok; else clearInvalid(i_am);
+      if(!i_am.value.trim() ) ok = setInvalid(i_am,'status obligatoire') && ok; else clearInvalid(i_am);
       if(!/^[0-9]{4,5}$/.test(postalCode.value.trim())) ok = setInvalid(postalCode,'Code postal invalide (4 à 5 chiffres)') && ok; else clearInvalid(postalCode);
     }
 
