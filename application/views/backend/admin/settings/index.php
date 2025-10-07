@@ -49,6 +49,13 @@ function updateSystemLogo() {
 }
 
 
+function updateSystemVat() {
+  $(".systemvatAjaxForm").validate({});
+  $(".systemvatAjaxForm").submit(function(e) {
+    var form = $(this);
+    ajaxSubmit(e, form, reload);
+  });
+}
 function updateSystemCurrencyInfo() {
   $(".systemAjaxForm").validate({});
   $(".systemAjaxForm").submit(function(e) {
@@ -56,7 +63,6 @@ function updateSystemCurrencyInfo() {
     ajaxSubmit(e, form, reload);
   });
 }
-
 function updatePaypalInfo() {
   $(".paypalAjaxForm").validate({});
   $(".paypalAjaxForm").submit(function(e) {

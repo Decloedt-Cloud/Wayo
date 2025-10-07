@@ -127,11 +127,19 @@ class Settings_model extends CI_Model
     return $this->db->get_where('schools', array('id' => school_id()))->row_array();
   }
 
+  public function get_current_settings_school_data()
+  {
+    return $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
+  }
+
   public function update_current_school_settings()
   {
     $data['name'] = htmlspecialchars($this->input->post('school_name'));
     $data['phone'] = htmlspecialchars($this->input->post('phone'));
-    $data['address'] = htmlspecialchars($this->input->post('address'));
+    $data['Rue'] = htmlspecialchars($this->input->post('communityStreet'));
+    $data['Numero'] = htmlspecialchars($this->input->post('communityNumber'));
+    $data['Ville'] = htmlspecialchars($this->input->post('communityCity'));
+    $data['Codepostal'] = htmlspecialchars($this->input->post('communityPostalCode'));
     $data['description'] = htmlspecialchars($this->input->post('description'));
     $data['access'] = htmlspecialchars($this->input->post('access'));
     $data['category'] = htmlspecialchars_decode($this->input->post('category'));
@@ -139,8 +147,55 @@ class Settings_model extends CI_Model
 
     $this->db->where('id', school_id());
     $this->db->update('schools', $data);
-    move_uploaded_file($_FILES['school_image']['tmp_name'], 'uploads/schools/' . school_id() . '.jpg');
 
+
+
+    move_uploaded_file($_FILES['school_image']['tmp_name'], 'uploads/schools/' . school_id() . '.jpg');
+   
+    $data_settings_school['Tax_residence'] = htmlspecialchars_decode($this->input->post('tax_residence'));
+    $data_settings_school['type'] = htmlspecialchars_decode($this->input->post('i_am'));
+    $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('vat_number'));
+
+ 
+    // Validate the tax residence input
+    if (!in_array($data_settings_school['Tax_residence'], ['MA', 'UAE'])) {
+        log_message('error', 'Invalid Tax Residence value: ' . $data_settings_school['Tax_residence']);
+        return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
+    }
+
+    // Validate the uploaded file
+    if (isset($_FILES['tax_document']) && $_FILES['tax_document']['error'] === UPLOAD_ERR_OK) {
+        $allowed_extensions = ['pdf', 'jpg', 'png'];
+        $file_ext = strtolower(pathinfo($_FILES['tax_document']['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($file_ext, $allowed_extensions)) {
+            log_message('error', 'Invalid file extension: ' . $file_ext);
+            return json_encode(['status' => false, 'notification' => 'Invalid file type. Only PDF, JPG, and PNG are allowed.']);
+        }
+
+        $file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+        $upload_path = 'uploads/community_tax/' . $file_name;
+
+        // Check if a file with the same name already exists
+        if (file_exists($upload_path)) {
+            log_message('error', 'File already exists: ' . $upload_path);
+            return json_encode(['status' => false, 'notification' => 'A file with the same name already exists.']);
+        }
+
+        if (!move_uploaded_file($_FILES['tax_document']['tmp_name'], $upload_path)) {
+            log_message('error', 'Failed to move uploaded file to ' . $upload_path);
+            return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
+        }
+
+        $data_settings_school['file'] = $file_name;
+    } 
+    // else {
+    //     log_message('error', 'File upload error or no file uploaded.');
+    //     return json_encode(['status' => false, 'notification' => 'No file uploaded or upload error.']);
+    // }
+
+    $this->db->where('school_id', school_id());
+    $this->db->update('settings_school', $data_settings_school);
 
     // Récupérer l’école mise à jour
     $school = $this->db->get_where('schools', ['id' => $schoolId])->row();
@@ -193,7 +248,28 @@ class Settings_model extends CI_Model
     );
     return json_encode($response);
   }
+  public function update_system_vat()
+  {
+    
+    $data['vat'] = htmlspecialchars($this->input->post('vat_applicable'));
+    $data['vat_rat'] = htmlspecialchars($this->input->post('vat_rate'));
+   
+    $user_id =  $this->session->userdata('user_id');
+    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
+          $this->db->where('school_id', school_id());
+          $this->db->update('settings_school', $data);
+    }else{
+          $this->db->where('id', 1);
+          $this->db->update('settings_school', $data);
 
+    }
+
+    $response = array(
+      'status' => true,
+      'notification' => get_phrase('system_settings_updated_successfully')
+    );
+    return json_encode($response);
+  }
   public function update_paypal_settings()
   {
     $paypal_info = array();
@@ -290,7 +366,7 @@ class Settings_model extends CI_Model
   }
 
   // This function is responsible for retreving all the files and folder
-  function get_list_of_directories_and_files($dir = APPPATH, &$results = array())
+  public function get_list_of_directories_and_files($dir = APPPATH, &$results = array())
   {
     $files = scandir($dir);
     foreach ($files as $key => $value) {
