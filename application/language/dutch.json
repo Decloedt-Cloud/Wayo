@@ -2684,5 +2684,16 @@
     "file_size_exceeds_10mb": "Bestandsgrootte is groter dan 10 MB",
     "membres": "Mensen",
     "espaces": "Ruimtes",
-    "launch_and_monetize": "Lanceren en geld verdienen"
+    "launch_and_monetize": "Lanceren en geld verdienen",
+    "create_your_member_account": "Erstellen Sie Ihr Mitgliedskonto",
+    "complete_your_profile_and_confirm_your_account._it’s_quick_and_easy.": "Vervollständigen Sie Ihr Profil und bestätigen Sie Ihr Konto. Es ist schnell und einfach.",
+    "profile_information": "Profilinformationen",
+    "summary_&_account_creation": "Zusammenfassung & Kontoerstellung",
+    "your_information": "Ihre Informationen",
+    "checklist": "Checkliste",
+    "valid_gmail": "Gültiges Gmail",
+    "password_confirmed": "Passwort bestätigt",
+    "create_account": "Konto erstellen",
+    "you_can_complete_your_information_later.": "Sie können Ihre Informationen später vervollständigen."
+
 }

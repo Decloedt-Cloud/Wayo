@@ -2447,5 +2447,16 @@
     "file_size_exceeds_10mb": "حجم الملف يتجاوز 10 ميجا بايت",
     "membres": "أعضاء",
     "espaces": "مساحات",
-    "launch_and_monetize": "الإطلاق وتحقيق الدخل"
+    "launch_and_monetize": "الإطلاق وتحقيق الدخل",
+    "create_your_member_account": "إنشاء حساب العضو الخاص بك",
+    "complete_your_profile_and_confirm_your_account._it’s_quick_and_easy.": "أكمل ملفك الشخصي وقم بتأكيد حسابك. إنه سريع وسهل.",
+    "profile_information": "معلومات الملف الشخصي",
+    "summary_&_account_creation": "الملخص وإنشاء الحساب",
+    "your_information": "معلوماتك",
+    "checklist": "قائمة التحقق",
+    "valid_gmail": "جيميل صالح",
+    "password_confirmed": "تم تأكيد كلمة المرور",
+    "create_account": "إنشاء الحساب",
+    "you_can_complete_your_information_later.": "يمكنك إكمال معلوماتك لاحقًا."
+
 }
