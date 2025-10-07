@@ -9,7 +9,7 @@
         <input type="hidden" name="school_id" value="<?php echo $school_id; ?>">
         <input type="hidden" name="session_id" value="<?php echo active_session(); ?>">
         <div class="form-group col-md-12 mb-2">
-            <label for="title"><?php echo get_phrase('tittle'); ?><span class="required"> * </span></label>
+            <label for="title"><?php echo get_phrase('title'); ?><span class="required"> * </span></label>
             <input type="text" class="form-control" id="title" name = "title" required>
         </div>
         <div class="form-group col-md-12 mb-2">

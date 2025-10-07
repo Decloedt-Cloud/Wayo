@@ -7,62 +7,69 @@
         <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Dynamic communities + Quality classes = Learning that takes off!") ?></p>
       </div>
     </section>
-  <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
-  <section class="py-4 bg-light border-top">
-    <div class="container">
-      <div class="row g-3 align-items-center">
-        <!-- Recherche (pill + icône) -->
-        <div class="col-12 col-lg-5">
+    <form class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
+    <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
+    <section class="py-4 bg-light border-top">
+      <div class="container">
+        <div class="row g-3 align-items-center">
+          <!-- Recherche (pill + icône) -->
+          <div class="col-12 col-lg-5">
           <div class="pill-input d-flex align-items-center">
-            <i class="fa-solid fa-magnifying-glass ms-3 me-2 text-muted"></i>
-            <input id="searchInput" type="search" class="form-control border-0 bg-transparent" placeholder="<?php echo get_phrase("Search for a community…") ?>">
+            <input id="searchInput" 
+                  type="search" 
+                  name="search"
+                  class="form-control border-0 bg-transparent ps-3" 
+                  placeholder="<?php echo get_phrase('Search'); ?>">
+            <button type="submit" class="btn-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
           </div>
-        </div>
-
-        <!-- Sélecteur catégories (pill + bordure orange + icône filtre) -->
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="pill-select d-flex border border-2 rounded-pill border-warning">
-            <span class="ps-3 d-inline-flex align-items-center text-muted">
-              <i class="fa-solid fa-filter"></i>
-            </span>
-            <select name="categories" id="categories" 
-                    class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark"
-                    onchange="location = this.value;">
-              
-              <!-- Option pour "All" -->
-              <option value="<?php echo base_url('home/communities/'); ?>" 
-                <?php echo empty($selected_category) ? 'selected' : ''; ?>>
-                <?php echo get_phrase('All categories'); ?>
-              </option>
-
-              <!-- Boucle dynamique sur les catégories -->
-              <?php foreach ($categories as $category): ?>
-                <?php 
-                  $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
-                ?>
-                <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
-                  <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
-                  <?php echo $category['name']; ?>
+          </div>
+          <!-- Sélecteur catégories (pill + bordure orange + icône filtre) -->
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="pill-select d-flex border border-2 rounded-pill border-warning">
+              <span class="ps-3 d-inline-flex align-items-center text-muted">
+                <i class="fa-solid fa-filter"></i>
+              </span>
+              <select name="categories" id="categories" 
+                      class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark"
+                      onchange="location = this.value;">
+                
+                <!-- Option pour "All" -->
+                <option value="<?php echo base_url('home/communities/'); ?>" 
+                  <?php echo empty($selected_category) ? 'selected' : ''; ?>>
+                  <?php echo get_phrase('All categories'); ?>
                 </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
 
-        <!-- Langues (boutons pastilles, actif = bleu) -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="d-flex align-items-center gap-3 justify-content-lg-end">
-            <span class="text-muted small d-none d-md-inline"><?php echo get_phrase("Language ") ?></span>
-            <div id="langFilter" class="d-flex align-items-center gap-2">
-              <button class="lang-pill active" data-lang="all"><?php echo get_phrase("All") ?></button>
-              <button class="lang-pill" data-lang="fr">FR</button>
-              <button class="lang-pill" data-lang="ar">AR</button>
+                <!-- Boucle dynamique sur les catégories -->
+                <?php foreach ($categories as $category): ?>
+                  <?php 
+                    $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
+                  ?>
+                  <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
+                    <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
+                    <?php echo $category['name']; ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+          </div>
+
+          <!-- Langues (boutons pastilles, actif = bleu) -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="d-flex align-items-center gap-3 justify-content-lg-end">
+              <span class="text-muted small d-none d-md-inline"><?php echo get_phrase("Language ") ?></span>
+              <div id="langFilter" class="d-flex align-items-center gap-2">
+                <button class="lang-pill active" data-lang="all"><?php echo get_phrase("All") ?></button>
+                <button class="lang-pill" data-lang="fr">FR</button>
+                <button class="lang-pill" data-lang="ar">AR</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+    </form>
 
   <!-- ===== CTA ===== -->
   <section class="py-4 bg-light">
@@ -188,7 +195,7 @@
  <!-- Scripts -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-  const search   = document.getElementById("searchInput");
+  const search   = document.getElementById("searchInputs");
   const catSel   = document.getElementById("catSelect");
   const langBtns = document.querySelectorAll("#langFilter .lang-pill");
   const cards    = document.querySelectorAll(".course");
