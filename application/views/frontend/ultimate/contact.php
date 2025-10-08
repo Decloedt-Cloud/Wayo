@@ -16,7 +16,7 @@
             <div class="col-12 col-md-6">
               <div class="form-floating">
                 <input type="text" class="form-control shadow-none"
-                      placeholder="<?php echo get_phrase('First name'); ?>" name="first_name" required
+                      placeholder="<?php echo get_phrase('First name'); ?>" name="first_name"
                       data-msg="Please enter your first name." data-error-class="u-has-error"
                       data-success-class="u-has-success">
                 <label><?php echo get_phrase("First Name*") ?></label>
@@ -25,7 +25,7 @@
             <div class="col-12 col-md-6">
               <div class="form-floating">
                 <input type="text" class="form-control shadow-none"
-                      placeholder="<?php echo get_phrase('Last name'); ?>" name="last_name" required
+                      placeholder="<?php echo get_phrase('Last name'); ?>" name="last_name"
                       data-msg="Please enter your last name." data-error-class="u-has-error"
                       data-success-class="u-has-success">
                 <label><?php echo get_phrase("Last Name*") ?></label>
@@ -35,7 +35,7 @@
             <div class="col-12">
               <div class="form-floating">
                 <input type="email" class="form-control shadow-none" name="email"
-                      placeholder="<?php echo get_phrase('Email address'); ?>" required
+                      placeholder="<?php echo get_phrase('Email address'); ?>"
                       data-msg="Please enter a valid email address." data-error-class="u-has-error"
                       data-success-class="u-has-success">
                 <label><?php echo get_phrase("Email*") ?></label>
@@ -71,7 +71,7 @@
             <div class="col-12">
               <div class="form-floating">
                 <textarea type="text" class="form-control shadow-none" rows="5"
-                      placeholder="<?php echo get_phrase('Please_write_a_message.'); ?>" name="comment" required
+                      placeholder="<?php echo get_phrase('Please_write_a_message.'); ?>" name="comment"
                       data-msg="Please enter your message." data-error-class="u-has-error"
                       data-success-class="u-has-success"></textarea>
                 <label><?php echo get_phrase("Message*") ?></label>
