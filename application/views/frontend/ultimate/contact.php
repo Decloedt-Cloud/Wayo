@@ -53,7 +53,7 @@
             <div class="col-12 col-md-6">
               <div class="form-floating">
                 <input type="tel" class="form-control shadow-none" placeholder="+971501548923" name="phone"
-                    pattern="\+[0-9]{10,15}" data-msg="Please enter a valid phone number starting with '+' followed by 10 to 15 digits."
+                     data-msg="Please enter a valid phone number starting with '+' followed by 10 to 15 digits."
                     data-error-class="u-has-error" data-success-class="u-has-success">
                 <label><?php echo get_phrase("Phone") ?></label>
               </div>

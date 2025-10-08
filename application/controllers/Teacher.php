@@ -1600,6 +1600,9 @@ class Teacher extends CI_Controller {
 			if (! $iframeUrl) {
 				show_error('Impossible de générer l’URL SSO HumHub.');
 			}
+
+            $iframeUrl .= '&redirect=' . urlencode('/mail/mail/index') . '&t=' . time();
+            
 			// Ajoute ça pour le badge :
      	  $unread_messages = $this->user_model->get_unread_messages_count($userId);
 			// 5) Passer à la vue

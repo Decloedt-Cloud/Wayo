@@ -13,21 +13,19 @@
                     <h2 class="month-nav mb-0" id="monthYear"></h2>
                 </div>
             </div>
-            <div class="col-md-6 text-end">
-                <div class="d-flex align-items-center justify-content-end">
-                  <select class="school-filter me-3" id="schoolFilter">
-                        <option value=""><?php echo get_phrase('All schools'); ?></option>
-                    </select>
+            <div class="text-end">
                     <select class="class-filter me-3" id="classFilter">
                         <option value=""><?php echo get_phrase('All classes'); ?></option>
                     </select>
-                    <select class="view-filter me-3" id="viewFilter">
+                  <select class="school-filter school-filter-student me-3" id="schoolFilter">
+                        <option value=""><?php echo get_phrase('All schools'); ?></option>
+                    </select>
+                    <select class="view-filter view-filter-student me-3" id="viewFilter">
                         <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
                         <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
                         <option value="timeGridDay"><?php echo get_phrase('Day'); ?></option>
                         <option value="listMonth"><?php echo get_phrase('List'); ?></option>
                     </select>
-                </div>
             </div>
         </div>
     </div>
