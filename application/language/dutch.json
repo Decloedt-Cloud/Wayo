@@ -2684,5 +2684,7 @@
     "file_size_exceeds_10mb": "Bestandsgrootte is groter dan 10 MB",
     "membres": "Mensen",
     "espaces": "Ruimtes",
-    "launch_and_monetize": "Lanceren en geld verdienen"
+    "launch_and_monetize": "Lanceren en geld verdienen",
+    "this_tab_allows_you_to_publish_an_announcement": "Met dit tabblad kunt u een aankondiging publiceren die op het dashboard van het platform verschijnt.Als u informatie, een evenement of nieuws wilt delen, kunt u dat hier doen!",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website": "Met dit tabblad kunt u een aankondiging publiceren die zal verschijnen op de showcase-website van het platform.Als u informatie, een evenement of nieuws wilt delen, kunt u dat hier doen!"
 }
