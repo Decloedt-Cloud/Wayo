@@ -318,7 +318,7 @@
                 <!-- Team Member 8 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/allam.png" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
+                    <img src="../uploads/teams/avatar-teams.webp" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>
