@@ -1,4 +1,3 @@
-
 <?php if (get_common_settings('recaptcha_status')): ?>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <?php endif; ?>
@@ -32,7 +31,7 @@
   <section class="">
   <div class="container py">
     <!-- Stepper -->
-    <ol class="stepper" role="list" aria-label="Étapes">
+    <ol class="stepper" role="list" aria-label="<?php echo get_phrase('Steps'); ?>">
       <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
       <li class="step-create-commaunaute" data-stepnav="2"><span class="num">2</span><span class="lbl"><?php echo get_phrase("Community") ?></span></li>
       <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl"><?php echo get_phrase("Price") ?></span></li>
@@ -57,7 +56,7 @@
             <!-- <input id="profileName" type="text" placeholder="Votre nom" required aria-required="true" autocomplete="name"> -->
             <input id="profileName" type="text" placeholder="<?php echo get_phrase('full_name'); ?>"
                 class="form-control shadow-none rounded-end text-capitalize" name="name" required
-                data-msg="Please enter your full name." data-error-class="u-has-error"
+                data-msg="<?php echo get_phrase("Please enter your full name") ?>" data-error-class="u-has-error"
                 data-success-class="u-has-success" aria-required="true" autocomplete="name">
             <div class="error" data-for="profileName"></div>
           </label>
@@ -67,7 +66,7 @@
             <!-- <input id="profileEmail" type="email" placeholder="exemple@email.com" required aria-required="true" autocomplete="email"> -->
             <input id="profileEmail" type="email" placeholder="<?php echo get_phrase('email'); ?>"
                 class="form-control rounded-end shadow-none" name="email" required aria-required="true" autocomplete="email"
-                data-msg="Please enter a valid email address." data-error-class="u-has-error"
+                data-msg="<?php echo get_phrase("Please enter a valid email address") ?>" data-error-class="u-has-error"
                 data-success-class="u-has-success">
             <div class="error" data-for="profileEmail"></div>
           </label>
@@ -78,13 +77,13 @@
             <span class="field-label"><?php echo get_phrase("Phone") ?> <span class="req">*</span></span>
             <!-- <input id="profilePhone" type="tel" placeholder="+212 600 00 00 00" required aria-required="true" autocomplete="tel"> -->
             <input id="profilePhone" type="tel" pattern="\+?\d{1,3}\s?(\d{1,4}\s?){4}" placeholder="+212 600 00 00 00"
-                class="form-control rounded-end shadow-none" name="phone" data-msg="Please enter a valid phone number."
+                class="form-control rounded-end shadow-none" name="phone" data-msg="<?php echo get_phrase("Please enter a valid phone number") ?>"
                 data-error-class="u-has-error" data-success-class="u-has-success" required aria-required="true" autocomplete="tel">
             <div class="error" data-for="profilePhone"></div>
           </label>
           <label class="field">
                 <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
-                <select id="communityLang" name="communityLang" required aria-required="true">
+                <select id="communityLang" name="communityLang" required aria-required="true" data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
                   <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
                   <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
                   <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
@@ -98,7 +97,7 @@
           <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
           <!-- <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
           <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
-                data-msg="Please enter a password" data-error-class="u-has-error" data-success-class="u-has-success">
+                data-msg="<?php echo get_phrase("Please enter a password") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
           <div class="error" data-for="profilePass"></div>
         </label>
 
@@ -106,7 +105,7 @@
           <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
           <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
           <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
-                name="repeat-password" required data-msg="Please repeat your password" data-error-class="u-has-error"
+                name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password") ?>" data-error-class="u-has-error"
                 data-success-class="u-has-success">
           <div class="error" data-for="profilePass2"></div>
         </label>
@@ -120,18 +119,33 @@
       <!-- STEP 2 : COMMUNAUTÉ -->
       <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2">
         <div class="panel-head">
-          <h2 id="title-step2"><?php echo get_phrase("Community details") ?></h2>
+          <h2 id="title-step2"><?php echo get_phrase("Community_details") ?></h2>
           <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
         </div>
 
         <div class="grid-2 mt-4">
           <div class="stack">
+
+              <label class="field">
+              <span class="field-label"><?php echo get_phrase("I_am") ?> <span class="req">*</span></span>
+              <select id="i_am" aria-required="true" name="i_am" class="form-control shadow-none" required
+              data-msg="<?php echo get_phrase("Please select your status") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+              <option value=""><?php echo get_phrase('select_a_status'); ?></option>
+
+              <option value="Entreprise"> <?php echo get_phrase("Entreprise") ?></option>
+              <option value="Freelancer"> <?php echo get_phrase("Freelancer") ?> </option>
+              <option value="Autoentrepreneur"> <?php echo get_phrase("Autoentrepreneur") ?> </option>
+              <option value="Particulier"> <?php echo get_phrase("Particulier") ?> </option>
+        
+              </select>
+             <div class="error" data-for="i_am"></div>
+            </label>
             <label class="field">
               <span class="field-label"><?php echo get_phrase("Community_name") ?> <span class="req">*</span></span>
               <!-- <input id="communityName" type="text" placeholder="Ex. Digital Marketing" required maxlength="80" aria-required="true"> -->
                <input id="communityName" type="text" placeholder="<?php echo get_phrase("Ex._Digital_Marketing") ?>" required maxlength="80" aria-required="true"
                 class="form-control shadow-none rounded-end text-capitalize" name="school_name" required
-                data-msg="Please enter your first name." data-error-class="u-has-error"
+                data-msg="<?php echo get_phrase("Please enter your first name") ?>" data-error-class="u-has-error"
                 data-success-class="u-has-success">
               <small class="help"><?php echo get_phrase("Max._80_characters") ?></small>
               <div class="error" data-for="communityName"></div>
@@ -146,26 +160,56 @@
               </span>
               <!-- <textarea id="communityDesc" rows="6" placeholder="Décrivez l’objectif et la valeur…" required aria-required="true"></textarea> -->
               <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description" placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
-                data-msg="Please enter a description." data-error-class="u-has-error"
+                data-msg="<?php echo get_phrase("Please enter a description") ?>" data-error-class="u-has-error"
                 data-success-class="u-has-success"></textarea>
               <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
               <div class="error" data-for="communityDesc"></div>
             </label>
 
-            <div class="grid-2">
+          <div class="address-zone">
+                <div class="grid-2" style="display: grid; grid-template-columns: 66% 30%;">
+                  <div>
+                      <label class="field">
+                        <span class="field-label"> <?php echo get_phrase("Rue") ?> <span class="req">*</span></span>
+                        <input id="communityStreet" type="text" placeholder="<?php echo get_phrase("Rue") ?>" class="form-control shadow-none" name="street" required
+                          data-msg="<?php echo get_phrase("Veuillez entrer la rue") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        <div class="error" data-for="communityStreet"></div>
+                      </label>
+                  </div>
+                    <div>
+                      <label class="field">
+                        <span class="field-label"><?php echo get_phrase("Numéro") ?> <span class="req">*</span></span>
+                        <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" name="number" required
+                          data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        <div class="error" data-for="communityNumber"></div>
+                      </label>
+                    </div>
+                      
+
+                </div>
+                 <div class="grid-2">
+                <label class="field">
+                  <span class="field-label"> <?php echo get_phrase("Ville") ?><span class="req">*</span></span>
+                  <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" required
+                    data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                  <div class="error" data-for="communityCity"></div>
+                </label>
+              
+            
               <label class="field">
-                <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
-                <select id="communityCat" aria-required="true" name="category" class=""
-                 required>
-                <option value=""><?php echo get_phrase('select_a_category'); ?></option>
-                <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
-                <?php foreach ($categories as $categorie): ?>
-                  <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
-                <?php endforeach; ?>
-                </select>
-                <div class="error" data-for="communityCat"></div>
+                <span class="field-label"> <?php echo get_phrase("code_postal") ?><span class="req">*</span></span>
+                <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" required
+                  data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                <div class="error" data-for="communityPostalCode"></div>
               </label>
-            </div>
+      </div>
+</div>
+          
+
+     
+
+
+
               <label class="switch emph">
                 <input type="hidden" name="visibility" value="0">
                 <input id="isPrivate" name="visibility" type="checkbox" value="1"/>
@@ -189,32 +233,68 @@
                 </span>
               </span>
             <div class="uploader" data-kind="logo">
-            <!-- <input type="file" id="communityLogo" accept="image/*"> -->
-            <input id="communityLogo" type="file"  name="school_image" accept="image/*">
-            <div class="uploader-content">
-              <i class="fa-solid fa-upload"></i>
-              <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
-            </div>
-            <div class="preview" id="logoPreview"></div>
-            <div class="error" data-for="communityLogo"></div>
+              <!-- <input type="file" id="communityLogo" accept="image/*"> -->
+              <input id="communityLogo" type="file"  name="school_image" accept="image/*">
+              <div class="uploader-content">
+                <i class="fa-solid fa-upload"></i>
+                <p><?php echo get_phrase("Upload_or_drag_a_logo") ?></p>
+              </div>
+              <div class="preview" id="logoPreview"></div>
+              <div class="error" data-for="communityLogo"></div>
             </div>
 
             <!-- Cover -->
-             <span class="field-label">
-                <?php echo get_phrase("Cover_(16:9)") ?>
-                <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
-                  <i class="fa-solid fa-circle-info"></i>
+           
+                <span class="field-label">
+                    <?php echo get_phrase("Cover_(16:9)") ?>
+                    <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?> ">
+                      <i class="fa-solid fa-circle-info"></i>
+                    </span>
                 </span>
-              </span>
-            <div class="uploader" data-kind="cover">
-            <input type="file" id="communityCover" name="communityCover" accept="image/*">
-            <div class="uploader-content">
-              <i class="fa-solid fa-image"></i>
-              <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
-            </div>
-            <div class="preview" id="coverPreview"></div>
-            <div class="error" data-for="communityCover"></div>
-          </div>
+                <div class="uploader" data-kind="cover">
+                  <input type="file" id="communityCover" name="communityCover" accept="image/*">
+                  <div class="uploader-content">
+                    <i class="fa-solid fa-image"></i>
+                    <p><?php echo get_phrase("Upload_or_drag_a_cover_photo") ?></p>
+                  </div>
+                  <div class="preview" id="coverPreview"></div>
+                  <div class="error" data-for="communityCover"></div>
+                </div>
+            
+        
+
+
+
+
+                <div class="grid-2">
+                  <label class="field">
+                      <span class="field-label"><?php echo get_phrase("Tax_residence") ?> <span class="req">*</span></span>
+                      <select id="Tax_residence" aria-required="true" name="Tax_residence" class="form-control shadow-none" required
+                      data-msg="<?php echo get_phrase("Please select your tax residence") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                      <option value=""><?php echo get_phrase('select_a_Tax_residence'); ?></option>
+
+                      <option value="MA"> <?php echo get_phrase("Morocco") ?></option>
+                      <option value="UAE"> <?php echo get_phrase("United_Arab_Emirates") ?> </option>
+                
+                      </select>
+                      <div class="error" data-for="Tax_residence"></div>
+                    </label>
+                </div>
+                <div class="grid-2">
+                  <label class="field">
+                    <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
+                    <select id="communityCat" aria-required="true" name="category" class=""
+                    required>
+                    <option value=""><?php echo get_phrase('select_a_category'); ?></option>
+                    <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
+                    <?php foreach ($categories as $categorie): ?>
+                      <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                    <div class="error" data-for="communityCat"></div>
+                 </label>
+                </div>
+
           </div>
         </div>
 
@@ -348,11 +428,12 @@
   goTo(0);
 
   // =================== Validation ===================
-  function setInvalid(el,msg){
+  function setInvalid(el, msg){
     if(!el) return false;
     el.classList.add('is-invalid');
     const err = document.querySelector(`.error[data-for="${el.id}"]`);
-    if(err) err.textContent = msg || '';
+    const finalMsg = msg || el.getAttribute('data-msg') || '';
+    if(err) err.textContent = finalMsg;
     return false;
   }
 
@@ -380,15 +461,33 @@
       if(pass.value !== pass2.value || (pass2.value||'').length<6) ok = setInvalid(pass2,'Les mots de passe ne correspondent pas') && ok; else clearInvalid(pass2);
     }
 
+
     // STEP 2 : Communauté
     if(pane.dataset.step=="2"){
-      const name = $('#communityName'), desc = $('#communityDesc'),
-            cat = $('#communityCat'), lang = $('#communityLang');
-      if(!name.value.trim() || name.value.trim().length<2) ok = setInvalid(name,'Nom obligatoire (2 caractères min)') && ok; else clearInvalid(name);
-      if(!desc.value.trim() || desc.value.trim().length<40) ok = setInvalid(desc,'Description obligatoire (40 caractères min)') && ok; else clearInvalid(desc);
-      if(!cat.value) ok = setInvalid(cat,'Catégorie obligatoire') && ok; else clearInvalid(cat);
-      if(!lang.value) ok = setInvalid(lang,'Langue obligatoire') && ok; else clearInvalid(lang);
+      const name = $('#communityName'),
+            desc = $('#communityDesc'),
+            Tax_residence = $('#Tax_residence'),
+            cat = $('#communityCat'),
+            lang = $('#communityLang'),
+            street = $('#communityStreet'),
+            number = $('#communityNumber'),
+            city = $('#communityCity'),
+            postalCode = $('#communityPostalCode'),
+            i_am = $('#i_am');
+
+      if(!name.value.trim() || name.value.trim().length < 2) ok = setInvalid(name) && ok; else clearInvalid(name);
+      if(!desc.value.trim() || desc.value.trim().length < 40) ok = setInvalid(desc) && ok; else clearInvalid(desc);
+      if(!cat.value) ok = setInvalid(cat) && ok; else clearInvalid(cat);
+      if(!Tax_residence.value) ok = setInvalid(Tax_residence) && ok; else clearInvalid(Tax_residence);
+      if(!lang.value) ok = setInvalid(lang) && ok; else clearInvalid(lang);
+
+      if(!street.value.trim() || street.value.trim().length < 3) ok = setInvalid(street) && ok; else clearInvalid(street);
+      if(!/^[0-9]+$/.test(number.value.trim())) ok = setInvalid(number) && ok; else clearInvalid(number);
+      if(!city.value.trim() || city.value.trim().length < 2) ok = setInvalid(city) && ok; else clearInvalid(city);
+      if(!i_am.value.trim()) ok = setInvalid(i_am) && ok; else clearInvalid(i_am);
+      if(!/^[0-9]{4,5}$/.test(postalCode.value.trim())) ok = setInvalid(postalCode) && ok; else clearInvalid(postalCode);
     }
+
 
     // STEP 3 : Prix
     if(pane.dataset.step=="3"){
@@ -418,39 +517,60 @@
   setupUploader('#communityCover','#coverPreview');
 
   // =================== Résumé ===================
-  function updateSummary(){
-    const pane = panes[3]; // step 4
-    if(!pane) return;
-    const summaryDiv = pane.querySelector('.summary');
-    if(!summaryDiv) return;
+function updateSummary(){
+  const pane = panes[3]; // step 4
+  if(!pane) return;
+  const summaryDiv = pane.querySelector('.summary');
+  if(!summaryDiv) return;
 
-    const profileName = $('#profileName')?.value || '—';
-    const profileEmail = $('#profileEmail')?.value || '—';
-    const phone = $('#profilePhone')?.value || '—';
-    const communityName = $('#communityName')?.value || '—';
-    const desc = $('#communityDesc')?.value || '—';
-    const cat = $('#communityCat')?.value || '—';
-    const lang = $('#communityLang')?.value || '—';
-    const price = $('#price')?.value || '—';
-    const isPrivate = $('#isPrivate')?.checked ? 1 : 0;
+  const profileName = $('#profileName')?.value || '—';
+  const profileEmail = $('#profileEmail')?.value || '—';
+  const phone = $('#profilePhone')?.value || '—';
+  const communityName = $('#communityName')?.value || '—';
+  const desc = $('#communityDesc')?.value || '—';
+  const cat = $('#communityCat')?.value || '—';
+  const communityStreet = $('#communityStreet')?.value || '—';
+  const communityNumber = $('#communityNumber')?.value || '—';
+  const communityCity = $('#communityCity')?.value || '—';
+  const communityPostalCode = $('#communityPostalCode')?.value || '—';
+  const Tax_residence = $('#Tax_residence')?.value || '—';
+  const i_am = $('#i_am')?.value || '—';
+  const lang = $('#communityLang')?.value || '—';
+  const price = $('#price')?.value || '—';
+  const isPrivate = $('#isPrivate')?.checked ? 1 : 0;
 
-    const logoHtml = $('#logoPreview img') ? `<img src="${$('#logoPreview img').src}" style="max-width:80px; border-radius:10px;">` : '—';
-    const coverHtml = $('#coverPreview img') ? `<img src="${$('#coverPreview img').src}" style="max-width:120px; border-radius:10px;">` : '—';
+  const logoEl = $('#logoPreview img');
+  const coverEl = $('#coverPreview img');
+  const logoHtml = logoEl ? `<img src="${logoEl.src}" style="max-width:80px; border-radius:10px;">` : '—';
+  const coverHtml = coverEl ? `<img src="${coverEl.src}" style="max-width:120px; border-radius:10px;">` : '—';
 
+  summaryDiv.innerHTML = `
+    <h3><?php echo get_phrase("Profile"); ?></h3>
+    <p><?php echo get_phrase("Name"); ?> : ${profileName}<br>
+       <?php echo get_phrase("Email"); ?> : ${profileEmail}<br>
+       <?php echo get_phrase("Phone"); ?> : ${phone}<br>
+       <?php echo get_phrase("Primary_language"); ?> : ${lang}</p>
 
-    summaryDiv.innerHTML = `
-      <h3>Profil</h3>
-      <p>Nom : ${profileName}<br>Email : ${profileEmail}<br>Téléphone : ${phone}<br>Langue : ${lang}</p>
-      <h3>Communauté</h3>
-      <p>Nom : ${communityName}<br>Description : ${desc}<br>Catégorie : ${cat}</p>
-      <h3>Médias</h3>
-      <p>Logo : ${logoHtml}<br>Cover : ${coverHtml}</p>
-      <h3>Prix</h3>
-      <p>${price} €</p>
-      <h3>Visibilité</h3>
-       <p>Communauté : ${isPrivate === 1 ? 'Privée' : 'Public'}</p>
-    `;
-  }
+    <h3><?php echo get_phrase("Community"); ?></h3>
+    <p><?php echo get_phrase("I_am"); ?> : ${i_am}<br>
+       <?php echo get_phrase("Community_name"); ?> : ${communityName}<br>
+       <?php echo get_phrase("Description"); ?> : ${desc}<br>
+       <?php echo get_phrase("Category"); ?> : ${cat}<br>
+       <?php echo get_phrase("Address"); ?> : ${communityStreet}, ${communityNumber}, ${communityCity}, ${communityPostalCode}<br>
+       <?php echo get_phrase("Tax_residence"); ?> : ${Tax_residence}</p>
+
+    <h3><?php echo get_phrase("Media"); ?></h3>
+    <p><?php echo get_phrase("Logo"); ?> : ${logoHtml}<br>
+       <?php echo get_phrase("Cover"); ?> : ${coverHtml}</p>
+
+    <h3><?php echo get_phrase("Price"); ?></h3>
+    <p>${price} €</p>
+
+    <h3><?php echo get_phrase("Visibility"); ?></h3>
+    <p><?php echo get_phrase("Community"); ?> : ${isPrivate === 1 ? '<?php echo get_phrase("Private"); ?>' : '<?php echo get_phrase("Public"); ?>'}</p>
+  `;
+}
+
 
 })();
 </script>
@@ -542,4 +662,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // }
 });
 </script>
+
 

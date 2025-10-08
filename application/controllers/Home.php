@@ -368,10 +368,7 @@ class Home extends CI_Controller
     $page_data['page_name'] = 'communities';
     $page_data['page_title'] = get_phrase('communities');
 
-	$page_data['schools_count'] = $this->user_model->get_all_schools_with_counts();
 
-	// Compter les classes
-    $page_data['classes_count'] = $this->user_model->get_all_classes_with_counts();
     $this->load->view('frontend/' . $this->theme . '/index', $page_data);
 }
 

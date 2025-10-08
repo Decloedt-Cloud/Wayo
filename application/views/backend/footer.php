@@ -10,9 +10,16 @@ body[dir="rtl"] .footer-info {
     .row1 {
         position: relative;
         top: 12px;
+        display: none;
     }
+    
     body[dir="rtl"] .footer{
        bottom: -4px;
+       
+}
+.footer {
+    
+   display: none;
 }
 }
 </style>
