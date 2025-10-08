@@ -27,16 +27,16 @@
 
     <div class="form-grid">
         <div class="form-group ">
-            <label class="col-form-label" for="name"><?php echo get_phrase('name'); ?><span class="required"> * </span></label>
+            <label class="col-form-label" for="name"><?php echo get_phrase('Full_name'); ?><span class="required"> * </span></label>
             <div class="input-wrapper">
-                <input type="text" id="name" name="name" class="form-control" placeholder="name" required>
+                <input type="text" id="name" name="name" class="form-control" placeholder="<?php echo get_phrase("Full_name") ?>" required>
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-form-label" for="email"><?php echo get_phrase('email'); ?><span class="required"> * </span></label>
             <div class="input-wrapper">
-                <input type="email" class="form-control" id="email" name="email" placeholder="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="<?php echo get_phrase("email") ?>" required>
             </div>
         </div>
 
@@ -66,17 +66,38 @@
 
         <div class="form-group ">
             <label class="col-form-label" for="birthday"><?php echo get_phrase('birthday'); ?><span class="required"> *</span></label>
-            <input type="text" class="form-control" data-provide="datepicker" id="birthday" placeholder="mm/dd/yyyy" data-date-autoclose="true" data-date-container="#datepicker4" name="birthday" value="">
+            <input type="text" class="form-control" data-provide="datepicker" id="birthday"  data-date-autoclose="true" data-date-container="#datepicker4" name="birthday" value="">
         </div>
         <div class="form-group ">
             <label class="col-form-label" for="phone"><?php echo get_phrase('phone'); ?><span class="required"> *</span></label>
-            <input type="text" id="phone" name="phone" class="form-control" placeholder="phone" required>
+            <input type="text" id="phone" name="phone" class="form-control" placeholder="<?php echo get_phrase("phone") ?>" required>
+        </div>
+        <div class="form-group ">
+            <label class="col-form-label" for="Rue"><?php echo get_phrase('Rue'); ?><span class="required"> *</span></label>
+            <input type="text" class="form-control" id="Street" placeholder="<?php echo get_phrase('Rue'); ?>"  name="Street"  required>
+        </div>
+        <div class="form-group ">
+            <label class="col-form-label" for="phone"><?php echo get_phrase('Numéro'); ?><span class="required"> *</span></label>
+            <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" name="number" required
+                          data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+        </div>
+        <div class="form-group ">                 
+                 
+            <label class="col-form-label" for="Ville"><?php echo get_phrase("Ville") ?><span class="required"> *</span></label>
+             <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" required
+                    data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+        </div>
+        <div class="form-group ">
+            <label class="col-form-label" for="code_postal"><?php echo get_phrase('code_postal'); ?><span class="required"> *</span></label>
+            <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" required
+            data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-form-label" for="address"><?php echo get_phrase('address'); ?><span class="required"> *</span></label>
-        <textarea class="form-control" id="address" rows="5" name="address" placeholder="address"></textarea>
+        <label class="col-form-label" for="VAT number"><?php echo get_phrase('numero_de_tva'); ?></label>
+        <input type="text" id="VAT_number" name="VAT_number" class="form-control" placeholder="<?php echo get_phrase("VAT_number") ?>" >
+
     </div>
 
         <div class="text-center mt-4">

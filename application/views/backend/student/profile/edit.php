@@ -12,14 +12,14 @@ $profile_data = $this->user_model->get_profile_data();
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
                     <div class="col-12">
                         <div class="form-group row mb-3">
-                            <label class="col-md-3 col-form-label" for="name"> <?php echo get_phrase('name') ; ?></label>
+                            <label class="col-md-3 col-form-label" for="name"> <?php echo get_phrase('Full_name') ; ?><span class="required"> *</span></label>
                             <div class="col-md-9">
                                 <input type="text" id="name" name="name" class="form-control"  value="<?php echo $profile_data['name']; ?>" required>
                             </div>
                         </div>
 
                         <div class="form-group row mb-3">
-                            <label class="col-md-3 col-form-label" for="email"><?php echo get_phrase('email') ; ?></label>
+                            <label class="col-md-3 col-form-label" for="email"><?php echo get_phrase('email') ; ?><span class="required"> *</span></label>
                             <div class="col-md-9">
                                 <input type="email" id="email" name="email" class="form-control"  value="<?php echo $profile_data['email']; ?>" required>
                             </div>
@@ -32,12 +32,44 @@ $profile_data = $this->user_model->get_profile_data();
                             </div>
                         </div>
 
-                        <div class="form-group row mb-3">
-                            <label class="col-md-3 col-form-label" for="address"> <?php echo get_phrase('address') ; ?></label>
+
+                         <div class="form-group row mb-3 ">
+                            <label class="col-md-3 col-form-label" for="Rue"><?php echo get_phrase('Rue'); ?><span class="required"> *</span></label>
                             <div class="col-md-9">
-                                <textarea class="form-control" id="address" name = "address" rows="5"><?php echo $profile_data['address']; ?></textarea>
+                             <input type="text" class="form-control" id="Street" placeholder="<?php echo get_phrase('Rue'); ?>"  name="Street" value="<?php echo $profile_data['Rue']; ?>" required>
                             </div>
                         </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-3 col-form-label" for="phone"><?php echo get_phrase('Numéro'); ?><span class="required"> *</span></label>
+                          <div class="col-md-9">
+                            <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" value="<?php echo $profile_data['Numero']; ?>" name="number" required
+                                        data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                          </div>
+                        </div>
+                        <div class="form-group row mb-3">                 
+                                
+                            <label class="col-md-3 col-form-label" for="Ville"><?php echo get_phrase("Ville") ?><span class="required"> *</span></label>
+                           <div class="col-md-9">
+                            <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" value="<?php echo $profile_data['Ville']; ?>" required
+                                    data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                           </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-3 col-form-label" for="code_postal"><?php echo get_phrase('code_postal'); ?><span class="required"> *</span></label>
+                          <div class="col-md-9">
+                            <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" value="<?php echo $profile_data['Codepostal']; ?>" required
+                            data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                          </div>
+                        </div>
+
+                        
+                    
+                     <div class="form-group row mb-3">
+                        <label class="col-md-3 col-form-label" for="VAT number"><?php echo get_phrase('numero_de_tva'); ?></label>
+                        <div class="col-md-9">
+                         <input type="text" id="VAT_number" name="VAT_number" class="form-control" value="<?php echo $profile_data['num_vat']; ?>" placeholder="<?php echo get_phrase("VAT_number") ?>" >
+                        </div>
+                    </div>
 
                         <div class="form-group row mb-3">
                                 <label class="col-md-3 col-form-label" for="example-fileinput"><?php echo get_phrase('profile_image'); ?></label>
@@ -63,7 +95,7 @@ $profile_data = $this->user_model->get_profile_data();
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-l px-4"id="update-logos-btn" onclick="updateProfileInfo()">
+                            <button type="submit" class="btn btn-primary btn-l px-4"id="update-logos-btn" >
                                  <i class="mdi mdi-account-check"></i>
                                 <?php echo get_phrase('update_profile') ; ?>
                             </button>
