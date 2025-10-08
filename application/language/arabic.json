@@ -2448,6 +2448,8 @@
     "membres": "أعضاء",
     "espaces": "مساحات",
     "launch_and_monetize": "الإطلاق وتحقيق الدخل",
+    "this_tab_allows_you_to_publish_an_announcement":"يتيح لك هذا القسم نشر  إعلان يظهر على لوحة التحكم. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website":"يتيح لك هذا القسم نشر  إعلان يظهر في الموقع التعريفي للمنصّة. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
     "create_your_member_account": "إنشاء حساب العضو الخاص بك",
     "complete_your_profile_and_confirm_your_account._it’s_quick_and_easy.": "أكمل ملفك الشخصي وقم بتأكيد حسابك. إنه سريع وسهل.",
     "profile_information": "معلومات الملف الشخصي",
@@ -2503,5 +2505,4 @@
     "veuillez_entrer_la_ville": "يرجى إدخال اسم المدينة",
     "veuillez_entrer_le_postal_code": "يرجى إدخال الرمز البريدي",
     "please_select_your_tax_residence": "يرجى اختيار مقر الإقامة الضريبية"
-
 }

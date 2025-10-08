@@ -2685,6 +2685,8 @@
     "membres": "Mensen",
     "espaces": "Ruimtes",
     "launch_and_monetize": "Lanceren en geld verdienen",
+    "this_tab_allows_you_to_publish_an_announcement": "Met dit tabblad kunt u een aankondiging publiceren die op het dashboard van het platform verschijnt.Als u informatie, een evenement of nieuws wilt delen, kunt u dat hier doen!",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website": "Met dit tabblad kunt u een aankondiging publiceren die zal verschijnen op de showcase-website van het platform.Als u informatie, een evenement of nieuws wilt delen, kunt u dat hier doen!",
     "create_your_member_account": "Erstellen Sie Ihr Mitgliedskonto",
     "complete_your_profile_and_confirm_your_account._it’s_quick_and_easy.": "Vervollständigen Sie Ihr Profil und bestätigen Sie Ihr Konto. Es ist schnell und einfach.",
     "profile_information": "Profilinformationen",
@@ -2741,5 +2743,4 @@
     "veuillez_entrer_la_ville": "Voer de stad in",
     "veuillez_entrer_le_postal_code": "Voer de postcode in",
     "please_select_your_tax_residence": "Selecteer uw fiscale woonplaats"
-
 }

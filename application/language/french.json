@@ -2435,6 +2435,8 @@
     "file_size_exceeds_10mb": "La taille du fichier dépasse 10 Mo",
     "espaces": "Espaces",
     "launch_and_monetize": "Lancer et monétiser",
+    "this_tab_allows_you_to_publish_an_announcement":"Cet onglet vous permet de publier une annonce qui apparaîtra sur le dashboard.Si vous avez une information, un événement ou une actualité à partager, n’hésitez pas à la publier ici !",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website":"Cet onglet vous permet de publier une annonce qui apparaîtra sur le site vitrine de la plateforme.Si vous avez une information, un événement ou une actualité à partager, n’hésitez pas à la publier ici !",
     "create_your_member_account": "Créer votre compte membre",
     "complete_your_profile_and_confirm_your_account._it’s_quick_and_easy.": "Complétez votre profil et confirmez votre compte. C’est rapide et facile.",
     "profile_information": "Informations du profil",
@@ -2491,7 +2493,5 @@
     "veuillez_entrer_la_ville": "Veuillez entrer la ville",
     "veuillez_entrer_le_postal_code": "Veuillez entrer le code postal",
     "please_select_your_tax_residence": "Veuillez sélectionner votre résidence fiscale"
-
-
-
 }
+
