@@ -83,7 +83,8 @@ if ($page_name == "home") {
 }
 elseif ($page_name == "online_admission_student"){
 
-  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
+  // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.css">';
   
 }elseif ($page_name == "communities"){
 

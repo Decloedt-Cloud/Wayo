@@ -729,7 +729,10 @@ class Frontend_model extends CI_Model
     $access = $this->input->post('visibility') ? 1 : 0;
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
-        'address' => htmlspecialchars($this->input->post('school_adress')),
+        'Rue' => htmlspecialchars($this->input->post('street')),
+        'Numero' => htmlspecialchars($this->input->post('number')),
+        'Ville' => htmlspecialchars($this->input->post('city')),
+        'Codepostal' => htmlspecialchars($this->input->post('postal_code')),
         'phone' => htmlspecialchars($this->input->post('school_phone')),
         'status' => 0, // School pending approval
         'description' => htmlspecialchars($this->input->post('school_description')),
@@ -755,13 +758,20 @@ class Frontend_model extends CI_Model
         ]
     ];
     $this->db->insert_batch('payment_settings', $payment_settings);
-
+    if(htmlspecialchars($this->input->post('Tax_residence')) == 'MA'){
+        $rate = 20;
+    } else {
+         $rate = 5;
+    }
     // Insert school settings
     $settings_school = [
         'school_id' => $school_id,
         'system_currency' => 'USD',
         'currency_position' => 'left',
-        'language' => 'english'
+        'language' => 'english',
+        'Tax_residence' => htmlspecialchars($this->input->post('Tax_residence')),
+        'type' => htmlspecialchars($this->input->post('i_am')),
+        'vat_rat' => $rate
     ];
     $this->db->insert('settings_school', $settings_school);
 

@@ -917,10 +917,13 @@ class User_model extends CI_Model
 			$user_data = [
 				'name' => html_entity_decode(html_escape($this->input->post('name'))),
 				'email' => html_escape($this->input->post('email')),
-				//'birthday' => strtotime(html_escape($this->input->post('birthday'))),
 				'birthday' => date('Y-m-d', strtotime(html_escape($this->input->post('birthday')))),
 				'gender' => html_escape($this->input->post('gender')),
-				'address' => html_escape($this->input->post('address')),
+				'Rue' => html_escape($this->input->post('Street')),
+				'Numero' => html_escape($this->input->post('number')),
+				'Ville' => html_escape($this->input->post('city')),
+				'Codepostal' => html_escape($this->input->post('postal_code')),
+				'num_vat' => html_escape($this->input->post('VAT_number')),
 				'phone' => html_escape($this->input->post('phone')),
 				'role' => 'student',
 				'school_id' => $this->school_id,
@@ -1361,8 +1364,12 @@ class User_model extends CI_Model
 		$user_data['birthday'] = date('Y-m-d', strtotime($posted_birthday));//Avec date('Y-m-d', strtotime(...)) : Le format stocké sera Y-m-d (ex. 2025-04-04), un format de date standard.
 
 		$user_data['gender'] = html_escape($this->input->post('gender'));
-		$user_data['address'] = html_escape($this->input->post('address'));
+		$user_data['Rue'] = html_escape($this->input->post('Street'));
+		$user_data['Numero'] = html_escape($this->input->post('number'));
+		$user_data['Ville'] = html_escape($this->input->post('city'));
+		$user_data['Codepostal'] = html_escape($this->input->post('postal_code'));
 		$user_data['phone'] = html_escape($this->input->post('phone'));
+		$user_data['num_vat'] = html_escape($this->input->post('VAT_number'));
 
 		// Check Duplication
 		$duplication_status = $this->check_duplication('on_update', $user_data['email'], $user_id);
@@ -1868,8 +1875,13 @@ class User_model extends CI_Model
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$email = htmlspecialchars($this->input->post('email'));
 		$data['phone'] = htmlspecialchars($this->input->post('phone'));
-		$data['address'] = htmlspecialchars($this->input->post('address'));
-
+		// $data['address'] = htmlspecialchars($this->input->post('address'));
+		$data['Rue'] = html_escape($this->input->post('Street'));
+		$data['Numero'] = html_escape($this->input->post('number'));
+		$data['Ville'] = html_escape($this->input->post('city'));
+		$data['Codepostal'] = html_escape($this->input->post('postal_code'));
+		$data['num_vat'] = html_escape($this->input->post('VAT_number'));
+		
 		// Check Duplication
 		$duplication_status = $this->check_duplication('on_update', $email, $user_id);
 
