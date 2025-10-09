@@ -73,7 +73,7 @@
         <p class="mb-1"><strong><?php echo get_phrase("Last_updated:"); ?></strong> <?php echo get_phrase("October_7,_2025"); ?></p>
         <p class="mb-1"><strong><?php echo get_phrase("Website:"); ?></strong> <a href="https://preprod.wayo.site" rel="noopener">https://preprod.wayo.site</a></p>
         <p class="mb-0"><strong><?php echo get_phrase("Contact:"); ?></strong> <a href="mailto:info@wayo.cloud">info@wayo.cloud</a></p>
-        <p class="mb-0"><strong><?php echo get_phrase("Data_Controller:"); ?></strong> <?php echo get_phrase("Wayo_Academy,_[Moroccan_address_to_be_completed]"); ?></p>
+        <p class="mb-0"><strong><?php echo get_phrase("Data_Controller:"); ?></strong> <?php echo get_phrase("Wayo_Academy,_[R320 Umm Hurair 2, Dubai, UAE]"); ?></p>
       </div>
     </section>
 
@@ -289,7 +289,7 @@
   <h2><?php echo get_phrase("Contact_Information"); ?></h2>
   <p><strong><?php echo get_phrase("Data_Controller:"); ?></strong> <?php echo get_phrase("Wayo_Academy"); ?><br>
   <strong><?php echo get_phrase("Email:"); ?></strong> <a href="mailto:info@wayo.cloud"><?php echo get_phrase("info@wayo.cloud"); ?></a><br>
-  <strong><?php echo get_phrase("Address:"); ?></strong> <?php echo get_phrase("[to_be_completed,_Morocco]"); ?></p>
+  <strong><?php echo get_phrase("Address:"); ?></strong> <?php echo get_phrase("[R320 Umm Hurair 2, Dubai, UAE]"); ?></p>
 </section>
 
 
