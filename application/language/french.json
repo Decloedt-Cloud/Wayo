@@ -865,7 +865,7 @@
     "total_section": "Total des sections",
     "total_lesson": "Total des leçons",
     "total_enrolment": "Total des inscriptions",
-    "view_course_on_frontend": "Voir le cours sur le frontend",
+    "start_the_course": "Lancer le cours",
     "edit_this_course": "Modifier ce cours",
     "section_and_lesson": "Section et leçon",
     "inform_instructor": "Informer l'instructeur",
@@ -2490,8 +2490,7 @@
     "veuillez_entrer_le_numéro": "Veuillez entrer le numéro",
     "veuillez_entrer_la_ville": "Veuillez entrer la ville",
     "veuillez_entrer_le_postal_code": "Veuillez entrer le code postal",
-    "please_select_your_tax_residence": "Veuillez sélectionner votre résidence fiscale"
-
-
-
+    "please_select_your_tax_residence": "Veuillez sélectionner votre résidence fiscale",
+    "logo": "Logo",
+    "cover": "Cover"
 }

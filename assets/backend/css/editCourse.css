@@ -128,7 +128,23 @@
     border-color: #3a56d8;
     color: #fff;
 }
+[dir="rtl"] .mdi-chevron-right,
+[dir="rtl"] .mdi-chevron-left {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+/* Inverser l'ordre icône/texte en RTL */
+[dir="rtl"] .btn-back {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.5rem;
+}
 
+/* Inverser la flèche horizontalement */
+[dir="rtl"] .btn-back .mdi-arrow-left-circle {
+  transform: scaleX(1);
+}
 /* Primary Button */
 .btn-primary {
     background-color: #4361ee;
@@ -309,7 +325,23 @@
         gap: 0;
         /* Remove the gap between the buttons */
     }
+[dir="rtl"] .mdi-chevron-right,
+  [dir="rtl"] .mdi-chevron-left {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+  /* Inverser l'ordre icône/texte en RTL */
+  [dir="rtl"] .btn-back {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
+  /* Inverser la flèche horizontalement */
+  [dir="rtl"] .btn-back .mdi-arrow-left-circle {
+    transform: scaleX(1);
+  }
     .header-title-wrapper {
         flex-direction: column;
         align-items: flex-start;
