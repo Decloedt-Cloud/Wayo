@@ -867,7 +867,7 @@ $infouser = [
     // Créer l’espace HumHub
     $spaceData = [
         'name'        => $school_data['name'],
-        'description' => !empty($school_data['description'])? $school_data['description'] : 'Aucune description fournie',
+        'description' => '', // empty string
         'join_policy' => 0,
         'visibility'  => ($school_data['access'] === 'public' ? 2 : 1),
     ];
