@@ -69,7 +69,7 @@
           <label class="field">
             <span class="field-label">
               <?php echo get_phrase("Email") ?> <span class="req">*</span>
-              <span class="info" data-tooltip="Utilisez une adresse se terminant par @gmail.com.">
+              <span class="info" data-tooltip="Utilisez une adresse e-mail valide (ex. exemple@domaine.com).">
                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
               </span>
             </span>
@@ -252,11 +252,10 @@
       if (err) err.textContent = '';
     }
 
-    function isGmail(addr) {
+    function isEmail(addr) {
       const v = (addr || '').trim().toLowerCase();
-      return /^[^\s@]+@gmail\.com$/.test(v);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     }
-
     function notFuture(dateStr) {
       if (!dateStr) return false;
       const d = new Date(dateStr);
@@ -269,7 +268,7 @@
     [
       ['lastName', 'Nom obligatoire (2 caractères min).', v => v.trim().length >= 2],
       ['firstName', 'Prénom obligatoire (2 caractères min).', v => v.trim().length >= 2],
-      ['gmail', 'Veuillez utiliser une adresse @gmail.com valide.', v => isGmail(v)],
+      ['gmail', 'Veuillez utiliser une adresse e-mail valide.', v => isEmail(v)],
       ['birthdate', 'Date invalide (pas de date future).', v => notFuture(v)],
       ['password', '6 caractères minimum.', v => (v || '').length >= 6],
       ['confirmPassword', 'Les mots de passe ne correspondent pas.', v => qs('#password')?.value === v && v.length >= 6],
@@ -296,7 +295,11 @@
 
         if (!last.value.trim() || last.value.trim().length < 2) { ok = setInvalid(last, 'Nom obligatoire (2 caractères min).'); } else { clearInvalid(last); }
         if (!first.value.trim() || first.value.trim().length < 2) { ok = setInvalid(first, 'Prénom obligatoire (2 caractères min).'); } else { clearInvalid(first); }
-        if (!isGmail(mail.value)) { ok = setInvalid(mail, 'Veuillez utiliser une adresse @gmail.com valide.'); } else { clearInvalid(mail); }
+        if (!isEmail(mail.value)) {
+          ok = setInvalid(mail, 'Veuillez utiliser une adresse e-mail valide.');
+        } else {
+          clearInvalid(mail);
+        }
         if (!notFuture(birth.value)) { ok = setInvalid(birth, 'Date invalide (pas de date future).'); } else { clearInvalid(birth); }
         if ((pass.value || '').length < 6) { ok = setInvalid(pass, '6 caractères minimum.'); } else { clearInvalid(pass); }
         if (conf.value !== pass.value || (conf.value || '').length < 6) { ok = setInvalid(conf, 'Les mots de passe ne correspondent pas.'); } else { clearInvalid(conf); }
