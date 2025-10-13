@@ -3007,5 +3007,7 @@
     "tax_residence": "Fiscale woonplaats",
     "please_select_your_tax_residence": "Selecteer uw fiscale woonplaats",
     "select_a_tax_residence": "Selecteer een fiscale woonplaats",
-    "launch_and_monetize": "Lanceren en te gelde maken"
+    "launch_and_monetize": "Lanceren en te gelde maken",
+    "As_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "Aangezien u een particulier bent, wordt de prijs automatisch op 0 gezet."
+
 }

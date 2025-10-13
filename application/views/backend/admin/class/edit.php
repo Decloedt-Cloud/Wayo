@@ -66,7 +66,7 @@
 
             <!-- Message d'avertissement -->
             <small id="price-warning" class="text-danger" <?php if ($type != 'Particulier'): ?>   style="display:none;" <?php endif; ?>>
-                <?php echo get_phrase('As you are a private individual, the price will be automatically set to 0.'); ?>
+                <?php echo get_phrase('As_you_are_a_private_individual_the_price_will_be_automatically_set_to_0'); ?>
             </small>
         </div>
 

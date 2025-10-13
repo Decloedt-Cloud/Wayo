@@ -2770,5 +2770,7 @@
     "veuillez_entrer_la_rue": "يرجى إدخال الشارع",
     "tax_residence": "الإقامة الضريبية",
     "please_select_your_tax_residence": "يرجى اختيار الإقامة الضريبية",
-    "select_a_tax_residence": "اختر الإقامة الضريبية"
+    "select_a_tax_residence": "اختر الإقامة الضريبية",
+    "As_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "بما أنك فرد خاص، سيتم تحديد السعر تلقائيًا إلى 0."
+
 }
