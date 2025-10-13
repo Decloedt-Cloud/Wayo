@@ -2849,7 +2849,7 @@
     "tax_residence": "Résidence fiscale",
     "please_select_your_tax_residence": "Veuillez sélectionner votre résidence fiscale",
     "select_a_tax_residence": "Sélectionnez une résidence fiscale",
-    "As_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "En tant que particulier, le prix sera automatiquement fixé à 0."
+    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "En tant que particulier, le prix sera automatiquement fixé à 0."
 
 
 }
