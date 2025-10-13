@@ -52,13 +52,13 @@
      <!-- Date de début -->
     <div class="form-group mb-1 col-md-12">
         <label for="start_date"><?php echo get_phrase('start_date'); ?></label>
-        <input type="date" class="form-control" id="start_date" name="start_date">
+        <input type="date" class="form-control" id="start_date" name="start_date"  min="<?php echo date('Y-m-d'); ?>">
     </div>
 
     <!-- Date de fin -->
     <div class="form-group mb-1 col-md-12">
         <label for="end_date"><?php echo get_phrase('end_date'); ?></label>
-        <input type="date" class="form-control" id="end_date" name="end_date">
+        <input type="date" class="form-control" id="end_date" name="end_date"  min="<?php echo date('Y-m-d'); ?>">
     </div>
 
     <!-- Classe active/inactive -->
