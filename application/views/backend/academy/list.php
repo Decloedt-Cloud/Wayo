@@ -130,7 +130,7 @@
                                                   <i class="mdi mdi-dots-vertical"></i>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                  <li><a class="dropdown-item" href="<?php echo site_url('addons/lessons/play/'.slugify($course['title']).'/'.$course['id'].'/'.$lessons->row('id')); ?>" target="_blank"><?php echo get_phrase('view_course_on_frontend');?></a></li>
+                                                  <li><a class="dropdown-item" href="<?php echo site_url('addons/lessons/play/'.slugify($course['title']).'/'.$course['id'].'/'.$lessons->row('id')); ?>" target="_blank"><?php echo get_phrase('start_the_course');?></a></li>
                                                   <li><a class="dropdown-item" href="<?php echo site_url('addons/courses/course_edit/'.$course['id']); ?>"><?php echo get_phrase('edit_this_course');?></a></li>
                                                   <!-- <li><a class="dropdown-item" href="<?php //echo site_url('addons/courses/course_edit/'.$course['id']); ?>"><?php //echo get_phrase('lesson_and_quiz');?></a></li> -->
                                                   <li>
