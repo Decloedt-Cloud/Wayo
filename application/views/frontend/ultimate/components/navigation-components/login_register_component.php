@@ -34,7 +34,7 @@
         <label for="forgetEmail" class="login-input-label login-input-label-forget text-uppercase" style="padding-right: 20px !important;"><?php echo get_phrase("Email") ?><span class="required"> * </span></label>
         <input type="text" class="form-control shadow-none information" id="forgotEmail" name="email" required data-msg="<?php echo get_phrase("required") ?>">
       </div>
-      <button type="submit" id="registerSubmit" class="register-button text-uppercase"><?php echo get_phrase("sent_password_reset_link") ?></button>
+      <button type="submit" id="registerSubmit" class="login-button text-uppercase mb-3" style="background-color: #FC7B30;"><?php echo get_phrase("sent_password_reset_link") ?></button>
     </form>
   </div>
 

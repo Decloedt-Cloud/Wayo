@@ -55,7 +55,53 @@ public function get_school_classes($school_id)
 	public function class_create()
     {
         $data['name'] = html_escape($this->input->post('name'));
-        $data['price'] = html_escape($this->input->post('price'));
+		$type = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('type');
+
+		$price = html_escape($this->input->post('price'));;
+
+		if ($type === "Particulier") {
+			$data['price'] = 0;
+		} else {
+			// Vérifie que 'price' est bien numérique et non vide
+			if (empty($price) || !is_numeric($price)) {
+				$data['price'] = 0;
+			} else {
+				$data['price'] = html_escape($price);
+			}
+		}
+        $data['date_debut'] = html_escape($this->input->post('start_date'));
+        $data['date_fin'] = html_escape($this->input->post('end_date'));
+        $data['statut'] = html_escape($this->input->post('status'));
+
+		    // Validate the uploaded file
+			if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+				$allowed_extensions = ['jpeg','gif', 'jpg', 'png'];
+				$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+
+				if (!in_array($file_ext, $allowed_extensions)) {
+					log_message('error', 'Invalid file extension: ' . $file_ext);
+					return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
+				}
+
+				$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+				$upload_path = 'uploads/class/' . $file_name;
+
+				// Check if a file with the same name already exists
+				if (file_exists($upload_path)) {
+					log_message('error', 'Photo already exists: ' . $upload_path);
+					return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
+				}
+
+				if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+					log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
+					return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
+				}
+
+			$data['photo'] = $file_name;
+			}
+
+       
+        $data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
         $data['school_id'] = $this->school_id;
         $this->db->insert('classes', $data);
 
@@ -114,6 +160,39 @@ public function get_school_classes($school_id)
     {
         $data['name'] = html_escape($this->input->post('name'));
         $data['price'] = html_escape($this->input->post('price'));
+		$data['date_debut'] = html_escape($this->input->post('start_date'));
+        $data['date_fin'] = html_escape($this->input->post('end_date'));
+        $data['statut'] = html_escape($this->input->post('status'));
+
+		    // Validate the uploaded file
+		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+			$allowed_extensions = ['jpeg','gif', 'jpg', 'png'];
+			$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+
+			if (!in_array($file_ext, $allowed_extensions)) {
+				log_message('error', 'Invalid file extension: ' . $file_ext);
+				return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
+			}
+
+			$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+			$upload_path = 'uploads/class/' . $file_name;
+
+			// Check if a file with the same name already exists
+			if (file_exists($upload_path)) {
+				log_message('error', 'Photo already exists: ' . $upload_path);
+				return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
+			}
+
+			if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+				log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
+				return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
+			}
+
+		$data['photo'] = $file_name;
+		}
+
+       
+        $data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
         $this->db->where('id', $param1);
         $this->db->update('classes', $data);
 

@@ -271,19 +271,7 @@ class Humhub_sso
         $res = $this->httpRequest('DELETE', HUMHUB_BASE_URL . '/api/v1/user/full/' . intval($id));
         return $res !== null;
     }
-    /**
-     * Upload l'avatar d'un utilisateur HumHub
-     * @param string $guid GUID de l'utilisateur (ex: 'b3d34b9a-...')
-     * @param string $imagePath Chemin absolu vers l'image
-     * @return array|null Réponse API ou null en cas d'erreur
-     */
-    public function uploadUserAvatar($guid, $imagePath)
-    {
-        return $this->httpRequest('POST', HUMHUB_BASE_URL . '/api/v1/user/account/image', [
-            'userGuid' => $guid,
-            'image' => new CURLFile($imagePath, mime_content_type($imagePath), basename($imagePath))
-        ]);
-    }
+    
 
     /**
      * Ajoute un utilisateur HumHub à un groupe existant, en passant son ID numérique.

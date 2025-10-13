@@ -50,7 +50,7 @@
 
                     <div class="form-grid">
                         <div class="form-group ">
-                            <label class="col-form-label" for="name"><?php echo get_phrase('name'); ?><span class="required"> * </span></label>
+                            <label class="col-form-label" for="name"><?php echo get_phrase('Full_name'); ?><span class="required"> * </span></label>
                             <div class="input-wrapper">
                                 <input type="text" id="name" name="name" class="form-control" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'name'); ?>" placeholder="name" required>
                             </div>
@@ -112,13 +112,38 @@
                             <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'phone'); ?>" placeholder="phone" required>
 
                         </div>
+                               
+                        
+                        <div class="form-group ">
+                            <label class="col-form-label" for="Rue"><?php echo get_phrase('Rue'); ?><span class="required"> *</span></label>
+                            <input type="text" class="form-control" id="Street" placeholder="<?php echo get_phrase('Rue'); ?>"  name="Street" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'Rue'); ?>" required>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-form-label" for="phone"><?php echo get_phrase('Numéro'); ?><span class="required"> *</span></label>
+                            <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'Numero'); ?>" name="number" required
+                                        data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        </div>
+                        <div class="form-group ">                 
+                                
+                            <label class="col-form-label" for="Ville"><?php echo get_phrase("Ville") ?><span class="required"> *</span></label>
+                            <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'Ville'); ?>" required
+                                    data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-form-label" for="code_postal"><?php echo get_phrase('code_postal'); ?><span class="required"> *</span></label>
+                            <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'Codepostal'); ?>" required
+                            data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        </div>
                     </div>
 
-
+                    
                     <div class="form-group">
-                        <label class="col-form-label" for="address"><?php echo get_phrase('address'); ?></label>
-                        <textarea class="form-control" id="example-textarea" rows="5" name="address" placeholder="address" required><?php echo $this->user_model->get_user_details($student['user_id'], 'address'); ?></textarea>
+                        <label class="col-form-label" for="VAT number"><?php echo get_phrase('numero_de_tva'); ?></label>
+                        <input type="text" id="VAT_number" name="VAT_number" class="form-control" value="<?php echo $this->user_model->get_user_details($student['user_id'], 'num_vat'); ?>" placeholder="<?php echo get_phrase("VAT_number") ?>" >
+
                     </div>
+
+
 
 
 

@@ -1123,7 +1123,38 @@ class Student extends CI_Controller {
 			log_message('error', "Impossible d’ajouter l’étudiant à l’espace (space_id ou humhub_user_id manquant)");
 		}
     }
-	
+	private function add_student_to_school_community($student_id, $school_id)
+{
+	// 1. Récupérer les infos de l'étudiant
+	$student = $this->user_model->get_student_details_by_id('student', $student_id);
+
+	// 2. Récupérer l’école et son espace HumHub
+	$school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+	if (! $school || empty($school['humhub_space_id'])) {
+		log_message('error', "École #{$school_id} introuvable ou humhub_space_id vide");
+		return;
+	}
+
+	$space_id = $school['humhub_space_id'];
+
+	// 3. Récupérer l’ID HumHub de l’étudiant
+	$humhubUser = $this->humhub_sso->getUserByEmail($student['email']);
+	if (empty($humhubUser['id'])) {
+		log_message('error', "Utilisateur HumHub introuvable pour {$student['email']}");
+		return;
+	}
+
+	$humhub_user_id = $humhubUser['id'];
+
+	// 4. Ajouter l’étudiant à l’espace
+	if (!empty($space_id) && !empty($humhub_user_id)) {
+		$this->humhub_sso->addUserSpace($space_id, $humhub_user_id);
+		log_message('debug', "Étudiant HumHub #{$humhub_user_id} ajouté à l’école (espace) #{$space_id}");
+	} else {
+		log_message('error', "Impossible d’ajouter l’étudiant à l’école (space_id ou humhub_user_id manquant)");
+	}
+}
+
 	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "") {
 		if ($payment_method == 'stripe') {
 			$stripe = json_decode(get_payment_settings('stripe_settings'));
@@ -1156,7 +1187,13 @@ class Student extends CI_Controller {
         // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
         $details = $this->crud_model->get_invoice_by_id($invoice_id);
         $this->add_student_to_class_space($details['student_id'], $details['class_id']);
+			// Récupérer l’école liée à la classe (ou directement via le cours si tu préfères)
+		$class = $this->db->get_where('classes', ['id' => $details['class_id']])->row_array();
+		$school_id = $class['school_id'] ?? null;
 
+		if ($school_id) {
+			$this->add_student_to_school_community($details['student_id'], $school_id);
+		}
     } else {
         log_message('error', "Échec du paiement pour invoice #{$invoice_id} via {$payment_method}");
     }

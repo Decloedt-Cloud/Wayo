@@ -6,7 +6,7 @@
   }
 
   // Fetch the count of students
-  $student_count = $this->db->get_where('enrols', $where)->num_rows();
+  $student_count = $this->db->select('DISTINCT(student_id), school_id, session')->get_where('enrols', $where)->num_rows();
 ?>
 
 
@@ -32,7 +32,7 @@
   </thead>
   <tbody>
     <?php
-    $enrols = $this->db->get_where('enrols', $where)->result_array();
+    $enrols = $this->db->select('DISTINCT(student_id), school_id, session')->get_where('enrols', $where)->result_array();
     foreach($enrols as $enroll){
       $student = $this->db->get_where('students', array('id' => $enroll['student_id']))->row_array();
       ?>
