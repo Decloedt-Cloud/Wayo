@@ -284,8 +284,8 @@ label div:last-child {
 .register-dropdown {
   position: absolute;
   height: 480px !important;
-  width: 480px !important;
-  top: 60px;
+  width: 360px !important;
+  top: 40px;
   right: 0;
   padding-left: 50px;
   padding-right: 20px;
@@ -297,11 +297,11 @@ label div:last-child {
 }
 .forget-dropdown {
   position: absolute;
-  height: 360px !important;
-  width: 320px;
-  top: 60px;
+  height: 380px !important;
+  width: 300px;
+  top: 40px;
   right: 0;
-  padding-left: 50px;
+  padding-left: 20px;
   padding-right: 20px;
   background-color: #dadada91;
   border-radius: 6px;
@@ -368,7 +368,7 @@ label div:last-child {
 }
 
 .register-link {
-  color: #ffffff;
+  color: #000;
   text-decoration: none;
   font-size: 11px !important;
   transition: all 0.3s;
@@ -377,12 +377,13 @@ label div:last-child {
 }
 
 .register-link:hover {
-  color: rgba(210, 210, 210, 0.7);
+  /* color: rgba(210, 210, 210, 0.7); */
+  color: #000;
   transition: all 0.3s;
 }
 
 .forget-link {
-  color: #ffffff;
+  color: #000;
   text-decoration: none;
   font-size: 11px !important;
   transition: all 0.3s;
@@ -391,7 +392,8 @@ label div:last-child {
 }
 
 .forget-link:hover {
-  color: rgba(210, 210, 210, 0.7);
+  /* color: rgba(210, 210, 210, 0.7); */
+  color: #000;
   transition: all 0.3s;
 }
 

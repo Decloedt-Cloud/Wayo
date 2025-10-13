@@ -212,7 +212,7 @@
                     <h3><?php echo get_phrase("Mohamed_Bouhouti") ?></h3>
                     <div class="position"><?php echo get_phrase("CEO_–_Wayo_Academy") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/mohamed-bouhouti/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/mohamed-bouhouti/"target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="https://moscaling.ae/"><i class=" fas fa-link"></i></a>
                       <a href="mailto:contact@exemple.com"><i class="fas fa-envelope"></i></a>
                     </div>
@@ -228,7 +228,7 @@
                     <h3><?php echo get_phrase("Stéphanie_Decloedt") ?></h3>
                     <div class="position"><?php echo get_phrase("Co-founder") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/st%C3%A9phanie-decloedt-040259161/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/st%C3%A9phanie-decloedt-040259161/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Stephanie@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -243,7 +243,7 @@
                     <h3><?php echo get_phrase("Fatine_Bennani") ?></h3>
                     <div class="position"><?php echo get_phrase("Human_Resources") ?></div>   
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/fatine-bennani-21b029144/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/fatine-bennani-21b029144/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:fatine.bennani@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -258,7 +258,7 @@
                     <h3><?php echo get_phrase("Ahmed_Aboulfath") ?></h3>
                     <div class="position"><?php echo get_phrase("Digital_Marketing_Manager") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/ahmed-aboulfath-2156a6162/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/ahmed-aboulfath-2156a6162/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:ahmed.aboulfath@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -274,7 +274,7 @@
                     <h3><?php echo get_phrase("Aymane_Naji") ?></h3>
                     <div class="position"><?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/aymane-naji-743753297/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/aymane-naji-743753297/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:aymane.naji@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -291,7 +291,7 @@
                     <h3><?php echo get_phrase("Zakaria_Sandal") ?></h3>
                     <div class="position"> <?php echo get_phrase("Senior_Programmatic_Analyst") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/ziko-zakaria/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/ziko-zakaria/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:zakaria.sandal@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -307,7 +307,7 @@
                     <h3><?php echo get_phrase("Mehdi El khiat") ?></h3>
                     <div class="position"><?php echo get_phrase("Product Owner") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/mehdi-elkhiat-4138aa15b/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/mehdi-elkhiat-4138aa15b/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Mehdi.elkhiat@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -324,7 +324,7 @@
                     <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>
                     <div class="position"><?php echo get_phrase("Senior Developer") ?></div>   
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/abdelfattah-allam-654b92160/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/abdelfattah-allam-654b92160/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:abdelfattah.allam@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -341,7 +341,7 @@
                     <h3><?php echo get_phrase("Mouhssine_Tchoubi") ?></h3>
                     <div class="position"><?php echo get_phrase("Full-Stack_Web_Developer") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/mouhssine-tchoubi-8a2b02176/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/mouhssine-tchoubi-8a2b02176/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Mouhssine.Tchoubi@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -357,7 +357,7 @@
                     <h3><?php echo get_phrase("Hamza_Bastor") ?></h3>
                     <div class="position"><?php echo get_phrase("Software_Engineer") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/hamza-bastor-5b6215231/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/hamza-bastor-5b6215231/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Hamza.Bastor@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -373,7 +373,7 @@
                     <h3><?php echo get_phrase("Khalil_Abbaoui") ?></h3>
                     <div class="position"><?php echo get_phrase("Software_Engineer") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/khalil-abbaoui-537873268/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/khalil-abbaoui-537873268/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:khalil.abbaoui@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -389,7 +389,7 @@
                     <h3><?php echo get_phrase("Aymen_Maski") ?> </h3>
                     <div class="position"><?php echo get_phrase("AI_Software_Engineer") ?> </div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/free-palestine-%F0%9F%87%B5%F0%9F%87%B8-56488125b/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/free-palestine-%F0%9F%87%B5%F0%9F%87%B8-56488125b/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Maski.Aymen@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -406,7 +406,7 @@
 
                     <div class="position"><?php echo get_phrase("Web Developer") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/ilyas-zmane-0483691bb/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/ilyas-zmane-0483691bb/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Ilyas.Zmane@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
@@ -420,7 +420,7 @@
                     <h3><?php echo get_phrase("Abdelazyz_Fakir") ?></h3>
                     <div class="position"><?php echo get_phrase("Full-Stack_Developer") ?></div>
                     <div class="social-links">
-                      <a href="https://www.linkedin.com/in/fakir-aziz/"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="https://www.linkedin.com/in/fakir-aziz/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Abdelazyz.fakir@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
