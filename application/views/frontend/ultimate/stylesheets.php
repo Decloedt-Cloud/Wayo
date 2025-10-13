@@ -105,4 +105,14 @@ elseif ($page_name == "faq"){
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.css">';
 }
+elseif ($page_name == "terms_conditions"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/terms-conditions.css">';
+    
+}
+elseif ($page_name == "privacy_policy"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/privacy-policy.css">';
+    
+}
 ?>
