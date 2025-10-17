@@ -44,7 +44,7 @@ img { max-width:100%; display:block; }
 /* radio tiles */
 .radio-tile input{display:none}
 .radio-tile{
-  width: 31%;
+  width: 100%;
   margin: 10px;
 }
 @media (max-width: 767px) {

@@ -3290,6 +3290,20 @@ public function get_sections_by_class()
       // Renvoyer la réponse avec un nouveau jeton CSRF
       echo json_encode(array('status' => $response, 'csrf' => $csrf));
     }
+    if ($param1 == 'price') {
+			
+		  $response = $this->settings_model->update_system_price();
+		
+		
+			// Préparer la réponse avec un nouveau jeton CSRF
+			$csrf = array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+				);
+			
+			// Renvoyer la réponse avec un nouveau jeton CSRF
+			echo json_encode(array('status' => $response, 'csrf' => $csrf));
+		}
     if ($param1 == 'paypal') {
       $response = $this->settings_model->update_paypal_settings();
       // echo $response;

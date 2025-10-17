@@ -47,7 +47,13 @@ function updateSystemLogo() {
     ajaxSubmit(e, form, reload);
   });
 }
-
+function updateSystemPrice() {
+  $(".systempriceAjaxForm").validate({});
+  $(".systempriceAjaxForm").submit(function(e) {
+    var form = $(this);
+    ajaxSubmit(e, form, reload);
+  });
+}
 
 function updateSystemVat() {
   $(".systemvatAjaxForm").validate({});

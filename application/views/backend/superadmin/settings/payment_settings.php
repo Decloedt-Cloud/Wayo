@@ -2,52 +2,143 @@
 <?php
   $paypal = json_decode(get_payment_settings('paypal_settings'));
   $stripe = json_decode(get_payment_settings('stripe_settings'));
+  $school_data = $this->settings_model->get_current_school_data();
+  $settings_school = $this->settings_model->get_current_settings_school_data();
 ?>
 <div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
+        <h4 class="header-title"><?php echo get_phrase('Community_pricing') ;?></h4>
+        <form method="POST" class="col-12 systempriceAjaxForm" action="<?php echo route('payment_settings/price') ;?>" id = "price_settings">
+          <!-- Champ caché pour le jeton CSRF -->
+           <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
+            <div class="col-12">
+
+
+              <div class="form-group row mb-3">
+                <label class="col-md-3 col-form-label" for="price"> <?php echo get_phrase('Price'); ?> </label>
+                <div class="col-md-9">
+                  <input <?php if ($settings_school['type'] == 'Particulier'): ?> readonly value="0" <?php endif; ?> type="text" id="price_community" name="price_community" class="form-control"   value="<?php echo $school_data['price']; ?>" placeholder="price"  oninput="checkPriceForParticulier(this)" />
+            <small id="price-warning" class="text-danger" <?php if ($settings_school['type'] != 'Particulier'): ?>   style="display:none;" <?php endif; ?>>
+                <?php echo get_phrase('as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0'); ?>
+            </small>
+                </div>
+              </div>
+
+
+              <div class="row justify-content-md-center">
+                <div class="form-group col-md-4">
+                  <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemPrice()" >
+                    <i class="mdi mdi-account-check"></i> <?php echo get_phrase('update_price'); ?>
+                  </button>
+                </div>
+              </div>
+      </div>
+      </form>
+
+      </div> <!-- end card body-->
+    </div> <!-- end card -->
+  </div>
+
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
+        <h4 class="header-title"><?php echo get_phrase('VAT') ;?></h4>
+        <form method="POST" class="col-12 systemvatAjaxForm," action="<?php echo route('payment_settings/vat') ;?>" id = "vat_settings">
+          <!-- Champ caché pour le jeton CSRF -->
+           <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
+            <div class="col-12">
+              <div class="form-group row mb-3">
+                <label class="col-md-3 col-form-label" for="vat_applicable"> <?php echo get_phrase('VAT_applicable'); ?> </label>
+                <div class="col-md-9">
+                  <?php $result = $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array(); ?>
+                  <select class="form-control" name="vat_applicable" id="vat_applicable">
+                    <option value=""><?php echo get_phrase('select_Vat'); ?></option>
+                    <option value="1"<?php if ($result['vat'] == 1): ?> selected <?php endif; ?>> <?php echo get_phrase('Yes'); ?> </option>
+                    <option value="0"<?php if ($result['vat'] == 0): ?> selected <?php endif; ?>> <?php echo get_phrase('No'); ?> </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row mb-3">
+                <label class="col-md-3 col-form-label" for="vat_rate"> <?php echo get_phrase('VAT_rate'); ?> </label>
+                <div class="col-md-9">
+                  <input type="text" id="vat_rate" name="vat_rate" class="form-control" readonly value="<?php echo $result['vat']; ?>" placeholder="--" />
+                </div>
+              </div>
+
+              <div class="form-group row mb-3">
+                <div class="col-md-12">
+                  <small class="text-muted">
+                    <i class="mdi mdi-information-outline"></i>
+                    <?php echo get_phrase('wayo_is_not_responsible_for_the_choice,_consult_an_accountant_to_define_if_your_entity_is_subject_to_VAT.'); ?>
+                  </small>
+                </div>
+              </div>
+
+              <div class="row justify-content-md-center">
+                <div class="form-group col-md-4">
+                  <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemVat()">
+                    <i class="mdi mdi-account-check"></i> <?php echo get_phrase('update_Vat'); ?>
+                  </button>
+                </div>
+              </div>
+      </div>
+      </form>
+
+      </div> <!-- end card body-->
+    </div> <!-- end card -->
+  </div>
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     <div class="mb-3">
     <div class="main-card">
         <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('system_currency') ;?></h4>
         <form method="POST" class="col-12 systemAjaxForm" action="<?php echo route('payment_settings/system') ;?>" id = "system_settings">
           <!-- Champ caché pour le jeton CSRF -->
-    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+           <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 
-          <div class="col-12">
+            <div class="col-12">
+              <div class="form-group row mb-3">
+                <label class="col-md-3 col-form-label" for="system_currency"> <?php echo get_phrase('system_currency') ;?> <span class="required"> * </span></label>
+                <div class="col-md-9">
+                  <select class="form-control"  id = "system_currency" name="system_currency" required>
+                    <option value=""><?php echo get_phrase('select_system_currency'); ?></option>
+                    <?php
+                    $currencies = $this->settings_model->get_currencies();
+                    
+                    foreach ($currencies as $currency):?>
+                    <option value="<?php echo $currency['code'];?>"
+                      <?php if ($result['system_currency'] == $currency['code'])echo 'selected';?>> <?php echo $currency['code'];?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
+            <input type="hidden" name="tax_residence"  id="tax_residence"  value="<?php echo $result['Tax_residence']; ?>">
             <div class="form-group row mb-3">
-              <label class="col-md-3 col-form-label" for="system_currency"> <?php echo get_phrase('system_currency') ;?> <span class="required"> * </span></label>
+              <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
               <div class="col-md-9">
-                <select class="form-control"  id = "system_currency" name="system_currency" required>
-                  <option value=""><?php echo get_phrase('select_system_currency'); ?></option>
-                  <?php
-                  $currencies = $this->settings_model->get_currencies();
-                  $result = $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
-                  foreach ($currencies as $currency):?>
-                  <option value="<?php echo $currency['code'];?>"
-                    <?php if ($result['system_currency'] == $currency['code'])echo 'selected';?>> <?php echo $currency['code'];?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+              <select class="form-control"  id = "currency_position" name="currency_position" required>
+                  <option value="left" <?php if ($result['currency_position'] == 'left') echo 'selected';?> ><?php echo get_phrase('left'); ?></option>
+                  <option value="right" <?php if ($result['currency_position'] == 'right') echo 'selected';?> ><?php echo get_phrase('right'); ?></option>
+                  <option value="left-space" <?php if ($result['currency_position'] == 'left-space') echo 'selected';?> ><?php echo get_phrase('left_with_a_space'); ?></option>
+                  <option value="right-space" <?php if ($result['currency_position'] == 'right-space') echo 'selected';?> ><?php echo get_phrase('right_with_a_space'); ?></option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
-            <div class="col-md-9">
-            <select class="form-control"  id = "currency_position" name="currency_position" required>
-                <option value="left" <?php if ($result['currency_position'] == 'left') echo 'selected';?> ><?php echo get_phrase('left'); ?></option>
-                <option value="right" <?php if ($result['currency_position'] == 'right') echo 'selected';?> ><?php echo get_phrase('right'); ?></option>
-                <option value="left-space" <?php if ($result['currency_position'] == 'left-space') echo 'selected';?> ><?php echo get_phrase('left_with_a_space'); ?></option>
-                <option value="right-space" <?php if ($result['currency_position'] == 'right-space') echo 'selected';?> ><?php echo get_phrase('right_with_a_space'); ?></option>
-              </select>
-            </div>
-          </div>
 
-          <div class="row justify-content-md-center">
-            <div class="form-group col-md-4">
-              <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemCurrencyInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_system_currency'); ?></button>
+            <div class="row justify-content-md-center">
+              <div class="form-group col-md-4">
+                <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemCurrencyInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_system_currency'); ?></button>
+              </div>
             </div>
-          </div>
-        </div>
+      </div>
       </form>
 
       </div> <!-- end card body-->
@@ -236,7 +327,7 @@ function getCsrfToken() {
 
 
  // Soumission du formulaire de logo
- $(".paypalAjaxForm,.systemAjaxForm,.stripeAjaxForm").submit(function(e) {
+ $(".paypalAjaxForm,.systemAjaxForm,.stripeAjaxForm,systemvatAjaxForm,systempriceAjaxForm").submit(function(e) {
     e.preventDefault();
 
            // Cible uniquement le bouton de ce formulaire
@@ -276,4 +367,54 @@ function getCsrfToken() {
       });
     });
   });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const vatApplicable = document.getElementById('vat_applicable');
+    const vatRate       = document.getElementById('vat_rate');
+    const taxResidence  = document.getElementById('tax_residence');
+
+    // Map of default VAT rates by tax residence (extend as needed)
+    const DEFAULT_VAT_BY_COUNTRY = {
+      'MA': '20%',   // Morocco
+      'UAE': '5%',  // United Arab Emirates
+      // 'SA': '15%',  // Saudi Arabia
+      // 'FR': '20%',
+      // 'BE': '21%',
+      // ...
+    };
+
+    function computeVatRate() {
+      const applicable = String(vatApplicable.value); // '1' or '0' or ''
+      const country    = String((taxResidence?.value || '').toUpperCase());
+
+      if (applicable === '1') {
+        vatRate.value = DEFAULT_VAT_BY_COUNTRY[country] || '--';
+      } else {
+        vatRate.value = '--';
+      }
+    }
+
+    // Initialize on load (in case the server preselected values)
+    computeVatRate();
+
+    // React to changes
+    vatApplicable.addEventListener('change', computeVatRate);
+  });
+
+  function checkPriceForParticulier(input) {
+    const userType = "<?php echo $type; ?>";
+    const price = parseFloat(input.value) || 0;
+    const warning = document.getElementById('price-warning');
+
+    // Autorise uniquement les chiffres et le point
+    input.value = input.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+
+    if (userType === "Particulier" && price > 0) {
+        warning.style.display = 'block';
+    } else {
+        warning.style.display = 'none';
+    }
+}
 </script>

@@ -2786,7 +2786,7 @@
     "please_enter_a_password": "Please enter a password",
     "please_repeat_your_password": "Please repeat your password",
     "i_am": "I am",
-   "entreprise": "Company",
+    "entreprise": "Company",
     "freelancer": "Freelancer",
     "autoentrepreneur": "Self-employed",
     "particulier": "Individual",
@@ -2815,6 +2815,19 @@
     "date_heure": "Date and time",
     "sauvegarder": "Save",
     "votre_inscription_a_été_effectuée_avec_succès.": "Your registration has been successfully completed.",
-    "learner_—_À_la_carte": "Learner — On demand"
-
+    "learner_—_À_la_carte": "Learner — On demand",
+    "community_pricing": "Community pricing",
+    "update_price": "Update price",
+    "please_enter_the_price": "Please enter the price",
+    "identity": "Identity",
+    "please_select_a_category": "Please select a category",
+    "content": "Content",
+    "please_select_a_price_type": "Please select a price type",
+    "one-time": "One-time",
+    "please_enter_a_valid_price": "Please enter a valid price",
+    "as_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_it_is_automatically_set_to_0": "As you are a private individual you are not allowed to set a price it is automatically set to 0",
+    "price_to_pay_790": "Price to pay 790",
+    "you_are_entitled_to_a_14-day_free_trial": "You are entitled to a 14-day free trial",
+    "country_applicable_for_vat": "Country applicable for vat",
+    "vat_rate_applied": "Vat rate applied"
 }

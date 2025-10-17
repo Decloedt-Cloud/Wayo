@@ -2771,6 +2771,20 @@
     "tax_residence": "الإقامة الضريبية",
     "please_select_your_tax_residence": "يرجى اختيار الإقامة الضريبية",
     "select_a_tax_residence": "اختر الإقامة الضريبية",
-    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "بما أنك فرد خاص، سيتم تحديد السعر تلقائيًا إلى 0"
+    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "بما أنك فرد خاص، سيتم تحديد السعر تلقائيًا إلى 0",
+    "community_pricing": "تسعير المجتمع",
+    "update_price": "تحديث السعر",
+    "please_enter_the_price": "يرجى إدخال السعر",
+    "identity": "الهوية",
+    "please_select_a_category": "يرجى اختيار الفئة",
+    "content": "المحتوى",
+    "please_select_a_price_type": "يرجى اختيار نوع السعر",
+    "one-time": "دفع لمرة واحدة",
+    "please_enter_a_valid_price": "يرجى إدخال سعر صالح",
+    "as_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_it_is_automatically_set_to_0": "بصفتك فردًا خاصًا، لا يُسمح لك بتحديد سعر، وسيتم تعيينه تلقائيًا إلى 0.",
+    "price_to_pay_790": "السعر المستحق: 790",
+    "you_are_entitled_to_a_14-day_free_trial": "أنت مؤهل للحصول على تجربة مجانية لمدة 14 يومًا",
+    "country_applicable_for_vat": "البلد الخاضع لضريبة القيمة المضافة",
+    "vat_rate_applied": "نسبة ضريبة القيمة المضافة المطبقة"
 
 }

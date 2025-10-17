@@ -2849,7 +2849,21 @@
     "tax_residence": "Résidence fiscale",
     "please_select_your_tax_residence": "Veuillez sélectionner votre résidence fiscale",
     "select_a_tax_residence": "Sélectionnez une résidence fiscale",
-    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "En tant que particulier, le prix sera automatiquement fixé à 0."
+    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "En tant que particulier, le prix sera automatiquement fixé à 0.",
+    "community_pricing": "Tarification de la communauté",
+    "update_price": "Mettre à jour le prix",
+    "please_enter_the_price": "Veuillez entrer le prix",
+    "identity": "Identité",
+    "please_select_a_category": "Veuillez sélectionner une catégorie",
+    "content": "Contenu",
+    "please_select_a_price_type": "Veuillez sélectionner un type de prix",
+    "one-time": "Paiement unique",
+    "please_enter_a_valid_price": "Veuillez entrer un prix valide",
+    "as_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_it_is_automatically_set_to_0": "En tant que particulier, vous n’êtes pas autorisé à définir un prix. Il est automatiquement fixé à 0.",
+    "price_to_pay_790": "Prix à payer : 790",
+    "you_are_entitled_to_a_14-day_free_trial": "Vous bénéficiez d’un essai gratuit de 14 jours",
+    "country_applicable_for_vat": "Pays applicable à la TVA",
+    "vat_rate_applied": "Taux de TVA appliqué"
 
 
 }

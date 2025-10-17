@@ -3008,6 +3008,21 @@
     "please_select_your_tax_residence": "Selecteer uw fiscale woonplaats",
     "select_a_tax_residence": "Selecteer een fiscale woonplaats",
     "launch_and_monetize": "Lanceren en te gelde maken",
-    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "Aangezien u een particulier bent, wordt de prijs automatisch op 0 gezet."
+    "as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0": "Aangezien u een particulier bent, wordt de prijs automatisch op 0 gezet.",
+    "community_pricing": "Community-prijsstelling",
+    "update_price": "Prijs bijwerken",
+    "please_enter_the_price": "Voer de prijs in",
+    "identity": "Identiteit",
+    "please_select_a_category": "Selecteer een categorie",
+    "content": "Inhoud",
+    "please_select_a_price_type": "Selecteer een prijstype",
+    "one-time": "Eenmalige betaling",
+    "please_enter_a_valid_price": "Voer een geldige prijs in",
+    "as_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_it_is_automatically_set_to_0": "Aangezien u een particulier bent, mag u geen prijs instellen. Deze wordt automatisch op 0 gezet.",
+    "price_to_pay_790": "Te betalen prijs: 790",
+    "you_are_entitled_to_a_14-day_free_trial": "U heeft recht op een gratis proefperiode van 14 dagen",
+    "country_applicable_for_vat": "Land waarop de btw van toepassing is",
+    "vat_rate_applied": "Toegepast btw-tarief"
+
 
 }

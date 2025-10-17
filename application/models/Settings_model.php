@@ -248,6 +248,28 @@ class Settings_model extends CI_Model
     );
     return json_encode($response);
   }
+    public function update_system_price()
+  {
+    
+    $data['price'] = htmlspecialchars($this->input->post('price_community'));
+
+   
+    $user_id =  $this->session->userdata('user_id');
+    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
+          $this->db->where('id', school_id());
+          $this->db->update('schools', $data);
+    }else{
+          $this->db->where('id', 1);
+          $this->db->update('schools', $data);
+
+    }
+
+    $response = array(
+      'status' => true,
+      'notification' => get_phrase('system_settings_updated_successfully')
+    );
+    return json_encode($response);
+  }
   public function update_system_vat()
   {
     

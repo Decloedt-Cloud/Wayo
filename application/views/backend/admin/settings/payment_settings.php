@@ -2,14 +2,53 @@
 <?php
   $paypal = json_decode(get_payment_settings('paypal_settings'));
   $stripe = json_decode(get_payment_settings('stripe_settings'));
+  $school_data = $this->settings_model->get_current_school_data();
+  $settings_school = $this->settings_model->get_current_settings_school_data();
 ?>
 <div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="mb-3">
+    <div class="main-card">
+        <div class="card-body">
+        <h4 class="header-title"><?php echo get_phrase('Community_pricing') ;?></h4>
+        <form method="POST" class="col-12 systempriceAjaxForm" action="<?php echo route('payment_settings/price') ;?>" id = "price_settings">
+          <!-- Champ caché pour le jeton CSRF -->
+           <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+
+            <div class="col-12">
+
+
+              <div class="form-group row mb-3">
+                <label class="col-md-3 col-form-label" for="price"> <?php echo get_phrase('Price'); ?> </label>
+                <div class="col-md-9">
+                  <input <?php if ($settings_school['type'] == 'Particulier'): ?> readonly value="0" <?php endif; ?> type="text" id="price_community" name="price_community" class="form-control"   value="<?php echo $school_data['price']; ?>" placeholder="price"  oninput="checkPriceForParticulier(this)" />
+            <small id="price-warning" class="text-danger" <?php if ($settings_school['type'] != 'Particulier'): ?>   style="display:none;" <?php endif; ?>>
+                <?php echo get_phrase('as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0'); ?>
+            </small>
+                </div>
+              </div>
+
+
+              <div class="row justify-content-md-center">
+                <div class="form-group col-md-4">
+                  <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemPrice()" >
+                    <i class="mdi mdi-account-check"></i> <?php echo get_phrase('update_price'); ?>
+                  </button>
+                </div>
+              </div>
+      </div>
+      </form>
+
+      </div> <!-- end card body-->
+    </div> <!-- end card -->
+  </div>
+
   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     <div class="mb-3">
     <div class="main-card">
         <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('VAT') ;?></h4>
-        <form method="POST" class="col-12 systemvatAjaxForm" action="<?php echo route('payment_settings/vat') ;?>" id = "vat_settings">
+        <form method="POST" class="col-12 systemvatAjaxForm," action="<?php echo route('payment_settings/vat') ;?>" id = "vat_settings">
           <!-- Champ caché pour le jeton CSRF -->
            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 
@@ -288,7 +327,7 @@ function getCsrfToken() {
 
 
  // Soumission du formulaire de logo
- $(".paypalAjaxForm,.systemAjaxForm,.stripeAjaxForm,systemvatAjaxForm").submit(function(e) {
+ $(".paypalAjaxForm,.systemAjaxForm,.stripeAjaxForm,systemvatAjaxForm,systempriceAjaxForm").submit(function(e) {
     e.preventDefault();
 
            // Cible uniquement le bouton de ce formulaire
@@ -340,7 +379,7 @@ function getCsrfToken() {
     const DEFAULT_VAT_BY_COUNTRY = {
       'MA': '20%',   // Morocco
       'UAE': '5%',  // United Arab Emirates
-      'SA': '15%',  // Saudi Arabia
+      // 'SA': '15%',  // Saudi Arabia
       // 'FR': '20%',
       // 'BE': '21%',
       // ...
@@ -363,4 +402,19 @@ function getCsrfToken() {
     // React to changes
     vatApplicable.addEventListener('change', computeVatRate);
   });
+
+  function checkPriceForParticulier(input) {
+    const userType = "<?php echo $type; ?>";
+    const price = parseFloat(input.value) || 0;
+    const warning = document.getElementById('price-warning');
+
+    // Autorise uniquement les chiffres et le point
+    input.value = input.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+
+    if (userType === "Particulier" && price > 0) {
+        warning.style.display = 'block';
+    } else {
+        warning.style.display = 'none';
+    }
+}
 </script>

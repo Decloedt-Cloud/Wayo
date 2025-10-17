@@ -737,7 +737,8 @@ class Frontend_model extends CI_Model
         'status' => 0, // School pending approval
         'description' => htmlspecialchars($this->input->post('school_description')),
         'access' => $access,
-        'category' => htmlspecialchars($this->input->post('category'))
+        'category' => htmlspecialchars($this->input->post('category')),
+        'price' => htmlspecialchars($this->input->post('price'))
     ];
 
     // Insert school
@@ -766,7 +767,7 @@ class Frontend_model extends CI_Model
     // Insert school settings
     $settings_school = [
         'school_id' => $school_id,
-        'system_currency' => 'USD',
+        'system_currency' => htmlspecialchars($this->input->post('currency')),
         'currency_position' => 'left',
         'language' => 'english',
         'Tax_residence' => htmlspecialchars($this->input->post('Tax_residence')),

@@ -1,0 +1,2 @@
+ALTER TABLE schools
+ADD COLUMN  price INT(11) NOT NULL ;
