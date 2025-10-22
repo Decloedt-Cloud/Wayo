@@ -42,7 +42,7 @@ $system_name = get_frontend_settings('website_title');
             </a>
           </li>
            <li class="nav-item nav-item-courses">
-            <a class="nav-link <?php if ($page_name === 'courses') echo 'active'; ?>" href="<?php echo site_url('admission/online_admission'); ?>">
+            <a class="nav-link <?php if ($page_name === 'online_admission') echo 'active'; ?>" href="<?php echo site_url('admission/online_admission'); ?>">
               <?php echo get_phrase('Create Community'); ?>
             </a>
           </li>
