@@ -132,31 +132,6 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
     }
  
 }
-@media (max-width: 767px) {
-    .leftside-menu {
-        min-width: 280px;
-    max-width: 280px;
-    background: #fff; /* Ajustez selon votre thème */
-    z-index: 1000; /* Assurez-vous que le sidebar est au-dessus du contenu */
-    transition: transform 0.3s ease-in-out;
-        display: none !important;
-    }
- 
-    .leftside-menu.show-sidebar {
-        display: block !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        z-index: 999;
-        transform: translateX(0);
-    }
-    .content-page, .container-fluid {
-        width: 100% !important;
-        margin-left: 0 !important;
-    }
- 
-}
 </style>
 <!-- ========== Left Sidebar Start ========== -->
 <div class="leftside-menu leftside-menu-detached" style="min-width: 280px; max-width: 280px;">

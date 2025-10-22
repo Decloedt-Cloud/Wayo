@@ -187,13 +187,18 @@
             }
         });
     }
+    document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.getElementById('hamburger');
 
-    hamburger.addEventListener('click', function() {
-        this.classList.toggle('open');
-        // ici tu peux ajouter l'ouverture/fermeture de ton menu
-        // exemple : document.querySelector('.menu').classList.toggle('show');
-    });
+     const sidebar = document.querySelector('.leftside-menu');
+
+    if (hamburger && sidebar) {
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('open');
+            sidebar.classList.toggle('show-sidebar');
+        });
+    }
+});
 
     
 </script>
