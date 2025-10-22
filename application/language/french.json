@@ -2876,5 +2876,7 @@
     "event_successfully_updated": "Événement mis à jour avec succès",
     "event_successfully_deleted": "Événement supprimé avec succès",
     "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_dashboard._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Cet onglet vous permet de publier une annonce qui apparaîtra sur le tableau de bord de la plateforme. Si vous avez des informations, un événement ou des nouvelles à partager, n'hésitez pas à les poster ici !",
-    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Cet onglet vous permet de publier une annonce qui apparaîtra sur le site vitrine de la plateforme. Si vous avez des informations, un événement ou des nouvelles à partager, n'hésitez pas à les poster ici !"
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Cet onglet vous permet de publier une annonce qui apparaîtra sur le site vitrine de la plateforme. Si vous avez des informations, un événement ou des nouvelles à partager, n'hésitez pas à les poster ici !",
+    "loading...": "Chargement...",
+    "all_categorie": "Toutes les catégories"
 }

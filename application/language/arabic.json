@@ -2800,5 +2800,7 @@
     "event_successfully_deleted": "تم حذف الحدث بنجاح",
     "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_dashboard._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "تتيح لك هذه علامة التبويب نشر إعلان سيظهر على لوحة معلومات المنصة. إذا كان لديك أي معلومات أو حدث أو أخبار تريد مشاركتها، فلا تتردد في نشرها هنا!",
     "contenu_complet": "المحتوى الكامل",
-    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "تتيح لك هذه علامة التبويب نشر إعلان سيظهر على موقع عرض المنصة. إذا كان لديك أي معلومات أو حدث أو أخبار تريد مشاركتها، فلا تتردد في نشرها هنا!"
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "تتيح لك هذه علامة التبويب نشر إعلان سيظهر على موقع عرض المنصة. إذا كان لديك أي معلومات أو حدث أو أخبار تريد مشاركتها، فلا تتردد في نشرها هنا!",
+    "loading...": "...جارٍ التحميل",
+    "all_categorie": "جميع الفئات"
 }

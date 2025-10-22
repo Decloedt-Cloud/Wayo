@@ -7,7 +7,19 @@
         <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Dynamic communities + Quality classes = Learning that takes off!") ?></p>
       </div>
     </section>
-    <form class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
+      <!-- ===== CTA ===== -->
+  <section class="py-4 bg-light">
+    <div class="container">
+      <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
+        <div class="me-md-3">
+          <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket me-2"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
+          <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
+        </div>
+        <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
+      </div>
+    </div>
+  </section>
+    <form id="searchForm" class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
     <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
     <section class="py-4 bg-light border-top">
       <div class="container">
@@ -19,7 +31,8 @@
                   type="search" 
                   name="search"
                   class="form-control border-0 bg-transparent ps-3" 
-                  placeholder="<?php echo get_phrase('Search'); ?>">
+                  placeholder="<?php echo get_phrase('Search'); ?>"
+                  value="<?php if ($input_search) echo ($input_search); ?>">
             <button type="submit" class="btn-search">
               <i class="fa-solid fa-magnifying-glass"></i>
             </button>
@@ -31,23 +44,14 @@
               <span class="ps-3 d-inline-flex align-items-center text-muted">
                 <i class="fa-solid fa-filter"></i>
               </span>
-              <select name="categories" id="categories" 
-                      class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark"
-                      onchange="location = this.value;">
-                
-                <!-- Option pour "All" -->
-                <option value="<?php echo base_url('home/communities/'); ?>" 
-                  <?php echo empty($selected_category) ? 'selected' : ''; ?>>
-                  <?php echo get_phrase('All categories'); ?>
-                </option>
-
-                <!-- Boucle dynamique sur les catégories -->
+                 <select name="categories" id="catSelect"
+                      class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark">
+                <option value="<?php echo base_url('home/communities/'); ?>"><?php echo get_phrase('All_categorie'); ?></option>
                 <?php foreach ($categories as $category): ?>
                   <?php 
                     $cat_formated = $this->frontend_model->get_category_formated($category['name']); 
                   ?>
-                  <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>" 
-                    <?php echo ($selected_category == $category['name']) ? 'selected' : ''; ?>>
+                  <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>">
                     <?php echo $category['name']; ?>
                   </option>
                 <?php endforeach; ?>
@@ -71,128 +75,19 @@
     </section>
     </form>
 
-  <!-- ===== CTA ===== -->
-  <section class="py-4 bg-light">
-    <div class="container">
-      <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
-        <div class="me-md-3">
-          <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket me-2"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
-          <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
-        </div>
-        <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
-      </div>
-    </div>
-  </section>
+
 
   <!-- ===== GRID DES COMMUNAUTÉS (20 cartes) ===== -->
   <section class="py-5 section-communities">
-  <div class="container mt-5">
-    <div id="cardsGrid" class="row g-4">
-
-      <?php 
-      // Vérifier si des écoles existent
-      $schools_array = [];
-
-      if (!empty($schools)) {
-          if (is_object($schools) && method_exists($schools, 'result_array')) {
-              $schools_array = $schools->result_array();
-          } elseif (is_array($schools)) {
-              $schools_array = $schools;
-          }
-      }
-
-      if (empty($schools_array)): ?>
-        <p class="text-center text-muted"><?php echo $no_courses_found ?? get_phrase('0_communities_found'); ?></p>
-      <?php else: ?>
-        <?php foreach ($schools_array as $c): ?>
-     
-          <!-- Carte cours dynamique -->
-          <div class="col-12 col-sm-6 col-lg-4 col-xxl-3 course" 
-              data-cat="<?php echo strtolower($c['category']); ?>" 
-              data-lang="<?php echo $c['language'] ?? 'fr'; ?>">
-
-            <div class="card h-100 shadow-sm border-0 rounded-3">
-
-              <!-- Image -->
-              <img class="card-img-top card-img-custom ratio ratio-16x9 object-fit-cover" 
-                  src="<?php echo $this->user_model->get_school_cover($c['id']); ?>" 
-                  alt="<?php echo $c['name']; ?>" >
-
-              <div class="card-body d-flex flex-column <?php echo ($c['language'] ?? '') == 'ar' ? 'text-end' : ''; ?>" 
-                  <?php echo ($c['language'] ?? '') == 'ar' ? 'dir="rtl"' : ''; ?>>
-
-                <!-- Titre -->
-                <h3 class="h6 fw-bold text-uppercase"><?php echo $c['name']; ?></h3>
-
-                <!-- Description -->
-                <p class="small text-secondary mb-3 card-description"><?php echo $c['description']; ?></p>
-
-                <!-- Infos cours -->
-                <ul class="list-inline small text-secondary mb-3">
-                  <li class="list-inline-item me-3">
-                    <i class="fa-solid fa-users me-1 text-wayo"></i>
-                   
-                  <?php 
-                  // Compte filtré par status = 1
-                $student_count = $this->db->get_where('students', array(
-                      'school_id' => $c['id'],
-                      'status'    => 1
-                  ))->num_rows();
-                  echo $student_count;
-                    ?>
-                  </li>
-                  <li class="list-inline-item me-3">
-                    <i class="fa-solid fa-chalkboard-user me-1 text-wayo"></i>
-                    <?php 
-                  // Compte filtré par status = 1
-                $classes_count = $this->db->get_where('classes', array(
-                      'school_id' => $c['id'],
-                  ))->num_rows();
-                  echo $classes_count;
-                    ?>
-                    
-                    classes
-                  </li>
-                  <li class="list-inline-item">
-                    <?php if (($c['access'] ?? 0) == 1): ?>
-                      <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Private'); ?></span>
-                    <?php else: ?>
-                       <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Free access'); ?></span>
-                    <?php endif; ?>
-                  </li>
-                </ul>
-
-                <!-- Lien détails -->
-                <a class="btn btn-outline-wayo mt-auto" 
-                  href="<?php echo base_url('home/community_details/' . $c['id']); ?>">
-                  <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?>
-                </a>
-              </div>
-            </div>
-          </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
+   <div class="container mt-5" id="communitiesContainer">
+      <?php include 'partials/communities_grid.php'; ?>
 
     </div>
 
-    <!-- Pagination -->
-    <div class="row justify-content-center mt-4">
-      <div class="col-auto">
-        <?php echo $links ?? ''; ?>
-      </div>
-    </div>
-    
-  </div>
-</section>
+  </section>
 
 
 
-  <!-- Scroll to top -->
-  <button id="scrollTopBtn" class="btn btn-wayo btn-lg rounded-circle shadow position-fixed" aria-label="Retour haut">
-    <i class="fa-solid fa-arrow-up"></i>
-  </button>
-</main>
- <!-- Scripts -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
   const search   = document.getElementById("searchInputs");
@@ -200,11 +95,9 @@
   const langBtns = document.querySelectorAll("#langFilter .lang-pill");
   const cards    = document.querySelectorAll(".course");
   const topBtn   = document.getElementById("scrollTopBtn");
-
   let currentCat = "all";
   let currentLang = "all";
   let query = "";
-
   function refresh(){
     cards.forEach(card => {
       const okCat  = (currentCat === "all" || card.dataset.cat === currentCat);
@@ -213,19 +106,16 @@
       card.style.display = (okCat && okLang && okTxt) ? "" : "none";
     });
   }
-
   // Search
   search.addEventListener("input", () => {
     query = search.value.trim().toLowerCase();
     refresh();
   });
-
   // Category
   catSel.addEventListener("change", () => {
     currentCat = catSel.value;
     refresh();
   });
-
   // Language pills
   langBtns.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -235,14 +125,78 @@
       refresh();
     });
   });
-
   // Scroll-to-top show/hide
   window.addEventListener("scroll", () => {
     topBtn.style.display = window.scrollY > 600 ? "inline-flex" : "none";
   });
-
   // Smooth scroll top
   topBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 });
   </script>
+   <!-- //ajax form recherche -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("searchForm");
+      const searchInput = document.getElementById("searchInput");
+      const searchButton = form.querySelector("button[type='submit']");
+      const catSelect = document.getElementById("catSelect");
+      const cardsGrid = document.getElementById("cardsGrid");
+      const pagination = document.getElementById("pagination");
+
+      // --- Recherche au clic ---
+      searchButton.addEventListener("click", e => {
+        e.preventDefault();
+        sendAjax();
+      });
+
+      // --- Filtrage par catégorie ---
+      catSelect.addEventListener("change", e => {
+        e.preventDefault();
+        sendAjax(catSelect.value);
+      });
+
+      function sendAjax(pageUrl = null) {
+        const searchValue = searchInput.value.trim();
+        let url = pageUrl || "<?php echo site_url('home/communities_search'); ?>";
+
+        // Ajouter le paramètre search si présent
+        if (searchValue) {
+          const sep = url.includes("?") ? "&" : "?";
+          url += sep + "search=" + encodeURIComponent(searchValue);
+        }
+
+        cardsGrid.innerHTML = `
+          <div class="alert alert-primary text-center" role="alert">
+            <?php echo get_phrase("Loading...") ?>
+          </div>
+        `;
+
+        fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            cardsGrid.innerHTML = doc.querySelector("#cardsGrid")?.innerHTML || "<p class='text-center text-muted py-5'>Aucun résultat trouvé.</p>";
+            pagination.innerHTML = doc.querySelector("#pagination")?.innerHTML || "";
+            attachPaginationEvents();
+          })
+          .catch(err => {
+            console.error("Erreur AJAX :", err);
+            cardsGrid.innerHTML = `<p class="text-center text-danger py-5">Erreur de chargement.</p>`;
+          });
+      }
+
+       function attachPaginationEvents() {
+        pagination.querySelectorAll("a").forEach(a => {
+          a.addEventListener("click", e => {
+            e.preventDefault();
+            sendAjax(a.href);
+          });
+        });
+      }
+      attachPaginationEvents();
+    });
+    </script>
+
+
 
