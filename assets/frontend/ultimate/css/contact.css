@@ -8,7 +8,7 @@
 
 *{box-sizing:border-box}
 body{font-family:var(--ff);color:var(--clr-gray);background:#fff;line-height:1.6}
-img{max-width:100%;display:block}
+img{max-width:100%;}
 
 /* ====== Bootstrap overrides (brand color) ====== */
 

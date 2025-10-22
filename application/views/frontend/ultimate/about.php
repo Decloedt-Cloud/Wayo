@@ -21,7 +21,7 @@
           font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
         }
     img{
-         max-width:100%; height:auto; display:block; 
+         max-width:100%; height:auto;
         }
 
     /* Hero */
