@@ -2878,5 +2878,15 @@
     "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_dashboard._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Cet onglet vous permet de publier une annonce qui apparaîtra sur le tableau de bord de la plateforme. Si vous avez des informations, un événement ou des nouvelles à partager, n'hésitez pas à les poster ici !",
     "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Cet onglet vous permet de publier une annonce qui apparaîtra sur le site vitrine de la plateforme. Si vous avez des informations, un événement ou des nouvelles à partager, n'hésitez pas à les poster ici !",
     "loading...": "Chargement...",
-    "all_categorie": "Toutes les catégories"
+    "all_categorie": "Toutes les catégories",
+    "community_profile_logo": "Logo de profil de la communauté",
+    "upload_a_square_image_(512×512_recommended),_png_or_jpeg,_max_size_2_mb": "Téléchargez une image carrée (512×512 recommandé), PNG ou JPEG, poids max 2 MB",
+    "community_cover_image": "Image de couverture de la communauté",
+    "upload_an_image_(1920×600_recommended),_png_or_jpeg,_max_size_2_mb": "Téléchargez une image (1920×600 recommandé), PNG ou JPEG, poids max 2 MB",
+    "the_file_is_too_large!_maximum": "Le fichier est trop lourd ! Maximum",
+    "allowed": "Autorisé",
+    "the_logo_is_too_large!_maximum": "Le logo est trop grand ! Maximum",
+    "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "Impossible de charger cette image. Vérifiez le format (PNG/JPEG)..",
+    "cover_image_is_too_large!_maximum": "L'image de couverture est trop grande ! Maximum",
+    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Impossible de charger cette image. Veuillez vérifier le format (PNG/JPEG)."
 }
