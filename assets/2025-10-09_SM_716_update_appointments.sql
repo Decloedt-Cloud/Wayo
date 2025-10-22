@@ -1,0 +1,1 @@
+ALTER TABLE appointments DROP COLUMN classe_id, DROP COLUMN sections_id;

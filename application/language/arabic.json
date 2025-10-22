@@ -2785,6 +2785,18 @@
     "price_to_pay_790": "السعر المستحق: 790",
     "you_are_entitled_to_a_14-day_free_trial": "أنت مؤهل للحصول على تجربة مجانية لمدة 14 يومًا",
     "country_applicable_for_vat": "البلد الخاضع لضريبة القيمة المضافة",
-    "vat_rate_applied": "نسبة ضريبة القيمة المضافة المطبقة"
+    "vat_rate_applied": "نسبة ضريبة القيمة المضافة المطبقة",
+    "invite_attendees": "دعوة المشاركين",
+    "created_by": "تم الإنشاء بواسطة",
+    "search_classes_or_users": "البحث عن الفصول أو المستخدمين",
+    "meeting_not_started": "الاجتماع لم يبدأ",
+    "write_something_to_search...": "اكتب شيئًا للبحث...",
+    "superadmin": "مدير متميز",
+    "no_results_found": "لم يتم العثور على نتائج",
+    "checking_meeting...": "التحقق من الاجتماع...",
+    "meeting_expired": "انتهت صلاحية الاجتماع",
+    "event_created_successfully": "تم إنشاء الحدث بنجاح",
+    "event_successfully_updated": "تم تحديث الحدث بنجاح",
+    "event_successfully_deleted": "تم حذف الحدث بنجاح"
 
 }

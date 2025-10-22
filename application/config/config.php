@@ -555,12 +555,19 @@ $config['csrf_exclude_uris'] = array(
     'student/get_classes_with_events',
 
     'student/filter_recordings',
-     'login/set_student_just_registered',
+    'login/set_student_just_registered',
     'home/set_guest_language/.*',
     'bigbluebutton/webhook',
     'bigbluebutton/meeting_states',
     'profile/update_profile',
-    'home/contact/send'
+    'home/contact/send',
+    'superadmin/delete_event',
+    'admin/delete_event',
+    'teacher/delete_event',
+    'superadmin/get_users_by_school',
+    'admin/get_users_by_school',
+    'teacher/get_users_by_school',
+    'student/get_school_data'
 
 );
  
