@@ -2212,7 +2212,7 @@
     "contenu_complet": "Full content",
     "people": "Members",
     "membre": "Membre",
-    "start_with_your_profile,_then_create_your_community,_set_the_price,_and_publish.": "Start with your profile, then create your community, set the price, and publish.",
+    "start_with_your_profile,then_create_your_community,_set_the_price,_and_publish.": "Start with your profile,then create your community, set the price, and publish.",
     "digital_marketing_2025": "Digital marketing 2025",
     "the_no._1_community_to_learn,_practice,_and_network!": "The no. 1 community to learn, practice, and network!",
     "mentors": "Mentors",
@@ -2840,5 +2840,7 @@
     "meeting_expired": "Meeting expired",
     "event_created_successfully": "Event created successfully",
     "event_successfully_updated": "Event successfully updated",
-    "event_successfully_deleted": "Event successfully deleted"
+    "event_successfully_deleted": "Event successfully deleted",
+    "loading...": "Loading...",
+    "all_categorie": "All categorie"
 }

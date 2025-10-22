@@ -2837,7 +2837,7 @@
     "email:": "E-Mail:",
     "address:": "Adresse:",
     "[to_be_completed,_morocco]": "[auszufüllen, Marokko]",
-      "terms_and_conditions_–_wayo_academy": "Allgemeine Geschäftsbedingungen – Wayo Academy",
+    "terms_and_conditions_–_wayo_academy": "Allgemeine Geschäftsbedingungen – Wayo Academy",
     "4._content_protection_and_use": "4. Schutz und Nutzung von Inhalten",
     "6._technical_support_and_maintenance": "6. Technischer Support und Wartung",
     "13._amendments_to_the_terms": "13. Änderungen der Bedingungen",
@@ -3034,5 +3034,7 @@
     "meeting_expired": "Vergadering verlopen",
     "event_created_successfully": "Evenement succesvol aangemaakt",
     "event_successfully_updated": "Evenement succesvol bijgewerkt",
-    "event_successfully_deleted": "Evenement succesvol verwijderd"
+    "event_successfully_deleted": "Evenement succesvol verwijderd",
+    "all_categorie": "Alle Kategorien",
+    "loading...": "Wird geladen..."
 }

@@ -2721,8 +2721,8 @@
     "web_developer": "مطور ويب",
     "abdelfattah_allam": "عبد الفتاح علام",
     "senior_developer": "مطور أول",
-    "this_tab_allows_you_to_publish_an_announcement":"يتيح لك هذا القسم نشر  إعلان يظهر على لوحة التحكم. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
-    "this_tab_allows_you_to_publish_an_announcement_showcase_website":"يتيح لك هذا القسم نشر  إعلان يظهر في الموقع التعريفي للمنصّة. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
+    "this_tab_allows_you_to_publish_an_announcement": "يتيح لك هذا القسم نشر  إعلان يظهر على لوحة التحكم. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website": "يتيح لك هذا القسم نشر  إعلان يظهر في الموقع التعريفي للمنصّة. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
     "announcements": "الإعلانات",
     "price_including_vat": "السعر شامل الضريبة",
     "start_date": "تاريخ البدء",
@@ -2797,6 +2797,7 @@
     "meeting_expired": "انتهت صلاحية الاجتماع",
     "event_created_successfully": "تم إنشاء الحدث بنجاح",
     "event_successfully_updated": "تم تحديث الحدث بنجاح",
-    "event_successfully_deleted": "تم حذف الحدث بنجاح"
-
+    "event_successfully_deleted": "تم حذف الحدث بنجاح",
+    "loading...": "...جارٍ التحميل",
+    "all_categorie": "جميع الفئات"
 }
