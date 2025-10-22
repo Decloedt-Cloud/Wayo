@@ -1,5 +1,5 @@
 <!-- ====== HERO compact ====== -->
-<section class="pp-hero pt-5">
+<section class="pp-hero pt-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container pp-hero-inner">
     <div class="pp-hero-text">
       <h1><?php echo get_phrase("Privacy_Policy") ?></h1>
@@ -17,7 +17,7 @@
 </section>
 
 <!-- ====== Breadcrumb ====== -->
-<nav class="pp-breadcrumb" aria-label="Breadcrumb">
+<nav class="pp-breadcrumb" aria-label="Breadcrumb" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <a href="/"><?php echo get_phrase("Home"); ?></a>
     <span aria-hidden="true">›</span>
@@ -26,7 +26,7 @@
 </nav>
 
 <!-- ====== LAYOUT ====== -->
-<main class="pp-layout container">
+<main class="pp-layout container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <!-- TOC sticky -->
   <aside class="pp-toc" aria-label="<?php echo get_phrase("Table_of_contents"); ?>">
     <div class="pp-toc-card">
