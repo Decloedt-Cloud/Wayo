@@ -2841,5 +2841,7 @@
     "event_successfully_updated": "Evento actualizado con éxito",
     "event_successfully_deleted": "Evento eliminado con éxito",
     "loading...": "Cargando...",
-    "all_categorie": "Todas las categorías"
+    "all_categorie": "Todas las categorías",
+    "admisión_en_línea": "Admisión en línea",
+    "(youtube/vimeo_ou_téléversement) ": "(youtube/vimeo ou téléversement) "
 }
