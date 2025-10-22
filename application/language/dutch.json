@@ -3022,7 +3022,17 @@
     "price_to_pay_790": "Te betalen prijs: 790",
     "you_are_entitled_to_a_14-day_free_trial": "U heeft recht op een gratis proefperiode van 14 dagen",
     "country_applicable_for_vat": "Land waarop de btw van toepassing is",
-    "vat_rate_applied": "Toegepast btw-tarief"
-
-
+    "vat_rate_applied": "Toegepast btw-tarief",
+    "invite_attendees": "Deelnemers uitnodigen",
+    "created_by": "Gemaakt door",
+    "search_classes_or_users": "Zoek naar klassen of gebruikers",
+    "meeting_not_started": "Vergadering niet gestart",
+    "write_something_to_search...": "Schrijf iets om te zoeken...",
+    "superadmin": "Superbeheerder",
+    "no_results_found": "Geen resultaten gevonden",
+    "checking_meeting...": "Vergadering controleren...",
+    "meeting_expired": "Vergadering verlopen",
+    "event_created_successfully": "Evenement succesvol aangemaakt",
+    "event_successfully_updated": "Evenement succesvol bijgewerkt",
+    "event_successfully_deleted": "Evenement succesvol verwijderd"
 }

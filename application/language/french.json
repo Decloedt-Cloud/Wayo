@@ -2863,7 +2863,16 @@
     "price_to_pay_790": "Prix à payer : 790",
     "you_are_entitled_to_a_14-day_free_trial": "Vous bénéficiez d’un essai gratuit de 14 jours",
     "country_applicable_for_vat": "Pays applicable à la TVA",
-    "vat_rate_applied": "Taux de TVA appliqué"
-
-
+    "vat_rate_applied": "Taux de TVA appliqué",
+    "invite_attendees": "Inviter des participants",
+    "created_by": "Créé par",
+    "search_classes_or_users": "Rechercher des classes ou des utilisateurs",
+    "write_something_to_search...": "Écrivez quelque chose à rechercher...",
+    "superadmin": "Superadmin",
+    "no_results_found": "Aucun résultat trouvé",
+    "checking_meeting...": "Vérification de la réunion...",
+    "meeting_expired": "Réunion expirée",
+    "event_created_successfully": "Événement créé avec succès",
+    "event_successfully_updated": "Événement mis à jour avec succès",
+    "event_successfully_deleted": "Événement supprimé avec succès"
 }

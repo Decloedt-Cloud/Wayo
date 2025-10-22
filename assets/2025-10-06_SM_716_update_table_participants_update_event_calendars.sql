@@ -1,0 +1,23 @@
+ALTER TABLE participants
+DROP FOREIGN KEY participants_ibfk_1,
+DROP FOREIGN KEY participants_ibfk_2;
+
+ALTER TABLE participants
+DROP COLUMN meeting_id,
+DROP COLUMN user_id,
+DROP COLUMN username,
+DROP COLUMN role,
+ADD event_id INT(11) NOT NULL,
+ADD guest INT(10) UNSIGNED NOT NULL,
+ADD type ENUM('class', 'individual') NOT NULL,
+ADD updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+MODIFY COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER type,
+ALGORITHM=INPLACE;
+
+ALTER TABLE participants
+ADD CONSTRAINT fk_participants_event_id
+FOREIGN KEY (event_id) REFERENCES event_calendars(id);
+
+ALTER TABLE event_calendars
+DROP COLUMN class_id;
+ADD created_by INT(11) UNSIGNED NOT NULL;

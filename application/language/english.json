@@ -2829,5 +2829,16 @@
     "price_to_pay_790": "Price to pay 790",
     "you_are_entitled_to_a_14-day_free_trial": "You are entitled to a 14-day free trial",
     "country_applicable_for_vat": "Country applicable for vat",
-    "vat_rate_applied": "Vat rate applied"
+    "vat_rate_applied": "Vat rate applied",
+    "invite_attendees": "Invite attendees",
+    "created_by": "Created by",
+    "search_classes_or_users": "Search classes or users",
+    "write_something_to_search...": "Write something to search...",
+    "superadmin": "Superadmin",
+    "no_results_found": "No results found",
+    "checking_meeting...": "Checking meeting...",
+    "meeting_expired": "Meeting expired",
+    "event_created_successfully": "Event created successfully",
+    "event_successfully_updated": "Event successfully updated",
+    "event_successfully_deleted": "Event successfully deleted"
 }
