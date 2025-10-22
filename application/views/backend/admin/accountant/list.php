@@ -8,7 +8,7 @@ if($check_data->num_rows() > 0):?>
         <tr>
 			<th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('name'); ?></th>
 			<th><i class="mdi mdi-email-outline thead-icon"></i><?php echo get_phrase('email'); ?></th>
-			<th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
+			<th><?php echo get_phrase('options'); ?></th>
 		</tr>
 	</thead>
 	<tbody>

@@ -2841,6 +2841,8 @@
     "event_created_successfully": "Event created successfully",
     "event_successfully_updated": "Event successfully updated",
     "event_successfully_deleted": "Event successfully deleted",
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "This tab allows you to publish an announcement that will appear on the platform’s showcase website. if you have any information, event, or news to share, feel free to post it here!",
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_dashboard._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "This tab allows you to publish an announcement that will appear on the platform’s dashboard. if you have any information, event, or news to share, feel free to post it here!",
     "loading...": "Loading...",
     "all_categorie": "All categorie"
 }

@@ -8,7 +8,7 @@ if (isset($class_id) ):
             <tr>
                 <th><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('title'); ?></th>
                 <th><i class="mdi mdi-book-open-page-variant-outline thead-icon"></i><?php echo get_phrase('syllabus'); ?></th>
-                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+                <th><?php echo get_phrase('option'); ?></th>
             </tr>
         </thead>
         <tbody>
