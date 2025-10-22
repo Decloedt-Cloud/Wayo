@@ -2842,5 +2842,15 @@
     "event_successfully_updated": "Event successfully updated",
     "event_successfully_deleted": "Event successfully deleted",
     "loading...": "Loading...",
-    "all_categorie": "All categorie"
+    "all_categorie": "All categorie",
+    "community_profile_logo": "Community profile logo",
+    "community_cover_image": "Community cover image",
+    "upload_a_square_image_(512×512_recommended),_png_or_jpeg,_max_size_2_mb": "Upload a square image (512×512 recommended), png or jpeg, max size 2 mb",
+    "upload_an_image_(1920×600_recommended),_png_or_jpeg,_max_size_2_mb": "Upload an image (1920×600 recommended), png or jpeg, max size 2 mb",
+    "the_logo_is_too_large!_maximum": "The logo is too large! maximum",
+    "cover_image_is_too_large!_maximum": "Cover image is too large! maximum",
+    "the_file_is_too_large!_maximum": "The file is too large! maximum",
+    "allowed": "Allowed",
+    "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "Unable to upload this image. check the format (png/jpeg)..",
+    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Unable to upload this image. please check the format (png/jpeg)."
 }

@@ -3036,5 +3036,18 @@
     "event_successfully_updated": "Evenement succesvol bijgewerkt",
     "event_successfully_deleted": "Evenement succesvol verwijderd",
     "all_categorie": "Alle Kategorien",
-    "loading...": "Wird geladen..."
+    "loading...": "Wird geladen...",
+    "community_profile_logo": "Community-Profillogo",
+    "upload_a_square_image_(512×512_recommended),_png_or_jpeg,_max_size_2_mb": "Laden Sie ein quadratisches Bild hoch (512×512 empfohlen), PNG oder JPEG, maximal 2 MB",
+    "community_cover_image": "Community-Titelbild",
+    "upload_an_image_(1920×600_recommended),_png_or_jpeg,_max_size_2_mb": "Laden Sie ein Bild hoch (1920×600 empfohlen), PNG oder JPEG, maximal 2 MB",
+    "the_file_is_too_large!_maximum": "Die Datei ist zu groß! Maximum",
+    "allowed": "Erlaubt",
+    "the_logo_is_too_large!_maximum": "Das Logo ist zu groß! Maximum",
+    "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "Dieses Bild konnte nicht hochgeladen werden. Überprüfen Sie das Format (PNG/JPEG)..",
+    "cover_image_is_too_large!_maximum": "Das Titelbild ist zu groß! Maximum",
+    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Dieses Bild konnte nicht hochgeladen werden. Bitte überprüfen Sie das Format (PNG/JPEG).",
+    "start_with_your_profile": "Start with your profile",
+    "logo": "Logo",
+    "cover": "Cover"
 }

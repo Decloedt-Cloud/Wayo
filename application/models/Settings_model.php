@@ -134,6 +134,7 @@ class Settings_model extends CI_Model
 
   public function update_current_school_settings()
   {
+    $schoolId = school_id();
     $data['name'] = htmlspecialchars($this->input->post('school_name'));
     $data['phone'] = htmlspecialchars($this->input->post('phone'));
     $data['Rue'] = htmlspecialchars($this->input->post('communityStreet'));
@@ -145,19 +146,34 @@ class Settings_model extends CI_Model
     $data['category'] = htmlspecialchars_decode($this->input->post('category'));
     $schoolId = school_id();
 
-    $this->db->where('id', school_id());
+    $this->db->where('id', $schoolId);
     $this->db->update('schools', $data);
 
+    // ----------------- Upload logo -----------------
+    if(isset($_FILES['school_image']['name']) && $_FILES['school_image']['name'] != '') {
+        $logo_path = 'uploads/schools/';
+        if(!is_dir($logo_path)){
+            mkdir($logo_path, 0777, true);
+        }
+        move_uploaded_file($_FILES['school_image']['tmp_name'], $logo_path . $schoolId . '.jpg');
+    }
 
-
-    move_uploaded_file($_FILES['school_image']['tmp_name'], 'uploads/schools/' . school_id() . '.jpg');
-   
+    // ----------------- Upload cover -----------------
+    if(isset($_FILES['school_cover']['name']) && $_FILES['school_cover']['name'] != '') {
+        $cover_path = 'uploads/communityCover/';
+        if(!is_dir($cover_path)){
+            mkdir($cover_path, 0777, true);
+        }
+        move_uploaded_file($_FILES['school_cover']['tmp_name'], $cover_path . $schoolId . '.jpg');
+    }
+    
+    // ----------------- Settings school -----------------
     $data_settings_school['Tax_residence'] = htmlspecialchars_decode($this->input->post('tax_residence'));
     $data_settings_school['type'] = htmlspecialchars_decode($this->input->post('i_am'));
     $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('vat_number'));
 
  
-    // Validate the tax residence input
+      // Validation Tax Residence
     if (!in_array($data_settings_school['Tax_residence'], ['MA', 'UAE'])) {
         log_message('error', 'Invalid Tax Residence value: ' . $data_settings_school['Tax_residence']);
         return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
@@ -194,7 +210,7 @@ class Settings_model extends CI_Model
     //     return json_encode(['status' => false, 'notification' => 'No file uploaded or upload error.']);
     // }
 
-    $this->db->where('school_id', school_id());
+    $this->db->where('school_id', $schoolId);
     $this->db->update('settings_school', $data_settings_school);
 
     // Récupérer l’école mise à jour
@@ -219,33 +235,38 @@ class Settings_model extends CI_Model
     } else {
         log_message('error', "ID HumHub manquant pour l’école ID {$schoolId}");
     }
-    $response = array(
-      'status' => true,
-      'notification' => get_phrase('school_settings_updated_successfully')
-    );
-    return json_encode($response);
-  }
+  //   $response = array(
+  //     'status' => true,
+  //     'notification' => get_phrase('school_settings_updated_successfully')
+  //   );
+  //   return json_encode($response);
+  // }
 
   // PAYMENT SETTINGS
-  public function update_system_currency_settings()
-  {
-    $data['system_currency'] = htmlspecialchars($this->input->post('system_currency'));
-    $data['currency_position'] = htmlspecialchars($this->input->post('currency_position'));
+  // public function update_system_currency_settings()
+  // {
+  //   $data['system_currency'] = htmlspecialchars($this->input->post('system_currency'));
+  //   $data['currency_position'] = htmlspecialchars($this->input->post('currency_position'));
 
-    $user_id =  $this->session->userdata('user_id');
-    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
-          $this->db->where('school_id', school_id());
-          $this->db->update('settings_school', $data);
-    }else{
-          $this->db->where('id', 1);
-          $this->db->update('settings_school', $data);
+  //   $user_id =  $this->session->userdata('user_id');
+  //   if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
+  //         $this->db->where('school_id', school_id());
+  //         $this->db->update('settings_school', $data);
+  //   }else{
+  //         $this->db->where('id', 1);
+  //         $this->db->update('settings_school', $data);
 
-    }
+  //   }
 
-    $response = array(
-      'status' => true,
-      'notification' => get_phrase('system_settings_updated_successfully')
-    );
+  //   $response = array(
+  //     'status' => true,
+  //     'notification' => get_phrase('system_settings_updated_successfully')
+  //   );
+  // ----------------- Réponse -----------------
+    $response = [
+        'status' => true,
+        'notification' => get_phrase('school_settings_updated_successfully')
+    ];
     return json_encode($response);
   }
     public function update_system_price()

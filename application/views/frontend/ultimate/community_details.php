@@ -149,9 +149,11 @@
                     title="Présentation Wayo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen></iframe>
           </div> -->
-          <div class="text-center py-3 bg-logo-communaute">
-            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute" >
+           <div class="bg-logo-communaute p-4 text-center">
+          <div class="cercle-logo">
+          <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute">
           </div>
+            </div>
            <div class="card-body">
             <h3 class="h6 fw-bold"><?php echo get_phrase("Accès communauté") ?></h3>
             <ul class="list-unstyled small text-muted mb-3">
