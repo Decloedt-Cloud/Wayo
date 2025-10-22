@@ -7,7 +7,7 @@ if($check_data->num_rows() > 0):?>
             <th><i class="mdi mdi-star-circle-outline thead-icon"></i><?php echo get_phrase('grade_point'); ?></th>
             <th><i class="mdi mdi-arrow-collapse-right thead-icon"></i><?php echo get_phrase('mark_from'); ?></th>
             <th><i class="mdi mdi-arrow-expand-right thead-icon"></i><?php echo get_phrase('mark_upto'); ?></th>
-            <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
+            <th><?php echo get_phrase('options'); ?></th>
         </tr>
     </thead>
     <tbody>

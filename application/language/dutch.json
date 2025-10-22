@@ -2837,7 +2837,7 @@
     "email:": "E-Mail:",
     "address:": "Adresse:",
     "[to_be_completed,_morocco]": "[auszufüllen, Marokko]",
-      "terms_and_conditions_–_wayo_academy": "Allgemeine Geschäftsbedingungen – Wayo Academy",
+    "terms_and_conditions_–_wayo_academy": "Allgemeine Geschäftsbedingungen – Wayo Academy",
     "4._content_protection_and_use": "4. Schutz und Nutzung von Inhalten",
     "6._technical_support_and_maintenance": "6. Technischer Support und Wartung",
     "13._amendments_to_the_terms": "13. Änderungen der Bedingungen",
@@ -3034,5 +3034,7 @@
     "meeting_expired": "Vergadering verlopen",
     "event_created_successfully": "Evenement succesvol aangemaakt",
     "event_successfully_updated": "Evenement succesvol bijgewerkt",
-    "event_successfully_deleted": "Evenement succesvol verwijderd"
+    "event_successfully_deleted": "Evenement succesvol verwijderd",
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_showcase_website._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Via dit tabblad kunt u een aankondiging publiceren die op de showcasewebsite van het platform verschijnt. Als u informatie, evenementen of nieuws hebt om te delen, kunt u het hier plaatsen!",
+    "this_tab_allows_you_to_publish_an_announcement_that_will_appear_on_the_platform’s_dashboard._if_you_have_any_information,_event,_or_news_to_share,_feel_free_to_post_it_here!": "Via dit tabblad kunt u een aankondiging publiceren die op het dashboard van het platform verschijnt. Als u informatie, een evenement of nieuws wilt delen, kunt u het hier plaatsen!"
 }

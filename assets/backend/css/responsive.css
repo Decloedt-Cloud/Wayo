@@ -1013,3 +1013,74 @@ th {
 .entries-selector select:hover {
   border-color: #cbd5e0;
 }
+
+.alert-modern .icon {
+      background-color: #6c757d;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      cursor: pointer;
+      /* Neon yellow effect */
+      animation: neon-pulse 1.5s ease-in-out infinite;
+      margin-left: 10px; /* Espacement entre le titre et l'icône */
+   }
+
+   .alert-modern {
+      padding: 0; /* Supprime le padding pour un alignement propre */
+   }
+
+   .alert-modern:hover .icon {
+      background-color: #5a6268; /* Légère variation au survol */
+   }
+
+   /* Popover styling */
+   .popover {
+      --bs-popover-bg: #fff;
+      --bs-popover-border-color: #6c757d;
+      --bs-popover-header-bg: #f8f9fa;
+      --bs-popover-header-color: #495057;
+      --bs-popover-body-padding-x: 1rem;
+      --bs-popover-body-padding-y: 0.75rem;
+   }
+
+   [dir="rtl"] .space-between-icon {
+      margin-right: 10px !important;
+   }
+
+   @media (max-width: 857px) {
+    .alert-modern {
+      padding-right: 30px;
+    }
+   }
+   /* Ensure popover shows on click for mobile */
+   @media (max-width: 767.98px) {
+      .alert-modern .icon {
+         pointer-events: auto;
+      }
+   }
+
+      @media (max-width: 600px) {
+         .space-between-icon {
+            margin-right: 10px !important;
+         }
+         [dir="rtl"] .space-between-icon {
+      margin-right: 22px !important;
+   }
+      }
+
+   /* Ajuster le conteneur du titre et de l'icône */
+   .d-flex.align-items-center.justify-content-between {
+      width: 100%;
+   }
+
+   .page-title {
+      margin: 0; /* Supprime la marge par défaut pour un alignement propre */
+      display: flex;
+      align-items: center;
+   }
