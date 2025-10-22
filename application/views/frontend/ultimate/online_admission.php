@@ -481,6 +481,7 @@
 
   function goTo(i){
     if(i<0 || i>=panes.length) return;
+      const prevScroll = window.scrollY; // Sauvegarde la position actuelle
     panes.forEach(p=>p.classList.remove('is-visible'));
     steps.forEach((s,idx)=>{
       s.classList.toggle('is-active', idx===i);
@@ -489,6 +490,8 @@
     panes[i].classList.add('is-visible');
     current = i;
     window.scrollTo({top:0,behavior:'smooth'});
+    // Restaure la position pour éviter le scroll vers le haut
+    window.scrollTo({ top: prevScroll, behavior: 'auto' });
     updateSummary?.();
   }
 
@@ -566,10 +569,11 @@ updateCurrencyUI();
     if(current < panes.length-1) goTo(current+1);
   }));
   $$('.prev').forEach(btn => btn.addEventListener('click', ()=> {
+     e.preventDefault();
     if(current > 0) goTo(current-1);
   }));
 
-  // Step click for completed steps
+   // Clic sur les steps déjà terminés
   steps.forEach((s, idx) => {
     s.style.cursor = 'pointer';
     s.addEventListener('click', ()=> { if(idx <= current) goTo(idx); });
