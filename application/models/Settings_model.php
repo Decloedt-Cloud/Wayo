@@ -235,33 +235,33 @@ class Settings_model extends CI_Model
     } else {
         log_message('error', "ID HumHub manquant pour l’école ID {$schoolId}");
     }
-  //   $response = array(
-  //     'status' => true,
-  //     'notification' => get_phrase('school_settings_updated_successfully')
-  //   );
-  //   return json_encode($response);
-  // }
+    $response = array(
+      'status' => true,
+      'notification' => get_phrase('school_settings_updated_successfully')
+    );
+    return json_encode($response);
+  }
 
   // PAYMENT SETTINGS
-  // public function update_system_currency_settings()
-  // {
-  //   $data['system_currency'] = htmlspecialchars($this->input->post('system_currency'));
-  //   $data['currency_position'] = htmlspecialchars($this->input->post('currency_position'));
+  public function update_system_currency_settings()
+  {
+    $data['system_currency'] = htmlspecialchars($this->input->post('system_currency'));
+    $data['currency_position'] = htmlspecialchars($this->input->post('currency_position'));
 
-  //   $user_id =  $this->session->userdata('user_id');
-  //   if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
-  //         $this->db->where('school_id', school_id());
-  //         $this->db->update('settings_school', $data);
-  //   }else{
-  //         $this->db->where('id', 1);
-  //         $this->db->update('settings_school', $data);
+    $user_id =  $this->session->userdata('user_id');
+    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
+          $this->db->where('school_id', school_id());
+          $this->db->update('settings_school', $data);
+    }else{
+          $this->db->where('id', 1);
+          $this->db->update('settings_school', $data);
 
-  //   }
+    }
 
-  //   $response = array(
-  //     'status' => true,
-  //     'notification' => get_phrase('system_settings_updated_successfully')
-  //   );
+    $response = array(
+      'status' => true,
+      'notification' => get_phrase('system_settings_updated_successfully')
+    );
   // ----------------- Réponse -----------------
     $response = [
         'status' => true,
