@@ -1562,8 +1562,7 @@ $('#participantsDropdownMenu').on('click', '.participant-checkbox', function() {
     });
 
     $('#participantsInput').val(JSON.stringify(selected));
-    $('#participantsSearchInput').val(''); // Reset search
-    $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
+    $('#participantsSearchInput').focus();
 
     // Trigger AJAX to refresh users dropdown
     const schoolId = $('#createSchoolId').val();
@@ -2830,8 +2829,7 @@ $('#editParticipantsDropdownMenu').on('click', '.participant-checkbox', function
     });
 
     $('#editParticipantsInput').val(JSON.stringify(selected));
-    $('#editParticipantsSearchInput').val(''); // Reset search
-    $('#editParticipantsDropdownMenu').removeClass('show').parent().removeClass('open');
+    $('#editParticipantsSearchInput').focus();
 
     // Trigger AJAX to refresh users dropdown
     const schoolId = $('#school_id').val();
