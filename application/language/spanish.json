@@ -2843,5 +2843,7 @@
     "loading...": "Cargando...",
     "all_categorie": "Todas las categorías",
     "admisión_en_línea": "Admisión en línea",
-    "(youtube/vimeo_ou_téléversement) ": "(youtube/vimeo ou téléversement) "
+    "(youtube/vimeo_ou_téléversement) ": "(youtube/vimeo ou téléversement) ",
+    "visible_on_website": "Visible en el sitio web",
+    "website_visibility": "Visibilidad del sitio web"
 }

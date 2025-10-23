@@ -2854,5 +2854,8 @@
     "the_file_is_too_large!_maximum": "The file is too large! maximum",
     "allowed": "Allowed",
     "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "Unable to upload this image. check the format (png/jpeg)..",
-    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Unable to upload this image. please check the format (png/jpeg)."
+    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Unable to upload this image. please check the format (png/jpeg).",
+    "not_visible_on_website": "Not visible on website",
+    "website_visibility": "Website visibility",
+    "visible_on_website": "Visible on website"
 }

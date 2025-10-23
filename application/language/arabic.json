@@ -2805,7 +2805,7 @@
     "all_categorie": "جميع الفئات",
     "logo": "الشعار",
     "cover": "الغلاف",
-   "community_profile_logo": "شعار ملف المجتمع",
+    "community_profile_logo": "شعار ملف المجتمع",
     "upload_a_square_image_(512×512_recommended),_png_or_jpeg,_max_size_2_mb": "قم بتحميل صورة مربعة (512×512 موصى بها)، بصيغة PNG أو JPEG، الحد الأقصى للحجم 2 ميغابايت",
     "community_cover_image": "صورة غلاف المجتمع",
     "upload_an_image_(1920×600_recommended),_png_or_jpeg,_max_size_2_mb": "قم بتحميل صورة (1920×600 موصى بها)، بصيغة PNG أو JPEG، الحد الأقصى للحجم 2 ميغابايت",
@@ -2814,5 +2814,7 @@
     "the_logo_is_too_large!_maximum": "الشعار كبير جدًا! الحد الأقصى",
     "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "تعذر تحميل هذه الصورة. تحقق من الصيغة (PNG/JPEG)..",
     "cover_image_is_too_large!_maximum": "صورة الغلاف كبيرة جدًا! الحد الأقصى",
-    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "تعذر تحميل هذه الصورة. يرجى التحقق من الصيغة (PNG/JPEG)."
+    "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "تعذر تحميل هذه الصورة. يرجى التحقق من الصيغة (PNG/JPEG).",
+    "visible_on_website": "مرئية على الموقع",
+    "website_visibility": "رؤية الموقع"
 }
