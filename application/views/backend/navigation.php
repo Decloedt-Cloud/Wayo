@@ -320,3 +320,15 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
     <!-- Sidebar -left -->
 </div>
 <!-- Left Sidebar End -->
+ <script>
+$(document).ready(function() {
+    var currentUrl = window.location.pathname;
+
+    if (currentUrl.includes('/calendar')) {
+        var parentMenu = $('.side-nav-item').find('a[href="#academic"]');
+        var subMenu = $('#academic');
+        parentMenu.attr('aria-expanded', 'true');
+        subMenu.addClass('show');
+    }
+});
+</script>
