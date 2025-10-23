@@ -7,7 +7,6 @@
   margin-bottom: 30px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .card-body {
   padding: 25px 30px;
   /* display: flex; */
@@ -128,24 +127,6 @@
   color: #fff;
 }
 
-[dir="rtl"] .mdi-chevron-right,
-[dir="rtl"] .mdi-chevron-left {
-  display: inline-block;
-  transform: scaleX(-1);
-}
-/* Inverser l'ordre icône/texte en RTL */
-[dir="rtl"] .btn-back {
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Inverser la flèche horizontalement */
-[dir="rtl"] .btn-back .mdi-arrow-left-circle {
-  transform: scaleX(1);
-}
-
 /* Success Button */
 .btn-success {
   background-color: #38b000;
@@ -199,6 +180,91 @@
   display: contents;
   align-items: center;
 }
+/* Style du cercle de validation */
+.completion-check {
+  background-color: #e9f8ee;
+  border: 2px solid #28a74533;
+}
+
+/* Titres et texte */
+#finish h3 {
+  font-size: 1.6rem;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+#finish p {
+  font-size: 1rem;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Boutons */
+#finish .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+#finish .btn-success:hover {
+  background-color: #218838;
+}
+
+#finish .btn-outline-primary {
+  border-radius: 8px;
+}
+
+.big-switch {
+  width: 50px !important;
+  height: 28px !important;
+  background-color: #CBD5E0;
+  cursor: pointer;
+}
+.form-check-input.big-switch {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23FFFFFF'/%3e%3c/svg%3e") !important;
+}
+.big-switch:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+.switch {
+  font-weight: 900;
+  font-size: larger;
+}
+.alert-modern .icon {
+  background-color: #6c757d;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  animation: neon-pulse 1.5s ease-in-out infinite;
+  margin-left: 10px;
+}
+/* --- Popover style --- */
+.popover {
+  --bs-popover-bg: #fff;
+  --bs-popover-border-color: #6c757d;
+  --bs-popover-header-bg: #f8f9fa;
+  --bs-popover-header-color: #495057;
+  --bs-popover-body-padding-x: 1rem;
+  --bs-popover-body-padding-y: 0.75rem;
+}
+
+[dir="rtl"] .select2-container--open .select2-dropdown {
+  left: 0 !important; /* remplace left: auto */
+  right: auto !important; /* remplace right: 0 */
+}
+.select2-container .select2-selection--multiple  {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%3E%3Cpolygon%20points%3D%221%2C1%2015%2C1%208%2C11%22%20fill%3D%22%236c757d%22%20/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 13px;
+    cursor: pointer;
+}
+
 
 /* Add responsive rules for smaller screens */
 @media (max-width: 768px) {
@@ -208,23 +274,7 @@
     padding: 0 5px !important; /* Reduce the lateral padding to make space for smaller screens */
     gap: 0; /* Remove the gap between the buttons */
   }
-  [dir="rtl"] .mdi-chevron-right,
-  [dir="rtl"] .mdi-chevron-left {
-    display: inline-block;
-    transform: scaleX(-1);
-  }
-  /* Inverser l'ordre icône/texte en RTL */
-  [dir="rtl"] .btn-back {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    gap: 0.5rem;
-  }
 
-  /* Inverser la flèche horizontalement */
-  [dir="rtl"] .btn-back .mdi-arrow-left-circle {
-    transform: scaleX(1);
-  }
   /* Style for the individual buttons */
   .custom-navigation-buttons .btn-outline-primary {
     flex: 1 1 auto; /* Allow buttons to resize and adapt more flexibly */
@@ -237,6 +287,41 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+  /* Boutons */
+  /* Conteneur des boutons : passe en colonne */
+  #finish .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  /* Bouton précédent : prend toute la largeur */
+  #finish .btn-outline-primary {
+    width: 100%;
+  }
+
+  /* Groupe switch + submit : passe en colonne */
+  #finish .d-flex.align-items-center.gap-3 {
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Bouton submit : plein écran aussi */
+  #finish .btn-success {
+    width: 100%;
+  }
+
+  /* Switch : plus petit et mieux centré */
+  .big-switch {
+    width: 45px !important;
+    height: 24px !important;
+  }
+
+  .switch {
+    font-size: medium;
+    font-weight: 900;
   }
 }
 

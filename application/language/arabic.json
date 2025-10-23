@@ -858,7 +858,7 @@
     "total_section": "إجمالي الأقسام",
     "total_lesson": "إجمالي الدروس",
     "total_enrolment": "إجمالي التسجيل",
-    "start_the_course": "ابدأ الدورة",
+    "start_the_course": "ابدأ هذه الدورة",
     "edit_this_course": "تعديل هذه الدورة",
     "section_and_lesson": "القسم والدرس",
     "inform_instructor": "إبلاغ المدرب",
@@ -907,7 +907,7 @@
     "meta_description": "الوصف التعريفي",
     "thank_you": "شكرًا لك",
     "you_are_just_one_click_away": "أنت على بعد نقرة واحدة فقط",
-    "select_a_teacher": "اختر معلمًا",
+    "select_a_teacher": "اختر الموجهين",
     "outcomes_desc": "وصف النتائج",
     "course_thumbnail": "صورة مصغرة للدورة",
     "please_fill_all_the_required_fields": "يرجى ملء جميع الحقول المطلوبة",
@@ -2721,8 +2721,8 @@
     "web_developer": "مطور ويب",
     "abdelfattah_allam": "عبد الفتاح علام",
     "senior_developer": "مطور أول",
-    "this_tab_allows_you_to_publish_an_announcement":"يتيح لك هذا القسم نشر  إعلان يظهر على لوحة التحكم. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
-    "this_tab_allows_you_to_publish_an_announcement_showcase_website":"يتيح لك هذا القسم نشر  إعلان يظهر في الموقع التعريفي للمنصّة. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
+    "this_tab_allows_you_to_publish_an_announcement": "يتيح لك هذا القسم نشر  إعلان يظهر على لوحة التحكم. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
+    "this_tab_allows_you_to_publish_an_announcement_showcase_website": "يتيح لك هذا القسم نشر  إعلان يظهر في الموقع التعريفي للمنصّة. إذا كانت لديك أي معلومات أو حدث أو خبر تود مشاركته، فلا تتردد في نشره هنا!",
     "announcements": "الإعلانات",
     "price_including_vat": "السعر شامل الضريبة",
     "start_date": "تاريخ البدء",
@@ -2797,6 +2797,6 @@
     "meeting_expired": "انتهت صلاحية الاجتماع",
     "event_created_successfully": "تم إنشاء الحدث بنجاح",
     "event_successfully_updated": "تم تحديث الحدث بنجاح",
-    "event_successfully_deleted": "تم حذف الحدث بنجاح"
-
+    "event_successfully_deleted": "تم حذف الحدث بنجاح",
+    "don't_forget_to_add_your_content_to_your_course.": "لا تنسَ إضافة المحتوى إلى دورتك."
 }
