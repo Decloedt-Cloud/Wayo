@@ -3052,7 +3052,6 @@
     "unable_to_upload_this_image._check_the_format_(png/jpeg)..": "Dieses Bild konnte nicht hochgeladen werden. Überprüfen Sie das Format (PNG/JPEG)..",
     "cover_image_is_too_large!_maximum": "Das Titelbild ist zu groß! Maximum",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Dieses Bild konnte nicht hochgeladen werden. Bitte überprüfen Sie das Format (PNG/JPEG).",
-    "start_with_your_profile": "Start with your profile",
-    "logo": "Logo",
-    "cover": "Cover"
+    "visible_on_website": "Zichtbaar op website",
+    "website_visibility": "Zichtbaarheid van de website"
 }
