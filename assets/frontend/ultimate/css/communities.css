@@ -76,19 +76,19 @@ body{   font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;}
 }
 
 .btn-search {
-  background: transparent;
+  background: #fc7b30;
   border: none;
   height: 48px;
   width: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: #fff;
   cursor: pointer;
 }
 
 .btn-search:hover {
-  color: var(--wayo-orange);
+  color: #fff;
 }
 
 .pill-select{

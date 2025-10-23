@@ -8,7 +8,7 @@
             <th class="d-none d-md-table-cell"><i class="mdi mdi-check-circle-outline thead-icon"></i><?php echo get_phrase('paid_amount'); ?></th>
             <th class="d-none d-md-table-cell"><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
             <th>
-                <span class="d-none d-md-inline"><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></span>
+                <span class="d-none d-md-inline"><?php echo get_phrase('option'); ?></span>
                 <span class="d-md-none"><i class="mdi mdi-chevron-down"></i><?php echo get_phrase('details'); ?></span>
             </th>
         </tr>

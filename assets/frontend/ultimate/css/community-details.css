@@ -47,16 +47,27 @@ body{
   height: 545px;
 }
 .bg-logo-communaute{
-  background-color:#ffdcb8 ;
+  background: #ffdcb8;
+}
+.cercle-logo {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 2px solid #fc7b30;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  overflow: hidden; /* masque ce qui dépasse du cercle */
 }
 .logo-communaute {
-  border-radius: 50%;       /* pour faire un cercle */
-  width: 170px;             /* largeur fixe ou adaptative */
-  height: 170px;            /* hauteur identique à la largeur pour un cercle parfait */
-  object-fit: cover;        /* recadre l'image pour remplir le cercle sans déformation */
+  width: 150px;              /* taille de l’image (tu peux ajuster) */
+  height: 150px;             /* même valeur que width = cercle parfait */
+  border-radius: 50%;        /* rend l’image ronde */
+  object-fit: cover;         /* garde le bon cadrage sans déformation */
   display: block;
-  margin: 0 auto;
-  border: 2px solid #fc7b30;           /* centre horizontalement */
+  margin: 0 auto;            /* centre horizontalement */
 }
 
 

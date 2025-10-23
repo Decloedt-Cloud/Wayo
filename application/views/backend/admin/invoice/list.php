@@ -7,7 +7,7 @@
                 <th><i class="mdi mdi-currency-usd thead-icon"></i><?php echo get_phrase('total_amount'); ?></th>
                 <th><i class="mdi mdi-check-circle-outline thead-icon"></i><?php echo get_phrase('paid_amount'); ?></th>
                 <th><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
-                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+                <th><?php echo get_phrase('option'); ?></th>
                
                 
         </tr>

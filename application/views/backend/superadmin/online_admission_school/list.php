@@ -10,7 +10,7 @@ $school_id = school_id();
       <th><i class="mdi mdi-phone-outline thead-icon"></i><?php echo get_phrase('phone'); ?></th>
       <th><i class="mdi mdi-text-box-outline thead-icon"></i><?php echo get_phrase('description'); ?></th>
       <th><i class="mdi mdi-tag-outline thead-icon"></i><?php echo get_phrase('category'); ?></th>
-      <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
+      <th><?php echo get_phrase('options'); ?></th>
     </tr>
   </thead>
   <tbody>

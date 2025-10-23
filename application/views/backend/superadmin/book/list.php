@@ -10,7 +10,7 @@ $books = $this->crud_model->get_books()->result_array();
           <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('author'); ?></th>
           <th><i class="mdi mdi-book-multiple-outline thead-icon"></i><?php echo get_phrase('copies'); ?></th>
           <th><i class="mdi mdi-book-check-outline thead-icon"></i><?php echo get_phrase('available_copies'); ?></th>
-          <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+          <th><?php echo get_phrase('option'); ?></th>
         </tr>
       </thead>
       <tbody>

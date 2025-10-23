@@ -17,7 +17,7 @@ if (count($expenses) > 0): ?>
         <th><i class="mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('date'); ?></th>
         <th><i class="mdi mdi-currency-usd outline thead-icon"></i><?php echo get_phrase('amount'); ?></th>
         <th><i class="mdi mdi-tag-outline thead-icon"></i><?php echo get_phrase('expense_category'); ?></th>
-        <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+        <th><?php echo get_phrase('option'); ?></th>
       </tr>
     </thead>
     <tbody>

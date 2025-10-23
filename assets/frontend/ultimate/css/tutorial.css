@@ -12,7 +12,7 @@
 *,::before,::after{box-sizing:border-box}
 body{margin:0;font-family:var(--font);color:var(--g-dark);background:var(--white);line-height:1.6}
 a{text-decoration:none;color:inherit}
-img{max-width:100%;display:block}
+img{max-width:100%;}
 /* .container{width:90%;max-width:1200px;margin-inline:auto} */
 
 

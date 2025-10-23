@@ -1,12 +1,12 @@
 <div class="row">
-	<div class="col-md-6">
+	<!-- <div class="col-md-6">
 		<div class="card">
 			<div class="card-body">
 				<div id="calendar"></div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-6">
+	</div> -->
+	<div class="col-md-12">
 		<div class="card">
 			<div class="card-body">
 				<?php
@@ -26,7 +26,7 @@
 
 				?>
 				<?php if($announcements > 0): ?>
-					<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
+					<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
 						<thead>
 							<tr>
 								<th><i class="mdi mdi-calendar-range-outline me-2 thead-icon"></i><?php echo get_phrase('event_title'); ?></th>
