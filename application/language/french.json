@@ -2890,5 +2890,6 @@
     "cover_image_is_too_large!_maximum": "L'image de couverture est trop grande ! Maximum",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Impossible de charger cette image. Veuillez vérifier le format (PNG/JPEG).",
     "visible_on_website": "Visible sur le site Internet",
-    "website_visibility": "Visibilité du site Web"
+    "website_visibility": "Visibilité du site Web",
+    "certifications": "Certifications"
 }
