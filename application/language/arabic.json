@@ -2816,5 +2816,9 @@
     "cover_image_is_too_large!_maximum": "صورة الغلاف كبيرة جدًا! الحد الأقصى",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "تعذر تحميل هذه الصورة. يرجى التحقق من الصيغة (PNG/JPEG).",
     "visible_on_website": "مرئية على الموقع",
-    "website_visibility": "رؤية الموقع"
+    "website_visibility": "رؤية الموقع",
+    "limited_offer": "عرض محدود",
+    "class_description": "وصف الصف",
+    "maximum_number": "العدد الأقصى",
+    "see_more": "عرض المزيد"
 }

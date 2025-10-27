@@ -474,29 +474,48 @@ class Home extends CI_Controller
 
 function community_details($school_id = '')
 {
-    $page_data['school'] = $this->user_model->get_school_details(urldecode($school_id));
+    $school_id = urldecode($school_id);
+
+    // Récupérer la communauté (school)
+    $page_data['school'] = $this->user_model->get_school_details($school_id);
+
+    if (empty($page_data['school'])) {
+        show_404(); 
+        return;
+    }
+
     $page_data['school_id'] = $page_data['school']['id'];
 
-    // passe la valeur deux façons : dans school et comme variable indépendante
-    $page_data['course_students_count'] = $this->user_model->get_community_students_count($page_data['school']['id']);
-    $page_data['school']['course_students_count'] = $page_data['course_students_count'];
+    // Nombre d'étudiants
+    $page_data['course_students_count'] =
+        $this->user_model->get_community_students_count($page_data['school_id']);
 
-
-	// Compter les classes
-    $page_data['classes_count'] = $this->crud_model->get_school_classes_count($page_data['school']['id']);
-    $page_data['school']['classes_count'] = $page_data['classes_count'];
+    // Compter les classes
+    $page_data['classes_count'] =
+        $this->crud_model->get_school_classes_count($page_data['school_id']);
 
     // Compter les enseignants
-    $page_data['teachers_count'] = $this->user_model->get_school_teachers_count($page_data['school']['id']);
-    $page_data['school']['teachers_count'] = $page_data['teachers_count'];
+    $page_data['teachers_count'] =
+        $this->user_model->get_school_teachers_count($page_data['school_id']);
 
-	//get les classes a affecter community
-	$page_data['classes'] = $this->crud_model->get_school_classes($school_id);
+    // Récupération les classes
+    $classes = $this->crud_model->get_school_classes($page_data['school_id']);
 
-	
+    // Récupération le user créateur du school
+    $school_creator = $this->user_model->get_user_by_school_id($page_data['school_id']);
+    $creator_name = !empty($school_creator['name']) ? $school_creator['name'] : 'À définir';
+
+    // L'ajouter mentor dans chaque classe
+    foreach ($classes as &$class) {
+        $class['mentor'] = $creator_name;
+    }
+    unset($class);
+
+    $page_data['classes'] = $classes;
 
     $page_data['page_name']  = 'community_details';
     $page_data['page_title'] = get_phrase('community_details');
+
     $this->load->view('frontend/' . $this->theme . '/index', $page_data);
 }
 

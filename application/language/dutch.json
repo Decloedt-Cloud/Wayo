@@ -3053,5 +3053,9 @@
     "cover_image_is_too_large!_maximum": "Das Titelbild ist zu groß! Maximum",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Dieses Bild konnte nicht hochgeladen werden. Bitte überprüfen Sie das Format (PNG/JPEG).",
     "visible_on_website": "Zichtbaar op website",
-    "website_visibility": "Zichtbaarheid van de website"
+    "website_visibility": "Zichtbaarheid van de website",
+    "limited_offer": "Limited offer",
+    "class_description": "Class description",
+    "maximum_number": "Maximale Anzahl",
+    "see_more": "Mehr anzeigen"
 }
