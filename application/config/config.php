@@ -567,7 +567,8 @@ $config['csrf_exclude_uris'] = array(
     'superadmin/get_users_by_school',
     'admin/get_users_by_school',
     'teacher/get_users_by_school',
-    'student/get_school_data'
+    'student/get_school_data',
+    'admission/online_admission/.*'
 
 );
  
