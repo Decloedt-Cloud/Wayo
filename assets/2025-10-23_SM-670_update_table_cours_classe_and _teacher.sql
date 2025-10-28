@@ -1,0 +1,14 @@
+CREATE TABLE course_classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT UNSIGNED NOT NULL,
+    class_id INT UNSIGNED NOT NULL,
+    FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+)
+CREATE TABLE course_teachers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
+    FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)

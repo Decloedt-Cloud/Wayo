@@ -1,42 +1,44 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Lms_model extends CI_Model {
+class Lms_model extends CI_Model
+{
 
-  // constructor
+    // constructor
     function __construct()
     {
         parent::__construct();
         $this->load->library('upload');
     }
 
-    function index(){
-        
-    }
+    function index() {}
 
-    public function get_course_by_id($course_id){
+    public function get_course_by_id($course_id)
+    {
         return $this->db->get_where('course', array('id' => $course_id))->row_array();
     }
 
-    public function filter_course_for_backend($class_id ="", $user_id="", $status="", $school_id=""){
+    public function filter_course_for_backend($class_id = "", $user_id = "", $status = "", $school_id = "")
+    {
         $superadmin_login = $this->session->userdata('superadmin_login');
         $admin_login = $this->session->userdata('admin_login');
         $teacher_login = $this->session->userdata('teacher_login');
         $student_login = $this->session->userdata('student_login');
 
-        if($superadmin_login == 1 || $admin_login == 1):
+        if ($superadmin_login == 1 || $admin_login == 1):
             return $this->filter_course_for_admin($class_id, $user_id, $status);
         endif;
 
-        if($teacher_login == 1):
+        if ($teacher_login == 1):
             return $this->filter_course_for_teacher($class_id, $user_id, $status);
         endif;
-   
-        if($student_login == 1):
+
+        if ($student_login == 1):
             return $this->filter_course_for_student($class_id, $user_id, $status, $school_id);
         endif;
     }
-    public function filter_course_for_admin($class_id, $user_id, $status){
+    public function filter_course_for_admin($class_id, $user_id, $status)
+    {
         $this->db->where('school_id', school_id());
 
         if ($class_id != "all") {
@@ -52,7 +54,8 @@ class Lms_model extends CI_Model {
         }
         return $this->db->get('course')->result_array();
     }
-    public function filter_course_for_teacher($class_id, $user_id, $status){
+    public function filter_course_for_teacher($class_id, $user_id, $status)
+    {
         $this->db->where('school_id', school_id());
         $this->db->where('user_id', $this->session->userdata('user_id'));
 
@@ -65,56 +68,59 @@ class Lms_model extends CI_Model {
         }
         return $this->db->get('course')->result_array();
     }
-    public function filter_course_for_student($class_id, $user_id, $status, $school_id){
+    public function filter_course_for_student($class_id, $user_id, $status, $school_id)
+    {
         // $class_id = $this->get_class_id_by_user($this->session->userdata('user_id'));
         // // $this->db->where('school_id', school_id());
 
-        
+
         $schools =  $this->db->select('*,course.id as id,course.thumbnail as thumbnail');
-    $this->db->from('course');
-    $this->db->join('students', 'course.school_id = students.school_id', 'left');
-    $this->db->join('schools', 'schools.id = course.school_id', 'left');
-     $this->db->where('students.user_id', $this->session->userdata('user_id'));
-    $this->db->where('course.status', 'active');
-    $this->db->where('students.status', 1);
+        $this->db->from('course');
+        $this->db->join('students', 'course.school_id = students.school_id', 'left');
+        $this->db->join('schools', 'schools.id = course.school_id', 'left');
+        $this->db->where('students.user_id', $this->session->userdata('user_id'));
+        $this->db->where('course.status', 'active');
+        $this->db->where('students.status', 1);
 
 
-    if ($user_id != "all") {
-        $this->db->where('course.user_id', $user_id);
-    }
-    if ($school_id != "all") {
-        $this->db->where('course.school_id', $school_id);
-    }
-    if ($class_id != "all") {
-        $this->db->where('course.class_id', $class_id);
-    }
+        if ($user_id != "all") {
+            $this->db->where('course.user_id', $user_id);
+        }
+        if ($school_id != "all") {
+            $this->db->where('course.school_id', $school_id);
+        }
+        if ($class_id != "all") {
+            $this->db->where('course.class_id', $class_id);
+        }
 
         // return $this->db->get('course')->result_array();
-    return $this->db->get()->result_array();
-}
-
-    public function get_subject_by_class_id($class_id = ""){
-        return $this->db->get_where('subjects', array('class_id' => $class_id))->result_array();
-
+        return $this->db->get()->result_array();
     }
 
-    public function get_status_wise_courses($status = ""){
+    public function get_subject_by_class_id($class_id = "")
+    {
+        return $this->db->get_where('subjects', array('class_id' => $class_id))->result_array();
+    }
+
+    public function get_status_wise_courses($status = "")
+    {
         if ($status != "") {
-            $courses = $this->db->get_where('course', array('status' => $status,'school_id'=> school_id()));
+            $courses = $this->db->get_where('course', array('status' => $status, 'school_id' => school_id()));
         } else {
-            if($this->session->userdata('teacher_login') == 1){
+            if ($this->session->userdata('teacher_login') == 1) {
                 $teacher_id  = $this->session->userdata('user_id');
                 $courses['inactive'] = $this->db->get_where('course', array('status' => 'inactive', 'user_id' => $teacher_id));
                 $courses['active'] = $this->db->get_where('course', array('status' => 'active', 'user_id' => $teacher_id));
-            }else{
-                $courses['inactive'] = $this->db->get_where('course', array('status' => 'inactive','school_id'=> school_id()));
-                $courses['active'] = $this->db->get_where('course', array('status' => 'active','school_id'=> school_id()));
+            } else {
+                $courses['inactive'] = $this->db->get_where('course', array('status' => 'inactive', 'school_id' => school_id()));
+                $courses['active'] = $this->db->get_where('course', array('status' => 'active', 'school_id' => school_id()));
             }
         }
         return $courses;
     }
 
-    public function get_section($type_by, $id){
+    public function get_section($type_by, $id)
+    {
         $this->db->order_by("orders", "asc");
         if ($type_by == 'course') {
             return $this->db->get_where('course_section', array('course_id' => $id));
@@ -123,24 +129,26 @@ class Lms_model extends CI_Model {
         }
     }
 
-    public function course_activity($course_id){
+    public function course_activity($course_id)
+    {
         $course = $this->db->get_where('course', array('id' => $course_id))->row_array();
-        if($course['status'] == 'active'){
+        if ($course['status'] == 'active') {
             $data['status'] = 'inactive';
             $this->db->where('id', $course_id);
             $this->db->update('course', $data);
-        }else{
+        } else {
             $data['status'] = 'active';
             $this->db->where('id', $course_id);
             $this->db->update('course', $data);
         }
     }
 
-    public function delete_course($course_id){
+    public function delete_course($course_id)
+    {
         $course = $this->db->get_where('course', array('id' => $course_id))->row_array();
 
-        if(file_exists('uploads/course_thumbnail/'.$course['thumbnail']))
-        unlink('uploads/course_thumbnail/'.$course['thumbnail']);
+        if (file_exists('uploads/course_thumbnail/' . $course['thumbnail']))
+            unlink('uploads/course_thumbnail/' . $course['thumbnail']);
 
         $this->db->where('id', $course_id);
         $this->db->delete('course');
@@ -158,7 +166,8 @@ class Lms_model extends CI_Model {
         return json_encode($response);
     }
 
-    public function get_lessons($type = "", $id = ""){
+    public function get_lessons($type = "", $id = "")
+    {
         $this->db->order_by("order", "asc");
         if ($type == "course") {
             return $this->db->get_where('lesson', array('course_id' => $id));
@@ -171,46 +180,135 @@ class Lms_model extends CI_Model {
         }
     }
 
-    public function get_subject_by_class($class_id = '') {
+    public function get_subject_by_class($class_id = '')
+    {
         $subjects = $this->db->get_where('subjects', array('class_id' => $class_id))->result_array();
-        $option = '<option value="">'.get_phrase('select_a_subject').'</option>';
+        $option = '<option value="">' . get_phrase('select_a_subject') . '</option>';
         $count = 0;
         foreach ($subjects as $subject):
             $count++;
-            $option .= '<option value="'.$subject['id'].'">'.$subject['name'].'</option>';
+            $option .= '<option value="' . $subject['id'] . '">' . $subject['name'] . '</option>';
         endforeach;
 
-        if($count > 0){
+        if ($count > 0) {
             return $option;
-        }else{
-            return '<option value="">'.get_phrase('data_not_found').'</option>';;
+        } else {
+            return '<option value="">' . get_phrase('data_not_found') . '</option>';;
+        }
+    }
+    // === CLASSES ===
+    
+// Cette fonction récupère toutes les classes associées à un cours donné
+    public function get_classes_by_course($course_id)
+    {
+        return $this->db
+            ->select('classes.*')// On sélectionne toutes les colonnes de la table 'classes'
+            ->from('classes')
+            ->join('course_classes', 'course_classes.class_id = classes.id')// On fait un JOIN avec la table pivot 'course_classes' qui relie les cours aux classes
+            ->where('course_classes.course_id', $course_id)// On filtre uniquement les classes qui appartiennent au cours $course_id
+            ->get()
+            ->result_array();
+    }
+
+    // Cette fonction met à jour les classes liées à un cours
+    public function update_course_classes($course_id, $class_ids)
+    {
+        // Supprime les anciennes relations
+        $this->db->where('course_id', $course_id)->delete('course_classes');
+
+        // Ajoute les nouvelles classes sélectionnées
+        // Si $class_ids est un tableau (ex: [1, 2, 3])
+        if (is_array($class_ids)) {
+            foreach ($class_ids as $class_id) {
+                // Pour chaque class_id, on crée une nouvelle entrée dans la table pivot
+                $this->db->insert('course_classes', [
+                    'course_id' => $course_id,
+                    'class_id'  => $class_id
+                ]);
+            }
         }
     }
 
-    public function course_add(){
+    // === TEACHERS ===
+    // Cette fonction récupère tous les enseignants (mentors) associés à un cours
+    public function get_teachers_by_course($course_id)
+    {
+        return $this->db
+            ->select('users.*')
+            ->from('users')
+            ->join('course_teachers', 'course_teachers.user_id = users.id')// On fait un JOIN avec la table pivot 'course_teachers' qui relie les cours aux enseignants
+            ->where('course_teachers.course_id', $course_id)// On filtre uniquement les enseignants qui appartiennent au cours $course_id
+            ->get()
+            ->result_array();
+    }
+    
+    // Cette fonction met à jour les enseignants liés à un cours
+    public function update_course_teachers($course_id, $teacher_ids)
+    {
+        $this->db->where('course_id', $course_id)->delete('course_teachers');
+    // Si $teacher_ids est un tableau (ex: [5, 6, 7])
+        if (is_array($teacher_ids)) {
+            foreach ($teacher_ids as $user_id) {
+                // Pour chaque teacher_id, on crée une nouvelle entrée dans la table pivot
+                $this->db->insert('course_teachers', [
+                    'course_id' => $course_id,
+                    'user_id'   => $user_id
+                ]);
+            }
+        }
+    }
+
+    public function course_add()
+    {
         $data['title'] = $this->input->post('title');
-        $data['class_id'] = $this->input->post('class_id');
-        $data['user_id'] = $this->input->post('user_id');
+        // $data['class_id'] = $this->input->post('class_id');
+        // $data['user_id'] = $this->input->post('user_id');
         // $data['subject_id'] = $this->input->post('subject_id');
         $data['description'] = $this->input->post('description');
         $data['outcomes'] = $this->input->post('outcomes');
         $data['course_overview_provider'] = $this->input->post('course_overview_provider');
         $data['course_overview_url'] = $this->input->post('course_overview_url');
-        $data['thumbnail'] = rand().'.jpg';
-
-        $data['status'] = 'active';
+        $data['thumbnail'] = rand() . '.jpg';
+    // récupérer la valeur envoyée par le switch
+    $status = $this->input->post('status'); // 'active' ou 'inactive'
+    $data['status'] = !empty($status) ? $status : 'inactive'; // sécurité par défaut
         $data['date_added'] = strtotime(date('d M Y'));
         $data['school_id'] = school_id();
 
         $this->db->insert('course', $data);
+    $course_id = $this->db->insert_id(); // récupère l'id du cours créé
+        move_uploaded_file($_FILES['course_thumbnail']['tmp_name'], 'uploads/course_thumbnail/' . $data['thumbnail']);
+        // Récupérer les classes et mentors sélectionnés
+    $class_ids = $this->input->post('class_id');   // tableau d'ids
+    $teacher_ids = $this->input->post('user_id');  // tableau d'ids
 
-        move_uploaded_file($_FILES['course_thumbnail']['tmp_name'], 'uploads/course_thumbnail/'.$data['thumbnail']);
+    // Insérer dans table pivot course_classes
+    if (!empty($class_ids)) {
+        foreach ($class_ids as $class_id) {
+            $this->db->insert('course_classes', [
+                'course_id' => $course_id,
+                'class_id' => $class_id
+            ]);
+        }
     }
 
-    public function course_edit($course_id){
+    // Insérer dans table pivot course_teachers
+    if (!empty($teacher_ids)) {
+        foreach ($teacher_ids as $teacher_id) {
+            $this->db->insert('course_teachers', [
+                'course_id' => $course_id,
+                'user_id' => $teacher_id
+            ]);
+        }
+    }
+
+    }
+
+    public function course_edit($course_id)
+    {
         $data['title'] = $this->input->post('title');
-        $data['class_id'] = $this->input->post('class_id');
-        $data['user_id'] = $this->input->post('user_id');
+        // $data['class_id'] = $this->input->post('class_id');
+        // $data['user_id'] = $this->input->post('user_id');
         // $data['subject_id'] = $this->input->post('subject_id');
         $data['description'] = $this->input->post('description');
         $data['outcomes'] = $this->input->post('outcomes');
@@ -218,14 +316,20 @@ class Lms_model extends CI_Model {
         $data['course_overview_url'] = $this->input->post('course_overview_url');
         $data['last_modified'] = strtotime(date('d M Y'));
 
-        if($_FILES['course_thumbnail']['tmp_name']){
-            unlink('uploads/course_thumbnail/'.$this->input->post('current_thumbnail'));
-            $data['thumbnail'] = rand().'.jpg';
-            move_uploaded_file($_FILES['course_thumbnail']['tmp_name'], 'uploads/course_thumbnail/'.$data['thumbnail']);
+        if ($_FILES['course_thumbnail']['tmp_name']) {
+            unlink('uploads/course_thumbnail/' . $this->input->post('current_thumbnail'));
+            $data['thumbnail'] = rand() . '.jpg';
+            move_uploaded_file($_FILES['course_thumbnail']['tmp_name'], 'uploads/course_thumbnail/' . $data['thumbnail']);
         }
 
         $this->db->where('id', $course_id);
         $this->db->update('course', $data);
+        // Mettre à jour les relations multi-classes et multi-teachers
+        $class_ids = $this->input->post('class_id');
+        $teacher_ids = $this->input->post('user_id');
+
+        $this->update_course_classes($course_id, $class_ids);
+        $this->update_course_teachers($course_id, $teacher_ids);
     }
 
     public function add_course_section($course_id)
@@ -259,7 +363,8 @@ class Lms_model extends CI_Model {
         $this->db->update('course_section', $data);
     }
 
-    public function add_lesson(){
+    public function add_lesson()
+    {
         $data['course_id'] = html_escape($this->input->post('course_id'));
         $data['title'] = html_escape($this->input->post('title'));
         $data['section_id'] = html_escape($this->input->post('section_id'));
@@ -300,67 +405,65 @@ class Lms_model extends CI_Model {
                 $sec = sprintf('%02d', $duration_formatter[2]);
                 $data['duration'] = $hour . ':' . $min . ':' . $sec;
                 $data['video_type'] = 'html5';
-            } elseif ($lesson_provider == 'mydevice'){
+            } elseif ($lesson_provider == 'mydevice') {
                 $data['video_type'] = 'mydevice';
-            
-                 if (!file_exists('uploads/videos')) {
+
+                if (!file_exists('uploads/videos')) {
                     mkdir('uploads/videos', 0777, true);
                 }
-              
+
 
                 // move_uploaded_file($_FILES['userfileMe']['tmp_name'], 'uploads/videos/'.$data['video_uplaod']);
                 // Configuration de l'upload
-                        $upload_path = './uploads/videos/';
-                        $allowed_types = array('mp4', 'avi', 'mov');
-                        $max_size = 102400; // 100MB
+                $upload_path = './uploads/videos/';
+                $allowed_types = array('mp4', 'avi', 'mov');
+                $max_size = 102400; // 100MB
 
-                    if (isset($_FILES['userfileMe']) && $_FILES['userfileMe']['error'] == 0) {
-                        // Vérifiez le type de fichier
-                        $file_type = pathinfo($_FILES['userfileMe']['name'], PATHINFO_EXTENSION);
-                        if (in_array($file_type, $allowed_types)) {
-                            // Vérifiez la taille du fichier
-                            if ($_FILES['userfileMe']['size'] <= $max_size * 1024) {
-                                // Déplacez le fichier vers le dossier de téléchargement
-                                $data['video_uplaod'] = rand().'.mp4';
-                                $file_name = $data['video_uplaod'];
-                                $tmp_name = $_FILES['userfileMe']['tmp_name'];
-                                $destination = $upload_path . $file_name;
+                if (isset($_FILES['userfileMe']) && $_FILES['userfileMe']['error'] == 0) {
+                    // Vérifiez le type de fichier
+                    $file_type = pathinfo($_FILES['userfileMe']['name'], PATHINFO_EXTENSION);
+                    if (in_array($file_type, $allowed_types)) {
+                        // Vérifiez la taille du fichier
+                        if ($_FILES['userfileMe']['size'] <= $max_size * 1024) {
+                            // Déplacez le fichier vers le dossier de téléchargement
+                            $data['video_uplaod'] = rand() . '.mp4';
+                            $file_name = $data['video_uplaod'];
+                            $tmp_name = $_FILES['userfileMe']['tmp_name'];
+                            $destination = $upload_path . $file_name;
 
-                                if (move_uploaded_file($tmp_name, $destination)) {
-                                    // Upload réussi
-                                    $datavideo['upload_data'] = array(
-                                        'file_name' => $file_name,
-                                        'file_type' => $file_type,
-                                        'file_path' => $upload_path,
-                                        'full_path' => $destination,
-                                        'file_size' => $_FILES['userfileMe']['size'],
-                                    );
-                                } else {
-                                    // Erreur de déplacement du fichier
-                                    $this->session->set_flashdata('error_message', get_phrase('There was a problem moving the file.'));
-                                    redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
-                                }
+                            if (move_uploaded_file($tmp_name, $destination)) {
+                                // Upload réussi
+                                $datavideo['upload_data'] = array(
+                                    'file_name' => $file_name,
+                                    'file_type' => $file_type,
+                                    'file_path' => $upload_path,
+                                    'full_path' => $destination,
+                                    'file_size' => $_FILES['userfileMe']['size'],
+                                );
                             } else {
-                                // Fichier trop grand
-                                $this->session->set_flashdata('error_message', get_phrase('The file size exceeds the limit.'));
-                                    redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
+                                // Erreur de déplacement du fichier
+                                $this->session->set_flashdata('error_message', get_phrase('There was a problem moving the file.'));
+                                redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                             }
                         } else {
-                            // Type de fichier non autorisé
-                            $this->session->set_flashdata('error_message', get_phrase('The file type is not allowed.'));
+                            // Fichier trop grand
+                            $this->session->set_flashdata('error_message', get_phrase('The file size exceeds the limit.'));
                             redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                         }
                     } else {
-                        // Erreur d'upload
-                        $this->session->set_flashdata('error_message', get_phrase('No file uploaded or there was an upload error.'));
+                        // Type de fichier non autorisé
+                        $this->session->set_flashdata('error_message', get_phrase('The file type is not allowed.'));
                         redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                     }
-                            
-            }else {
+                } else {
+                    // Erreur d'upload
+                    $this->session->set_flashdata('error_message', get_phrase('No file uploaded or there was an upload error.'));
+                    redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
+                }
+            } else {
                 $this->session->set_flashdata('error_message', get_phrase('invalid_lesson_provider'));
                 redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
             }
-
         } else {
             if ($_FILES['attachment']['name'] == "") {
                 $this->session->set_flashdata('error_message', get_phrase('invalid_attachment'));
@@ -393,16 +496,18 @@ class Lms_model extends CI_Model {
             move_uploaded_file($_FILES['thumbnail']['tmp_name'], 'uploads/thumbnails/lesson_thumbnails/' . $inserted_id . '.jpg');
         }
     }
-    private function delete_old_files($path) {
+    private function delete_old_files($path)
+    {
         $files = glob($path . '*'); // Obtenir tous les fichiers dans le répertoire
-        foreach($files as $file) {
-            if(is_file($file)) {
+        foreach ($files as $file) {
+            if (is_file($file)) {
                 unlink($file); // Supprimer chaque fichier
             }
         }
     }
 
-    public function edit_lesson($lesson_id){
+    public function edit_lesson($lesson_id)
+    {
         $previous_data = $this->db->get_where('lesson', array('id' => $lesson_id))->row_array();
 
         $data['course_id'] = html_escape($this->input->post('course_id'));
@@ -451,7 +556,7 @@ class Lms_model extends CI_Model {
                     }
                     move_uploaded_file($_FILES['thumbnail']['tmp_name'], 'uploads/thumbnails/lesson_thumbnails/' . $lesson_id . '.jpg');
                 }
-            } elseif ($lesson_provider == 'mydevice'){
+            } elseif ($lesson_provider == 'mydevice') {
 
 
 
@@ -463,63 +568,53 @@ class Lms_model extends CI_Model {
                 $allowed_types = array('mp4', 'avi', 'mov');
                 $max_size = 102400; // 100MB
 
-            if (isset($_FILES['userfileMe']) && $_FILES['userfileMe']['error'] == 0) {
-                // Vérifiez le type de fichier
-                $file_type = pathinfo($_FILES['userfileMe']['name'], PATHINFO_EXTENSION);
-                if (in_array($file_type, $allowed_types)) {
-                    // Vérifiez la taille du fichier
-                    if ($_FILES['userfileMe']['size'] <= $max_size * 1024) {
-                        // Déplacez le fichier vers le dossier de téléchargement
-                        $data['video_uplaod'] = rand().'.mp4';
-                        $file_name = $data['video_uplaod'];
-                        $tmp_name = $_FILES['userfileMe']['tmp_name'];
-                        $destination = $upload_path . $file_name;
+                if (isset($_FILES['userfileMe']) && $_FILES['userfileMe']['error'] == 0) {
+                    // Vérifiez le type de fichier
+                    $file_type = pathinfo($_FILES['userfileMe']['name'], PATHINFO_EXTENSION);
+                    if (in_array($file_type, $allowed_types)) {
+                        // Vérifiez la taille du fichier
+                        if ($_FILES['userfileMe']['size'] <= $max_size * 1024) {
+                            // Déplacez le fichier vers le dossier de téléchargement
+                            $data['video_uplaod'] = rand() . '.mp4';
+                            $file_name = $data['video_uplaod'];
+                            $tmp_name = $_FILES['userfileMe']['tmp_name'];
+                            $destination = $upload_path . $file_name;
 
-                        if (move_uploaded_file($tmp_name, $destination)) {
-                            // Upload réussi
-                            $datavideo['upload_data'] = array(
-                                'file_name' => $file_name,
-                                'file_type' => $file_type,
-                                'file_path' => $upload_path,
-                                'full_path' => $destination,
-                                'file_size' => $_FILES['userfileMe']['size'],
-                            );
-                            $this->delete_old_files( 'uploads/videos/'.$previous_data['video_uplaod']);
-
+                            if (move_uploaded_file($tmp_name, $destination)) {
+                                // Upload réussi
+                                $datavideo['upload_data'] = array(
+                                    'file_name' => $file_name,
+                                    'file_type' => $file_type,
+                                    'file_path' => $upload_path,
+                                    'full_path' => $destination,
+                                    'file_size' => $_FILES['userfileMe']['size'],
+                                );
+                                $this->delete_old_files('uploads/videos/' . $previous_data['video_uplaod']);
+                            } else {
+                                // Erreur de déplacement du fichier
+                                $this->session->set_flashdata('error_message', get_phrase('There was a problem moving the file.'));
+                                redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
+                            }
                         } else {
-                            // Erreur de déplacement du fichier
-                            $this->session->set_flashdata('error_message', get_phrase('There was a problem moving the file.'));
+                            // Fichier trop grand
+                            $this->session->set_flashdata('error_message', get_phrase('The file size exceeds the limit.'));
                             redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                         }
                     } else {
-                        // Fichier trop grand
-                        $this->session->set_flashdata('error_message', get_phrase('The file size exceeds the limit.'));
-                            redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
+                        // Type de fichier non autorisé
+                        $this->session->set_flashdata('error_message', get_phrase('The file type is not allowed.'));
+                        redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                     }
                 } else {
-                    // Type de fichier non autorisé
-                    $this->session->set_flashdata('error_message', get_phrase('The file type is not allowed.'));
+                    // Erreur d'upload
+                    $this->session->set_flashdata('error_message', get_phrase('No file uploaded or there was an upload error.'));
                     redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
                 }
             } else {
-                // Erreur d'upload
-                $this->session->set_flashdata('error_message', get_phrase('No file uploaded or there was an upload error.'));
-                redirect(site_url('addons/courses/course_edit/' . $data['course_id']), 'refresh');
-            }
-
-
-
-
-
-
-
-
-            }else {
                 $this->session->set_flashdata('error_message', get_phrase('invalid_lesson_provider'));
                 redirect(site_url(strtolower($this->session->userdata('role')) . '/course_form/course_edit/' . $data['course_id']), 'refresh');
             }
             $data['attachment'] = "";
-
         } else {
             if ($_FILES['attachment']['name'] != "") {
                 // unlinking previous attachments
@@ -549,7 +644,8 @@ class Lms_model extends CI_Model {
         $this->db->update('lesson', $data);
     }
 
-    public function delete_lesson($lesson_id){
+    public function delete_lesson($lesson_id)
+    {
         $this->db->where('id', $lesson_id);
         $this->db->delete('lesson');
         $response = array(
@@ -560,7 +656,8 @@ class Lms_model extends CI_Model {
     }
 
     // Adding quiz functionalities
-    public function add_quiz($course_id = ""){
+    public function add_quiz($course_id = "")
+    {
         $data['course_id'] = $course_id;
         $data['title'] = html_escape($this->input->post('title'));
         $data['section_id'] = html_escape($this->input->post('section_id'));
@@ -573,7 +670,8 @@ class Lms_model extends CI_Model {
     }
 
     // updating quiz functionalities
-    public function edit_quiz($lesson_id = ""){
+    public function edit_quiz($lesson_id = "")
+    {
         $data['title'] = html_escape($this->input->post('title'));
         $data['section_id'] = html_escape($this->input->post('section_id'));
         $data['last_modified'] = strtotime(date('D, d-M-Y'));
@@ -582,7 +680,8 @@ class Lms_model extends CI_Model {
         $this->db->update('lesson', $data);
     }
 
-    public function delete_course_section($course_id, $section_id){
+    public function delete_course_section($course_id, $section_id)
+    {
         $this->db->where('id', $section_id);
         $this->db->delete('course_section');
 
@@ -611,7 +710,8 @@ class Lms_model extends CI_Model {
         return json_encode($response);
     }
 
-    public function sort_section($section_json){
+    public function sort_section($section_json)
+    {
         $sections = json_decode($section_json);
         foreach ($sections as $key => $value) {
             $updater = array(
@@ -622,7 +722,8 @@ class Lms_model extends CI_Model {
         }
     }
 
-    public function sort_lesson($lesson_json){
+    public function sort_lesson($lesson_json)
+    {
         $lessons = json_decode($lesson_json);
         foreach ($lessons as $key => $value) {
             $updater = array(
@@ -633,13 +734,15 @@ class Lms_model extends CI_Model {
         }
     }
 
-    public function get_quiz_questions($quiz_id){
+    public function get_quiz_questions($quiz_id)
+    {
         $this->db->order_by("order", "asc");
         $this->db->where('quiz_id', $quiz_id);
         return $this->db->get('question');
     }
 
-    public function sort_question($question_json){
+    public function sort_question($question_json)
+    {
         $questions = json_decode($question_json);
         foreach ($questions as $key => $value) {
             $updater = array(
@@ -650,7 +753,8 @@ class Lms_model extends CI_Model {
         }
     }
     // Add Quiz Questions
-    public function add_quiz_questions($quiz_id){
+    public function add_quiz_questions($quiz_id)
+    {
         $question_type = $this->input->post('question_type');
         if ($question_type == 'mcq') {
             $response = $this->add_multiple_choice_question($quiz_id);
@@ -658,7 +762,8 @@ class Lms_model extends CI_Model {
         }
     }
     // multiple_choice_question crud functions
-    public function add_multiple_choice_question($quiz_id){
+    public function add_multiple_choice_question($quiz_id)
+    {
         if (sizeof($this->input->post('options')) != $this->input->post('number_of_options')) {
             return false;
         }
@@ -681,7 +786,8 @@ class Lms_model extends CI_Model {
         $this->db->insert('question', $data);
         return true;
     }
-    public function update_quiz_questions($question_id){
+    public function update_quiz_questions($question_id)
+    {
         $question_type = $this->input->post('question_type');
         if ($question_type == 'mcq') {
             $response = $this->update_multiple_choice_question($question_id);
@@ -689,7 +795,8 @@ class Lms_model extends CI_Model {
         }
     }
     // update multiple choice question
-    public function update_multiple_choice_question($question_id){
+    public function update_multiple_choice_question($question_id)
+    {
         if (sizeof($this->input->post('options')) != $this->input->post('number_of_options')) {
             return false;
         }
@@ -714,7 +821,8 @@ class Lms_model extends CI_Model {
         $this->db->update('question', $data);
         return true;
     }
-    public function delete_quiz_question($question_id){
+    public function delete_quiz_question($question_id)
+    {
         $this->db->where('id', $question_id);
         $this->db->delete('question');
         $response = array(
@@ -723,14 +831,16 @@ class Lms_model extends CI_Model {
         );
         return json_encode($response);
     }
-    public function get_quiz_question_by_id($question_id){
+    public function get_quiz_question_by_id($question_id)
+    {
         $this->db->order_by("order", "asc");
         $this->db->where('id', $question_id);
         return $this->db->get('question');
     }
 
     // code of mark this lesson as completed
-    function save_course_progress(){
+    function save_course_progress()
+    {
         $lesson_id = $this->input->post('lesson_id');
         $progress = $this->input->post('progress');
         $user_id   = $this->session->userdata('user_id');
@@ -761,15 +871,17 @@ class Lms_model extends CI_Model {
         return $progress;
     }
 
-    public function get_class_id_by_user($user_id = ""){
-        if($user_id == ""){
+    public function get_class_id_by_user($user_id = "")
+    {
+        if ($user_id == "") {
             $user_id = $this->session->userdata('user_id');
         }
         $student_id = $this->db->get_where('students', array('user_id' => $user_id))->row('id');
         return $class_id = $this->db->get_where('enrols', array('student_id' => $student_id,  'session' => active_session()))->row('class_id');
     }
 
-    public function get_exams($type = "", $id = "") {
+    public function get_exams($type = "", $id = "")
+    {
         $this->db->order_by("id", "asc"); // Tri par "id" au lieu de "order"
         if ($type == "exam") {
             $query = $this->db->get_where('exams', array('id' => $id));
@@ -785,28 +897,32 @@ class Lms_model extends CI_Model {
             return $query;
         }
     }
-    
-    public function get_exam_questions($exam_id) {
+
+    public function get_exam_questions($exam_id)
+    {
         $this->db->order_by("order", "asc");
         $this->db->where('exam_id', $exam_id);
         return $this->db->get('exam_questions');
     }
-    
-    public function get_exam_question_by_id($question_id) {
+
+    public function get_exam_question_by_id($question_id)
+    {
         $this->db->order_by("order", "asc");
         $this->db->where('id', $question_id);
         return $this->db->get('exam_questions');
     }
-    
-    public function add_exam_questions($exam_id) {
+
+    public function add_exam_questions($exam_id)
+    {
         $question_type = $this->input->post('question_type');
         if ($question_type == 'mcq') {
             $response = $this->add_multiple_choice_exam_question($exam_id);
             return $response;
         }
     }
-    
-    public function add_multiple_choice_exam_question($exam_id) {
+
+    public function add_multiple_choice_exam_question($exam_id)
+    {
         if (sizeof($this->input->post('options')) != $this->input->post('number_of_options')) {
             return false;
         }
@@ -829,16 +945,18 @@ class Lms_model extends CI_Model {
         $this->db->insert('exam_questions', $data);
         return true;
     }
-    
-    public function update_exam_questions($question_id) {
+
+    public function update_exam_questions($question_id)
+    {
         $question_type = $this->input->post('question_type');
         if ($question_type == 'mcq') {
             $response = $this->update_multiple_choice_exam_question($question_id);
             return $response;
         }
     }
-    
-    public function update_multiple_choice_exam_question($question_id) {
+
+    public function update_multiple_choice_exam_question($question_id)
+    {
         if (sizeof($this->input->post('options')) != $this->input->post('number_of_options')) {
             return false;
         }
@@ -847,13 +965,13 @@ class Lms_model extends CI_Model {
                 return false;
             }
         }
-    
+
         if (sizeof($this->input->post('correct_answers')) == 0) {
             $correct_answers = [""];
         } else {
             $correct_answers = $this->input->post('correct_answers');
         }
-    
+
         $data['title']              = html_escape($this->input->post('title'));
         $data['number_of_options']  = html_escape($this->input->post('number_of_options'));
         $data['type']               = 'multiple_choice';
@@ -863,15 +981,17 @@ class Lms_model extends CI_Model {
         $this->db->update('exam_questions', $data);
         return true;
     }
-    
-    public function delete_exam_question($question_id) {
+
+    public function delete_exam_question($question_id)
+    {
         $this->db->where('id', $question_id);
         $this->db->delete('exam_questions');
         return $this->db->affected_rows() > 0;
     }
 
     // Dans models/Lms_model.php
-    public function sort_exam_question($question_json) {
+    public function sort_exam_question($question_json)
+    {
         $questions = json_decode($question_json);
         foreach ($questions as $key => $value) {
             $updater = array(
@@ -880,5 +1000,5 @@ class Lms_model extends CI_Model {
             $this->db->where('id', $value);
             $this->db->update('exam_questions', $updater);
         }
-}
+    }
 }

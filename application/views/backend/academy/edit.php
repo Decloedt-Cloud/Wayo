@@ -68,11 +68,11 @@
                                                 </a>
                                             </li>
                                             <!-- <li class="nav-item">
-                                      <a href="#media" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
-                                      <i class="mdi mdi-video-outline"></i>
-                                          <span class="d-none d-sm-inline"><?php echo get_phrase('media'); ?></span>
-                                      </a>
-                                  </li> -->
+                                                <a href="#media" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
+                                                    <i class="mdi mdi-video-outline"></i>
+                                                    <span class="d-none d-sm-inline"><?php echo get_phrase('media'); ?></span>
+                                                </a>
+                                            </li> -->
                                             <li class="nav-item">
                                                 <a href="#finish" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
                                                     <i class="mdi mdi-check-circle-outline"></i>
@@ -114,20 +114,26 @@
                                                     </div>
                                                     */ ?>
                                                 </div>
-                                                <div class="thumbnail-upload bg-light border rounded-3 p-3 text-center">
-                                                    <div class="mb-3">
-                                                        <img src="<?php echo base_url('uploads/course_thumbnail/' . $course['thumbnail'] ? $course['thumbnail'] : 'placeholder.png'); ?>" id="thumbnail-preview" class="img-fluid rounded shadow-sm" style="max-height: 180px;">
-                                                    </div>
-
-                                                    <label for="course_thumbnail" class="btn btn-outline-primary mb-0">
-                                                        <i class="mdi mdi-image me-1"></i> <?php echo get_phrase('Choose image'); ?>
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-medium mb-3" for="course_thumbnail">
+                                                        <?php echo get_phrase('Course thumbnail'); ?>
                                                     </label>
-                                                    <input id="course_thumbnail" type="file" class="d-none" name="course_thumbnail" accept="image/*">
-                                                    <input type="hidden" name="current_thumbnail" value="<?php echo $course['thumbnail']; ?>">
-                                                    <div class="form-text text-secondary small mt-2">
-                                                        <?php echo get_phrase('Recommended size: 800 × 530 pixels'); ?>
+
+                                                    <div class="thumbnail-upload bg-light border rounded-3 p-3 text-center">
+                                                        <div class="mb-3">
+                                                             <img src="<?php echo base_url('uploads/course_thumbnail/' . ($course['thumbnail'] ? $course['thumbnail'] : 'placeholder.png')); ?>" id="thumbnail-preview" class="img-fluid rounded shadow-sm" style="max-height: 180px;">
+                                                        </div>
+
+                                                        <label for="course_thumbnail" class="btn btn-outline-primary mb-0">
+                                                            <i class="mdi mdi-image me-1"></i> <?php echo get_phrase('Choose image'); ?>
+                                                        </label>
+                                                        <input id="course_thumbnail" type="file" class="d-none" name="course_thumbnail" accept="image/*">
+                                                        <div class="form-text text-secondary small mt-2">
+                                                            <?php echo get_phrase('Recommended size: 800 × 530 pixels'); ?>
+                                                        </div>
                                                     </div>
                                                 </div>
+
                                                 <!-- Navigation Buttons -->
                                                 <div class="d-flex justify-content-end mt-5 custom-navigation-buttons">
                                                     <button type="button" class="btn btn-outline-primary px-4 py-2" onclick="goToNext()">
@@ -145,10 +151,13 @@
                                                     <label class="form-label fw-medium" for="class_id">
                                                         <?php echo get_phrase('Class'); ?> <span class="text-danger">*</span>
                                                     </label>
-                                                    <select class="form-select form-select-lg border-0 bg-light" name="class_id" id="class_id_add_cours" required>
-                                                        <option value=""><?php echo get_phrase('Select a class'); ?></option>
+                                                    <select class="form-select form-select-lg " name="class_id[]" id="class_id_add_cours" multiple required>
+                                                        <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                                         <?php foreach ($classes->result_array() as $class): ?>
-                                                            <option value="<?php echo $class['id']; ?>" <?php if ($class['id'] == $course['class_id']) echo 'selected'; ?>><?php echo $class['name']; ?></option>
+                                                            <option value="<?php echo $class['id']; ?>"
+                                                                <?php if (in_array($class['id'], array_column($course_classes, 'id'))) echo 'selected'; ?>>
+                                                                <?php echo $class['name']; ?>
+                                                            </option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 </div>
@@ -160,10 +169,13 @@
                                                         <label class="form-label fw-medium" for="user_id">
                                                             <?php echo get_phrase('Instructor'); ?> <span class="text-danger">*</span>
                                                         </label>
-                                                        <select class="form-select form-select-lg border-0 bg-light" name="user_id" id="user_id" required>
-                                                            <option value=""><?php echo get_phrase('Select a teacher'); ?></option>
+                                                        <select class="form-select form-select-lg border-0 bg-light" name="user_id[]" id="user_id" multiple required>
+                                                            <option value="" disabled><?php echo get_phrase('select_a_teacher'); ?></option>
                                                             <?php foreach ($all_teachers->result_array() as $teacher): ?>
-                                                                <option value="<?php echo $teacher['id']; ?>" <?php if ($teacher['id'] == $course['user_id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
+                                                                <option value="<?php echo $teacher['id']; ?>"
+                                                                    <?php if (in_array($teacher['id'], array_column($course_teachers, 'id'))) echo 'selected'; ?>>
+                                                                    <?php echo $teacher['name']; ?>
+                                                                </option>
                                                             <?php endforeach; ?>
                                                         </select>
                                                     </div>
@@ -213,7 +225,7 @@
                                             </div>
                                         </div>
 
-
+                                        <?php /*
                                         <div class="tab-pane" id="media">
                                             <div class="p-lg-5">
                                                 <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Course media'); ?></h4>
@@ -269,7 +281,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>*/ ?>
 
                                         <div class="tab-pane" id="finish">
                                             <div class="p-lg-5 text-center">
@@ -278,7 +290,7 @@
                                                         <i class="mdi mdi-check-bold text-success" style="font-size: 40px;"></i>
                                                     </div>
 
-                                                    <h3 class="mb-3"><?php echo get_phrase('Ready to update course'); ?></h3>
+                                                    <h3 class="mb-3 fw-bold text-dark" ><?php echo get_phrase('Ready to update course'); ?></h3>
                                                     <p class="text-secondary mb-4">
                                                         <?php echo get_phrase('Please review all information before submitting. Your course details will be updated.'); ?>
                                                     </p>

@@ -54,11 +54,11 @@
                                 </a>
                             </li>
                             <!-- <li class="nav-item">
-                            <a href="#media" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
-                                <i class="mdi mdi-video-outline"></i>
-                                <span><?php echo get_phrase('Media'); ?></span>
-                            </a>
-                        </li> -->
+                                <a href="#media" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
+                                    <i class="mdi mdi-video-outline"></i>
+                                    <span><?php echo get_phrase('Media'); ?></span>
+                                </a>
+                            </li> -->
                             <li class="nav-item">
                                 <a href="#finish" data-bs-toggle="tab" class="nav-link py-3 rounded-0">
                                     <i class="mdi mdi-check-circle-outline"></i>
@@ -123,6 +123,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <!-- Navigation Buttons -->
                                     <div class="d-flex justify-content-end mt-5 custom-navigation-buttons">
                                         <button type="button" class="btn btn-outline-primary px-4 py-2" onclick="goToNext()">
@@ -141,8 +142,8 @@
                                         <label class="form-label fw-medium" for="class_id">
                                             <?php echo get_phrase('Class'); ?> <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select form-select-lg border-0 bg-light" name="class_id" id="class_id_add_cours" required>
-                                            <option value=""><?php echo get_phrase('Select a class'); ?></option>
+                                        <select class="form-select form-select-lg border-0 bg-light" name="class_id[]" id="class_id_add_cours" multiple required>
+                                            <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                             <?php foreach ($classes->result_array() as $class): ?>
                                                 <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                                             <?php endforeach; ?>
@@ -156,8 +157,8 @@
                                             <label class="form-label fw-medium" for="user_id">
                                                 <?php echo get_phrase('Instructor'); ?> <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select form-select-lg border-0 bg-light" name="user_id" id="user_id" required>
-                                                <option value=""><?php echo get_phrase('Select a teacher'); ?></option>
+                                            <select class="form-select form-select-lg border-0 bg-light" name="user_id[]" id="user_id" multiple required>
+                                                <option value="" disabled><?php echo get_phrase('select_a_teacher'); ?></option>
                                                 <?php foreach ($all_teachers->result_array() as $teacher): ?>
                                                     <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['name']; ?></option>
                                                 <?php endforeach; ?>
@@ -203,12 +204,12 @@
                                             <i class="mdi mdi-chevron-left me-1"></i> <?php echo get_phrase('Previous'); ?>
                                         </button>
                                         <button type="button" class="btn btn-outline-primary px-4 py-2" onclick="goToNext()">
-                                            <?php echo get_phrase('Next'); ?> <i class="mdi mdi-chevron-right me-1"></i>
+                                            <?php echo get_phrase('Next'); ?> <i class="mdi mdi-chevron-right ms-1"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
+                            <?php /*
                             <!-- Media Tab -->
                             <div class="tab-pane fade" id="media">
                                 <div class="p-4 p-lg-5">
@@ -265,6 +266,7 @@
                                     </div>
                                 </div>
                             </div>
+                            */ ?>
 
                             <!-- Finish Tab -->
                             <div class="tab-pane fade" id="finish">
@@ -274,25 +276,43 @@
                                             <i class="mdi mdi-check-bold text-success" style="font-size: 40px;"></i>
                                         </div>
 
-                                        <h3 class="mb-3"><?php echo get_phrase('Ready to create course'); ?></h3>
+                                        <h3 class="mb-3 fw-bold text-dark"><?php echo get_phrase('Ready to create course'); ?>
+                                            <span class="alert-modern space-between-icon " role="alert">
+                                                <span class="icon flex-shrink-0"
+                                                    data-bs-toggle="popover"
+                                                    data-bs-trigger="hover focus"
+                                                    data-bs-content="<?php echo get_phrase("don't_forget_to_add_your_content_to_your_course."); ?>"
+                                                    data-bs-placement="top">
+                                                    <i class="dripicons-information"></i>
+                                                </span>
+                                            </span>
+                                        </h3>
                                         <p class="text-secondary mb-4">
                                             <?php echo get_phrase('Please review all information before submitting. Your course will be available after approval.'); ?>
                                         </p>
+                                        <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap custom-navigation-buttons">
+                                            <!-- Previous -->
+                                            <button type="button" class="btn btn-outline-primary px-4 py-2" onclick="goToPrevious()">
+                                                <i class="mdi mdi-chevron-left me-1"></i> <?php echo get_phrase('Previous'); ?>
+                                            </button>
+                                            <input type="hidden" name="status" id="course_status" value="inactive">
+                                            <!-- Switch + Submit -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="form-check form-switch m-0">
+                                                    <input class="form-check-input big-switch" type="checkbox" id="courseActiveSwitch">
 
-                                        <button type="button" class="btn btn-success px-5 py-2 fw-medium" onclick="checkRequiredFields()">
-                                            <?php echo get_phrase('Submit course'); ?>
-                                        </button>
-                                    </div>
-
-                                    <!-- Navigation Buttons -->
-                                    <div class="d-flex justify-content-start mt-5 custom-navigation-buttons">
-                                        <button type="button" class="btn btn-outline-primary px-4 py-2" onclick="goToPrevious()">
-                                            <i class="mdi mdi-chevron-left me-1"></i> <?php echo get_phrase('Previous'); ?>
-                                        </button>
+                                                </div>
+                                                <label class="form-check-label switch text-danger" for="courseActiveSwitch">
+                                                    <?php echo get_phrase('inactive'); ?>
+                                                </label>
+                                                <button type="button" class="btn btn-success px-5 py-2 fw-medium" onclick="checkRequiredFields()">
+                                                    <?php echo get_phrase('Submit course'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -515,4 +535,37 @@
             toastr.error('<?php echo get_phrase("Please fill all required fields"); ?>'); // Show error toastr
         }
     }
+
+    // 🔹 On injecte les traductions PHP dans le JS
+    const activeText = "<?php echo get_phrase('active'); ?>";
+    const inactiveText = "<?php echo get_phrase('inactive'); ?>";
+
+    const courseSwitch = document.getElementById('courseActiveSwitch');
+    const courseStatus = document.getElementById('course_status');
+    const switchLabel = document.querySelector('label.switch'); // ton label
+
+    // Valeur initiale
+    switchLabel.textContent = inactiveText;
+    courseStatus.value = 'inactive';
+
+    // Quand on change l’état du switch
+    courseSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            switchLabel.textContent = activeText;
+            courseStatus.value = 'active';
+            switchLabel.classList.add('text-success');
+            switchLabel.classList.remove('text-danger');
+        } else {
+            switchLabel.textContent = inactiveText;
+            courseStatus.value = 'inactive';
+            switchLabel.classList.add('text-danger');
+            switchLabel.classList.remove('text-success');
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
