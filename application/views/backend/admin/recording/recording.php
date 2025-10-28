@@ -276,7 +276,7 @@ $(document).ready(function() {
         },
         autoUpdateInput: false,
         ranges: {
-            '<?php echo get_phrase('today'); ?>': [moment(), moment()],
+            "<?php echo get_phrase('today'); ?>": [moment(), moment()],
             '<?php echo get_phrase('yesterday'); ?>': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             '<?php echo get_phrase('last_7_days'); ?>': [moment().subtract(6, 'days'), moment()],
             '<?php echo get_phrase('this_month'); ?>': [moment().startOf('month'), moment().endOf('month')],
