@@ -48,14 +48,14 @@
           <div class="card-body p-4">
             <div class="d-flex align-items-center gap-3 mb-3">
               <div class="rounded-circle bg-light text-wayo d-grid place-items-center" style="width:54px;height:54px;">
-                <i class="fa-solid fa-image"></i>
+                <!-- <i class="fa-solid fa-image"></i> -->
+                 <img style="max-width:45px; max-height:45px" src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute">
               </div>
               <h2 class="h5 fw-bold mb-0"> <?php echo $school["name"] ?></h2>
             </div>
 
             <ul class="list-inline small text-muted mb-3">
                <?php if ($school["access"] > 0) { ?>
-                  <!-- <i class="fa-solid fa-lock text-wayo me-1"> -->
                  <li class="list-inline-item me-3"><i class="fa-solid fa-lock text-wayo me-1"></i><?php echo get_phrase("Private") ?></li>
                 <?php } else { ?>
                   
@@ -64,6 +64,9 @@
               <li class="list-inline-item me-3"><i class="fa-solid fa-bullhorn text-wayo me-1"></i><?php echo $school['category'] ?></li>
               <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i><?php echo get_phrase("Free") ?></li>
               <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php echo $school["course_students_count"] ?> <?php echo get_phrase("Members") ?></li>
+              <!-- <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php if (!empty($school_creator)): ?>
+                  <p><?php echo htmlspecialchars($school_creator['name']); ?></p>
+              <?php endif; ?></li> -->
 
               <!-- <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php echo get_phrase("Aymane") ?></li> -->
             </ul>
@@ -74,70 +77,64 @@
 
             <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
-              <?php if (!empty($classes)): ?>
-                <?php foreach ($classes as $class): ?>
-                  <div class="col">
-                    <div class="card h-100 border rounded-4 class-card position-relative"
-                        data-title="<?php echo htmlspecialchars($class['name']); ?>"
-                        data-plan="<?php echo isset($class['plan']) ? htmlspecialchars($class['plan']) : ''; ?>"
-                        data-price="<?php echo isset($class['price']) ? $class['price'] : 0; ?>"
-                        data-currency="<?php echo isset($class['currency']) ? htmlspecialchars($class['currency']) : 'DH'; ?>"
-                        data-cycle="<?php echo isset($class['cycle']) ? htmlspecialchars($class['cycle']) : ''; ?>"
-                        data-free="<?php echo isset($class['free_places']) ? $class['free_places'] : 0; ?>"
-                        data-desc="<?php echo isset($class['description']) ? htmlspecialchars($class['description']) : ''; ?>"
-                        data-mentor="<?php echo isset($class['mentor']) ? htmlspecialchars($class['mentor']) : 'À définir'; ?>"
-                        data-duration="<?php echo isset($class['duration']) ? htmlspecialchars($class['duration']) : ''; ?>"
-                        data-level="<?php echo isset($class['level']) ? htmlspecialchars($class['level']) : ''; ?>"
-                        data-start="<?php echo isset($class['start_date']) ? htmlspecialchars($class['start_date']) : ''; ?>"
-                        data-end="<?php echo isset($class['end_date']) ? htmlspecialchars($class['end_date']) : ''; ?>"
-                        data-video="<?php echo isset($class['video']) ? htmlspecialchars($class['video']) : ''; ?>">
+           <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
+            <?php if (!empty($classes)): ?>
+              <?php foreach ($classes as $class): ?>
+                <div class="col">
+                  <div class="card h-100 border rounded-4 class-card position-relative"
+                      data-title="<?php echo htmlspecialchars($class['name']); ?>"
+                      data-photo="<?php echo htmlspecialchars($class['photo']); ?>"
+                      data-desc="<?php echo isset($class['description']) ? htmlspecialchars($class['description']) : ''; ?>"
+                      data-mentor="<?php echo htmlspecialchars($class['mentor']); ?>"
+                      data-duration="<?php echo isset($class['duration']) ? htmlspecialchars($class['duration']) : ''; ?>"
+                      data-level="<?php echo isset($class['level']) ? htmlspecialchars($class['level']) : ''; ?>"
+                      data-start="<?php echo isset($class['date_debut']) ? htmlspecialchars($class['date_debut']) : ''; ?>"
+                      data-end="<?php echo isset($class['date_fin']) ? htmlspecialchars($class['date_fin']) : ''; ?>"
+                      data-price="<?php echo isset($class['price']) ? $class['price'] : 0; ?>"
+                      data-currency="<?php echo isset($class['currency']) ? htmlspecialchars($class['currency']) : 'DH'; ?>"
+                      data-cycle="<?php echo isset($class['cycle']) ? htmlspecialchars($class['cycle']) : ''; ?>"
+                      data-free="<?php echo htmlspecialchars($class['nombre_max_membre']); ?>">
 
-                      <div class="card-body d-flex flex-column gap-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                          <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
-                          <span class="badge rounded-pill border text-brand fw-bold price-badge">
-                            <?php 
-                              if (isset($class['price']) && $class['price'] > 0) {
-                                echo $class['price'].' '.(isset($class['currency']) ? $class['currency'] : 'DH');
-                                if (!empty($class['cycle'])) echo ' '.$class['cycle'];
-                              } else {
-                                echo "Gratuit";
-                              }
-                            ?>
-                          </span>
-                          
-                        </div>
-                        <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
+                    <div class="card-body d-flex flex-column gap-2">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
+                        <span class="badge rounded-pill border text-brand fw-bold price-badge">
+                          <?php 
+                            if (isset($class['price']) && $class['price'] > 0) {
+                              echo $class['price'].' '.(isset($class['currency']) ? $class['currency'] : 'DH');
+                              if (!empty($class['cycle'])) echo ' '.$class['cycle'];
+                            } else {
+                              echo "Gratuit";
+                            }
+                          ?>
+                        </span>
+                      </div>
+                      <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
+                      <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
 
-                        <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
-
-                        <div class="text-secondary small d-flex align-items-center gap-2">
-                          <i class="fa-regular fa-calendar text-brand"></i>
-                          <strong class="date-start">
-                            01 oct. 2025</strong>
-                            → 
-                          <strong class="date-end">12 nov. 2025</strong>
-                        </div>
-
-                        <div class="small text-secondary">
-                          <i class="fa-regular fa-circle-check me-1"></i>
-                          25 places gratuites
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
-                            <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button>
-                          </div>
+                      <div class="text-secondary small d-flex align-items-center gap-2">
+                        <i class="fa-regular fa-calendar text-brand"></i>
+                        <strong class="date-start"><?php echo (new DateTime($class['date_debut']))->format('d M. Y'); ?></strong> → 
+                        <strong class="date-end"><?php echo (new DateTime($class['date_fin']))->format('d M. Y'); ?></strong>
+                      </div>
+                      <div class="small text-secondary">
+                        <i class="fa-regular fa-circle-check me-1"></i>
+                        <?php echo htmlspecialchars($class['nombre_max_membre']); ?> <?php echo get_phrase("Maximum_number") ?>
+                      </div>
+                      <div class="d-flex gap-2 mt-2">
+                          <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
+                          <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button>
                       </div>
                     </div>
                   </div>
-                <?php endforeach; ?>
-              <?php else: ?>
-                <div class="col-12">
-                  <p><?php echo get_phrase("Aucune classe disponible pour cette communauté.") ?></p>
                 </div>
-              <?php endif; ?>
-            </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="col-12">
+                <p><?php echo get_phrase("Aucune classe disponible pour cette communauté.") ?></p>
+              </div>
+            <?php endif; ?>
+          </div>
           </div>
         </div>
       </div>
@@ -149,9 +146,11 @@
                     title="Présentation Wayo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen></iframe>
           </div> -->
-          <div class="text-center py-3 bg-logo-communaute">
-            <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute" >
+           <div class="bg-logo-communaute p-4 text-center">
+          <div class="cercle-logo">
+          <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute">
           </div>
+            </div>
            <div class="card-body">
             <h3 class="h6 fw-bold"><?php echo get_phrase("Accès communauté") ?></h3>
             <ul class="list-unstyled small text-muted mb-3">
@@ -185,59 +184,54 @@
   <i class="fa-solid fa-arrow-up text-white"></i>
 </button>
 
-<!-- ===== MODAL Bootstrap (unique, alimentée dynamiquement) ===== -->
-<!-- <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0">
+
+  <!-- MODAL DETAILS CLASS -->
+<div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="modalTitle">Titre</h5>
+        <h5 class="modal-title fw-bold" id="classModalLabel"><?php echo get_phrase("Title") ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
       <div class="modal-body">
+        <div class="d-flex justify-content-center mb-3">
+          <img id="classPhoto" src="" alt="Photo de classe" class="img-fluid rounded img-card-dt-communitites">
+        </div>
+
         <ul class="list-inline small text-muted mb-3">
-          <li class="list-inline-item me-3"><i class="fa-regular fa-user text-wayo me-1"></i><span id="modalMentor">Mentor</span></li>
-          <li class="list-inline-item me-3"><i class="fa-regular fa-clock text-wayo me-1"></i><span id="modalDuration">Durée</span></li>
-          <li class="list-inline-item"><i class="fa-solid fa-ranking-star text-wayo me-1"></i><span id="modalLevel">Niveau</span></li>
+          <li class="list-inline-item me-3">
+            <i class="fa-regular fa-calendar text-wayo me-2"></i>
+            <span id="classDates"></span>
+          </li>
+          <li class="list-inline-item me-3">
+            <i class="fa-regular fa-user text-wayo me-2"></i>
+            <span id="classMentor"></span>
+          </li>
+          <li class="list-inline-item me-3">
+            <i class="fa-regular fa-clock text-wayo me-2"></i>
+            <span id="classDuration"></span>
+          </li>
+          <li class="list-inline-item me-3">
+            <i class="fa-solid fa-star text-wayo me-2"></i>
+            <span id="classLevel"></span>
+          </li>
+          <li class="list-inline-item me-3">
+            <i class="fa-regular fa-circle-check text-wayo me-2"></i>
+            <span id="classFree"></span>
+          </li>
         </ul>
-        <p class="mb-0" id="modalDesc">Description…</p>
+
+        <p id="classDescription" class="text-secondary mb-3"></p>
       </div>
       <div class="modal-footer d-flex justify-content-between">
-        <span class="fw-bold text-wayo" id="modalPrice">Gratuit</span>
-        <button type="button" class="btn btn-wayo" id="modalApplyBtn">S’inscrire</button>
+        <span class="fw-bold text-brand" id="classPrice">—</span>
+        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
       </div>
     </div>
   </div>
-</div> -->
+</div>
 
-<!-- MODAL -->
-  <div class="modal fade" id="classModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content rounded-4">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold" id="modalTitle"><?php echo get_phrase("Title") ?></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body">
-          <div class="ratio ratio-16x9 rounded-3 overflow-hidden mb-3" id="modalVideoWrap"></div>
-
-          <ul class="list-inline small text-muted mb-3">
-          <li class="list-inline-item me-3"><i class="fa-regular fa-user text-wayo me-1"></i><span id="modalMentor"><?php echo get_phrase("Mentor") ?></span></li>
-          <li class="list-inline-item me-3"><i class="fa-regular fa-clock text-wayo me-1"></i><span id="modalDuration"><?php echo get_phrase("Duration") ?></span></li>
-          <li class="list-inline-item"><i class="fa-solid fa-ranking-star text-wayo me-1"></i><span id="modalLevel"><?php echo get_phrase("Niveau") ?></span></li>
-        </ul>
-          <div class="fw-semibold mb-2"><i class="fa-regular fa-calendar text-brand me-1"></i>
-            <?php echo get_phrase("From") ?> <span id="modalStart">—</span> <?php echo get_phrase("to") ?> <span id="modalEnd">—</span>
-          </div>
-
-          <p id="modalDesc" class="mb-0">Description…</p>
-        </div>
-        <div class="modal-footer d-flex justify-content-between">
-          <span class="fw-bold text-brand" id="modalPrice">—</span>
-          <button class="btn btn-brand fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
@@ -251,58 +245,6 @@ document.querySelectorAll('.class-card').forEach(card => {
   if (badge) badge.textContent = formatPrice(card.dataset.price);
 });
 
-/* ===== Modal Bootstrap alimentée dynamiquement ===== */
-const modalEl = document.getElementById('classModal');
-const bsModal  = modalEl ? new bootstrap.Modal(modalEl) : null;
-
-const modalTitle    = document.getElementById('modalTitle');
-const modalMentor   = document.getElementById('modalMentor');
-const modalDuration = document.getElementById('modalDuration');
-const modalLevel    = document.getElementById('modalLevel');
-const modalDesc     = document.getElementById('modalDesc');
-const modalPrice    = document.getElementById('modalPrice');
-const modalApplyBtn = document.getElementById('modalApplyBtn');
-const modalVideoWrap= document.getElementById('modalVideoWrap');
-
-/* ===== Vidéo statique (fixe) ===== */
-const staticVideoUrl = "https://www.youtube.com/embed/r8cCk-HXcMQ?si=qL5bMJii7leDH7z1"; 
-// 👉 remplace ce lien par la vidéo que tu veux
-
-document.querySelectorAll('.class-card').forEach(card => {
-  // ouvrir via bouton "Voir plus"
-  card.querySelector('[data-bs-target="#classModal"]')?.addEventListener('click', () => {
-    modalTitle.textContent    = card.dataset.title || 'Classe';
-    modalMentor.textContent   = card.dataset.mentor || 'Mentor à venir';
-    modalDuration.textContent = card.dataset.duration || 'Durée à venir';
-    modalLevel.textContent    = card.dataset.level || 'Tous niveaux';
-    modalDesc.textContent     = card.dataset.desc || 'Description de classe';
-    modalPrice.textContent    = formatPrice(card.dataset.price);
-
-    // afficher la vidéo fixe
-    modalVideoWrap.innerHTML = `<iframe src="${staticVideoUrl}" 
-      class="w-100 h-100 border-0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen></iframe>`;
-  });
-
-  // CTA "S’inscrire" direct
-  card.querySelector('.btn-apply')?.addEventListener('click', () => {
-    const title = card.dataset.title || 'Classe';
-    const price = formatPrice(card.dataset.price);
-    alert(`Inscription à “${title}” — ${price}`);
-  });
-});
-
-// Nettoyer vidéo quand modal se ferme (évite le son qui continue)
-modalEl?.addEventListener('hidden.bs.modal', () => {
-  modalVideoWrap.innerHTML = '';
-});
-
-// CTA "S’inscrire" depuis la modal
-modalApplyBtn?.addEventListener('click', () => {
-  alert(`Inscription à “${modalTitle.textContent}” — ${modalPrice.textContent}`);
-  bsModal?.hide();
-});
 
 /* ===== Scroll-to-top ===== */
 const topBtn = document.getElementById('scrollTopBtn');
@@ -384,9 +326,62 @@ topBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smo
             }
       });
     }
-
     updateButton();
     setInterval(updateButton, 5000);
   });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const classCards = document.querySelectorAll('.class-card');
+    const modal = document.getElementById('classModal');
 
+    classCards.forEach(card => {
+        card.querySelector('[data-bs-toggle="modal"]').addEventListener('click', function() {
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { day: '2-digit', month: 'short', year: 'numeric' };
+                return date.toLocaleDateString('fr-FR', options);
+            }
+
+           const mentorName = card.dataset.mentor || "—";
+          // Mettre la première lettre de chaque mot en majuscule et le reste en minuscules
+          const capitalizedMentor = mentorName
+              .toLowerCase()
+              .split(' ')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ');
+
+          document.getElementById('classMentor').textContent = capitalizedMentor;
+
+            // Remplir les champs du modal
+            modal.querySelector('.modal-title').textContent = card.dataset.title;
+            modal.querySelector('#classPhoto').src = '<?php echo base_url("uploads/class/"); ?>' + card.dataset.photo;
+            modal.querySelector('#classDescription').textContent = card.dataset.desc;
+            modal.querySelector('#classDuration').textContent = card.dataset.duration;
+            modal.querySelector('#classLevel').textContent = card.dataset.level;
+
+            // Dates
+            const startText = '<?php echo get_phrase("From"); ?>';
+            const endText = '<?php echo get_phrase("to"); ?>';
+            const startDate = formatDate(card.dataset.start);
+            const endDate = formatDate(card.dataset.end);
+            modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
+
+            // Nombre max
+            const nombre_max = card.dataset.free;
+            modal.querySelector('#classFree').textContent = nombre_max + ' <?php echo get_phrase("Maximum_number"); ?>';
+
+            // Prix
+            modal.querySelector('#classPrice').textContent = (card.dataset.price > 0 ? card.dataset.price + ' ' + card.dataset.currency + ' ' + card.dataset.cycle : 'Gratuit');
+        });
+    });
+});
+</script>
+<script>
+  // // CTA "S’inscrire" depuis la modal
+// modalApplyBtn?.addEventListener('click', () => {
+//   alert(`Inscription à “${modalTitle.textContent}” — ${modalPrice.textContent}`);
+//   bsModal?.hide();
+// });
+</script>

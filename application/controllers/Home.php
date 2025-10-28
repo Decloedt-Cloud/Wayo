@@ -367,6 +367,12 @@ class Home extends CI_Controller
     $page_data['categories'] = $this->frontend_model->get_categories();
     $page_data['page_name'] = 'communities';
     $page_data['page_title'] = get_phrase('communities');
+	// --- 🔥 Ajout : Support AJAX ---
+		if ($this->input->is_ajax_request()) {
+			// En cas d’appel AJAX : on renvoie seulement le HTML partiel
+			$this->load->view('frontend/' . $this->theme . '/partials/communities_grid', $page_data);
+			return;
+		}
 
 
     $this->load->view('frontend/' . $this->theme . '/index', $page_data);
@@ -417,39 +423,36 @@ class Home extends CI_Controller
 
 			$config['num_links'] = 1;
 
-			$config['first_link'] = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16">
-  			<path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708z"/>
-			</svg>';
+			// Icônes Font Awesome
+			$config['first_link'] = '<i class="fas fa-angle-double-left fa-xs"></i>';
+			$config['last_link']  = '<i class="fas fa-angle-double-right fa-xs"></i>';
+			$config['next_link']  = '<i class="fas fa-angle-right fa-xs"></i>';
+			$config['prev_link']  = '<i class="fas fa-angle-left fa-xs"></i>';
 
-			$config['last_link'] = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-right" viewBox="0 0 16 16">
-  			<path fill-rule="evenodd" d="M14.854 4.854a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 4H3.5A2.5 2.5 0 0 0 1 6.5v8a.5.5 0 0 0 1 0v-8A1.5 1.5 0 0 1 3.5 5h9.793l-3.147 3.146a.5.5 0 0 0 .708.708z"/>
-			</svg>';
+			// === Structure Bootstrap ===
+			$config['full_tag_open']  = '<ul class="pagination justify-content-center pagination-custom">'; 
+			$config['full_tag_close'] = '</ul>';
 
-			$config['next_link'] = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class=bi bi-arrow-bar-right" viewBox="0 0 16 16">
-  			<path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5"/>
-			</svg>';
+			$config['first_tag_open'] = '<li class="page-item">';
+			$config['first_tag_close'] = '</li>';
+			
+			$config['last_tag_open'] = '<li class="page-item">';
+			$config['last_tag_close'] = '</li>';
+			
 
-			$config['prev_link'] = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
-  			<path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5"/>
-			</svg>';
+			$config['next_tag_open'] = '<li class="page-item">';
+			$config['next_tag_close'] = '</li>';
 
-			$config['full_tag_open'] = '<nav aria-label="course page navigation "><div class="pagination-list">';
-			$config['full_tag_close'] = '</div></nav>';
-			$config['first_tag_open'] = '<div class="pagination-item">';
-			$config['first_tag_close'] = '</div>';
-			$config['last_tag_open'] = '<div class="pagination-item">';
-			$config['last_tag_close'] = '</div>';
-			$config['next_tag_open'] = '<div class="pagination-item">';
-			$config['next_tag_close'] = '</div>';
-			$config['prev_tag_open'] = '<div class="pagination-item">';
-			$config['prev_tag_close'] = '</div>';
-			$config['cur_tag_open'] = '<div class="pagination-item active"><a class="pagination-link" href="#">';
-			$config['cur_tag_close'] = '</a></div>';
-			$config['num_tag_open'] = '<div class="pagination-item">';
-			$config['num_tag_close'] = '</div>';
-			$config['attributes'] = array('class' => 'pagination-link');
+			$config['prev_tag_open'] = '<li class="page-item">';
+			$config['prev_tag_close'] = '</li>';
 
+			$config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+			$config['cur_tag_close'] = '</a></li>';
 
+			$config['num_tag_open'] = '<li class="page-item">';
+			$config['num_tag_close'] = '</li>';
+
+			$config['attributes'] = array('class' => 'page-link');
 
 		}
 
@@ -471,26 +474,33 @@ class Home extends CI_Controller
 
 function community_details($school_id = '')
 {
-    $page_data['school'] = $this->user_model->get_school_details(urldecode($school_id));
+    $school_id = urldecode($school_id);
+    $page_data['school'] = $this->user_model->get_school_details($school_id);
     $page_data['school_id'] = $page_data['school']['id'];
 
-    // passe la valeur deux façons : dans school et comme variable indépendante
     $page_data['course_students_count'] = $this->user_model->get_community_students_count($page_data['school']['id']);
     $page_data['school']['course_students_count'] = $page_data['course_students_count'];
 
-
-	// Compter les classes
     $page_data['classes_count'] = $this->crud_model->get_school_classes_count($page_data['school']['id']);
     $page_data['school']['classes_count'] = $page_data['classes_count'];
 
-    // Compter les enseignants
     $page_data['teachers_count'] = $this->user_model->get_school_teachers_count($page_data['school']['id']);
     $page_data['school']['teachers_count'] = $page_data['teachers_count'];
 
-	//get les classes a affecter community
-	$page_data['classes'] = $this->crud_model->get_school_classes($school_id);
+    // Récupération des classes
+    $classes = $this->crud_model->get_school_classes($school_id);
 
-	
+    // Récupérer le créateur du school
+    $school_creator = $this->user_model->get_creator_by_school($page_data['school_id']);
+    $creator_name = !empty($school_creator['name']) ? $school_creator['name'] : 'À définir';
+
+    // Ajouter le nom du créateur comme mentor à chaque classe
+    foreach ($classes as &$class) {
+        $class['mentor'] = $creator_name;
+    }
+    unset($class);
+
+    $page_data['classes'] = $classes;
 
     $page_data['page_name']  = 'community_details';
     $page_data['page_title'] = get_phrase('community_details');

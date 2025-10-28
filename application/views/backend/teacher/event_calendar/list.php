@@ -1,29 +1,35 @@
 <div class="row">
-	<div class="col-md-6">
+	<!-- <div class="col-md-6">
 		<div class="card">
 			<div class="card-body">
 				<div id="calendar"></div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-6">
+	</div> -->
+	<div class="col-md-12">
 		<div class="card">
 			<div class="card-body">
-				<?php $school_id = school_id(); ?>
-				<?php $query = $this->db->get_where('event_calendars', array('school_id' => $school_id, 'session' => active_session())); ?>
+				<?php
+				// $school_id = school_id();
+				$user_id = $this->session->userdata('user_id');
+				$school_id = $this->db->get_where('users', array('id' => $user_id))->row('school_id');
+
+				?>
+				<?php $query = $this->db->get_where('announcement', array('school_id' => $school_id, 'session' => active_session())); ?>
 				<?php if ($query->num_rows() > 0): ?>
-					<table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
+					<table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
 						<thead>
 							<tr>
 								<th><i class="mdi mdi-calendar-range-outline me-2 thead-icon"></i><?php echo get_phrase('event_title'); ?></th>
 								<th><i class="mdi mdi-calendar-start thead-icon"></i><?php echo get_phrase('from'); ?></th>
 								<th><i class="mdi mdi-calendar-end thead-icon"></i><?php echo get_phrase('to'); ?></th>
+								<th><?php echo get_phrase('options'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php
-							$event_calendars = $this->db->get_where('event_calendars', array('school_id' => $school_id, 'session' => active_session()))->result_array();
-							foreach ($event_calendars as $event_calendar) {
+							$announcements = $this->db->get_where('announcement', array('school_id' => $school_id, 'session' => active_session()))->result_array();
+							foreach ($announcements as $announcement) {
 							?>
 								<tr>
 									<td class="modern-td">
@@ -31,21 +37,32 @@
 										<span class="desktop-description"
 											data-bs-toggle="tooltip"
 											data-bs-placement="top"
-											title="<?php echo htmlspecialchars($event_calendar['title']); ?>">
-											<?php echo strlen($event_calendar['title']) > 30 ? substr($event_calendar['title'], 0, 30) . '...' : $event_calendar['title']; ?>
+											title="<?php echo htmlspecialchars($announcement['title']); ?>">
+											<?php echo strlen($announcement['title']) > 30 ? substr($announcement['title'], 0, 30) . '...' : $announcement['title']; ?>
 										</span>
 										<span class="d-inline d-md-none ms-2">
-											<?php echo strlen($event_calendar['title']) > 13 ? substr($event_calendar['title'], 0, 13) . '...' : $event_calendar['title']; ?>
+											<?php echo strlen($announcement['title']) > 13 ? substr($announcement['title'], 0, 13) . '...' : $announcement['title']; ?>
 										</span>
 
 										<button type="button" class="btn btn-sm mobile-description-btn"
-											data-description="<?php echo htmlspecialchars($event_calendar['title']); ?>"
+											data-description="<?php echo htmlspecialchars($announcement['title']); ?>"
 											onclick="showDescriptionPopup(this)">
 											<i class="mdi mdi-eye-outline"></i>
 										</button>
 									</td>
-									<td><?php echo date('D, d M Y', strtotime($event_calendar['starting_date'])); ?></td>
-									<td><?php echo date('D, d M Y', strtotime($event_calendar['ending_date'])); ?></td>
+									<td><?php echo date('D, d M Y', strtotime($announcement['starting_date'])); ?></td>
+									<td><?php echo date('D, d M Y', strtotime($announcement['ending_date'])); ?></td>
+									<td>
+										<div class="dropdown text-center">
+											<button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
+											<div class="dropdown-menu dropdown-menu-end">
+												<!-- item-->
+												<a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/event_calendar/edit/' . $announcement['id']); ?>',&quot;<?php echo get_phrase('update_event'); ?>&quot;)"><?php echo get_phrase('edit'); ?></a>
+												<!-- item-->
+												<a href="javascript:void(0);" class="dropdown-item" onclick="confirmModal('<?php echo route('event_calendar/delete/' . $announcement['id']); ?>', showAllEvents)"><?php echo get_phrase('delete'); ?></a>
+											</div>
+										</div>
+									</td>
 								</tr>
 							<?php } ?>
 							<div id="description-popup-overlay" class="description-popup-overlay"></div>

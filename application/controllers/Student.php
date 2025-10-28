@@ -131,15 +131,42 @@ class Student extends CI_Controller {
         redirect(site_url('login'), 'refresh');
     }
 
-    // Récupérer l'ID de l'utilisateur connecté
-    $user_id = $this->session->userdata('user_id'); // Assurez-vous que 'user_id' est défini dans la session lors de la connexion
+    // Get the logged-in user's ID
+    $user_id = $this->session->userdata('user_id');
 
-    // Récupérer le school_id depuis la table users
+    // Get student IDs associated with the user
+    $this->db->select('id');
+    $this->db->from('students');
+    $this->db->where('user_id', $user_id);
+    $students = $this->db->get()->result_array();
+    $student_ids = array_column($students, 'id');
+
+    if (empty($student_ids)) {
+        log_message('error', 'recording - No student associated with user_id: ' . $user_id);
+        show_error('No student associated with this user.', 403);
+        return;
+    }
+
+    // Get permitted class IDs and school IDs from enrols
+    $this->db->select('enrols.school_id, enrols.class_id');
+    $this->db->from('enrols');
+    $this->db->where_in('enrols.student_id', $student_ids);
+    $this->db->where('enrols.school_id IS NOT NULL');
+    $enrols = $this->db->get()->result_array();
+    $permitted_class_ids = array_map('strval', array_column($enrols, 'class_id'));
+    $permitted_school_ids = array_map('strval', array_unique(array_column($enrols, 'school_id')));
+
+    if (empty($enrols)) {
+        log_message('error', 'recording - User not enrolled in any school: ' . $user_id);
+        show_error('Not enrolled in any school.', 403);
+        return;
+    }
+
+    // Get school_id from users table
     $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
-    if (!$user || empty($user['school_id'])) {
-        // Gérer le cas où l'utilisateur n'a pas de school_id ou n'existe pas
-        log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
-        show_error('No school associated with this user.', 403);
+    if (!$user || empty($user['school_id']) || !in_array((string)$user['school_id'], $permitted_school_ids)) {
+        log_message('error', 'recording - No valid school_id found for user_id: ' . $user_id);
+        show_error('No valid school associated with this user.', 403);
         return;
     }
     $school_id = $user['school_id'];
@@ -154,7 +181,7 @@ class Student extends CI_Controller {
     $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
 
     if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
-        // Filtrer les réunions par school_id
+        // Filter meetings by school_id
         $this->db->where('school_id', $school_id);
         $meetings = $this->db->get('sessions_meetings')->result_array();
 
@@ -187,20 +214,16 @@ class Student extends CI_Controller {
                     $recording_start_time = (string)$recording->startTime;
                     $recording_end_time = (string)$recording->endTime;
                     $original_recording_url = (string)$recording->playback->format->url;
-                    // Replace the domain in the recording URL
                     $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
                     $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
-    
+
                     // Format duration
                     $hours = floor($duration_seconds / 3600);
                     $minutes = floor(($duration_seconds % 3600) / 60);
                     $seconds = $duration_seconds % 60;
-                    
-                    if ($hours >= 1) {
-                        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-                    } else {
-                        $formatted_duration = sprintf("%02d:%02d", $minutes, $seconds);
-                    }
+                    $formatted_duration = $hours >= 1
+                        ? sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds)
+                        : sprintf("%02d:%02d", $minutes, $seconds);
 
                     $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
                     $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
@@ -243,11 +266,17 @@ class Student extends CI_Controller {
         'date_range' => $this->input->post('date_range', true) ?? ''
     ];
 
-    // Build query
+    // Build query for recordings with access restrictions
     $this->db->select('r.*, c.name as class_name');
     $this->db->from('recordings r');
     $this->db->join('classes c', 'r.class_id = c.id', 'left');
+    $this->db->join('appointments a', 'r.appointment_id = a.id', 'inner');
+    $this->db->join('appointment_participants ap', 'a.id = ap.appointment_id', 'left');
     $this->db->where('r.school_id', $school_id);
+    $this->db->where('
+        (ap.type = "class" AND ap.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+        OR (ap.type = "individual" AND ap.guest = ' . intval($user_id) . ')
+    ');
 
     // Apply filters
     if (!empty($filters['meeting_name'])) {
@@ -270,6 +299,7 @@ class Student extends CI_Controller {
         }
     }
 
+    $this->db->group_by('r.id');
     $this->db->order_by('r.created_at', 'DESC');
     $recordings = $this->db->get()->result_array();
 
@@ -2074,12 +2104,8 @@ public function calendar($param1 = '', $param2 = '', $param3 = '', $param4 = '')
         $this->get_user_school();
     }
 
-    if ($param1 == 'get_classes_by_school') {
-        $this->get_classes_by_school();
-    }
-
-    if ($param1 == 'get_classes_with_events') {
-        $this->get_classes_with_events();
+    if ($param1 == 'get_school_data') {
+        $this->get_school_data();
     }
 
     if ($param1 == 'start_meeting') {
@@ -2147,57 +2173,64 @@ public function get_user_school() {
     }
 
     $user_id = $this->session->userdata('user_id');
+    $this->db->select('id');
+    $this->db->from('students');
+    $this->db->where('user_id', $user_id);
+    $students = $this->db->get()->result_array();
+    $student_ids = array_column($students, 'id');
+
+    // Vérifier si l'étudiant est inscrit à l'école via jointure
+    if (empty($student_ids)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        echo json_encode(['status' => 'error', 'message' => 'No student associated with this user', 'csrf' => $csrf]);
+        return;
+    }
+
+    $this->db->select('enrols.school_id, enrols.class_id');
+    $this->db->from('enrols');
+    $this->db->where_in('enrols.student_id', $student_ids);
+    $this->db->where('enrols.school_id IS NOT NULL'); // Exclure les school_id NULL
+    $enrols = $this->db->get()->result_array();
+    $permitted_school_ids = array_map('strval', array_unique(array_column($enrols, 'school_id')));
+    $permitted_class_ids = array_map('strval', array_column($enrols, 'class_id'));
+
+    if (empty($enrols)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        echo json_encode(['status' => 'error', 'message' => 'Not enrolled in any school', 'csrf' => $csrf]);
+        return;
+    }
+
+    // Récupérer les paramètres
     $school_id = $this->input->get('school_id', true);
     $start_date = $this->input->get('start_date', true);
     $end_date = $this->input->get('end_date', true);
     $event_id = $this->input->get('id', true);
     $class_id = $this->input->get('class_id', true);
 
-    // Vérifier si l'étudiant est inscrit à l'école via jointure
-    if (!$school_id) {
+    // Valider school_id si fourni
+    if ($school_id && !in_array((string)$school_id, $permitted_school_ids, true)) {
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'get_events - No school_id provided');
-        echo json_encode(['status' => 'error', 'message' => 'School ID is required', 'csrf' => $csrf]);
-        return;
-    }
-
-    $this->db->select('enrols.id');
-    $this->db->from('students');
-    $this->db->join('enrols', 'students.id = enrols.student_id', 'inner');
-    $this->db->where('students.user_id', $user_id);
-    $this->db->where('enrols.school_id', $school_id);
-    $enrol = $this->db->get()->row_array();
-    if (!$enrol) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_events - Student not enrolled in school_id: ' . $school_id);
         echo json_encode(['status' => 'error', 'message' => 'Not authorized for this school', 'csrf' => $csrf]);
         return;
     }
 
     // Valider class_id si fourni
-    if ($class_id) {
-        $this->db->select('enrols.id');
-        $this->db->from('students');
-        $this->db->join('enrols', 'students.id = enrols.student_id', 'inner');
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.school_id', $school_id);
-        $this->db->where('enrols.class_id', $class_id);
-        $class_enrol = $this->db->get()->row_array();
-        if (!$class_enrol) {
-            $csrf = [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-            ];
-            log_message('error', 'get_events - Student not enrolled in class_id: ' . $class_id);
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized for this class', 'csrf' => $csrf]);
-            return;
-        }
+    if ($class_id && !in_array((string)$class_id, $permitted_class_ids, true)) {
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+        echo json_encode(['status' => 'error', 'message' => 'Not authorized for this class', 'csrf' => $csrf]);
+        return;
     }
 
     // Validation des dates
@@ -2207,7 +2240,7 @@ public function get_user_school() {
         if ($start_date_obj === false || $end_date_obj === false || $start_date_obj->format('Y-m-d') !== $start_date || $end_date_obj->format('Y-m-d') !== $end_date) {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Format de date invalide (attendu : YYYY-MM-DD)',
+                'message' => 'Invalid date format (expected: YYYY-MM-DD)',
                 'csrf' => [
                     'csrfName' => $this->security->get_csrf_token_name(),
                     'csrfHash' => $this->security->get_csrf_hash()
@@ -2220,7 +2253,7 @@ public function get_user_school() {
     } else {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Les paramètres start_date et end_date sont requis',
+            'message' => 'start_date and end_date are required',
             'csrf' => [
                 'csrfName' => $this->security->get_csrf_token_name(),
                 'csrfHash' => $this->security->get_csrf_hash()
@@ -2229,232 +2262,236 @@ public function get_user_school() {
         return;
     }
 
-    try {
-        // Charger la configuration BigBlueButton
-        $this->load->config('bigbluebutton');
-        $bbb_url = $this->config->item('bbb_url');
-        $bbb_secret = $this->config->item('bbb_secret');
+    $this->load->config('bigbluebutton');
+    $bbb_url = $this->config->item('bbb_url');
+    $bbb_secret = $this->config->item('bbb_secret');
 
-        // Construction de la requête pour les événements
-        $this->db->select('event_calendars.id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.class_id, schools.name as school_name, classes.name as class_name');
-        $this->db->from('event_calendars');
-        $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
-        $this->db->join('classes', 'event_calendars.class_id = classes.id', 'left');
+    // Construction de la requête pour les événements
+    $this->db->select('event_calendars.id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
+    $this->db->from('event_calendars');
+    $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
+    $this->db->join('users', 'event_calendars.created_by = users.id', 'left');
+    $this->db->join('participants', 'event_calendars.id = participants.event_id', 'inner');
+    $this->db->join('classes', 'participants.guest = classes.id AND participants.type = "class"', 'left');
+    // Filtrer par les écoles auxquelles l'étudiant est inscrit si school_id n'est pas fourni
+    if ($school_id) {
         $this->db->where('event_calendars.school_id', $school_id);
-
-        if ($event_id) {
-            $this->db->where('event_calendars.id', $event_id);
         } else {
-            $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
+        $this->db->where_in('event_calendars.school_id', $permitted_school_ids);
+    }
+    $this->db->where('
+        (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+        OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
+    ');
+        
+        if ($event_id) {
+        $this->db->where('event_calendars.id', $event_id);
+        } else {
+        $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
         }
 
         if ($class_id) {
-            $this->db->where('event_calendars.class_id', $class_id);
+        $this->db->where('participants.type', 'class');
+        $this->db->where('participants.guest', $class_id);
+    }
+
+    $this->db->group_by('event_calendars.id'); // Éviter les doublons
+    $events = $this->db->get()->result_array();
+
+    // Post-traitement des événements
+    $processed_events = [];
+    $now = new DateTime('now', new DateTimeZone('UTC'));
+    $threshold = (clone $now)->modify('-24 hours');
+
+    foreach ($events as $event) {
+        $event['school_name'] = $event['school_name'] ?? '';
+        $event['class_name'] = $event['class_name'] ?? '';
+        $event['created_by_name'] = $event['created_by_name'] ?? 'Unknown';
+
+        // Ajouter les informations des participants
+        $event['participants'] = [];
+        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
+        foreach ($participants as $participant) {
+            $participant_data = [
+                'id' => $participant['guest'],
+                'type' => $participant['type']
+            ];
+            if ($participant['type'] === 'class') {
+                $class = $this->db->get_where('classes', ['id' => $participant['guest']])->row();
+                $participant_data['name'] = $class ? $class->name : 'Unknown';
+            } elseif ($participant['type'] === 'individual') {
+                $user = $this->db->get_where('users', ['id' => $participant['guest']])->row();
+                $participant_data['name'] = $user ? ($user->name) : 'Unknown';
+            }
+            $event['participants'][] = $participant_data;
         }
 
-        $events = $this->db->get()->result_array();
+        $start_date_obj = DateTime::createFromFormat('Y-m-d', $event['starting_date']);
+        if ($start_date_obj) {
+            $event['starting_date'] = $start_date_obj->format('Y-m-d');
+        }
+        if ($event['ending_date']) {
+            $end_date_obj = DateTime::createFromFormat('Y-m-d', $event['ending_date']);
+            if ($end_date_obj) {
+                $event['ending_date'] = $end_date_obj->format('Y-m-d');
+            }
+        }
+        if ($event['recurrence_end_date']) {
+            $recurrence_end_date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $event['recurrence_end_date']);
+            if ($recurrence_end_date_obj === false) {
+                $recurrence_end_date_obj = DateTime::createFromFormat('Y-m-d', $event['recurrence_end_date']);
+            }
+            $event['recurrence_end_date'] = $recurrence_end_date_obj ? $recurrence_end_date_obj->format('Y-m-d') : null;
+        }
 
         // Post-traitement des événements
-        $processed_events = [];
-        foreach ($events as $event) {
-            try {
-                $event['school_name'] = $event['school_name'] ?? '';
-                $event['class_name'] = $event['class_name'] ?? '';
-                $event['class_id'] = $event['class_id'] ?? null;
+        $event_start = DateTime::createFromFormat('Y-m-d H:i:s', $event['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
+        $event['is_expired'] = $event['recurrence_type'] === 'does_not_repeat' && $event_start < $threshold;
 
-                // Normaliser les dates
-                $start_date_obj = DateTime::createFromFormat('Y-m-d', $event['starting_date']);
-                if ($start_date_obj) {
-                    $event['starting_date'] = $start_date_obj->format('Y-m-d');
-                }
-                if ($event['ending_date']) {
-                    $end_date_obj = DateTime::createFromFormat('Y-m-d', $event['ending_date']);
-                    if ($end_date_obj) {
-                        $event['ending_date'] = $end_date_obj->format('Y-m-d');
-                    }
-                }
-                if ($event['recurrence_end_date']) {
-                    $recurrence_end_date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $event['recurrence_end_date']);
-                    if ($recurrence_end_date_obj === false) {
-                        $recurrence_end_date_obj = DateTime::createFromFormat('Y-m-d', $event['recurrence_end_date']);
-                    }
-                    $event['recurrence_end_date'] = $recurrence_end_date_obj ? $recurrence_end_date_obj->format('Y-m-d') : null;
-                }
+        // Récupérer les occurrences pour les événements visio
+        $event['occurrences'] = [];
 
-                // Vérifier si l'événement est expiré
-                $event_start = DateTime::createFromFormat('Y-m-d H:i:s', $event['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
-                $now = new DateTime('now', new DateTimeZone('UTC'));
-                $threshold = (clone $now)->modify('-24 hours');
-                $event['is_expired'] = $event_start < $threshold;
+        // Générer les occurrences pour les événements récurrents
+        if ($event['recurrence_type'] !== 'does_not_repeat' && $event['recurrence_end_date']) {
+            $recurrence_end_date = new DateTime($event['recurrence_end_date']);
+            $current_date = new DateTime(max($event['starting_date'], $start_date));
+            $end_period = new DateTime($end_date);
 
-                // Récupérer les occurrences pour les événements visio
-                $event['occurrences'] = [];
-                if ($event['visio'] == 1) {
-                    $this->db->select('start_date, meeting_id');
-                    $this->db->from('appointments');
-                    $this->db->where('event_id', $event['id']);
-                    $this->db->where('Etat', 1);
-                    if ($event_id) {
-                        $this->db->where('DATE(start_date)', $event['starting_date']);
-                    } else {
-                        $this->db->where('DATE(start_date) >=', $start_date);
-                        $this->db->where('DATE(start_date) <=', $end_date);
-                    }
-                    $appointments = $this->db->get()->result_array();
+            $interval = null;
+            if ($event['recurrence_type'] === 'daily') {
+                $interval = new DateInterval('P1D');
+            } elseif ($event['recurrence_type'] === 'weekly') {
+                $interval = new DateInterval('P1D');
+            } elseif ($event['recurrence_type'] === 'every_weekday') {
+                $interval = new DateInterval('P1D');
+            } elseif ($event['recurrence_type'] === 'monthly') {
+                $interval = new DateInterval('P1M');
+            } elseif ($event['recurrence_type'] === 'yearly') {
+                $interval = new DateInterval('P1Y');
+            }
 
-                    foreach ($appointments as $appointment) {
-                        $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
-                        $meeting_id = $appointment['meeting_id'] ?? null;
+                $custom_days = ($event['recurrence_type'] === 'weekly' && $event['custom_recurrence']) ? json_decode($event['custom_recurrence'], true) : [];
 
-                        // Vérifier l'état du meeting via BBB API
-                        $is_running = false;
-                        $participant_count = 0;
-                        if ($meeting_id) {
-                            $params = "meetingID=" . urlencode($meeting_id);
-                            $checksum = sha1("isMeetingRunning" . $params . $bbb_secret);
-                            $is_running_url = $bbb_url . "isMeetingRunning?" . $params . "&checksum=" . $checksum;
-
-                            $ch = curl_init();
-                            curl_setopt($ch, CURLOPT_URL, $is_running_url);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                            $is_running_response = curl_exec($ch);
-                            $curl_error = curl_error($ch);
-                            curl_close($ch);
-
-                            if (!$curl_error) {
-                                $is_running_xml = simplexml_load_string($is_running_response);
-                                if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
-                                    $is_running = (string)$is_running_xml->running === "true";
-                                    if ($is_running) {
-                                        $params = "meetingID=" . urlencode($meeting_id);
-                                        $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
-                                        $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
-                                        $ch = curl_init();
-                                        curl_setopt($ch, CURLOPT_URL, $api_url);
-                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                                        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                                        $response = curl_exec($ch);
-                                        curl_close($ch);
-                                        $xml = simplexml_load_string($response);
-                                        if ($xml && (string)$xml->returncode === "SUCCESS") {
-                                            $participant_count = (int)$xml->participantCount;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        $event['occurrences'][$occurrence_date] = [
-                            'meeting_id' => $meeting_id,
-                            'is_running' => $is_running,
-                            'participant_count' => $participant_count
-                        ];
-                    }
+                while ($current_date <= $recurrence_end_date && $current_date <= $end_period) {
+                $is_valid_date = true;
+                if ($event['recurrence_type'] === 'every_weekday') {
+                    $day_of_week = $current_date->format('l');
+                    $is_valid_date = !in_array($day_of_week, ['Saturday', 'Sunday']);
+                } elseif ($event['recurrence_type'] === 'weekly' && !empty($custom_days)) {
+                    $day_of_week = $current_date->format('l');
+                    $is_valid_date = in_array($day_of_week, $custom_days);
+                } elseif ($event['recurrence_type'] === 'weekly') {
+                    $is_valid_date = $current_date->format('l') === $start_date_obj->format('l');
                 }
 
-                // Si un ID spécifique est demandé, retourner uniquement l'événement de base
-                if ($event_id) {
-                    $processed_events[] = $event;
-                    continue;
-                }
-
-                // Générer les occurrences pour les événements récurrents
-                if ($event['recurrence_type'] !== 'does_not_repeat' && $event['recurrence_end_date']) {
-                    $recurrence_end_date = new DateTime($event['recurrence_end_date']);
-                    $current_date = new DateTime(max($event['starting_date'], $start_date));
-                    $end_period = new DateTime($end_date);
-
-                    $interval = null;
-                    if ($event['recurrence_type'] === 'daily') {
-                        $interval = new DateInterval('P1D');
-                    } elseif ($event['recurrence_type'] === 'weekly') {
-                        $interval = new DateInterval('P1D');
-                    } elseif ($event['recurrence_type'] === 'every_weekday') {
-                        $interval = new DateInterval('P1D');
-                    } elseif ($event['recurrence_type'] === 'monthly') {
-                        $interval = new DateInterval('P1M');
-                    } elseif ($event['recurrence_type'] === 'yearly') {
-                        $interval = new DateInterval('P1Y');
-                    }
-
-                    $custom_days = ($event['recurrence_type'] === 'weekly' && $event['custom_recurrence']) ? json_decode($event['custom_recurrence'], true) : [];
-
-                    while ($current_date <= $recurrence_end_date && $current_date <= $end_period) {
-                        $is_valid_date = true;
-                        if ($event['recurrence_type'] === 'every_weekday') {
-                            $day_of_week = $current_date->format('l');
-                            $is_valid_date = !in_array($day_of_week, ['Saturday', 'Sunday']);
-                        } elseif ($event['recurrence_type'] === 'weekly' && !empty($custom_days)) {
-                            $day_of_week = $current_date->format('l');
-                            $is_valid_date = in_array($day_of_week, $custom_days);
-                        } elseif ($event['recurrence_type'] === 'weekly') {
-                            $is_valid_date = $current_date->format('l') === $start_date_obj->format('l');
-                        }
-
-                        if ($is_valid_date && $current_date->format('Y-m-d') >= $start_date) {
-                            $event_copy = $event;
-                            $event_copy['starting_date'] = $current_date->format('Y-m-d');
-                            $event_copy['ending_date'] = $event['ending_date'] ?: $event_copy['starting_date'];
-                            $occurrence_start = DateTime::createFromFormat('Y-m-d H:i:s', $event_copy['starting_date'] . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
-                            $event_copy['is_expired'] = $occurrence_start < $threshold;
-                            $occurrence_date = $current_date->format('Y-m-d');
-                            // Inclure les données de l'occurrence si disponibles
-                            if ($event['visio'] == 1 && isset($event['occurrences'][$occurrence_date])) {
-                                $event_copy['occurrences'] = [
-                                    $occurrence_date => $event['occurrences'][$occurrence_date]
-                                ];
-                            } else {
-                                $event_copy['occurrences'] = [
-                                    $occurrence_date => [
-                                        'meeting_id' => null,
-                                        'is_running' => false,
-                                        'participant_count' => 0
-                                    ]
-                                ];
-                            }
-                            $processed_events[] = $event_copy;
-                        }
-
+                if ($is_valid_date && $current_date->format('Y-m-d') >= $start_date) {
+                    $occurrence_date = $current_date->format('Y-m-d');
+                    $occurrence_start = DateTime::createFromFormat('Y-m-d H:i:s', $occurrence_date . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
+                    if ($occurrence_start === false) {
                         $current_date->add($interval);
+                        continue;
                     }
-                } else {
-                    $event_start = new DateTime($event['starting_date']);
-                    $event_end = $event['ending_date'] ? new DateTime($event['ending_date']) : $event_start;
-                    $range_start = new DateTime($start_date);
-                    $range_end = new DateTime($end_date);
+                    $is_expired = $occurrence_start < $threshold;
 
-                    if ($event_start <= $range_end && $event_end >= $range_start) {
-                        $processed_events[] = $event;
-                    }
+                    $event['occurrences'][$occurrence_date] = [
+                        'meeting_id' => null,
+                        'is_running' => false,
+                        'participant_count' => 0,
+                        'is_expired' => $is_expired
+                    ];
                 }
-            } catch (Exception $e) {
-                log_message('error', 'Erreur lors du traitement de l\'événement ID ' . $event['id'] . ': ' . $e->getMessage());
-                continue;
+
+                $current_date->add($interval);
             }
         }
 
-        echo json_encode([
-            'status' => 'success',
-            'data' => $processed_events,
-            'csrf' => [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash()
-            ]
-        ]);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans get_events: ' . $e->getMessage());
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Erreur serveur lors de la récupération des événements',
-            'csrf' => [
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash()
-            ]
-        ]);
+                // Récupérer les occurrences existantes pour les événements visio
+        if ($event['visio'] == 1) {
+            $this->db->select('start_date, meeting_id');
+            $this->db->from('appointments');
+            $this->db->where('event_id', $event['id']);
+            $this->db->where('Etat', 1);
+            $this->db->where('DATE(start_date) >=', $start_date);
+            $this->db->where('DATE(start_date) <=', $end_date);
+            $appointments = $this->db->get()->result_array();
+
+            foreach ($appointments as $appointment) {
+                $occurrence_date = (new DateTime($appointment['start_date']))->format('Y-m-d');
+                $meeting_id = $appointment['meeting_id'] ?? null;
+
+                $is_running = false;
+                $participant_count = 0;
+                if ($meeting_id) {
+                    $params = "meetingID=" . urlencode($meeting_id);
+                    $checksum = sha1("isMeetingRunning" . $params . $bbb_secret);
+                    $is_running_url = $bbb_url . "isMeetingRunning?" . $params . "&checksum=" . $checksum;
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $is_running_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    $is_running_response = curl_exec($ch);
+                    $curl_error = curl_error($ch);
+                    curl_close($ch);
+
+                        if (!$curl_error) {
+                        $is_running_xml = simplexml_load_string($is_running_response);
+                        if ($is_running_xml && (string)$is_running_xml->returncode === "SUCCESS") {
+                            $is_running = (string)$is_running_xml->running === "true";
+                            if ($is_running) {
+                                $params = "meetingID=" . urlencode($meeting_id);
+                                $checksum = sha1("getMeetingInfo" . $params . $bbb_secret);
+                                $api_url = $bbb_url . "getMeetingInfo?" . $params . "&checksum=" . $checksum;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, $api_url);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                                $response = curl_exec($ch);
+                                curl_close($ch);
+                                $xml = simplexml_load_string($response);
+                                if ($xml && (string)$xml->returncode === "SUCCESS") {
+                                    $participant_count = (int)$xml->participantCount;
+                                }
+                            }
+                        }
+                    }
+                }
+             $occurrence_start = DateTime::createFromFormat('Y-m-d H:i:s', $occurrence_date . ' ' . $event['starting_time'], new DateTimeZone('UTC'));
+                $is_expired = $occurrence_start < $threshold;
+
+                $event['occurrences'][$occurrence_date] = [
+                    'meeting_id' => $meeting_id,
+                    'is_running' => $is_running,
+                    'participant_count' => $participant_count,
+                    'is_expired' => $is_expired
+                ];
+            }
+        }
+
+        // Add to processed events
+        if ($event_id) {
+            $processed_events[] = $event;
+        } else {
+            $event_start = new DateTime($event['starting_date']);
+            $event_end = $event['ending_date'] ? new DateTime($event['ending_date']) : $event_start;
+            $range_start = new DateTime($start_date);
+            $range_end = new DateTime($end_date);
+
+            if ($event_start <= $range_end && $event_end >= $range_start) {
+                $processed_events[] = $event;
+            }
+        }
     }
+    echo json_encode([
+        'status' => 'success',
+        'data' => $processed_events,
+        'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        ]
+    ]);
 }
 
 public function start_meeting() {
@@ -2464,7 +2501,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Unauthorized access attempt. Session data: ' . json_encode($this->session->userdata()));
         echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'csrf' => $csrf]);
         return;
     }
@@ -2477,7 +2513,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Invalid or missing event_id or occurrence_date');
         echo json_encode(['status' => 'error', 'message' => 'Event ID and occurrence date are required', 'csrf' => $csrf]);
         return;
     }
@@ -2489,7 +2524,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Invalid occurrence_date format for event_id: ' . $event_id);
         echo json_encode(['status' => 'error', 'message' => 'Invalid occurrence date format (expected: YYYY-MM-DD)', 'csrf' => $csrf]);
         return;
     }
@@ -2502,7 +2536,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Event not found for event_id: ' . $event_id);
         echo json_encode(['status' => 'error', 'message' => 'Event not found', 'csrf' => $csrf]);
         return;
     }
@@ -2513,7 +2546,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Visio not enabled for event_id: ' . $event_id);
         echo json_encode(['status' => 'error', 'message' => 'Video conferencing is not enabled for this event', 'csrf' => $csrf]);
         return;
     }
@@ -2559,7 +2591,6 @@ public function start_meeting() {
                     'csrfName' => $this->security->get_csrf_token_name(),
                     'csrfHash' => $this->security->get_csrf_hash(),
                 ];
-                log_message('error', 'start_meeting - cURL error checking meeting status for meeting_id: ' . $appointment['meeting_id'] . ': ' . $curl_error);
                 echo json_encode([
                     'status' => 'error',
                     'message' => 'Failed to check meeting status due to server error',
@@ -2591,6 +2622,10 @@ public function start_meeting() {
                 $join_checksum = sha1("join" . $join_params . $bbb_secret);
                 $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
+                $this->db->select('guest, type');
+                $this->db->from('appointment_participants');
+                $this->db->where('appointment_id', $appointment_id);
+                $participants = $this->db->get()->result_array();
 
                 $csrf = [
                     'csrfName' => $this->security->get_csrf_token_name(),
@@ -2604,6 +2639,7 @@ public function start_meeting() {
                     'appointment_id' => $appointment_id,
                     'participant_count' => $participant_count,
                     'is_running' => true,
+                    'participants' => $participants,
                     'csrf' => $csrf
                 ]);
                 return;
@@ -2615,12 +2651,17 @@ public function start_meeting() {
         }
     }
 
-    // Créer un nouvel appointment pour cette occurrence
+    // Retrieve all participants (classes and users) for the event
+    $this->db->select('guest, type');
+    $this->db->from('participants');
+    $this->db->where('event_id', $event_id);
+    $participants = $this->db->get()->result_array();
+
+    // Create a new appointment
     $appointment_data = [
         'event_id' => $event_id,
         'title' => $event['title'],
         'start_date' => $occurrence_date . ' ' . $event['starting_time'],
-        'classe_id' => $event['class_id'],
         'school_id' => $event['school_id'],
         'visio' => $event['visio'],
         'Etat' => 1,
@@ -2628,6 +2669,14 @@ public function start_meeting() {
     ];
     $this->db->insert('appointments', $appointment_data);
     $appointment_id = $this->db->insert_id();
+
+     foreach ($participants as $participant) {
+        $this->db->insert('appointment_participants', [
+            'appointment_id' => $appointment_id,
+            'guest' => $participant['guest'],
+            'type' => $participant['type']
+        ]);
+    }
 
     // Créer un nouveau meeting BigBlueButton
     $meeting_name = $event['title'] ? $event['title'] : "Meeting for Event $event_id";
@@ -2644,7 +2693,7 @@ public function start_meeting() {
               "&record=true" .
               "&autoStartRecording=false" .
               "&allowStartStopRecording=true" .
-              "&welcome=" . urlencode( get_phrase("Welcome to the meeting"). ':' . ' ' . $event['title']) .
+              "&welcome=" . urlencode(get_phrase("Welcome to the meeting") . ': ' . $event['title']) .
               "&endWhenNoModerator=false" .
               "&duration=120";
 
@@ -2665,7 +2714,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - cURL error creating meeting for meeting_id: ' . $new_meeting_id . ': ' . $curl_error);
         echo json_encode([
             'status' => 'error',
             'message' => 'Failed to create meeting due to server error',
@@ -2679,7 +2727,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Empty response from BBB API for meeting_id: ' . $new_meeting_id);
         echo json_encode([
             'status' => 'error',
             'message' => 'Failed to create meeting: No response from BBB server',
@@ -2694,7 +2741,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - Invalid XML response from BBB API for meeting_id: ' . $new_meeting_id . ': ' . $response);
         echo json_encode([
             'status' => 'error',
             'message' => 'Failed to create meeting: Invalid response from BBB server',
@@ -2715,7 +2761,7 @@ public function start_meeting() {
             'moderator_pw' => $moderator_password,
             'school_id' => $event['school_id'],
             'user_id' => $this->session->userdata('user_id'),
-            'class_id' => $event['class_id'],
+            'class_id' => null,
             'created_at' => date('Y-m-d H:i:s'),
             'description' => null
         ];
@@ -2771,6 +2817,11 @@ public function start_meeting() {
         $join_checksum = sha1("join" . $join_params . $bbb_secret);
         $join_url = $bbb_url . "join?" . $join_params . "&checksum=" . $join_checksum;
 
+        $this->db->select('guest, type');
+        $this->db->from('appointment_participants');
+        $this->db->where('appointment_id', $appointment_id);
+        $participants = $this->db->get()->result_array();
+
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
@@ -2783,6 +2834,7 @@ public function start_meeting() {
             'appointment_id' => $appointment_id,
             'participant_count' => $participant_count,
             'is_running' => $is_running,
+            'participants' => $participants,
             'csrf' => $csrf
         ]);
     } else {
@@ -2790,7 +2842,6 @@ public function start_meeting() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'start_meeting - BBB API error for meeting_id: ' . $new_meeting_id . ': ' . (string)$xml->message);
         echo json_encode([
             'status' => 'error',
             'message' => 'Failed to create meeting: ' . (string)$xml->message,
@@ -2805,7 +2856,6 @@ public function get_student_schools() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'get_student_schools - Unauthorized access attempt');
         echo json_encode(['status' => 'error', 'message' => 'Session expired, please login again', 'csrf' => $csrf]);
         return;
     }
@@ -2817,7 +2867,6 @@ public function get_student_schools() {
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
         ];
-        log_message('error', 'get_student_schools - No user_id in session');
         echo json_encode(['status' => 'error', 'message' => 'No user associated with this session', 'csrf' => $csrf]);
         return;
     }
@@ -2847,72 +2896,123 @@ public function get_student_schools() {
     ]);
 }
 
-public function get_classes_with_events() {
+public function get_school_data() {
     if ($this->session->userdata('student_login') != 1) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_with_events - Unauthorized access attempt');
-        echo json_encode(['status' => 'error', 'message' => 'Session expired, please login again', 'csrf' => $csrf]);
+       echo json_encode([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+            'csrf' => [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            ]
+        ]);
         return;
     }
 
-    $user_id = $this->session->userdata('user_id');
-
-    $school_id = $this->input->post('school_id', true);
-    $start_date = $this->input->post('start_date', true);
-    $end_date = $this->input->post('end_date', true);
-
-    if (empty($school_id) || empty($start_date) || empty($end_date)) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_with_events - Missing parameters');
-        echo json_encode(['status' => 'error', 'message' => 'School ID, start_date, and end_date are required', 'csrf' => $csrf]);
+    $school_id = filter_var($this->input->post('school_id', true), FILTER_VALIDATE_INT);
+    if (!$school_id || !$this->db->get_where('schools', ['id' => $school_id, 'Etat' => 1, 'status' => 1])->row()) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'École invalide',
+            'csrf' => [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            ]
+        ]);
         return;
     }
 
-    // Valider l'inscription à l'école via jointure
-    $this->db->select('enrols.id');
-    $this->db->from('students');
-    $this->db->join('enrols', 'students.id = enrols.student_id', 'inner');
-    $this->db->where('students.user_id', $user_id);
-    $this->db->where('enrols.school_id', $school_id);
-    $school_enrol = $this->db->get()->row_array();
-    if (!$school_enrol) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_with_events - Student not enrolled in school_id: ' . $school_id);
-        echo json_encode(['status' => 'error', 'message' => 'Not authorized for this school', 'csrf' => $csrf]);
-        return;
+    try {
+        // Récupérer les classes
+        $this->db->select('id, name');
+        $this->db->where('school_id', $school_id);
+        $classes = $this->db->get('classes')->result_array();
+
+   // Récupérer l'ID du superadmin connecté
+        $current_user_id = $this->session->userdata('user_id');
+
+    $participants = json_decode($this->input->post('participants', true), true);
+        $class_ids = [];
+
+    if (is_array($participants) && !empty($participants)) {
+            foreach ($participants as $participant) {
+                if (isset($participant['type']) && $participant['type'] === 'class' && isset($participant['id'])) {
+                    $class_ids[] = $participant['id'];
+                }
+            }
+        }
+
+        $users = [];
+
+        // 1. Récupérer les étudiants
+        $this->db->select('DISTINCT(u.id), u.name, "student" as type, u.role, u.status as user_status, s.status as student_status');
+        $this->db->from('users u');
+        $this->db->join('students s', 's.user_id = u.id', 'inner');
+        $this->db->join('enrols e', 'e.student_id = s.id', 'inner');
+        $this->db->where('e.school_id', $school_id);
+        $this->db->where('u.status', 1);
+        $this->db->where('s.status', 1);
+        if (!empty($class_ids)) {
+            $this->db->where_not_in('e.class_id', $class_ids);
+        }
+        $this->db->order_by('u.name', 'ASC');
+        $students = $this->db->get()->result_array();
+        $users = array_merge($users, $students);
+
+        // 2. Récupérer les enseignants
+        $this->db->select('DISTINCT(u.id), u.name, "teacher" as type, u.role');
+        $this->db->from('users u');
+        $this->db->join('teachers t', 't.user_id = u.id', 'inner');
+        $this->db->where('t.school_id', $school_id);
+        $this->db->where('u.status', 1);
+        $this->db->where('u.id !=', $current_user_id);
+        $this->db->order_by('u.name', 'ASC');
+        $teachers = $this->db->get()->result_array();
+        $users = array_merge($users, $teachers);
+
+        // 3. Récupérer les admins et superadmins
+        $this->db->select('DISTINCT(u.id), u.name, u.role as type, u.role');
+        $this->db->from('users u');
+        $this->db->where('u.school_id', $school_id);
+        $this->db->where('u.status', 1);
+        $this->db->where_in('u.role', ['admin', 'superadmin']);
+        $this->db->order_by('u.name', 'ASC');
+        $admins = $this->db->get()->result_array();
+        $users = array_merge($users, $admins);
+
+        // Éliminer les doublons basés sur l'ID
+        $unique_users = [];
+        $seen_ids = [];
+        foreach ($users as $user) {
+            if (!in_array($user['id'], $seen_ids)) {
+                $seen_ids[] = $user['id'];
+                $unique_users[] = $user;
+            }
+        }
+
+        // Trier les utilisateurs par nom
+        usort($unique_users, function($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        echo json_encode([
+            'status' => 'success',
+            'classes' => $classes,
+            'users' => $unique_users,
+            'csrf' => [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            ]
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Erreur lors de la récupération des données',
+            'csrf' => [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash()
+            ]
+        ]);
     }
-
-    // Récupérer les classes inscrites via jointure
-    $this->db->select('DISTINCT(enrols.class_id) as class_id, classes.name');
-    $this->db->from('students');
-    $this->db->join('enrols', 'students.id = enrols.student_id', 'inner');
-    $this->db->join('event_calendars', 'enrols.class_id = event_calendars.class_id', 'inner');
-    $this->db->join('classes', 'event_calendars.class_id = classes.id', 'inner');
-    $this->db->where('students.user_id', $user_id);
-    $this->db->where('event_calendars.school_id', $school_id);
-    $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
-    $this->db->order_by('classes.name', 'ASC');
-    $classes = $this->db->get()->result_array();
-
-    $csrf = [
-        'csrfName' => $this->security->get_csrf_token_name(),
-        'csrfHash' => $this->security->get_csrf_hash(),
-    ];
-
-    echo json_encode([
-        'status' => 'success',
-        'classes' => $classes,
-        'message' => empty($classes) ? 'Aucune classe avec des événements pour vos permissions dans cette période' : '',
-        'csrf' => $csrf
-    ]);
 }
 }

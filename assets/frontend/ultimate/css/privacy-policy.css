@@ -102,7 +102,7 @@
 .pp-section p, .pp-section li{ color:var(--pp-ink); }
 .pp-section ul{ padding-left: 1.1rem; list-style: none; }
 .pp-section ul li{ position:relative; padding-left:.9rem; margin:.35rem 0; }
-.pp-section ul li:before{ content:"▸"; position:absolute; left:0; top:0; color:var(--wayo-orange); font-weight:900; }
+.pp-section ul li:before{ content:" - ";  left:0; top:0; color:var(--wayo-orange); font-weight:900; }
 
 /* ===== Cards ===== */
 .pp-card{
@@ -204,4 +204,24 @@ mark.pp-hit{
 /* Accessibilité focus visible (si pas déjà présent dans ton global) */
 a:focus-visible, button:focus-visible, input:focus-visible{
   outline:3px solid #F47A1F; outline-offset:2px; border-radius:10px;
+}
+
+
+#tocList,
+#tocList ol {
+  list-style: none;
+}
+
+#tocList li {
+  margin-bottom: 6px;
+}
+
+#tocList li a {
+  text-decoration: none;
+  color: #333;
+}
+
+#tocList li a:hover {
+  color: #007bff;
+  text-decoration: underline;
 }
