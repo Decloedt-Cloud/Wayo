@@ -235,20 +235,40 @@ class Teacher extends CI_Controller {
         redirect(site_url('login'), 'refresh');
     }
 
-    // Récupérer l'ID de l'utilisateur connecté
-    $user_id = $this->session->userdata('user_id'); // Assurez-vous que 'user_id' est défini dans la session lors de la connexion
+    // Get the logged-in user's ID
+    $user_id = $this->session->userdata('user_id');
 
-    // Récupérer le school_id depuis la table users
+    // Map user_id to teacher_id
+    $this->db->select('id');
+    $this->db->from('teachers');
+    $this->db->where('user_id', $user_id);
+    $teacher = $this->db->get()->row_array();
+    $teacher_id = $teacher['id'] ?? null;
+
+    if (!$teacher_id) {
+        log_message('error', 'recording - No teacher associated with user_id: ' . $user_id);
+        show_error('No teacher associated with this user.', 403);
+        return;
+    }
+
+    // Get permitted class IDs from teacher_permissions where attendance = 1
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_map('strval', array_column($permitted_classes, 'class_id'));
+
+    // Get school_id from users table
     $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
     if (!$user || empty($user['school_id'])) {
-        // Gérer le cas où l'utilisateur n'a pas de school_id ou n'existe pas
         log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
         show_error('No school associated with this user.', 403);
         return;
     }
     $school_id = $user['school_id'];
 
-    // Synchronize recordings
+    // Synchronize recordings (unchanged)
     $this->load->config('bigbluebutton');
     $bbb_url = $this->config->item('bbb_url');
     $bbb_secret = $this->config->item('bbb_secret');
@@ -258,7 +278,7 @@ class Teacher extends CI_Controller {
     $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
 
     if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
-        // Filtrer les réunions par school_id
+        // Filter meetings by school_id
         $this->db->where('school_id', $school_id);
         $meetings = $this->db->get('sessions_meetings')->result_array();
 
@@ -291,20 +311,16 @@ class Teacher extends CI_Controller {
                     $recording_start_time = (string)$recording->startTime;
                     $recording_end_time = (string)$recording->endTime;
                     $original_recording_url = (string)$recording->playback->format->url;
-                    // Replace the domain in the recording URL
                     $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
                     $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
-    
+
                     // Format duration
                     $hours = floor($duration_seconds / 3600);
                     $minutes = floor(($duration_seconds % 3600) / 60);
                     $seconds = $duration_seconds % 60;
-                    
-                    if ($hours >= 1) {
-                        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-                    } else {
-                        $formatted_duration = sprintf("%02d:%02d", $minutes, $seconds);
-                    }
+                    $formatted_duration = $hours >= 1
+                        ? sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds)
+                        : sprintf("%02d:%02d", $minutes, $seconds);
 
                     $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
                     $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
@@ -347,11 +363,25 @@ class Teacher extends CI_Controller {
         'date_range' => $this->input->post('date_range', true) ?? ''
     ];
 
-    // Build query
+    // Build query for recordings with access restrictions
     $this->db->select('r.*, c.name as class_name');
     $this->db->from('recordings r');
     $this->db->join('classes c', 'r.class_id = c.id', 'left');
+    $this->db->join('appointments a', 'r.appointment_id = a.id', 'inner');
+    $this->db->join('appointment_participants ap', 'a.id = ap.appointment_id', 'left');
     $this->db->where('r.school_id', $school_id);
+
+    // Allow access if teacher is invited individually or has class permissions
+    if (!empty($permitted_class_ids)) {
+        $this->db->where('
+            (ap.type = "class" AND ap.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+            OR (ap.type = "individual" AND ap.guest = ' . intval($user_id) . ')
+        ');
+    } else {
+        // Only check for individual invitations if no class permissions exist
+        $this->db->where('ap.type', 'individual');
+        $this->db->where('ap.guest', $user_id);
+    }
 
     // Apply filters
     if (!empty($filters['meeting_name'])) {
@@ -374,6 +404,7 @@ class Teacher extends CI_Controller {
         }
     }
 
+    $this->db->group_by('r.id'); // Avoid duplicates
     $this->db->order_by('r.created_at', 'DESC');
     $recordings = $this->db->get()->result_array();
 
