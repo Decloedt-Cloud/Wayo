@@ -391,8 +391,10 @@ $(document).ready(function() {
                         if (response.csrf_token) {
                             $('input[name="<?php echo $this->security->get_csrf_token_name(); ?>"]').val(response.csrf_token);
                         }
-                    } else {
-                        showNotification('error', '<?php echo get_phrase("Error"); ?>: ' + response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Delete error:', xhr, status, error);
+                        showNotification('error', "<?php echo get_phrase("Failed to delete recording"); ?>");
                     }
                 },
                 error: function(xhr, status, error) {
