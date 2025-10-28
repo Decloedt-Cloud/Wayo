@@ -2043,7 +2043,6 @@ public function get_unread_messages_count($wayo_user_id)//user_model
     ";
  
     $result = $this->db->query($sql, [$humhub_id, $humhub_id]);
-   
     return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
 }
 	public function update_password()
@@ -2224,6 +2223,15 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			->count_all_results();
 		return $count;
 	}
+
+	public function get_creator_by_school($school_id)
+{
+    return $this->db->select('name')
+                    ->from('users')
+                    ->where('school_id', $school_id)
+                    ->get()
+                    ->row_array();
+}
 
 
 

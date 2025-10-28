@@ -299,4 +299,17 @@ class Humhub_sso
         $u = strtolower(preg_replace('/[^a-z0-9]/i', '', $str));
         return $u ?: 'user' . rand(1000, 9999);
     }
+     public function getSpaceBySchoolId($schoolId)
+    {
+        // récupérer l’espace HumHub correspondant à une école donnée (via school_id de Wayo)
+        $this->ci->db->select('humhub_space_id');
+        $this->ci->db->from('schools');
+        $this->ci->db->where('id', intval($schoolId));// 1-Cherche dans Wayo la valeur de humhub_space_id pour l’école avec l’ID $schoolId.
+        $row = $this->ci->db->get()->row_array();//Exemple : si school_id = 5, peut renvoyer humhub_space_id = 12.
+
+        if (!empty($row['humhub_space_id'])) {
+            return $this->getSpace($row['humhub_space_id']); // Appelle getSpace existant
+        }
+        return null;//2- Si un ID HumHub existe (12 dans notre exemple) → appelle la fonction getSpace(12) pour récupérer toutes les infos de cet espace (nom, description, etc.).
+    }
 }

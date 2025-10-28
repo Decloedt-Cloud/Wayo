@@ -168,28 +168,100 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
 
 
                     <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="example-fileinput"><?php echo get_phrase('school_profile_image'); ?></label>
+                        <label class="col-md-3 col-form-label" for="example-fileinput">
+                            <?php echo get_phrase('Community_profile_logo'); ?>
+                        </label>
+
                         <div class="col-md-5 logo-upload-container">
                             <div class="logo-card">
                                 <div class="logo-header">
-                                    <h5><?php echo get_phrase('school_profile_image'); ?></h5>
-                                </div>
-                                <div class="logo-preview" id="school-image-preview">
-                                    <img src="<?php echo $this->user_model->get_school_image($school_data['id']) . '?v=' . time(); ?>" alt="School Profile Image" class="preview-image">
-                                    <div class="logo-overlay">
-                                        <i class="fas fa-camera"></i>
-                                    </div>
+                                <h5><?php echo get_phrase('Community_profile_logo'); ?></h5>
+                            </div>
 
-                                </div>
-                                <div class="logo-upload-btn">
-                                    <label for="school_image">
-                                        <i class="mdi mdi-cloud-upload"></i> <?php echo get_phrase('upload_an_image'); ?>
-                                    </label>
-                                    <input id="school_image" type="file" class="image-upload" name="school_image" accept="image/*" data-preview="school-image-preview">
-                                </div>
+                            <div class="logo-preview" id="school-image-preview">
+                                <img 
+                                src="<?php echo $this->user_model->get_school_image($school_data['id']) . '?v=' . time(); ?>" 
+                                alt="Community profile logo" 
+                                class="preview-image"
+                                >
+                            </div>
+                                    <div class="logo-upload-btn mt-2">
+                                <label 
+                                for="school_image" 
+                                class="btn btn-outline-primary"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="<?php echo get_phrase('Upload_a square_image_(512×512_recommended),_PNG_or_JPEG,_max_size_2_MB'); ?>"
+                                >
+                                <i class="mdi mdi-cloud-upload" style="pointer-events: none;"></i> 
+                                <?php echo get_phrase('upload_an_image'); ?>
+                                </label>
+
+                                <input 
+                                id="school_image" 
+                                type="file" 
+                                class="image-upload d-none" 
+                                name="school_image" 
+                                accept="image/*" 
+                                data-preview="school-image-preview"
+                                >
+                                <!-- 🔹 Zone d’erreur -->
+                                <div id="image-error" class="text-danger mt-2 small fw-bold"></div>
+                            </div>
+                                
                             </div>
                         </div>
                     </div>
+                    <div class="form-group row mb-3">
+                    <label class="col-md-3 col-form-label" for="school_cover">
+                        <?php echo get_phrase('Community_cover_image'); ?>
+                    </label>
+
+                    <div class="col-md-5 logo-upload-container">
+                        <div class="logo-card">
+                        <div class="logo-header">
+                            <h5><?php echo get_phrase('Community_cover_image'); ?></h5>
+                        </div>
+
+                        <div class="logo-preview" id="school-cover-preview">
+                            <img 
+                            src="<?php echo $this->user_model->get_school_cover($school_data['id']) . '?v=' . time(); ?>" 
+                            alt="Community_cover_image" 
+                            class="preview-image"
+                            >
+                            <div class="logo-overlay">
+                            <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+
+                        <div class="logo-upload-btn mt-2">
+                            <label 
+                            for="school_cover" 
+                            class="btn btn-outline-primary tooltip-label"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="<?php echo get_phrase('Upload_an_image_(1920×600_recommended),_PNG_or_JPEG,_max_size_2_MB'); ?>"
+                            >
+                            <i class="mdi mdi-cloud-upload" style="pointer-events: none;"></i> 
+                            <?php echo get_phrase('upload_an_image'); ?>
+                            </label>
+
+                            <input 
+                            id="school_cover" 
+                            type="file" 
+                            class="image-upload d-none" 
+                            name="school_cover" 
+                            accept="image/png, image/jpeg" 
+                            data-preview="school-cover-preview"
+                            >
+
+                            <!-- 🔹 Zone d’erreur -->
+                            <div id="cover-error" class="text-danger mt-2 small fw-bold"></div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-l px-4" id="update-logos-btn" id="update-logos-btn" >
@@ -406,5 +478,123 @@ document.addEventListener('DOMContentLoaded', function () {
 
   toggleVat();                   // État initial (pré-sélection serveur)
   selectStatus.addEventListener('change', toggleVat);
+});
+</script>
+</script>
+<!-- condition logo photo -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const fileInput = document.getElementById("school_image");
+  const errorDiv = document.getElementById("image-error");
+  const maxWidth = 512;
+  const maxHeight = 512;
+  const maxSizeMB = 2;
+
+  fileInput.addEventListener("change", function (e) {
+    errorDiv.textContent = ""; // réinitialiser le message
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Vérification du poids
+    const fileSizeMB = file.size / 1024 / 1024;
+    if (fileSizeMB > maxSizeMB) {
+      errorDiv.textContent = `⚠️ <?php echo get_phrase("The_file_is_too_large!_Maximum") ?> ${maxSizeMB} MB <?php echo get_phrase("allowed") ?>.`;
+      fileInput.value = "";
+      return;
+    }
+
+    // Vérification des dimensions
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = function () {
+      if (img.width > maxWidth || img.height > maxHeight) {
+        errorDiv.textContent = `⚠️ <?php echo get_phrase("The_logo_is_too_large!_Maximum") ?> ${maxWidth}×${maxHeight} pixels.`;
+        fileInput.value = "";
+      } else {
+        errorDiv.textContent = ""; // OK
+      }
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    img.onerror = function() {
+      errorDiv.textContent = "⚠️ <?php echo get_phrase("Unable_to_upload_this_image._Check_the_format_(PNG/JPEG)..") ?>";
+      fileInput.value = "";
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    img.src = objectUrl;
+  });
+
+  // Tooltip Bootstrap
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (el) {
+    const tooltipInstance = bootstrap.Tooltip.getInstance(el);
+    if (tooltipInstance) tooltipInstance.dispose();
+    new bootstrap.Tooltip(el, { trigger: 'hover', delay: { show: 200, hide: 0 } });
+  });
+});
+</script>
+
+
+<!-- condition cover photo -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const fileInput = document.getElementById("school_cover");
+  const errorDiv = document.getElementById("cover-error");
+
+  const maxWidth = 1600;   // largeur max
+  const maxHeight = 900;   // hauteur max
+  const maxSizeMB = 2;     // poids max
+
+  fileInput.addEventListener("change", function (e) {
+    errorDiv.textContent = "";
+    errorDiv.style.display = "none";
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Vérification du poids
+    const fileSizeMB = file.size / 1024 / 1024;
+    if (fileSizeMB > maxSizeMB) {
+      errorDiv.textContent = `⚠️ <?php echo get_phrase("The file is too large! Maximum") ?> ${maxSizeMB} MB <?php echo get_phrase("allowed") ?>.`;
+      errorDiv.style.display = "block";
+      fileInput.value = "";
+      return;
+    }
+
+    // Vérification des dimensions
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = function () {
+      if (img.width > maxWidth || img.height > maxHeight) {
+        errorDiv.textContent = `⚠️ <?php echo get_phrase("Cover_image_is_too_large!_Maximum") ?> ${maxWidth}×${maxHeight} pixels.`;
+        errorDiv.style.display = "block";
+        fileInput.value = "";
+      } else {
+        errorDiv.textContent = "";
+        errorDiv.style.display = "none";
+      }
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    img.onerror = function() {
+      errorDiv.textContent = "⚠️ <?php echo get_phrase("Unable_to_upload_this_image._Please_check_the_format_(PNG/JPEG).") ?>";
+      errorDiv.style.display = "block";
+      fileInput.value = "";
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    img.src = objectUrl;
+  });
+
+  // Initialisation tooltip Bootstrap
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('.tooltip-label'));
+  tooltipTriggerList.forEach(function(el){
+    const tooltipInstance = bootstrap.Tooltip.getInstance(el);
+    if (tooltipInstance) tooltipInstance.dispose();
+    new bootstrap.Tooltip(el, { trigger: 'hover', delay: { show: 200, hide: 0 } });
+  });
 });
 </script>

@@ -1,14 +1,26 @@
 <?php
 $school_id = school_id();
 if (isset($class_id) ):
-    $syllabuses = $this->db->get_where('syllabuses', array('class_id' => $class_id, 'session_id' => active_session()))->result_array();
+       if ($class_id == 'all') {
+        // Tous les syllabus de l'école et session active
+        $syllabuses = $this->db->get_where('syllabuses', array(
+            'school_id' => $school_id,
+            'session_id' => active_session()
+        ))->result_array();
+    } else {
+        //Syllabus filtrés par classe
+        $syllabuses = $this->db->get_where('syllabuses', array(
+            'class_id' => $class_id,
+            'session_id' => active_session()
+        ))->result_array();
+    }
     if(count($syllabuses) > 0):?>
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
         <thead>
             <tr>
                 <th><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('title'); ?></th>
                 <th><i class="mdi mdi-book-open-page-variant-outline thead-icon"></i><?php echo get_phrase('syllabus'); ?></th>
-                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+                <th><?php echo get_phrase('option'); ?></th>
             </tr>
         </thead>
         <tbody>

@@ -104,7 +104,7 @@ $exam_calendar_json = json_encode($exam_calendar);
                                     <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('exam_name'); ?></th>
                                     <th><i class="mdi mdi-calendar-outline thead-icon"></i><?php echo get_phrase('date'); ?></th>
                                     <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('class'); ?></th>
-                                    <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
+                                    <th><?php echo get_phrase('options'); ?></th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -3,7 +3,7 @@
         <div class="row align-items-center">
             <div class="col-md-6">
                 <div class="d-flex align-items-center">
-                    <button class="today-btn me-3" onclick="CalendarApp.goToToday()">TODAY</button>
+                    <button class="today-btn me-3" onclick="CalendarApp.goToToday()"><?php echo get_phrase('TODAY'); ?></button>
                     <button class="nav-btn me-2" onclick="CalendarApp.previousPeriod()">
                         <i class="mdi mdi-chevron-left" style="font-size: 25px;"></i>
                     </button>
@@ -14,9 +14,6 @@
                 </div>
             </div>
             <div class="text-end">
-              <select class="class-filter me-3" id="classFilter">
-                        <option value=""><?php echo get_phrase('All classes'); ?></option>
-                    </select>
                     <select class="view-filter me-3" id="viewFilter">
                         <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
                         <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
@@ -24,7 +21,6 @@
                         <option value="listMonth"><?php echo get_phrase('List'); ?></option>
                     </select>
                     <button class="add-event-btn" data-bs-toggle="modal" data-bs-target="#createEventModal"><i class="mdi mdi-plus"></i><?php echo get_phrase('New_Event'); ?></button>
-
             </div>
         </div>
     </div>
@@ -32,12 +28,12 @@
     <div id="calendar"></div>
     <div class="modal fade mt-5" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="border-radius: 20px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createEventModalLabel"><?php echo get_phrase('New_Event'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body modal-body-calendar">
                     <form id="createEventForm">
                         <input type="hidden" id="createRecurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="createRecurrenceEndDate" name="recurrence_end_date">
@@ -55,16 +51,21 @@
                         <div class="form-group-calendar-community-class mt-3">
                             <span class="mdi mdi-account-multiple"></span>
                             <div class="input-container">
-                                <div class="form-group-calendar">
+                                <div hidden class="form-group-calendar">
                                     <label for="createSchoolId"><span class="required"> * </span></label>
                                     <select class="form-control" id="createSchoolId" name="school_id" required>
                                     </select>
                                 </div>
                                 <div class="form-group-calendar">
-                                    <label for="createClasseId"><span class="required"> * </span></label>
-                                    <select class="form-control" id="createClasseId" name="classe_id" required>
-                                        <option value=""><?php echo get_phrase('select_a_class'); ?></option>
-                                    </select>
+                                   <label for="createParticipants"><span class="required"> * </span></label>
+                                    <div id="createParticipants" class="multi-select-search-dropdown">
+                                        <div class="search-container">
+                                            <input type="text-area" class="form-control search-input" id="participantsSearchInput" placeholder="<?php echo get_phrase('Invite_attendees'); ?>">
+                                            <div class="badges-container" id="participantsBadges"></div>
+                                        </div>
+                                        <div class="dropdown-menu" id="participantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
+                                    </div>
+                                    <input type="hidden" name="participants" id="participantsInput">
                                 </div>
                             </div>
                         </div>
@@ -127,13 +128,17 @@
     </div>
     <div class="modal fade" id="eventEditModal" tabindex="-1" role="dialog" aria-labelledby="eventEditModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="border-radius: 20px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="eventEditModalLabel"><?php echo get_phrase('event_details'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div id="eventDetailsView" style="display: none;">
+                      <div class="mb-2">
+                            <h6><?php echo get_phrase('Created By'); ?></h6>
+                            <p id="eventCreator" class="mb-0"></p>
+                        </div>
                         <div class="mb-2">
                             <h6><?php echo get_phrase('Title'); ?></h6>
                             <p id="eventTitle" class="mb-0"></p>
@@ -147,8 +152,8 @@
                             <p id="eventSchool" class="mb-0"></p>
                         </div>
                         <div class="mb-2">
-                            <h6><?php echo get_phrase('Class'); ?></h6>
-                            <p id="eventClass" class="mb-0"></p>
+                           <h6><?php echo get_phrase('Participants'); ?></h6>
+                            <div id="eventParticipants" class="badges-container"></div>
                         </div>
                         <div class="mb-2">
                             <h6><?php echo get_phrase('From'); ?></h6>
@@ -171,6 +176,7 @@
                             <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Start Meeting') ?></button>
                         </div>
                     </div>
+                    <div class="modal-body-calendar-edit">
                     <form id="eventForm" style="display: none;">
                         <input type="hidden" id="eventId" name="id">
                         <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
@@ -189,19 +195,24 @@
                         <div class="form-group-calendar-community-class mt-3">
                             <span class="mdi mdi-account-multiple"></span>
                             <div class="input-container">
-                                <div class="form-group-calendar">
+                                <div hidden class="form-group-calendar">
                                     <label for="school_id"><span class="required"> * </span></label>
                                     <select class="form-control" id="school_id" name="school_id" required>
                                     </select>
                                 </div>
                                 <div class="form-group-calendar">
-                                    <label for="classe_id"><span class="required"> * </span></label>
-                                    <select class="form-control" id="classe_id" name="classe_id" required>
-                                        <option value=""><?php echo get_phrase('select_a_class'); ?></option>
-                                    </select>
+                                   <label for="editParticipantsInput"><span class="required"> * </span></label>
+                                    <div id="editParticipantsContainer" class="multi-select-search-dropdown">
+                            <div class="search-container">
+                                <input type="text" class="form-control search-input" id="editParticipantsSearchInput" placeholder="<?php echo get_phrase('Search classes or users'); ?>">
+                                <div class="badges-container" id="editParticipantsBadges"></div>
                                 </div>
+                                <div class="dropdown-menu" id="editParticipantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
                             </div>
-                        </div>
+                        <input type="hidden" name="participants" id="editParticipantsInput">
+                    </div>
+              </div>
+        </div>
                         <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
@@ -257,18 +268,19 @@
                             <button type="button" class="btn btn-secondary" id="cancelEditBtn"><?php echo get_phrase('Cancel') ?></button>
                         </div>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="modal fade" style="top:20%; z-index: 1070;" id="recurrenceModal" tabindex="-1" role="dialog" aria-labelledby="recurrenceModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="border-radius: 20px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="recurrenceModalLabel"><?php echo get_phrase('repeat') ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body modal-body-calendar">
                     <form id="recurrenceForm">
                         <div class="form-group-calendar mb-2">
                             <span class="mdi mdi-calendar-sync"></span>
@@ -308,9 +320,9 @@
                         <label for="recurrenceEndDatePopup" style="display: block; margin-top: 5px; margin-left: 32px; font-size: 0.8rem; color: #6c757d;">
                             <small><?php echo get_phrase('leave_blank_for_default_one_year'); ?></small>
                         </label>
-                        <div class="form-group-calendar mb-2 hidden">
+                        <div hidden class="form-group-calendar mb-2 hidden">
                             <label for="customRecurrencePopup"><?php echo get_phrase('Day_selected'); ?></label>
-                            <input type="text" class="form-control" id="customRecurrencePopup" name="custom_recurrence" placeholder="<?php echo get_phrase('exemple_cron'); ?>" readonly>
+                            <input  type="text" class="form-control" id="customRecurrencePopup" name="custom_recurrence" readonly>
                         </div>
                         <div class="form-group-calendar mt-2 btn-group-1">
                             <button type="button" class="btn btn-primary" id="saveRecurrence"><?php echo get_phrase('save') ?></button>
@@ -350,45 +362,6 @@ const CalendarApp = {
   lastMeetingId: null,
   lastOccurrenceDate: null,
   lastHasActiveMeetings: false,
-  // currentMeetingID: null,
-
-
- /* subscribedMeetings: new Set(),
-  subscribe(meetingID) {
-  if (!meetingID) return;
-  if (!this.socket || !this.socket.connected) {
-    console.warn('[RT] subscribe skipped: socket not connected', meetingID);
-    return;
-  }
-  if (this.currentMeetingID === meetingID) {
-    console.debug('[RT] already on', meetingID);
-    return;
-  }
-  // si on était abonné à un autre meeting, on s'en désabonne proprement
-  if (this.currentMeetingID && this.subscribedMeetings.has(this.currentMeetingID)) {
-    this.socket.emit('unsubscribe', { meetingID: this.currentMeetingID });
-    this.subscribedMeetings.delete(this.currentMeetingID);
-    console.info('[RT] auto-unsubscribe (switch)', this.currentMeetingID);
-  }
-  this.socket.emit('subscribe', { meetingID });
-  this.subscribedMeetings.add(meetingID);
-  this.currentMeetingID = meetingID;
-  console.info('[RT] subscribe', meetingID);
-},
- 
-unsubscribe(meetingID) {
-  // Ne pas désabonner si ce n'est plus l'actif (évite les courses)
-  if (!meetingID || meetingID !== this.currentMeetingID) {
-    console.debug('[RT] skip unsubscribe (not current)', meetingID);
-    return;
-  }
-  if (!this.subscribedMeetings.has(meetingID)) return;
-  this.socket.emit('unsubscribe', { meetingID });
-  this.subscribedMeetings.delete(meetingID);
-  console.info('[RT] unsubscribe', meetingID);
-  this.currentMeetingID = null;
-},
-*/
 
   closeAllPopovers() {
   $('[data-bs-popover]').each(function () {
@@ -449,142 +422,10 @@ unsubscribe(meetingID) {
   const calendarEl = document.getElementById('calendar');
   const now = new Date();
   const isMobile = window.innerWidth <= 576;
-  
-
-  /* this.socket = io('https://preprod.wayo.site', {
-    transports: ['websocket'],
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    timeout: 10000,
-    autoConnect: true
-  });
-
-  this.socket.onAny((event, ...args) => {
-    if (['ping', 'pong'].includes(event)) return;
-    const id = args?.[0]?.meetingID || '';
-    console.debug('[RT] onAny', event, id);
-  });
-
-  this.socket.on('connect', () => {
-    console.info('[RT] connected', this.socket.id);
-    $('#connectionStatus').show();
-    $('#connectionStatusText').text('Connected to real-time updates');
-    this.reSubscribeToActiveMeetings();
-  });
-
-  this.socket.on('connect_error', (error) => {
-    console.error('[RT] connect_error', error?.message || error);
-  });
-
-  this.socket.on('disconnect', (reason) => {
-    console.warn('[RT] disconnected', reason);
-    $('#connectionStatus').show();
-    $('#connectionStatusText').text('Disconnected, attempting to reconnect...');
-    this.showNotification('warning', 'Disconnected from real-time updates');
-  });
-
-  this.socket.on('error', (data) => {
-    console.error('[RT] error', data?.message || data);
-    this.showNotification('error', data?.message || 'Real-time update error');
-  });
-
-  this.socket.on('update_participants', (data) => {
-    console.log('Received update_participants:', JSON.stringify(data, null, 2));
-    try {
-      if (!data.meetingID) {
-        console.warn('update_participants without meetingID:', data);
-        return;
-      }
-      const today = new Date();
-      const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-      const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
-      $.ajax({
-        url: '<?php echo site_url('superadmin/get_events'); ?>',
-        type: 'GET',
-        data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
-        success: (response) => {
-          try {
-            const responseData = JSON.parse(response);
-            if (responseData.status === 'success' && responseData.data && responseData.data.length > 0) {
-              const event = responseData.data.find(e => e.occurrences && e.occurrences[Object.keys(e.occurrences)[0]]?.meeting_id === data.meetingID);
-              if (event) {
-                const occurrenceDate = Object.keys(event.occurrences).find(date => event.occurrences[date].meeting_id === data.meetingID);
-                const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-                const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-                if (isExpired) {
-                  this.unsubscribe(data.meetingID);
-                  return;
-                }
-                this.updateParticipantUI(event.id, data.participantCount, data.isRunning, occurrenceDate);
-                csrfHash = responseData.csrf.csrfHash;
-              }
-            } else {
-              console.warn('No event found for meetingID:', data.meetingID);
-            }
-          } catch (e) {
-            console.error('Error parsing get_events:', e, response);
-          }
-        },
-        error: () => {
-          console.warn('Failed to fetch event for meetingID:', data.meetingID);
-        }
-      });
-    } catch (e) {
-      console.error('update_participants processing error:', e, data);
-      this.showNotification('error', 'Failed to process real-time update');
-    }
-  });
-
-  this.socket.on('current_state', (data) => {
-    try {
-      if (!data.meetingID) {
-        console.warn('current_state without meetingID:', data);
-        return;
-      }
-      const today = new Date();
-      const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-      const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
-      $.ajax({
-        url: '<?php echo site_url('superadmin/get_events'); ?>',
-        type: 'GET',
-        data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
-        success: (response) => {
-          try {
-            const responseData = JSON.parse(response);
-            if (responseData.status === 'success' && responseData.data && responseData.data.length > 0) {
-              const event = responseData.data.find(e => e.occurrences && e.occurrences[Object.keys(e.occurrences)[0]]?.meeting_id === data.meetingID);
-              if (event) {
-                const occurrenceDate = Object.keys(event.occurrences).find(date => event.occurrences[date].meeting_id === data.meetingID);
-                const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-                const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-                if (isExpired) {
-                  this.unsubscribe(data.meetingID);
-                  return;
-                }
-                this.updateParticipantUI(event.id, data.participantCount, data.isRunning, occurrenceDate);
-                csrfHash = responseData.csrf.csrfHash;
-              }
-            } else {
-              console.warn('No event found for meetingID:', data.meetingID);
-            }
-          } catch (e) {
-            console.error('Error parsing get_events:', e, response);
-          }
-        },
-        error: () => {
-          console.warn('Failed to fetch event for meetingID:', data.meetingID);
-        }
-      });
-    } catch (e) {
-      console.error('current_state processing error:', e, data);
-      this.showNotification('error', 'Failed to process current state update');
-    }
-  }); */
 
   this.calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: isMobile ? 'listMonth' : this.currentView,
+        locale: navigator.language,
         headerToolbar: false,
         lazyFetching: true, // Activer le lazy loading
         views: {
@@ -740,190 +581,192 @@ setupResizeListener() {
 
   loadEvents(start, end, successCallback, failureCallback) {
     if (this.isLoading) return;
-    this.isLoading = true;
+        this.isLoading = true;
 
-    // Clé de cache basée sur la plage de dates et la classe sélectionnée
-    const cacheKey = `events_${start}_${end}_${this.selectedClass}`;
-    const cachedEvents = sessionStorage.getItem(cacheKey);
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        startDate.setMonth(startDate.getMonth() - 2); // 2 mois avant
+        endDate.setMonth(endDate.getMonth() + 2); // 2 mois après
 
-    if (cachedEvents) {
+    const adjustedStart = startDate.toISOString().split('T')[0];
+    const adjustedEnd = endDate.toISOString().split('T')[0];
+
+        const cacheKey = `events_${start}_${end}_${this.selectedClass}`;
+        const cachedEvents = sessionStorage.getItem(cacheKey);
+
+        if (cachedEvents) {
     try {
         const events = JSON.parse(cachedEvents);
+        // Preserve isRunning, participant_count, and meeting_id from existing events
+        const existingEvents = this.calendar ? this.calendar.getEvents() : [];
+        const existingEventMap = new Map();
+        existingEvents.forEach(event => {
+            existingEventMap.set(event.id, {
+                isRunning: event.extendedProps.is_running,
+                participant_count: event.extendedProps.participant_count,
+                meeting_id: event.extendedProps.meeting_id
+            });
+        });
+
+        const enrichedEvents = events.map(event => {
+            const existing = existingEventMap.get(event.id);
+            if (existing) {
+                return {
+                    ...event,
+                    extendedProps: {
+                        ...event.extendedProps,
+                        is_running: existing.isRunning || false,
+                        participant_count: existing.participant_count || 0,
+                        meeting_id: existing.meeting_id || event.extendedProps.meeting_id
+                    }
+                };
+            }
+            return event;
+        });
         if (this.calendar) {
             this.calendar.getEvents().forEach(event => event.remove());
         }
-        successCallback(events);
+        successCallback(enrichedEvents);
         this.isLoading = false;
         $('#calendar').removeClass('loading');
         return;
     } catch (e) {
-        console.warn('Erreur lors de l\'analyse du cache:', e);
+        console.warn('Error parsing cached events:', e);
     }
 }
 
     $.ajax({
-        url: '<?php echo site_url('superadmin/get_events'); ?>',
-        type: 'GET',
-        data: {
-            start_date: start.split('T')[0],
-            end_date: end.split('T')[0],
-            class_id: this.selectedClass,
-            [csrfName]: csrfHash
-        },
-        beforeSend: () => { $('#calendar').addClass('loading'); },
-        success: (response) => {
-            try {
-                const data = JSON.parse(response);
-                if (data.status === 'success') {
-                    const events = [];
-                    const uniqueEventIds = new Set();
+            url: '<?php echo site_url('superadmin/get_events'); ?>',
+            type: 'GET',
+            data: {
+                start_date: adjustedStart,
+                end_date: adjustedEnd,
+                class_id: this.selectedClass,
+                [csrfName]: csrfHash
+            },
+            beforeSend: () => { $('#calendar').addClass('loading'); },
+            success: (response) => {
+                try {
+                    const data = JSON.parse(response);
+                    if (data.status === 'success') {
+                        const events = [];
+                        const uniqueEventIds = new Set();
 
                     data.data.forEach(event => {
-                        if (!event.starting_date || !event.starting_time || !event.ending_time) {
-                            return;
-                        }
+    // Skip events with missing required fields
+    if (!event.starting_date || !event.starting_time || !event.ending_time) {
+        return;
+    }
 
-                        if (event.occurrences && Object.keys(event.occurrences).length > 0) {
-    Object.keys(event.occurrences).forEach(occurrenceDate => {
-        const occurrenceData = event.occurrences[occurrenceDate];
-        const uniqueId = `${event.id}_${occurrenceDate}`;
-        // Filtrer strictement les occurrences dans la plage de dates
-        if (!uniqueEventIds.has(uniqueId) && occurrenceDate >= start.split('T')[0] && occurrenceDate <= end.split('T')[0]) {
-            const endDate = event.ending_date || event.starting_date;
-            const occurrenceEndDateTime = new Date(`${occurrenceDate}T${event.ending_time}`);
-            const isExpired = occurrenceEndDateTime && (new Date() - occurrenceEndDateTime > 24 * 60 * 60 * 1000);
-            if (!isExpired) {
+                        // Preserve isRunning, participant_count, and meeting_id from existing events
+    const existingEvents = this.calendar ? this.calendar.getEvents() : [];
+    const existingEventMap = new Map();
+    existingEvents.forEach(event => {
+        existingEventMap.set(event.id, {
+            isRunning: event.extendedProps.is_running,
+            participant_count: event.extendedProps.participant_count,
+            meeting_id: event.extendedProps.meeting_id
+        });
+    });
+
+    // Handle recurring events
+    if (event.recurrence_type !== 'does_not_repeat' && event.occurrences && Object.keys(event.occurrences).length > 0) {
+        Object.keys(event.occurrences).forEach(occurrenceDate => {
+            const occurrenceData = event.occurrences[occurrenceDate];
+            const uniqueId = `${event.id}_${occurrenceDate}`;
+            // Include occurrence if within date range, regardless of is_expired
+            if (!uniqueEventIds.has(uniqueId) && occurrenceDate >= start.split('T')[0] && occurrenceDate <= end.split('T')[0]) {
+                const existing = existingEventMap.get(uniqueId);
+                const occurrenceEndDate = event.ending_date && event.ending_date >= occurrenceDate ? event.ending_date : occurrenceDate;
                 events.push({
                     id: uniqueId,
-                    title: event.title,
+                    title: event.title || 'unknown',
                     start: `${occurrenceDate}T${event.starting_time}`,
-                    end: `${endDate}T${event.ending_time}`,
+                    end: `${occurrenceEndDate}T${event.ending_time}`,
                     extendedProps: {
-                        description: event.description,
+                        description: event.description || '',
                         school_id: event.school_id,
-                        class_id: event.class_id,
                         recurrence_type: event.recurrence_type,
-                        recurrence_end_date: event.recurrence_end_date,
-                        custom_recurrence: event.custom_recurrence,
-                        visio: event.visio,
-                        school_name: event.school_name,
-                        class_name: event.class_name,
-                        is_expired: event.is_expired,
+                        recurrence_end_date: event.recurrence_end_date || null,
+                        custom_recurrence: event.custom_recurrence || null,
+                        visio: event.visio == 1,
+                        school_name: event.school_name || '',
+                        class_name: event.class_name || '',
+                        is_expired: occurrenceData.is_expired || false,
                         occurrence_date: occurrenceDate,
-                        meeting_id: occurrenceData.meeting_id,
-                        is_running: occurrenceData.is_running || false,
-                        participant_count: occurrenceData.participant_count || 0
+                        meeting_id: occurrenceData.meeting_id || (existing ? existing.meeting_id : null),
+                        is_running: existing ? existing.isRunning : (occurrenceData.is_running || false),
+                        participant_count: existing ? existing.participant_count : (occurrenceData.participant_count || 0),
+                        participants: event.participants || []
                     }
                 });
                 uniqueEventIds.add(uniqueId);
             }
+            });
+    } else {
+        // Handle non-recurring events
+        const uniqueId = event.id;
+        if (!uniqueEventIds.has(uniqueId) && event.starting_date >= start.split('T')[0] && event.starting_date <= end.split('T')[0]) {
+            const existing = existingEventMap.get(uniqueId);
+            const endDate = event.ending_date || event.starting_date;
+            events.push({
+                id: uniqueId,
+                title: event.title || 'No title',
+                start: `${event.starting_date}T${event.starting_time}`,
+                end: `${endDate}T${event.ending_time}`,
+                extendedProps: {
+                    description: event.description || '',
+                    school_id: event.school_id,
+                    recurrence_type: event.recurrence_type,
+                    recurrence_end_date: event.recurrence_end_date || null,
+                    custom_recurrence: event.custom_recurrence || null,
+                    visio: event.visio == 1,
+                    school_name: event.school_name || '',
+                    class_name: event.class_name || '',
+                    is_expired: event.is_expired || false,
+                    occurrence_date: event.starting_date,
+                    meeting_id: event.occurrences && event.occurrences[event.starting_date] ? event.occurrences[event.starting_date].meeting_id : (existing ? existing.meeting_id : null),
+                    is_running: existing ? existing.isRunning : (event.occurrences && event.occurrences[event.starting_date] ? event.occurrences[event.starting_date].is_running || false : false),
+                    participant_count: existing ? existing.participant_count : (event.occurrences && event.occurrences[event.starting_date] ? event.occurrences[event.starting_date].participant_count || 0 : 0),
+                    participants: event.participants || []
+                }
+            });
+            uniqueEventIds.add(uniqueId);
         }
-    });
-} else {
-                            const uniqueId = event.id;
-                            if (!uniqueEventIds.has(uniqueId)) {
-                                const endDate = event.ending_date || event.starting_date;
-                                events.push({
-                                    id: uniqueId,
-                                    title: event.title,
-                                    start: `${event.starting_date}T${event.starting_time}`,
-                                    end: `${endDate}T${event.ending_time}`,
-                                    extendedProps: {
-                                        description: event.description,
-                                        school_id: event.school_id,
-                                        class_id: event.class_id,
-                                        recurrence_type: event.recurrence_type,
-                                        recurrence_end_date: event.recurrence_end_date,
-                                        custom_recurrence: event.custom_recurrence,
-                                        visio: event.visio,
-                                        school_name: event.school_name,
-                                        class_name: event.class_name,
-                                        is_expired: event.is_expired,
-                                        occurrence_date: event.starting_date,
-                                        meeting_id: event.meeting_id || null,
-                                        is_running: event.is_running || false,
-                                        participant_count: event.participant_count || 0
-                                    }
-                                });
-                                uniqueEventIds.add(uniqueId);
-                            }
-                        }
-                    });
+    }
+});
 
                     // Mettre en cache les événements
-                    sessionStorage.setItem(cacheKey, JSON.stringify(events));
-
-                    this.calendar.getEvents().forEach(event => event.remove());
-                    successCallback(events);
-                    csrfHash = data.csrf.csrfHash;
-                } else {
-                    this.showNotification('error', data.message || 'Failed to load events');
+                        sessionStorage.setItem(cacheKey, JSON.stringify(events));
+                        this.calendar.getEvents().forEach(event => event.remove());
+                        successCallback(events);
+                        csrfHash = data.csrf.csrfHash;
+                    } else {
+                        this.showNotification('error', data.message || 'Failed to load events');
+                        failureCallback();
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    this.showNotification('error', 'Failed to parse events');
                     failureCallback();
                 }
-            } catch (e) {
-                console.error('Error parsing response:', e, response);
-                this.showNotification('error', 'Invalid server response');
+           },
+            error: (xhr) => {
+                console.error('AJAX error:', xhr.status, xhr.statusText);
+                this.showNotification('error', xhr.status === 403 ? 'Access denied' : 'Failed to load events');
                 failureCallback();
+                },
+            complete: () => {
+                this.isLoading = false;
+                $('#calendar').removeClass('loading');
             }
-        },
-        error: (xhr) => {
-            console.error('AJAX error:', xhr.status, xhr.statusText);
-            this.showNotification('error', xhr.status === 403 ? 'Access denied' : 'Failed to load events');
-            failureCallback();
-        },
-        complete: () => {
-            this.isLoading = false;
-            $('#calendar').removeClass('loading');
-        }
-    });
-},
-
+      });
+    },
   loadClassesWithEvents(start, end) {
     $.ajax({
       url: '<?php echo site_url('superadmin/get_user_school'); ?>',
       type: 'GET',
       data: { [csrfName]: csrfHash },
-      success: (response) => {
-        try {
-          const data = JSON.parse(response);
-          if (data.status === 'success') {
-            $.ajax({
-              url: '<?php echo site_url('superadmin/get_classes_with_events'); ?>',
-              type: 'POST',
-              data: {
-                school_id: data.data.id,
-                start_date: this.formatDate(start),
-                end_date: this.formatDate(end),
-                [csrfName]: csrfHash
-              },
-              success: (response) => {
-                try {
-                  const classData = JSON.parse(response);
-                  if (classData.status === 'success') {
-                    const classSelect = $('#classFilter');
-                    classSelect.empty();
-                    classSelect.append('<option value=""><?php echo get_phrase("All classes"); ?></option>');
-                    classData.classes.forEach(cls => {
-                      classSelect.append(`<option value="${cls.class_id}">${this.escapeHtml(cls.name)}</option>`);
-                    });
-                    classSelect.val(this.selectedClass || '');
-                    csrfHash = classData.csrf.csrfHash;
-                  } else {
-                    this.showNotification('error', classData.message);
-                  }
-                } catch (e) {
-                  this.showNotification('error', 'Invalid server response');
-                }
-              },
-              error: () => { this.showNotification('error', 'Failed to load classes'); }
-            });
-          } else {
-            this.showNotification('error', data.message);
-          }
-        } catch (e) {
-          this.showNotification('error', 'Invalid server response');
-        }
-      },
       error: () => { this.showNotification('error', 'Failed to load school'); }
     });
   },
@@ -971,50 +814,15 @@ setupResizeListener() {
 
   getPopoverContent(event) {
     const school = this.escapeHtml(event.school_name || event.title || 'N/A');
-    const className = this.escapeHtml(event.class_name || 'N/A');
     const start = event.starting_time ? event.starting_time.slice(0, 5) : '';
     const end = event.ending_time ? event.ending_time.slice(0, 5) : '';
     return `
       <div>
         <strong>School:</strong> ${school}<br>
-        <strong>Class:</strong> ${className}<br>
         <strong>Start:</strong> ${start}<br>
         <strong>End:</strong> ${end}
       </div>`;
   },
-
-  /* subscribeToMeeting(eventId, occurrenceDate) {
-  const today = new Date();
-  const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-  const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
-  $.ajax({
-    url: '<?php echo site_url('superadmin/get_events'); ?>',
-    type: 'GET',
-    data: { id: eventId, start_date: startDate, end_date: endDate, [csrfName]: csrfHash },
-    success: (response) => {
-      try {
-        const data = JSON.parse(response);
-        if (data.status === 'success' && data.data && data.data.length > 0) {
-          const event = data.data[0]; // Take the first event
-          const meetingID = event.occurrences?.[occurrenceDate]?.meeting_id;
-          if (meetingID) {
-            this.subscribe(meetingID);
-          } else {
-            console.warn(`No meetingID for eventId: ${eventId}, occurrenceDate: ${occurrenceDate}`);
-          }
-          csrfHash = data.csrf.csrfHash;
-        } else {
-          console.warn(`No event found for eventId: ${eventId}`);
-        }
-      } catch (e) {
-        console.error('Error parsing get_events:', e, response);
-      }
-    },
-    error: () => {
-      console.warn('Failed to fetch event for eventId:', eventId);
-    }
-  });
-}, */
 
 cacheMeetingState(meetingId, participantCount, isRunning) {
     const cacheKey = `meeting_state_${meetingId}`;
@@ -1042,7 +850,7 @@ cacheMeetingState(meetingId, participantCount, isRunning) {
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       const cacheData = JSON.parse(cached);
-      if (Date.now() - cacheData.timestamp < 5000) {
+      if (Date.now() - cacheData.timestamp < 10000) {
         return cacheData;
       } else {
         sessionStorage.removeItem(cacheKey);
@@ -1052,11 +860,11 @@ cacheMeetingState(meetingId, participantCount, isRunning) {
   },
 
 showEventDetails(eventId, occurrenceDate) {
-    $('#eventId').val(String(eventId)); // Ensure eventId is set as a string
-    if (!eventId || !occurrenceDate) {
-        this.showNotification('error', 'No event or occurrence date selected');
-        return;
-    }
+    $('#eventId').val(String(eventId));
+        if (!eventId || !occurrenceDate) {
+            this.showNotification('error', 'No event or occurrence date selected');
+            return;
+        }
 
     // Stop any existing polling to avoid conflicts
     this.stopPolling();
@@ -1073,23 +881,23 @@ showEventDetails(eventId, occurrenceDate) {
     const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
 
     $.ajax({
-        url: '<?php echo site_url('superadmin/get_events'); ?>',
-        type: 'GET',
-        data: { id: eventId, start_date: startDate, end_date: endDate, [csrfName]: csrfHash },
-        success: (response) => {
-            try {
+            url: '<?php echo site_url('superadmin/get_events'); ?>',
+            type: 'GET',
+            data: { id: eventId, start_date: startDate, end_date: endDate, [csrfName]: csrfHash },
+            success: (response) => {
                 const data = JSON.parse(response);
                 if (data.status === 'success' && data.data && data.data.length > 0) {
                     const event = data.data[0];
-                    const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-                    const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
                     event.occurrence_date = occurrenceDate;
                     event.occurrences = event.occurrences || {};
 
                     const occurrenceData = event.occurrences[occurrenceDate] || {};
                     const isVisio = event.visio == 1;
-
+                    const isExpired = event.recurrence_type !== 'does_not_repeat' && occurrenceData
+                        ? occurrenceData.is_expired !== undefined ? occurrenceData.is_expired : event.is_expired
+                        : event.is_expired;
                     // Populate view fields
+                    $('#eventCreator').text(this.escapeHtml(event.created_by_name || 'Unknown'));
                     $('#eventTitle').text(this.escapeHtml(event.title || ''));
                     $('#eventDescriptionView').text(event.description || 'No description');
                     $('#eventSchool').text(event.school_name || event.title || '');
@@ -1098,16 +906,67 @@ showEventDetails(eventId, occurrenceDate) {
                     $('#eventEnd').text(`${event.ending_time ? event.ending_time.slice(0, 5) : ''}`);
                     $('#eventRecurrenceSection').toggle(event.recurrence_type !== 'does_not_repeat');
 
+                    $.ajax({
+                        url: '<?php echo site_url('superadmin/get_school_data'); ?>',
+                        type: 'POST',
+                        data: {
+                            school_id: event.school_id,
+                            [csrfName]: csrfHash
+                        },
+                        success: (response) => {
+                            try {
+                                const data = JSON.parse(response);
+                                if (data.status === 'success') {
+                                    const userMap = {};
+                                    if (data.users && Array.isArray(data.users)) {
+                                        data.users.forEach(user => {
+                                            userMap[user.id] = user.name;
+                                        });
+                                    }
+
+                                    const classMap = {};
+                                    if (data.classes && Array.isArray(data.classes)) {
+                                        data.classes.forEach(cls => {
+                                            classMap[cls.id] = cls.name;
+                                        });
+                                    }
+
+                                    const eventParticipants = event.participants && Array.isArray(event.participants) ? event.participants : [];
+                                    const participantsContainer = $('#eventParticipants');
+                                    participantsContainer.empty();
+                                    eventParticipants.forEach(p => {
+                                        let name = 'Unknown';
+                                        if (p.type === 'class' && classMap[p.id]) {
+                                            name = classMap[p.id];
+                                        } else if (p.type === 'individual' && userMap[p.id]) {
+                                            name = userMap[p.id];
+                                        }
+                                        const badge = $(`
+                                            <span class="badge" data-type="${p.type}" data-id="${p.id}">
+                                                ${this.escapeHtml(name)}
+                                            </span>
+                                        `);
+                                        participantsContainer.append(badge);
+                                    });
+
+                                    csrfHash = data.csrf.csrfHash;
+                                }
+                            } catch (e) {
+                                this.showNotification('error', 'Error parsing school data');
+                            }
+                        },
+                    });
+
                     // Populate edit form fields
                     $('#eventId').val(event.id);
-                    $('#eventEditModal').find('#currentOccurrenceDate').remove(); // Remove any existing occurrence date
+                    $('#eventEditModal').find('#currentOccurrenceDate').remove();
                     $('#eventEditModal').append('<input type="hidden" id="currentOccurrenceDate" value="' + occurrenceDate + '">');
                     $('#eventTitleInput').val(this.escapeHtml(event.title || ''));
                     $('#eventDescription').val(event.description || '');
                     $('#school_id').val(event.school_id || '');
                     $('#classe_id').val(event.class_id || '');
                     $('#eventDate').val(event.starting_date || '');
-                    $('#eventEndDate').val(event.ending_date || event.starting_date || '');
+                    $('#eventEndDate').val(event.ending_date || '');
                     $('#recurrenceType').val(event.recurrence_type || 'does_not_repeat');
                     $('#recurrenceEndDate').val(event.recurrence_end_date || '');
                     $('#customRecurrence').val(event.custom_recurrence || '');
@@ -1123,7 +982,7 @@ showEventDetails(eventId, occurrenceDate) {
                     const endTimeFormatted = event.ending_time ? event.ending_time.slice(0, 5) : '';
 
                     // Store values in hidden inputs for persistence
-                    $('#eventForm').find('#tempStartTime, #tempEndTime').remove(); // Clean up old temp inputs
+                    $('#eventForm').find('#tempStartTime, #tempEndTime').remove();
                     $('#eventForm').append('<input type="hidden" id="tempStartTime" value="' + startTimeFormatted + '">');
                     $('#eventForm').append('<input type="hidden" id="tempEndTime" value="' + endTimeFormatted + '">');
 
@@ -1142,13 +1001,7 @@ showEventDetails(eventId, occurrenceDate) {
 
                             // Verify if the values are correctly set
                             const startTimeSet = $('#eventStartTime').val();
-                            const endTimeSet = $('#eventEndTime').val();
-                            if (startTimeSet !== startTimeFormatted) {
-                                console.warn(`startTimeFormatted (${startTimeFormatted}) not applied, current value: ${startTimeSet}`);
-                            }
-                            if (endTimeSet !== endTimeFormatted) {
-                                console.warn(`endTimeFormatted (${endTimeFormatted}) not applied, current value: ${endTimeSet}`);
-                            }
+                            const endTimeSet = $('#eventEndTime').val();  
                         } else {
                             setTimeout(waitForOptions, 50);
                         }
@@ -1157,34 +1010,57 @@ showEventDetails(eventId, occurrenceDate) {
 
                     // Load classes for the school
                     $.ajax({
-                        url: '<?php echo site_url('superadmin/get_classes_by_school'); ?>',
+                        url: '<?php echo site_url('superadmin/get_school_data'); ?>',
                         type: 'POST',
                         data: { school_id: event.school_id, [csrfName]: csrfHash },
                         success: (response) => {
                             try {
-                                const classData = JSON.parse(response);
-                                if (classData.status === 'success') {
+                                const data = JSON.parse(response);
+                                if (data.status === 'success') {
                                     const classSelect = $('#classe_id');
                                     classSelect.empty();
                                     classSelect.append('<option value=""><?php echo get_phrase("select_a_class"); ?></option>');
-                                    classData.classes.forEach(cls => {
-                                        classSelect.append(`<option value="${cls.id}">${this.escapeHtml(cls.name)}</option>`);
-                                    });
+                                    if (data.classes && Array.isArray(data.classes)) {
+                                        data.classes.forEach(cls => {
+                                            classSelect.append(`<option value="${cls.id}">${this.escapeHtml(cls.name)}</option>`);
+                                        });
+                                    }
                                     classSelect.val(event.class_id || '');
-                                    csrfHash = classData.csrf.csrfHash;
-                                } else {
-                                    this.showNotification('error', classData.message);
+                                    csrfHash = data.csrf.csrfHash;
                                 }
                             } catch (e) {
-                                this.showNotification('error', 'Invalid server response');
+                                this.showNotification('error', 'Error parsing school data');
                             }
                         },
                         error: () => {
                             this.showNotification('error', 'Failed to load classes');
                         }
                     });
+                    const participants = event.participants && Array.isArray(event.participants) ? event.participants : [];
+                    this.refreshUsersDropdown(event.school_id, participants, () => {
+                        const badgesContainer = $('#editParticipantsBadges');
+                        badgesContainer.empty();
+                        const selected = [];
 
-                    // Handle recurrence display
+                        participants.forEach(function(p) {
+                            const $checkbox = $(`#editParticipantsDropdownMenu .participant-checkbox[data-type="${p.type}"][value="${p.id}"]`);
+                            if ($checkbox.length) {
+                                $checkbox.prop('checked', true);
+                                const name = $checkbox.parent().text().replace(/^$$ \w+ $$\s*/, '').trim();
+                                selected.push({ type: p.type, id: p.id });
+
+                                const badge = $(`
+                                    <span class="badge" data-type="${p.type}" data-id="${p.id}">
+                                        ${CalendarApp.escapeHtml(name)}
+                                        <span class="remove-badge" data-type="${p.type}" data-id="${p.id}">&times;</span>
+                                    </span>
+                                `);
+                                badgesContainer.append(badge);
+                            }
+                        });
+
+                        $('#editParticipantsInput').val(JSON.stringify(selected));
+                    });
                     if (event.recurrence_type !== 'does_not_repeat') {
                         let recurrenceText = event.recurrence_type.charAt(0).toUpperCase() + event.recurrence_type.slice(1);
                         if (event.recurrence_type === 'weekly' && event.custom_recurrence) {
@@ -1203,7 +1079,6 @@ showEventDetails(eventId, occurrenceDate) {
                         $('#eventRecurrence').text('');
                     }
 
-                    // Handle visio and meeting state
                     $('#eventParticipantsSection').toggle(isVisio);
                     $('#joinMeetingBtn').toggle(isVisio);
 
@@ -1216,123 +1091,63 @@ showEventDetails(eventId, occurrenceDate) {
                         this.stopPolling();
                     } else if (isVisio) {
     const meetingId = occurrenceData.meeting_id;
-    if (meetingId) {
-        $.ajax({
-            url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
-            type: 'POST',
-            data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
-            dataType: 'json',
-            success: (response) => {
-                const status = response.status ? String(response.status).trim().toLowerCase() : '';
-                if (status === 'success' && response.data && response.data.length > 0) {
-                    const state = response.data[0];
-                    if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                        this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
-                        this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                        // Désactiver le bouton delete si la réunion est active
-                        $('#deleteevent').prop('disabled', state.is_running).toggleClass('disabled', state.is_running);
-                        $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                        if (state.is_running) {
-                            this.hasActiveMeetings = true;
-                            this.pollActiveMeetings();
+                        if (meetingId) {
+                            $.ajax({
+                                url: '<?php echo site_url('bigbluebutton/meeting_states'); ?>',
+                                type: 'POST',
+                                data: { meetingIDs: [meetingId], [csrfName]: csrfHash },
+                                dataType: 'json',
+                                success: (response) => {
+                                    const status = response.status ? String(response.status).trim().toLowerCase() : '';
+                                    if (status === 'success' && response.data && response.data.length > 0) {
+                                        const state = response.data[0];
+                                        if (state.status === 'success' && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                            this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
+                                            this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
+                                            $('#deleteevent').prop('disabled', state.is_running).toggleClass('disabled', state.is_running);
+                                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                                            if (state.is_running) {
+                                                this.hasActiveMeetings = true;
+                                                this.pollActiveMeetings();
+                                            }
+                                            this.startPolling(eventId, meetingId, occurrenceDate);
+                                            csrfHash = response.csrf?.csrfHash || csrfHash;
+                                        } else {
+                                            $('#participantCount').text('0');
+                                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
+                                        }
+                                    } else {
+                                        $('#participantCount').text('0');
+                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
+                                    }
+                                },
+                                error: (xhr, status, error) => {
+                                    const cachedState = this.getCachedMeetingState(meetingId);
+                                    if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
+                                        this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
+                                        $('#deleteevent').prop('disabled', cachedState.isRunning).toggleClass('disabled', cachedState.isRunning);
+                                        $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                                        if (cachedState.isRunning) {
+                                            this.hasActiveMeetings = true;
+                                            this.pollActiveMeetings();
+                                        }
+                                        this.startPolling(eventId, meetingId, occurrenceDate);
+                                    } else {
+                                        $('#participantCount').text('0');
+                                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                                        $('#deleteevent').prop('disabled', false).removeClass('disabled');
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#participantCount').text('0');
+                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
+                            $('#deleteevent').prop('disabled', false).removeClass('disabled');
+                            this.stopPolling();
                         }
-                        this.startPolling(eventId, meetingId, occurrenceDate);
-                        csrfHash = response.csrf?.csrfHash || csrfHash;
-                    } else {
-                        $('#participantCount').text('0');
-                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si non actif
                     }
-                } else {
-                    $('#participantCount').text('0');
-                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si erreur
-                }
-            },
-            error: (xhr, status, error) => {
-                const cachedState = this.getCachedMeetingState(meetingId);
-                if (cachedState && String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                    this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
-                    $('#deleteevent').prop('disabled', cachedState.isRunning).toggleClass('disabled', cachedState.isRunning); // Utiliser cache pour bouton delete
-                    $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                    if (cachedState.isRunning) {
-                        this.hasActiveMeetings = true;
-                        this.pollActiveMeetings();
-                    }
-                    this.startPolling(eventId, meetingId, occurrenceDate);
-                } else {
-                    $('#participantCount').text('0');
-                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-                    $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de cache
-                }
-            }
-        });
-    } else {
-        $('#participantCount').text('0');
-        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false).removeClass('disabled');
-        $('#deleteevent').prop('disabled', false).removeClass('disabled'); // Réactiver si pas de meetingId
-        this.stopPolling();
-    }
-}
-          /* else if (isVisio && occurrenceData.meeting_id) {
-            // Set initial state from superadmin/get_events
-            $('#participantCount').text(occurrenceData.participant_count || 0);
-            $('#joinMeetingBtn')
-              .text(occurrenceData.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>')
-              .prop('disabled', false);
-            console.log(`showEventDetails - Initial UI set: eventId: ${eventId}, occurrenceDate: ${occurrenceDate}, participantCount: ${occurrenceData.participant_count}, isRunning: ${occurrenceData.is_running}`);
-
-            // Subscribe to meeting updates
-            if (this.socket.connected) {
-              this.subscribe(occurrenceData.meeting_id);
-              this.socket.emit('request_current_state', { meetingID: occurrenceData.meeting_id });
-              console.log(`showEventDetails - Subscribed and requested current_state for meetingID: ${occurrenceData.meeting_id}`);
-            } else {
-              console.warn(`showEventDetails - Socket not connected for meetingID: ${occurrenceData.meeting_id}`);
-              this.showNotification('warning', 'Unable to connect to real-time updates.');
-            }
-
-            // Wait for current_state with longer timeout
-            const waitForState = new Promise((resolve) => {
-              const handler = (data) => {
-                if (data.meetingID === occurrenceData.meeting_id) {
-                  this.socket.off('current_state', handler);
-                  console.log(`showEventDetails - Received current_state for meetingID: ${data.meetingID}`, data);
-                  resolve(data);
-                }
-              };
-              this.socket.on('current_state', handler);
-              setTimeout(() => {
-                this.socket.off('current_state', handler);
-                console.warn(`showEventDetails - Timeout waiting for current_state for meetingID: ${occurrenceData.meeting_id}`);
-                resolve(null);
-              }, 10000); // Increased to 10 seconds
-            });
-
-            waitForState.then((data) => {
-              if (data && $('#eventId').val() === eventId && $('#eventEditModal').hasClass('show')) {
-                console.log(`showEventDetails - Updating UI from current_state: eventId: ${eventId}, participantCount: ${data.participantCount}, isRunning: ${data.isRunning}`);
-                this.updateParticipantUI(eventId, data.participantCount, data.isRunning, occurrenceDate);
-              } else if (!data) {
-                // Fallback: Fetch /meeting_states directly
-                console.log(`showEventDetails - Fallback to /meeting_states for meetingID: ${occurrenceData.meeting_id}`);
-                $.ajax({
-                  url: 'https://preprod.wayo.site/meeting_states',
-                  type: 'GET',
-                  data: { meetingID: occurrenceData.meeting_id },
-                  success: (response) => {
-                    console.log(`showEventDetails - /meeting_states response for meetingID: ${occurrenceData.meeting_id}`, response);
-                    if (response.status === 'success' && $('#eventId').val() === eventId && $('#eventEditModal').hasClass('show')) {
-                      this.updateParticipantUI(eventId, response.participantCount, response.isRunning, occurrenceDate);
-                    }
-                  },
-                  error: (xhr, status, error) => {
-                    console.error(`showEventDetails - Failed to fetch /meeting_states for meetingID: ${occurrenceData.meeting_id}`, status, error);
-                  }
-                });
-              }
-            });
-          } */ 
 
           $('#recurrenceTypePopup').val(event.recurrence_type || 'does_not_repeat');
                     $('#recurrenceEndDatePopup').val(event.recurrence_end_date || '');
@@ -1366,7 +1181,7 @@ showEventDetails(eventId, occurrenceDate) {
                         $('#participantCount').text('0');
                         $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>');
                         $('#eventEditModalLabel').text('<?php echo get_phrase("event_details"); ?>');
-                        $('#tempStartTime, #tempEndTime').remove(); // Clean up temporary inputs
+                        $('#tempStartTime, #tempEndTime').remove();
                         $('#currentOccurrenceDate').remove();
                         this.stopPolling();
                         if (this.hasActiveMeetings && document.visibilityState === 'visible') {
@@ -1381,23 +1196,17 @@ showEventDetails(eventId, occurrenceDate) {
                 } else {
                     this.showNotification('error', data.message || 'Failed to load event');
                 }
-            } catch (e) {
-                console.error('showEventDetails - Error parsing get_events:', e, response);
-                this.showNotification('error', 'Invalid server response');
+            },
+            error: () => {
+                this.showNotification('error', 'Failed to load event');
+                console.error('showEventDetails - AJAX error fetching get_events');
+                this.stopPolling();
             }
-        },
-        error: () => {
-            this.showNotification('error', 'Failed to load event');
-            console.error('showEventDetails - AJAX error fetching get_events');
-            this.stopPolling();
-        }
-    });
-},
+        });
+    },
 
 startPolling(eventId, meetingId, occurrenceDate) {
-    if (document.visibilityState !== 'visible') {
-        return;
-    }
+    if (document.visibilityState !== 'visible') return;
 
     this.stopPolling();
     this.currentEventId = eventId;
@@ -1405,20 +1214,23 @@ startPolling(eventId, meetingId, occurrenceDate) {
     this.currentOccurrenceDate = occurrenceDate;
 
 
-    this.pollingInterval = setInterval(() => {
+    let lastPollTime = 0;
+    const poll = () => {
         if (document.visibilityState !== 'visible') {
             this.stopPolling();
             return;
         }
+        const now = Date.now();
+        if (now - lastPollTime < 1500) return; // Prevent overlapping polls
+        lastPollTime = now;
 
         const cachedState = this.getCachedMeetingState(meetingId);
-        if (cachedState) {
+        if (cachedState && Date.now() - cachedState.timestamp < 10000) {
             const modalEventId = $('#eventId').length > 0 ? String($('#eventId').val()) : null;
             const modalOccurrenceDate = $('#currentOccurrenceDate').length > 0 ? $('#currentOccurrenceDate').val() : null;
             if (modalEventId && modalOccurrenceDate && modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                 this.updateParticipantUI(eventId, cachedState.participantCount, cachedState.isRunning, occurrenceDate);
-                $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>');
-            } else {
+                 $('#joinMeetingBtn').text(cachedState.isRunning ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', !cachedState.isRunning).removeClass('disabled');
             }
             return;
         }
@@ -1438,40 +1250,38 @@ startPolling(eventId, meetingId, occurrenceDate) {
                         if (modalEventId && modalOccurrenceDate && modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                             this.cacheMeetingState(meetingId, state.participant_count, state.is_running);
                             this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Start Meeting'); ?>');
+                            $('#joinMeetingBtn').text(state.is_running ? '<?php echo get_phrase('Join Meeting'); ?>' : '<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', !state.is_running).removeClass('disabled');
                             csrfHash = response.csrf?.csrfHash || csrfHash;
-                        } else {
                         }
                     } else {
-                        const modalEventId = $('#eventId').length > 0 ? String($('#eventId').val()) : null;
-                        const modalOccurrenceDate = $('#currentOccurrenceDate').length > 0 ? $('#currentOccurrenceDate').val() : null;
                         if (modalEventId && modalOccurrenceDate && modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                             $('#participantCount').text('0');
-                            $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false);
+                            $('#joinMeetingBtn').text('<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', true).removeClass('disabled');
                         }
                         this.stopPolling();
                     }
                 } else {
-                    const modalEventId = $('#eventId').length > 0 ? String($('#eventId').val()) : null;
-                    const modalOccurrenceDate = $('#currentOccurrenceDate').length > 0 ? $('#currentOccurrenceDate').val() : null;
                     if (modalEventId && modalOccurrenceDate && modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                         $('#participantCount').text('0');
-                        $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false);
+                        $('#joinMeetingBtn').text('<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', true).removeClass('disabled');
                     }
                     this.stopPolling();
                 }
             },
-            error: (xhr, status, error) => {
+            error: () => {
                 const modalEventId = $('#eventId').length > 0 ? String($('#eventId').val()) : null;
                 const modalOccurrenceDate = $('#currentOccurrenceDate').length > 0 ? $('#currentOccurrenceDate').val() : null;
                 if (modalEventId && modalOccurrenceDate && modalEventId === String(eventId) && modalOccurrenceDate === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                     $('#participantCount').text('0');
-                    $('#joinMeetingBtn').text('<?php echo get_phrase('Start Meeting'); ?>').prop('disabled', false);
+                    $('#joinMeetingBtn').text('<?php echo get_phrase('Meeting Not Started'); ?>').prop('disabled', true).removeClass('disabled');
                 }
                 this.stopPolling();
             }
         });
-    }, 5000);
+    };
+
+    poll(); // Immediate check
+    this.pollingInterval = setInterval(poll, 1500);
 },
 
 stopPolling() {
@@ -1486,54 +1296,9 @@ stopPolling() {
         this.currentOccurrenceDate = null;
         if (this.hasActiveMeetings && document.visibilityState === 'visible') {
             this.pollActiveMeetings();
-        }
-    }
-},
-
-/* reSubscribeToActiveMeetings() {
-  const today = new Date();
-  const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-  const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
-
-  $.ajax({
-    url: '<?php echo site_url('superadmin/get_events'); ?>',
-    type: 'GET',
-    data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
-    success: (response) => {
-      try {
-        const data = JSON.parse(response);
-        console.log('reSubscribeToActiveMeetings - get_events response:', JSON.stringify(data, null, 2));
-        if (data.status === 'success' && data.data) {
-          data.data.forEach(event => {
-            const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-            const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-            if (!isExpired && event.visio == 1 && event.occurrences) {
-              Object.keys(event.occurrences).forEach(occurrenceDate => {
-                const occurrenceData = event.occurrences[occurrenceDate];
-                if (occurrenceData.meeting_id && this.socket.connected) {
-                  console.log(`reSubscribeToActiveMeetings - Subscribing to meetingID: ${occurrenceData.meeting_id}, eventId: ${event.id}, occurrenceDate: ${occurrenceDate}`);
-                  this.subscribe(occurrenceData.meeting_id);
-                  this.socket.emit('request_current_state', { meetingID: occurrenceData.meeting_id });
-                } else {
-                  console.warn(`reSubscribeToActiveMeetings - Skipping subscription for meetingID: ${occurrenceData.meeting_id}, socketConnected: ${this.socket.connected}`);
-                }
-              });
-            }
-          });
-          csrfHash = data.csrf.csrfHash;
-        } else {
-          console.warn('reSubscribeToActiveMeetings - No events found or invalid response:', data);
-        }
-      } catch (e) {
-        console.error('reSubscribeToActiveMeetings - Error parsing get_events:', e, response);
+        }   
       }
-    },
-    error: () => {
-      console.error('reSubscribeToActiveMeetings - AJAX error fetching get_events');
-    }
-  });
-}, */
-
+},
   validateForm(formId) {
     const form = $(`#${formId}`);
     const requiredFields = form.find('[required]');
@@ -1596,6 +1361,12 @@ stopPolling() {
 
   bindGlobalEvents() {
     $('#createEventModal').on('show.bs.modal', () => {
+      $('#participantsSearchInput').val('');
+      $('#participantsBadges').empty();
+      $('#participantsDropdownMenu').html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+      $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
+      $('#participantsInput').val('[]');
+      $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
       $('#createeventEndDate').on('change', () => {
         const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
@@ -1610,7 +1381,7 @@ stopPolling() {
       $('#createeventEndDate').attr('min', today);
       $('#createeventStartTime').prop('disabled', true);
       $('#createeventEndTime').prop('disabled', true);
-      const updateTimeFields = () => {
+       const updateTimeFields = () => {
       const inputElement = document.getElementById('createeventDate');
       const selectedDate = inputElement ? inputElement.value : '';
     if (selectedDate) {
@@ -1650,64 +1421,178 @@ stopPolling() {
         type: 'GET',
         data: { [csrfName]: csrfHash },
         success: (response) => {
-          try {
             const data = JSON.parse(response);
             if (data.status === 'success') {
-              const schoolSelect = $('#createSchoolId');
-              schoolSelect.empty();
-              schoolSelect.append(`<option value="${data.data.id}">${this.escapeHtml(data.data.name)}</option>`);
-              schoolSelect.prop('disabled', true);
+                const schoolSelect = $('#createSchoolId');
+                schoolSelect.empty();
+                schoolSelect.append(`<option value="${data.data.id}">${this.escapeHtml(data.data.name)}</option>`);
+                schoolSelect.prop('disabled', true);
+                csrfHash = data.csrf.csrfHash;
 
               $.ajax({
-                url: '<?php echo site_url('superadmin/get_classes_by_school'); ?>',
+                url: '<?php echo site_url('superadmin/get_school_data'); ?>',
                 type: 'POST',
                 data: { school_id: data.data.id, [csrfName]: csrfHash },
                 success: (response) => {
-                  try {
-                    const classData = JSON.parse(response);
-                    if (classData.status === 'success') {
-                      const classSelect = $('#createClasseId');
-                      classSelect.empty();
-                      classSelect.append('<option value=""><?php echo get_phrase("select_a_class"); ?></option>');
-                      classData.classes.forEach(cls => {
-                        classSelect.append(`<option value="${cls.id}">${this.escapeHtml(cls.name)}</option>`);
-                      });
-                      csrfHash = classData.csrf.csrfHash;
-
-                      $('#recurrenceModal').on('show.bs.modal', () => {
-                        const eventDate = $('#createeventDate').val();
-                        $('#recurrenceStartDatePopup').val(eventDate || '');
-                        const rt = $('#recurrenceTypePopup').val();
-                        $('#recurrenceStartDateSection').toggle(rt === 'monthly' || rt === 'yearly');
-
-                        $('#recurrenceStartDatePopup').off('change').on('change', () => {
-                          $('#createeventDate').val($('#recurrenceStartDatePopup').val());
-                        });
-                        $('#createeventDate').off('change').on('change', () => {
-                          $('#recurrenceStartDatePopup').val($('#createeventDate').val());
-                        });
-                      });
-                    } else {
-                      this.showNotification('error', classData.message);
+                   try {
+                        const schoolData = JSON.parse(response);
+                        if (schoolData.status === 'success') {
+                            let html = '<strong><?php echo get_phrase("Classes"); ?></strong>';
+                            if (schoolData.classes && Array.isArray(schoolData.classes)) {
+                                schoolData.classes.forEach(cls => {
+                                    html += `<label><input type="checkbox" class="participant-checkbox" data-type="class" value="${cls.id}"> ${CalendarApp.escapeHtml(cls.name)}</label>`;
+                                });
+                            }
+                            html += '<hr><strong><?php echo get_phrase("Users"); ?></strong>';
+                            if (schoolData.users && Array.isArray(schoolData.users)) {
+                                schoolData.users.forEach(user => {
+                                    const roleTranslations = {
+                                        'student': '<?php echo get_phrase("student"); ?>',
+                                        'teacher': '<?php echo get_phrase("mentor"); ?>',
+                                        'admin': '<?php echo get_phrase("admin"); ?>',
+                                        'superadmin': '<?php echo get_phrase("superadmin"); ?>'
+                                    };
+                                    const roleLabel = roleTranslations[user.role] || (user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown');
+                                    html += `<label><input type="checkbox" class="participant-checkbox" data-type="individual" value="${user.id}"> (${roleLabel}) ${CalendarApp.escapeHtml(user.name)}</label>`;
+                                });
+                            }
+                            $('#participantsDropdownMenu').html(html);
+                            csrfHash = schoolData.csrf.csrfHash;
+                        }
+                    } catch (e) {
+                        this.showNotification('error', 'Error parsing school data');
                     }
-                  } catch (e) {
-                    this.showNotification('error', 'Invalid server response');
-                  }
                 },
-                error: () => { this.showNotification('error', 'Failed to load classes'); }
-              });
-              csrfHash = data.csrf.csrfHash;
-            } else {
-              this.showNotification('error', data.message);
-            }
-          } catch (e) {
-            this.showNotification('error', 'Invalid server response');
-          }
-        },
-        error: () => { this.showNotification('error', 'Failed to load school'); }
-      });
+               });
+        } else {
+            this.showNotification('error', data.message);
+        }
+    },
+    error: () => { this.showNotification('error', 'Failed to load school'); }
+});
     });
 
+
+    $('#participantsSearchInput').off('click').on('click', function(e) {
+    e.stopPropagation();
+    const dropdown = $('#participantsDropdownMenu');
+    const searchTerm = $(this).val().toLowerCase().trim();
+
+    if (!searchTerm) {
+        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+        dropdown.addClass('show').parent().addClass('open');
+    } else {
+        // Charger et filtrer les options si un texte est saisi
+        const schoolId = $('#createSchoolId').val();
+        if (schoolId) {
+            const selected = JSON.parse($('#participantsInput').val() || '[]');
+            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+                dropdown.find('label').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.includes(searchTerm));
+                });
+                const anyVisible = dropdown.find('label:visible').length > 0;
+                if (!anyVisible) {
+                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
+                }
+                dropdown.addClass('show').parent().addClass('open');
+            });
+        }
+    }
+});
+
+  $('#participantsSearchInput').off('input').on('input', function() {
+    const searchTerm = $(this).val().toLowerCase().trim();
+    const dropdown = $('#participantsDropdownMenu');
+
+    if (!searchTerm) {
+        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+        dropdown.addClass('show').parent().addClass('open');
+    } else {
+        const schoolId = $('#createSchoolId').val();
+        if (schoolId) {
+            const selected = JSON.parse($('#participantsInput').val() || '[]');
+            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+                const anyVisible = dropdown.find('label').filter(function() {
+                    const text = $(this).text().toLowerCase();
+                    const isVisible = text.includes(searchTerm);
+                    $(this).toggle(isVisible);
+                    return isVisible;
+                }).length > 0;
+
+                if (!anyVisible) {
+                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
+                }
+                dropdown.addClass('show').parent().addClass('open');
+            });
+        }
+    }
+});
+
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('#createParticipants').length) {
+        $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
+    }
+});
+
+$('#participantsDropdownMenu').on('click', function(e) {
+    e.stopPropagation();
+});
+
+$('#participantsDropdownMenu').on('click', '.participant-checkbox', function() {
+    const selected = [];
+    const badgesContainer = $('#participantsBadges');
+    badgesContainer.empty();
+
+    $('#participantsDropdownMenu .participant-checkbox:checked').each(function() {
+        const $checkbox = $(this);
+        const type = $checkbox.data('type');
+        const id = $checkbox.val();
+        const name = $checkbox.parent().text().trim();
+        selected.push({ type, id });
+
+        // Add badge
+        const badge = $(`
+            <span class="badge" data-type="${type}" data-id="${id}">
+                ${CalendarApp.escapeHtml(name)}
+                <span class="remove-badge" data-type="${type}" data-id="${id}">&times;</span>
+            </span>
+        `);
+        badgesContainer.append(badge);
+    });
+
+    $('#participantsInput').val(JSON.stringify(selected));
+    $('#participantsSearchInput').focus();
+
+    // Trigger AJAX to refresh users dropdown
+    const schoolId = $('#createSchoolId').val();
+    if (schoolId) {
+        CalendarApp.refreshUsersDropdown(schoolId, selected);
+    }
+});
+
+// Gestion de la suppression des badges
+$('#participantsBadges').on('click', '.remove-badge', function() {
+    const type = $(this).data('type');
+    const id = $(this).data('id');
+    $(`#participantsDropdownMenu .participant-checkbox[data-type="${type}"][value="${id}"]`).prop('checked', false);
+    $(this).parent().remove();
+
+    const selected = [];
+    $('#participantsDropdownMenu .participant-checkbox:checked').each(function() {
+        selected.push({
+            type: $(this).data('type'),
+            id: $(this).val()
+        }); 
+    });
+    $('#participantsInput').val(JSON.stringify(selected));
+
+    // Trigger AJAX to refresh users dropdown
+    const schoolId = $('#createSchoolId').val();
+    if (schoolId) {
+        CalendarApp.refreshUsersDropdown(schoolId, selected);
+    }
+});
     $('#createEventForm').on('submit', (e) => {
       e.preventDefault();
       if (!this.validateForm('createEventForm')) {
@@ -1727,6 +1612,7 @@ stopPolling() {
         recurrence_end_date: $('#createRecurrenceEndDate').val(),
         custom_recurrence: $('#createCustomRecurrence').val(),
         visio: $('#createVisio').is(':checked') ? 1 : 0,
+        participants: $('#participantsInput').val(),
         [csrfName]: csrfHash
       };
       $.ajax({
@@ -1734,12 +1620,16 @@ stopPolling() {
         type: 'POST',
         data: formData,
         success: (response) => {
-          try {
             const data = JSON.parse(response);
             if (data.status === 'success') {
               $('#createEventModal').modal('hide');
               $('#createEventForm')[0].reset();
               this.resetRecurrenceModal();
+              $('#participantsInput').val('');
+              $('#participantsBadges').empty();
+              $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
+              $('#participantsSearchInput').val('');
+              $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
               this.showNotification('success', data.message);
               this.clearEventCache();
               this.calendar.refetchEvents();
@@ -1748,9 +1638,6 @@ stopPolling() {
               this.showNotification('error', data.message);
             }
             csrfHash = data.csrf.csrfHash;
-          } catch (e) {
-            this.showNotification('error', 'Invalid server response');
-          }
         },
         error: () => { this.showNotification('error', 'Failed to create event'); }
       });
@@ -1776,6 +1663,7 @@ stopPolling() {
     recurrence_end_date: $('#recurrenceEndDate').val(),
     custom_recurrence: $('#customRecurrence').val(),
     visio: $('#visio').is(':checked') ? 1 : 0,
+    participants: $('#editParticipantsInput').val(),
     [csrfName]: csrfHash
   };
   $.ajax({
@@ -1783,7 +1671,6 @@ stopPolling() {
     type: 'POST',
     data: formData,
     success: (response) => {
-      try {
         const data = JSON.parse(response);
         if (data.status === 'success') {
           $('#eventEditModal').modal('hide');
@@ -1796,9 +1683,6 @@ stopPolling() {
           this.showNotification('error', data.message);
         }
         csrfHash = data.csrf.csrfHash;
-      } catch (e) {
-        this.showNotification('error', 'Invalid server response');
-      }
     },
     error: () => { this.showNotification('error', 'Failed to update event'); }
   });
@@ -1919,37 +1803,6 @@ stopPolling() {
       targetForm.find('[name="custom_recurrence"]').val(customRecurrence);
       $('#recurrenceModal').modal('hide');
     });
-
-    $('#school_id').on('change', () => {
-  const schoolId = $('#school_id').val();
-  $.ajax({
-    url: '<?php echo site_url('superadmin/get_classes_by_school'); ?>',
-    type: 'POST',
-    data: { school_id: schoolId, [csrfName]: csrfHash },
-    success: (response) => {
-      try {
-        const data = JSON.parse(response);
-        if (data.status === 'success') {
-          const classSelect = $('#classe_id');
-          classSelect.empty();
-          classSelect.append('<option value=""><?php echo get_phrase("select_a_class"); ?></option>');
-          data.classes.forEach(cls => {
-            classSelect.append(`<option value="${cls.id}">${this.escapeHtml(cls.name)}</option>`);
-          });
-          // Set the class_id from the event data after classes are loaded
-          classSelect.val(event.class_id || '');
-          csrfHash = data.csrf.csrfHash;
-        } else {
-          this.showNotification('error', data.message);
-        }
-      } catch (e) {
-        this.showNotification('error', 'Invalid server response');
-      }
-    },
-    error: () => { this.showNotification('error', 'Failed to load classes'); }
-  });
-});
-
     $('#joinMeetingBtn').on('click', () => { this.startMeeting(); });
   },
 
@@ -2070,137 +1923,6 @@ updateParticipantUI(eventId, participantCount, isRunning, occurrenceDate) {
     });
 },
 
- /*  startMeeting() {
-  const eventId = $('#eventId').val();
-  if (!eventId) {
-    this.showNotification('error', 'No event selected');
-    return;
-  }
-
-  const today = new Date();
-  const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-  const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
-  $.ajax({
-    url: '<?php echo site_url('superadmin/get_events'); ?>',
-    type: 'GET',
-    data: { id: eventId, start_date: startDate, end_date: endDate, [csrfName]: csrfHash },
-    async: true,
-    success: (response) => {
-      try {
-        const data = JSON.parse(response);
-        if (data.status === 'success' && data.data && data.data.length > 0) {
-          const event = data.data[0];
-          const occurrenceDate = event.occurrence_date || event.starting_date;
-          const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-          const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-
-          if (isExpired) {
-            this.showNotification('error', 'Event is expired');
-            return;
-          }
-          if (event.visio != 1) {
-            this.showNotification('error', 'This event does not support video conferencing');
-            return;
-          }
-
-          const occurrenceData = event.occurrences?.[occurrenceDate] || {};
-          const buttonText = $('#joinMeetingBtn').text();
-
-          if (buttonText === '<?php echo get_phrase('Start Meeting'); ?>') {
-            $.ajax({
-              url: '<?php echo site_url('superadmin/start_meeting'); ?>',
-              type: 'POST',
-              data: { event_id: eventId, occurrence_date: occurrenceDate, [csrfName]: csrfHash },
-              success: (response) => {
-                console.log('start_meeting response:', JSON.stringify(response, null, 2));
-                try {
-                  const data = JSON.parse(response);
-                  csrfHash = data.csrf.csrfHash;
-
-                  if (data.status === 'success' && data.meeting_id && data.appointment_id) {
-                    $('#participantCount').text(data.participant_count || 1);
-                    $('#joinMeetingBtn').text('<?php echo get_phrase('Join Meeting'); ?>');
-
-                    if (this.socket.connected) {
-                      this.subscribe(data.meeting_id);
-                      this.socket.emit('request_current_state', { meetingID: data.meeting_id });
-                    } else {
-                      console.warn('[RT] not connected for', data.meeting_id);
-                      this.showNotification('warning', 'Unable to connect to real-time updates.');
-                    }
-
-                    const joinUrl = data.join_url || '<?php echo site_url('bigbluebutton/join_meeting'); ?>/' + encodeURIComponent(data.meeting_id);
-                    const newWindow = window.open(joinUrl, '_blank');
-                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                      this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
-                    } else {
-                      this.showNotification('success', 'Starting meeting...');
-                      // Monitor window close to unsubscribe
-                      const checkWindowClosed = setInterval(() => {
-                        if (newWindow.closed) {
-                          clearInterval(checkWindowClosed);
-                          if (this.socket.connected && data.meeting_id) {
-                            this.unsubscribe(data.meeting_id);
-                            console.log(`[RT] Unsubscribed from meeting ${data.meeting_id} due to window close`);
-                          }
-                        }
-                      }, 1000);
-                    }
-                  } else {
-                    this.showNotification('error', data.message || 'Failed to start meeting');
-                  }
-                } catch (e) {
-                  console.error('start_meeting parse error:', e, response);
-                  this.showNotification('error', 'Invalid server response');
-                }
-              },
-              error: (xhr) => {
-                console.error('start_meeting AJAX error:', xhr.status, xhr.statusText);
-                this.showNotification('error', 'Error starting meeting. Please check server connectivity.');
-              }
-            });
-          } else if (buttonText === '<?php echo get_phrase('Join Meeting'); ?>') {
-            if (this.socket.connected) {
-              this.subscribe(occurrenceData.meeting_id);
-              this.socket.emit('request_current_state', { meetingID: occurrenceData.meeting_id });
-            } else {
-              console.warn('[RT] not connected for', occurrenceData.meeting_id);
-              this.showNotification('warning', 'Unable to connect to real-time updates.');
-            }
-
-            const joinUrl = '<?php echo site_url('bigbluebutton/join_meeting'); ?>/' + encodeURIComponent(occurrenceData.meeting_id);
-            const newWindow = window.open(joinUrl, '_blank');
-            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-              this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
-            } else {
-              this.showNotification('success', 'Joining meeting...');
-              // Monitor window close to unsubscribe
-              const checkWindowClosed = setInterval(() => {
-                if (newWindow.closed) {
-                  clearInterval(checkWindowClosed);
-                  if (this.socket.connected && occurrenceData.meeting_id) {
-                    this.unsubscribe(occurrenceData.meeting_id);
-                    console.log(`[RT] Unsubscribed from meeting ${occurrenceData.meeting_id} due to window close`);
-                  }
-                }
-              }, 1000);
-            }
-          }
-          csrfHash = data.csrf.csrfHash;
-        } else {
-          this.showNotification('error', data.message || 'Failed to load event');
-        }
-      } catch (e) {
-        console.error('Error parsing get_events:', e, response);
-        this.showNotification('error', 'Invalid server response');
-      }
-    },
-    error: (xhr) => {
-      console.error('AJAX error fetching event', xhr.status, xhr.statusText);
-      this.showNotification('error', 'Failed to load event');
-    }
-  });
-} */
 startMeeting() {
     const eventId = String($('#eventId').val());
     const occurrenceDate = $('#currentOccurrenceDate').val();
@@ -2210,7 +1932,7 @@ startMeeting() {
         return;
     }
 
-    // Clear previous polling and state to avoid conflicts
+    // Clear previous polling and state
     this.stopPolling();
     this.currentMeetingId = null;
     this.currentEventId = null;
@@ -2230,16 +1952,40 @@ startMeeting() {
                 const data = JSON.parse(response);
                 if (data.status === 'success' && data.data && data.data.length > 0) {
                     const event = data.data[0];
-                    const occurrenceData = event.occurrences?.[occurrenceDate] || {};
-                    const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
-                    const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
+                    const occurrenceData = event.occurrences && event.occurrences[occurrenceDate] ? event.occurrences[occurrenceDate] : {};
+
+                    let isExpired;
+                    if (event.recurrence_type !== 'does_not_repeat' && occurrenceDate !== event.starting_date) {
+                        isExpired = occurrenceData.is_expired !== undefined ? occurrenceData.is_expired : event.is_expired;
+                    } else {
+                        isExpired = event.is_expired;
+                    }
+
+                    if (isExpired === undefined || isExpired === null) {
+                        const effectiveEndDate = event.recurrence_type !== 'does_not_repeat' ? occurrenceDate : (event.ending_date || event.starting_date);
+                        const endingTime = event.ending_time ? event.ending_time.slice(0, 5) : '23:59';
+                        let endDateTime;
+                        try {
+                            endDateTime = new Date(`${effectiveEndDate}T${endingTime}:00Z`);
+                            if (isNaN(endDateTime.getTime())) {
+                                throw new Error('Invalid endDateTime');
+                            }
+                            isExpired = new Date() - endDateTime > 24 * 60 * 60 * 1000;
+                        } catch (e) {
+                            this.showNotification('error', 'Invalid event date or time format');
+                            $('#joinMeetingBtn').show();
+                            return;
+                        }
+                    }
 
                     if (isExpired) {
-                        this.showNotification('error', 'Event is expired');
+                        this.showNotification('error', 'Event occurrence is expired');
+                        $('#joinMeetingBtn').show();
                         return;
                     }
                     if (event.visio != 1) {
                         this.showNotification('error', 'This event does not support video conferencing');
+                        $('#joinMeetingBtn').show();
                         return;
                     }
 
@@ -2292,15 +2038,14 @@ startMeeting() {
                                         const newWindow = window.open(joinUrl, '_blank');
                                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                                             this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
-                                            $('#joinMeetingBtn').show(); // Show the button if the window fails to open
+                                            $('#joinMeetingBtn').show();
                                         } else {
                                             this.showNotification('success', 'Starting meeting...');
-                                            // Monitor window close to show the button again
                                             const checkWindowClosed = setInterval(() => {
                                                 if (newWindow.closed) {
                                                     clearInterval(checkWindowClosed);
                                                     if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                                        $('#joinMeetingBtn').show(); // Show the button when the window is closed
+                                                        $('#joinMeetingBtn').show();
                                                     }
                                                     this.stopPolling();
                                                     if (this.hasActiveMeetings && document.visibilityState === 'visible') {
@@ -2311,22 +2056,20 @@ startMeeting() {
                                         }
                                     } else {
                                         this.showNotification('error', data.message || 'Failed to start meeting');
-                                        $('#joinMeetingBtn').show(); // Show the button on failure
+                                        $('#joinMeetingBtn').show();
                                     }
                                 } catch (e) {
                                     this.showNotification('error', 'Invalid server response');
-                                    $('#joinMeetingBtn').show(); // Show the button on error
+                                    $('#joinMeetingBtn').show();
                                 }
                             },
                             error: (xhr) => {
-                                this.showNotification('error', 'Error starting meeting. Please check server connectivity.');
-                                $('#joinMeetingBtn').show(); // Show the button on error
+                                $('#joinMeetingBtn').show();
                             }
                         });
                     } else if (buttonText === '<?php echo get_phrase('Join Meeting'); ?>') {
                         if (!occurrenceData.meeting_id) {
-                            this.showNotification('error', 'No meeting ID available for joining');
-                            $('#joinMeetingBtn').show(); // Show the button on error
+                            $('#joinMeetingBtn').show();
                             return;
                         }
 
@@ -2344,7 +2087,7 @@ startMeeting() {
                                         this.cacheMeetingState(occurrenceData.meeting_id, state.participant_count, state.is_running);
                                         if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
                                             this.updateParticipantUI(eventId, state.participant_count, state.is_running, occurrenceDate);
-                                            $('#joinMeetingBtn').hide(); // Hide the Join Meeting button
+                                            $('#joinMeetingBtn').hide();
                                         }
                                         const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
                                         const calendarEvent = this.calendar.getEventById(uniqueEventId);
@@ -2360,18 +2103,18 @@ startMeeting() {
                                         this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
                                     } else {
                                         this.showNotification('error', state.message || 'Meeting is not active');
-                                        $('#joinMeetingBtn').show(); // Show the button on error
+                                        $('#joinMeetingBtn').show();
                                         return;
                                     }
                                 } else {
                                     this.showNotification('error', 'Failed to verify meeting state');
-                                    $('#joinMeetingBtn').show(); // Show the button on error
+                                    $('#joinMeetingBtn').show();
                                     return;
                                 }
                             },
                             error: (xhr, status, error) => {
                                 this.showNotification('error', 'Failed to verify meeting state');
-                                $('#joinMeetingBtn').show(); // Show the button on error
+                                $('#joinMeetingBtn').show();
                                 return;
                             }
                         });
@@ -2380,16 +2123,16 @@ startMeeting() {
                         const newWindow = window.open(joinUrl, '_blank');
                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                             this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
-                            $('#joinMeetingBtn').show(); // Show the button if the window fails to open
+                            $('#joinMeetingBtn').show();
                         } else {
                             this.showNotification('success', 'Joining meeting...');
                             this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
-                            // Monitor window close to show the button again
+                             // Monitor window close to show the button again
                             const checkWindowClosed = setInterval(() => {
                                 if (newWindow.closed) {
                                     clearInterval(checkWindowClosed);
                                     if (String($('#eventId').val()) === String(eventId) && $('#currentOccurrenceDate').val() === occurrenceDate && $('#eventEditModal').hasClass('show')) {
-                                        $('#joinMeetingBtn').show(); // Show the button when the window is closed
+                                        $('#joinMeetingBtn').show();
                                     }
                                     this.stopPolling();
                                     if (this.hasActiveMeetings && document.visibilityState === 'visible') {
@@ -2402,16 +2145,16 @@ startMeeting() {
                     csrfHash = data.csrf.csrfHash;
                 } else {
                     this.showNotification('error', data.message || 'Failed to load event');
-                    $('#joinMeetingBtn').show(); // Show the button on error
+                    $('#joinMeetingBtn').show(); 
                 }
             } catch (e) {
-                this.showNotification('error', 'Invalid server response');
-                $('#joinMeetingBtn').show(); // Show the button on error
+                this.showNotification('error', 'Error processing event data');
+                $('#joinMeetingBtn').show();
             }
         },
         error: (xhr) => {
             this.showNotification('error', 'Failed to load event');
-            $('#joinMeetingBtn').show(); // Show the button on error
+            $('#joinMeetingBtn').show(); 
         }
     });
 },
@@ -2434,14 +2177,13 @@ pollActiveMeetings() {
             return;
         }
 
-        const view = this.calendar.view;
-        const startDate = this.formatDate(view.activeStart);
-        const endDate = this.formatDate(view.activeEnd);
+        const today = new Date();
+        const currentDate = this.formatDate(today);
 
         $.ajax({
             url: '<?php echo site_url('superadmin/get_events'); ?>',
             type: 'GET',
-            data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
+            data: { start_date: currentDate, end_date: currentDate, visio: 1, [csrfName]: csrfHash },
             success: (response) => {
                 try {
                     const data = JSON.parse(response);
@@ -2452,21 +2194,21 @@ pollActiveMeetings() {
                         data.data.forEach(event => {
                             const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
                             const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-                            if (!isExpired && event.visio == 1) {
+                            if (!isExpired && event.visio == 1 && event.starting_date === currentDate) {
                                 if (event.occurrences && Object.keys(event.occurrences).length > 0) {
                                     Object.keys(event.occurrences).forEach(occurrenceDate => {
-                                        const meetingId = event.occurrences[occurrenceDate]?.meeting_id;
-                                        if (meetingId && occurrenceDate >= startDate && occurrenceDate <= endDate) {
-                                            const occurrenceEndDateTime = new Date(`${occurrenceDate}T${event.ending_time}`);
-                                            const isOccurrenceExpired = occurrenceEndDateTime && (new Date() - occurrenceEndDateTime > 24 * 60 * 60 * 1000);
-                                            if (!isOccurrenceExpired) {
-                                                meetingIds.add(JSON.stringify({ meetingId, eventId: event.id, occurrenceDate }));
-                                            }
+                                    const meetingId = event.occurrences[occurrenceDate]?.meeting_id;
+                                    if (meetingId && occurrenceDate === currentDate) {
+                                        const occurrenceEndDateTime = new Date(`${occurrenceDate}T${event.ending_time}`);
+                                        const isOccurrenceExpired = occurrenceEndDateTime && (new Date() - occurrenceEndDateTime > 24 * 60 * 60 * 1000);
+                                        if (!isOccurrenceExpired) {
+                                            meetingIds.add(JSON.stringify({ meetingId, eventId: event.id, occurrenceDate }));
                                         }
-                                    });
-                                } else if (event.meeting_id && event.starting_date >= startDate && event.starting_date <= endDate) {
-                                    meetingIds.add(JSON.stringify({ meetingId: event.meeting_id, eventId: event.id, occurrenceDate: event.starting_date }));
-                                }
+                                    }
+                                });
+                            } else if (event.meeting_id && event.starting_date === currentDate) {
+                                meetingIds.add(JSON.stringify({ meetingId: event.meeting_id, eventId: event.id, occurrenceDate: event.starting_date }));
+                            }
                             }
                         });
 
@@ -2813,13 +2555,12 @@ pollActiveMeetings() {
 
 checkAndRestoreActiveMeetings() {
   const today = new Date();
-  const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
-  const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
+  const currentDate = this.formatDate(today);
 
   $.ajax({
     url: '<?php echo site_url('superadmin/get_events'); ?>',
     type: 'GET',
-    data: { start_date: startDate, end_date: endDate, visio: 1, [csrfName]: csrfHash },
+    data: { start_date: currentDate, end_date: currentDate, visio: 1, [csrfName]: csrfHash },
     success: (response) => {
       try {
         const data = JSON.parse(response);
@@ -2829,17 +2570,17 @@ checkAndRestoreActiveMeetings() {
           data.data.forEach(event => {
             const endDateTime = new Date(`${event.ending_date || event.starting_date}T${event.ending_time}`);
             const isExpired = endDateTime && (new Date() - endDateTime > 24 * 60 * 60 * 1000);
-            if (!isExpired && event.visio == 1 && event.occurrences) {
-              Object.keys(event.occurrences).forEach(occurrenceDate => {
-                const meetingId = event.occurrences[occurrenceDate]?.meeting_id;
-                if (meetingId) {
-                  const occurrenceEndDateTime = new Date(`${occurrenceDate}T${event.ending_time}`);
-                  const isOccurrenceExpired = occurrenceEndDateTime && (new Date() - occurrenceEndDateTime > 24 * 60 * 60 * 1000);
-                  if (!isOccurrenceExpired) {
-                    meetingIdsToCheck.push({ meetingId, eventId: event.id, occurrenceDate });
-                  }
-                }
-              });
+            if (!isExpired && event.visio == 1 && event.starting_date === currentDate && event.occurrences) {
+                      Object.keys(event.occurrences).forEach(occurrenceDate => {
+            const meetingId = event.occurrences[occurrenceDate]?.meeting_id;
+            if (meetingId && occurrenceDate === currentDate) {
+              const occurrenceEndDateTime = new Date(`${occurrenceDate}T${event.ending_time}`);
+              const isOccurrenceExpired = occurrenceEndDateTime && (new Date() - occurrenceEndDateTime > 24 * 60 * 60 * 1000);
+              if (!isOccurrenceExpired) {
+                meetingIdsToCheck.push({ meetingId, eventId: event.id, occurrenceDate });
+              }
+            }
+          });
             }
           });
 
@@ -2903,6 +2644,73 @@ stopActiveMeetingsPolling() {
     this.hasActiveMeetings = false;
   }
 },
+refreshUsersDropdown(schoolId, participants, callback) {
+    $.ajax({
+        url: '<?php echo site_url('superadmin/get_school_data'); ?>',
+        type: 'POST',
+        data: {
+            school_id: schoolId,
+            participants: JSON.stringify(participants),
+            [csrfName]: csrfHash
+        },
+        success: (response) => {
+            try {
+                const data = JSON.parse(response);
+                if (data.status === 'success') {
+                    const dropdownMenu = $('#createEventModal').hasClass('show') ? $('#participantsDropdownMenu') : $('#editParticipantsDropdownMenu');
+                    let html = '<strong><?php echo get_phrase("Classes"); ?></strong>';
+
+                    // Ajouter les classes
+                    if (data.classes && Array.isArray(data.classes)) {
+                        data.classes.forEach(cls => {
+                            const isChecked = participants.some(p => p.type === 'class' && p.id === cls.id) ? 'checked' : '';
+                            html += `<label><input type="checkbox" class="participant-checkbox" data-type="class" value="${cls.id}" ${isChecked}> ${CalendarApp.escapeHtml(cls.name)}</label>`;
+                        });
+                    }
+
+                    html += '<hr><strong><?php echo get_phrase("Users"); ?></strong>';
+
+                    // Ajouter les utilisateurs
+                    if (data.users && Array.isArray(data.users)) {
+                        data.users.forEach(user => {
+                            const isChecked = participants.some(p => p.type === 'individual' && p.id === user.id) ? 'checked' : '';
+                            const roleTranslations = {
+                                'student': '<?php echo get_phrase("student"); ?>',
+                                'teacher': '<?php echo get_phrase("mentor"); ?>',
+                                'admin': '<?php echo get_phrase("admin"); ?>',
+                                'superadmin': '<?php echo get_phrase("superadmin"); ?>'
+                            };
+                            const roleLabel = roleTranslations[user.role] || (user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown');
+                            html += `<label><input type="checkbox" class="participant-checkbox" data-type="individual" value="${user.id}" ${isChecked}> (${roleLabel}) ${CalendarApp.escapeHtml(user.name)}</label>`;
+                        });
+                    }
+
+                    dropdownMenu.html(html);
+                    csrfHash = data.csrf.csrfHash;
+
+                    // Exécuter le callback si fourni
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                } else {
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                }
+            } catch (e) {
+                CalendarApp.showNotification('error', 'Error parsing school data');
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        },
+        error: () => {
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
+    });
+}
 };
 
 $(document).ready(() => {
@@ -2928,6 +2736,130 @@ $('#editEventBtn').on('click', () => {
   $('#eventEditModalLabel').text('<?php echo get_phrase("Edit_event"); ?>');
   $('#eventDetailsView').hide();
   $('#eventForm').show();
+
+  $('#editParticipantsSearchInput').off('click').on('click', function(e) {
+    e.stopPropagation();
+    const dropdown = $('#editParticipantsDropdownMenu');
+    const searchTerm = $(this).val().toLowerCase().trim();
+
+    // Si le champ est vide, afficher le message par défaut
+    if (!searchTerm) {
+        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+        dropdown.addClass('show').parent().addClass('open');
+    } else {
+        // Si du texte est saisi, charger et filtrer les options
+        const schoolId = $('#school_id').val();
+        if (schoolId) {
+            const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
+            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+                dropdown.find('label').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.includes(searchTerm));
+                });
+                const anyVisible = dropdown.find('label:visible').length > 0;
+                if (!anyVisible) {
+                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
+                }
+                dropdown.addClass('show').parent().addClass('open');
+            });
+        }
+    }
+});
+  // Gestion du champ de recherche et des badges pour eventEditModal
+$('#editParticipantsSearchInput').on('input', function() {
+    const searchTerm = $(this).val().toLowerCase().trim();
+    const dropdown = $('#editParticipantsDropdownMenu');
+
+    if (!searchTerm) {
+        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+        dropdown.addClass('show').parent().addClass('open');
+    } else {
+        const schoolId = $('#school_id').val();
+        if (schoolId) {
+            const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
+            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+                // Filtrer les éléments en fonction du terme de recherche
+                const anyVisible = dropdown.find('label').filter(function() {
+                    const text = $(this).text().toLowerCase();
+                    const isVisible = text.includes(searchTerm);
+                    $(this).toggle(isVisible);
+                    return isVisible;
+                }).length > 0;
+
+                // Afficher un message si aucun résultat
+                if (!anyVisible) {
+                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
+                }
+                dropdown.addClass('show').parent().addClass('open');
+            });
+        }
+    }
+});
+
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('#editParticipantsContainer').length) {
+        $('#editParticipantsDropdownMenu').removeClass('show').parent().removeClass('open');
+    }
+});
+
+$('#editParticipantsDropdownMenu').on('click', function(e) {
+    e.stopPropagation();
+});
+
+$('#editParticipantsDropdownMenu').on('click', '.participant-checkbox', function() {
+    const selected = [];
+    const badgesContainer = $('#editParticipantsBadges');
+    badgesContainer.empty();
+
+    $('#editParticipantsDropdownMenu .participant-checkbox:checked').each(function() {
+        const $checkbox = $(this);
+        const type = $checkbox.data('type');
+        const id = $checkbox.val();
+        const name = $checkbox.parent().text().trim();
+        selected.push({ type, id });
+
+        // Add badge
+        const badge = $(`
+            <span class="badge" data-type="${type}" data-id="${id}">
+                ${CalendarApp.escapeHtml(name)}
+                <span class="remove-badge" data-type="${type}" data-id="${id}">&times;</span>
+            </span>
+        `);
+        badgesContainer.append(badge);
+    });
+
+    $('#editParticipantsInput').val(JSON.stringify(selected));
+    $('#editParticipantsSearchInput').focus();
+
+    // Trigger AJAX to refresh users dropdown
+    const schoolId = $('#school_id').val();
+    if (schoolId) {
+        CalendarApp.refreshUsersDropdown(schoolId, selected);
+    }
+});
+
+// Gestion de la suppression des badges
+$('#editParticipantsBadges').on('click', '.remove-badge', function() {
+    const type = $(this).data('type');
+    const id = $(this).data('id');
+    $(`#editParticipantsDropdownMenu .participant-checkbox[data-type="${type}"][value="${id}"]`).prop('checked', false);
+    $(this).parent().remove();
+
+    const selected = [];
+    $('#editParticipantsDropdownMenu .participant-checkbox:checked').each(function() {
+        selected.push({
+            type: $(this).data('type'),
+            id: $(this).val()
+        });
+    });
+    $('#editParticipantsInput').val(JSON.stringify(selected));
+
+    // Trigger AJAX to refresh users dropdown
+    const schoolId = $('#school_id').val();
+    if (schoolId) {
+        CalendarApp.refreshUsersDropdown(schoolId, selected);
+    }
+});
 
   // Generate time options based on selected date
   const selectedDate = $('#eventDate').val() || CalendarApp.formatDate(new Date());
