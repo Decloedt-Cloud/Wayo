@@ -2861,5 +2861,7 @@
     "tarif": "Tarif",
     "free_spots": "Free spots",
     "until": "Until",
-    "maximum_number": "Maximum number"
+    "maximum_number": "Maximum number",
+    "certifications": "Certifications",
+    "all_programs": "All programs"
 }
