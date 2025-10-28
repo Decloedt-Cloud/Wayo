@@ -8,7 +8,7 @@
                 <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student'); ?></th>
                 <th><i class="mdi mdi-school-outline thead-icon"></i><?php echo get_phrase('class'); ?></th>
                 <th><i class="mdi mdi-checkbox-marked-circle-outline thead-icon"></i><?php echo get_phrase('status'); ?></th>
-                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('option'); ?></th>
+                <th><?php echo get_phrase('option'); ?></th>
             </tr>
         </thead>
         <tbody>

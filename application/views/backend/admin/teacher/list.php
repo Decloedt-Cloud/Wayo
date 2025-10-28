@@ -9,7 +9,7 @@ if ($check_data->num_rows() > 0): ?>
                 <th><i class="mdi mdi-account-circle-outline thead-icon"></i><?php echo get_phrase('photo'); ?></th>
                 <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('name'); ?></th>
                 <th><i class="mdi mdi-text-box-outline thead-icon"></i><?php echo get_phrase('designation'); ?></th>
-                <th><i class="mdi mdi-dots-vertical thead-icon"></i><?php echo get_phrase('options'); ?></th>
+                <th><?php echo get_phrase('options'); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +43,7 @@ if ($check_data->num_rows() > 0): ?>
                         <div class="dropdown text-center">
                             <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
                             <div class="dropdown-menu dropdown-menu-end">
+                                <a href="javascript:void(0);" class="dropdown-item" onclick="largeModal('<?php echo site_url('modal/popup/teacher/profile/'.$teacher['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('profile'); ?></a>
                                 <!-- item-->
                                 <a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/teacher/permission_overview/' . $teacher['id'] . '/' . $teacher['user_id']); ?>', '<?php echo get_phrase('assigned_permissions'); ?>')"><?php echo get_phrase('permissions'); ?></a>
                                 <!-- item-->
