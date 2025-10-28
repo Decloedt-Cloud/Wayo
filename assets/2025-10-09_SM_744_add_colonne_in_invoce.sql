@@ -20,3 +20,6 @@ CREATE TABLE payments (
 ALTER TABLE invoices 
 ADD COLUMN payment_type ENUM('class_enrol', 'community_join') DEFAULT 'class_enrol',
 ADD COLUMN payment_id INT NULL;
+
+ALTER TABLE invoices
+ADD COLUMN  currency varchar(255) DEFAULT NULL ;
