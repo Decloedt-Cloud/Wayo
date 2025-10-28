@@ -36,6 +36,7 @@
               action="<?php echo route('payment_success/stripe/' . $invoice_id.'/'.$amount_to_pay);?>">
               <!-- Champ caché pour le jeton CSRF -->
               <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+              <input type="hidden" name="type" value="<?php echo $type;?>" />
 
               <label>
                   <div id="card-element" class="field is-empty"></div>
@@ -51,7 +52,7 @@
                   </div>
               </div>
               <div class="package-details">
-                  <strong><?php echo get_phrase('student_name');?> | <?php echo $user_details['name'];?></strong> <br>
+                  <strong><?php echo get_phrase('student_name');?> | <?php if($type == "community")  echo $user_name ; else echo $user_details['name'];?></strong> <br>
               </div>
               <input type="hidden" name="stripeToken" value="">
           </form>

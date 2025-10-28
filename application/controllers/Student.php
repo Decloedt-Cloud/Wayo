@@ -840,6 +840,77 @@ class Student extends CI_Controller {
     $page_data['page_title'] = 'academy';
     $this->load->view('backend/index', $page_data);
   }
+
+  public function join_school($param1, $school_id)
+{
+    if ($param1 == 'assigned') {
+
+        // 🔹 1. Récupération des données envoyées par le formulaire
+        $data['student_id'] = $this->session->userdata('user_id'); 
+        $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
+        $data['price']      = htmlspecialchars($this->input->post('price'));
+        $data['currency']   = htmlspecialchars($this->input->post('currency'));
+        $data['session']    = active_session();
+
+        // 🔹 2. Vérifier si l'école existe
+        $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
+        if (!$school_name) {
+            show_error('École non trouvée.');
+            return;
+        }
+
+        // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
+        $existing_invoice = $this->db->get_where('invoices', [
+            'school_id'  => $data['school_id'],
+            'student_id' => $data['student_id']
+        ])->row();
+
+        if (!$existing_invoice) {
+            // 🔹 4. Créer la facture (invoice)
+            $invoice_data = [
+                'title'        => 'Adhésion - ' . $school_name,
+                'total_amount' => $data['price'],
+                'student_id'   => $data['student_id'],
+                'school_id'    => $data['school_id'],
+                'status'       => 'unpaid',
+                'currency'     => $data['currency'],
+                'session'      => $data['session'],
+                'created_at'   => strtotime(date('Y-m-d H:i:s')),
+                'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
+            ];
+            $this->db->insert('invoices', $invoice_data);
+            $invoice_id = $this->db->insert_id();
+        } else {
+            $invoice_id = $existing_invoice->id;
+        }
+
+        // 🔹 5. Vérifier s’il existe déjà un paiement
+        $existing_payment = $this->db->get_where('payments', [
+            'school_id'  => $data['school_id'],
+            'student_id' => $data['student_id']
+        ])->row();
+
+        if (!$existing_payment) {
+            // 🔹 6. Créer l'entrée de paiement dans la table "payments"
+            $payment_data = [
+                'student_id'     => $data['student_id'],
+                'school_id'      => $data['school_id'],
+                'amount'         => $data['price'],
+                'currency'       => $data['currency'],
+                'payment_type'   => 'community_join',
+                'payment_status' => 'pending',
+                'invoice_id'     => $invoice_id,
+                'created_at'     => date('Y-m-d H:i:s')
+            ];
+            $this->db->insert('payments', $payment_data);
+        }
+		// die($data['price']);
+        // 🔹 7. Redirection vers la page de paiement ou la facture
+       
+		redirect(site_url('Student/payment/community/' . $invoice_id), 'refresh');
+    }
+}
+
 	//START EVENT CALENDAR section
 	public function event_calendar($param1 = '', $param2 = ''){
 
@@ -1098,10 +1169,20 @@ class Student extends CI_Controller {
 	public function paypal_checkout() {
 		$invoice_id = htmlspecialchars($this->input->post('invoice_id'));
 		$invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+        $type = htmlspecialchars($this->input->post('type'));
+         $user_id = $this->session->userdata('user_id');
+        $user_details = $this->db->get_where('users', array('id' => $user_id))->row_array();
 
-		$page_data['invoice_id']   = $invoice_id;
-		$page_data['user_details']    = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
-		$page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+       if ($type == 'community') {
+             $page_data['invoice_id']   = $invoice_id;
+             $page_data['user_name']    = $user_details['name'];
+             $page_data['type']    = $type ;
+		     $page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+        }else{
+         	$page_data['invoice_id']   = $invoice_id;
+		    $page_data['user_details']    = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
+		    $page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+        }
 		$page_data['folder_name'] = 'paypal';
 		$page_data['page_title']  = 'paypal_checkout';
 		$this->load->view('backend/payment_gateway/paypal_checkout', $page_data);
@@ -1109,15 +1190,27 @@ class Student extends CI_Controller {
 	// STRIPE CHECKOUT
 	public function stripe_checkout() {
 		$invoice_id = htmlspecialchars($this->input->post('invoice_id'));
+ 
+		$type = htmlspecialchars($this->input->post('type'));
 		$invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+        $user_id = $this->session->userdata('user_id');
+        $user_details = $this->db->get_where('users', array('id' => $user_id))->row_array();
+        if ($type == 'community') {
+            $page_data['invoice_id']   = $invoice_id;
+             $page_data['user_name']    = $user_details['name'];
+             $page_data['type']    = $type ;
+		    $page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+        }else{
+         	$page_data['invoice_id']   = $invoice_id;
+		   $page_data['user_details']    = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
+		   $page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+        }
 
-		$page_data['invoice_id']   = $invoice_id;
-		$page_data['user_details']    = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
-		$page_data['amount_to_pay']   = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
 		$page_data['folder_name'] = 'paypal';
 		$page_data['page_title']  = 'paypal_checkout';
 		$this->load->view('backend/payment_gateway/stripe_checkout', $page_data);
 	}
+
 
 	private function add_student_to_class_space($student_id, $class_id)
     {
@@ -1154,39 +1247,43 @@ class Student extends CI_Controller {
 		}
     }
 	private function add_student_to_school_community($student_id, $school_id)
-{
-	// 1. Récupérer les infos de l'étudiant
-	$student = $this->user_model->get_student_details_by_id('student', $student_id);
+    {
+        // 1. Récupérer les infos de l'étudiant
+        $student = $this->user_model->get_student_details_by_id('student', $student_id);
 
-	// 2. Récupérer l’école et son espace HumHub
-	$school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
-	if (! $school || empty($school['humhub_space_id'])) {
-		log_message('error', "École #{$school_id} introuvable ou humhub_space_id vide");
-		return;
-	}
+        // 2. Récupérer l’école et son espace HumHub
+        $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+        if (! $school || empty($school['humhub_space_id'])) {
+            log_message('error', "École #{$school_id} introuvable ou humhub_space_id vide");
+            return;
+        }
 
-	$space_id = $school['humhub_space_id'];
+        $space_id = $school['humhub_space_id'];
 
-	// 3. Récupérer l’ID HumHub de l’étudiant
-	$humhubUser = $this->humhub_sso->getUserByEmail($student['email']);
-	if (empty($humhubUser['id'])) {
-		log_message('error', "Utilisateur HumHub introuvable pour {$student['email']}");
-		return;
-	}
+        // 3. Récupérer l’ID HumHub de l’étudiant
+        $humhubUser = $this->humhub_sso->getUserByEmail($student['email']);
+        if (empty($humhubUser['id'])) {
+            log_message('error', "Utilisateur HumHub introuvable pour {$student['email']}");
+            return;
+        }
 
-	$humhub_user_id = $humhubUser['id'];
+        $humhub_user_id = $humhubUser['id'];
 
-	// 4. Ajouter l’étudiant à l’espace
-	if (!empty($space_id) && !empty($humhub_user_id)) {
-		$this->humhub_sso->addUserSpace($space_id, $humhub_user_id);
-		log_message('debug', "Étudiant HumHub #{$humhub_user_id} ajouté à l’école (espace) #{$space_id}");
-	} else {
-		log_message('error', "Impossible d’ajouter l’étudiant à l’école (space_id ou humhub_user_id manquant)");
-	}
-}
+        // 4. Ajouter l’étudiant à l’espace
+        if (!empty($space_id) && !empty($humhub_user_id)) {
+            $this->humhub_sso->addUserSpace($space_id, $humhub_user_id);
+            log_message('debug', "Étudiant HumHub #{$humhub_user_id} ajouté à l’école (espace) #{$space_id}");
+        } else {
+            log_message('error', "Impossible d’ajouter l’étudiant à l’école (space_id ou humhub_user_id manquant)");
+        }
+    }
 
-	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "") {
+	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "", $type_parm = "") {
+
+        $type    = $type_parm;
+     
 		if ($payment_method == 'stripe') {
+           $type    = htmlspecialchars($this->input->post('type'));
 			$stripe = json_decode(get_payment_settings('stripe_settings'));
 			$token_id = $this->input->post('stripeToken');
 			$stripe_test_mode = $stripe[0]->stripe_mode;
@@ -1197,36 +1294,51 @@ class Student extends CI_Controller {
                 $public_key = $stripe[0]->stripe_live_public_key;
                 $secret_key = $stripe[0]->stripe_live_secret_key;
             }
+           
             $payment_status = $this->payment_model->stripe_payment($token_id, $invoice_id, $amount_paid, $secret_key);
 		}elseif($payment_method == 'paystack'){
 			$this->load->model('addons/paystack_model');
 			$payment_status = $this->paystack_model->check_payment($reference);
-		}
-
+		}elseif($payment_method == 'paypal'){
+            $payment_status = true; // temporaire, car validé côté JS
+        }
+    
 		$data['payment_method'] = $payment_method;
 		$data['invoice_id'] = $invoice_id;
 		$data['amount_paid'] = $amount_paid;
-		
+	            
 		//Pour chaque mode de paiement, si succès → marquer facture ET ajouter étudiant
-    if ($payment_method === 'stripe'  && $payment_status === true ||
-            $payment_method === 'paystack' && $payment_status === true ||
-            $payment_method === 'paypal'  && $payment_status === true) {
+        if ($payment_method === 'stripe'  && $payment_status === true ||
+                $payment_method === 'paystack' && $payment_status === true ||
+                $payment_method === 'paypal'  && $payment_status === true) {
 
-        // Marquer la facture comme payée
-       $this->crud_model->payment_success($data);
-        // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
-        $details = $this->crud_model->get_invoice_by_id($invoice_id);
-        $this->add_student_to_class_space($details['student_id'], $details['class_id']);
-			// Récupérer l’école liée à la classe (ou directement via le cours si tu préfères)
-		$class = $this->db->get_where('classes', ['id' => $details['class_id']])->row_array();
-		$school_id = $class['school_id'] ?? null;
+            // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
+            $details = $this->crud_model->get_invoice_by_id($invoice_id);
+            // Marquer la facture comme payée
 
-		if ($school_id) {
-			$this->add_student_to_school_community($details['student_id'], $school_id);
-		}
-    } else {
-        log_message('error', "Échec du paiement pour invoice #{$invoice_id} via {$payment_method}");
-    }
+            if($type == "community"){
+
+           
+            return    $this->user_model->join_school($details['school_id'],$data);
+            }else{
+
+                $this->crud_model->payment_success($data);
+                $this->add_student_to_class_space($details['student_id'], $details['class_id']);
+                // Récupérer l’école liée à la classe (ou directement via le cours si tu préfères)
+                $class = $this->db->get_where('classes', ['id' => $details['class_id']])->row_array();
+                $school_id = $class['school_id'] ?? null;
+
+                if ($school_id) {
+                    $this->add_student_to_school_community($details['student_id'], $school_id);
+                }
+            }
+                
+            
+            
+        
+        } else {
+            log_message('error', "Échec du paiement pour invoice #{$invoice_id} via {$payment_method}");
+        }
 
 
 		redirect(route('invoice'), 'refresh');
@@ -1270,8 +1382,10 @@ class Student extends CI_Controller {
 	}
 	//MANAGE PROFILE ENDS
 
-	public function payment($invoice_id = ""){
+	public function payment($param1 = "",$invoice_id = ""){
+  
 		$page_data['page_title']  = 'payment_gateway';
+		$page_data['type']  = $param1 ;
 		$page_data['invoice_details'] = $this->crud_model->get_invoice_by_id($invoice_id);
 		$this->load->view('backend/payment_gateway/index', $page_data);
 	}

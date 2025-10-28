@@ -21,7 +21,7 @@
      style="opacity: 0.05;">
 
 <div class="package-details">
-    <strong><?php echo get_phrase('student_name');?> | <?php echo $user_details['name'];?></strong> <br>
+    <strong><?php echo get_phrase('student_name');?> | <?php if($type == "community")  echo $user_name." ".$type ; else echo $user_details['name'];?></strong> <br>
     <strong><?php echo get_phrase('amount_to_pay');?> | <?php echo currency($amount_to_pay);?></strong> <br>
     <div id="paypal-button" style="margin-top: 20px;"></div><br>
 </div>
@@ -63,11 +63,14 @@
 
         onAuthorize: function(data, actions) {
             // executes the payment
+            console.log("Payment creation started...");
             return actions.payment.execute().then(function() {
                 // make an ajax call for saving the payment info
+               
                 $.ajax({
-                   url: '<?php echo route('payment_success/paypal/'.$invoice_id.'/'.$amount_to_pay);?>'
-                }).done(function () {
+                   url: '<?php echo route('payment_success/paypal/'.$invoice_id.'/'.$amount_to_pay.'/0/'.$type);?>',
+                }).done(function (result) {
+                   console.log("AJAX success response:", result);
                     window.location = '<?php echo route('invoice');?>';
                 });
             });

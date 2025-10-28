@@ -1188,9 +1188,9 @@ class Crud_model extends CI_Model
 		// return $this->db->get('invoices');
 		$this->db->select('invoices.*');
 		$this->db->from('invoices');
-		$this->db->join('students', 'students.id = invoices.student_id');
+		$this->db->join('students', 'students.user_id = invoices.student_id');
 		$this->db->where('students.code', $user_id);
-
+		$this->db->group_by('invoices.id');
 		$query = $this->db->get();
 
 		return $query;
