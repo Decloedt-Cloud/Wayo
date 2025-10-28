@@ -2857,5 +2857,7 @@
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Unable to upload this image. please check the format (png/jpeg).",
     "not_visible_on_website": "Not visible on website",
     "website_visibility": "Website visibility",
-    "visible_on_website": "Visible on website"
+    "visible_on_website": "Visible on website",
+    "certifications": "Certifications",
+    "all_programs": "All programs"
 }

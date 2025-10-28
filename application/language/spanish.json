@@ -2846,7 +2846,9 @@
     "(youtube/vimeo_ou_téléversement) ": "(youtube/vimeo ou téléversement) ",
     "visible_on_website": "Visible en el sitio web",
     "website_visibility": "Visibilidad del sitio web",
-    "inicio": "Inicio",
     "términos_y_condiciones": "Términos y condiciones",
-    "política_de_privacidad": "Política de privacidad"
+    "política_de_privacidad": "Política de privacidad",
+    "certifications": "Certificaciones",
+    "all_programs":"Todos los programas",
+    "inicio": "Inicio"
 }

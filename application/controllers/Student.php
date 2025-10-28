@@ -131,15 +131,42 @@ class Student extends CI_Controller {
         redirect(site_url('login'), 'refresh');
     }
 
-    // Récupérer l'ID de l'utilisateur connecté
-    $user_id = $this->session->userdata('user_id'); // Assurez-vous que 'user_id' est défini dans la session lors de la connexion
+    // Get the logged-in user's ID
+    $user_id = $this->session->userdata('user_id');
 
-    // Récupérer le school_id depuis la table users
+    // Get student IDs associated with the user
+    $this->db->select('id');
+    $this->db->from('students');
+    $this->db->where('user_id', $user_id);
+    $students = $this->db->get()->result_array();
+    $student_ids = array_column($students, 'id');
+
+    if (empty($student_ids)) {
+        log_message('error', 'recording - No student associated with user_id: ' . $user_id);
+        show_error('No student associated with this user.', 403);
+        return;
+    }
+
+    // Get permitted class IDs and school IDs from enrols
+    $this->db->select('enrols.school_id, enrols.class_id');
+    $this->db->from('enrols');
+    $this->db->where_in('enrols.student_id', $student_ids);
+    $this->db->where('enrols.school_id IS NOT NULL');
+    $enrols = $this->db->get()->result_array();
+    $permitted_class_ids = array_map('strval', array_column($enrols, 'class_id'));
+    $permitted_school_ids = array_map('strval', array_unique(array_column($enrols, 'school_id')));
+
+    if (empty($enrols)) {
+        log_message('error', 'recording - User not enrolled in any school: ' . $user_id);
+        show_error('Not enrolled in any school.', 403);
+        return;
+    }
+
+    // Get school_id from users table
     $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
-    if (!$user || empty($user['school_id'])) {
-        // Gérer le cas où l'utilisateur n'a pas de school_id ou n'existe pas
-        log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
-        show_error('No school associated with this user.', 403);
+    if (!$user || empty($user['school_id']) || !in_array((string)$user['school_id'], $permitted_school_ids)) {
+        log_message('error', 'recording - No valid school_id found for user_id: ' . $user_id);
+        show_error('No valid school associated with this user.', 403);
         return;
     }
     $school_id = $user['school_id'];
@@ -154,7 +181,7 @@ class Student extends CI_Controller {
     $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
 
     if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
-        // Filtrer les réunions par school_id
+        // Filter meetings by school_id
         $this->db->where('school_id', $school_id);
         $meetings = $this->db->get('sessions_meetings')->result_array();
 
@@ -187,20 +214,16 @@ class Student extends CI_Controller {
                     $recording_start_time = (string)$recording->startTime;
                     $recording_end_time = (string)$recording->endTime;
                     $original_recording_url = (string)$recording->playback->format->url;
-                    // Replace the domain in the recording URL
                     $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
                     $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
-    
+
                     // Format duration
                     $hours = floor($duration_seconds / 3600);
                     $minutes = floor(($duration_seconds % 3600) / 60);
                     $seconds = $duration_seconds % 60;
-                    
-                    if ($hours >= 1) {
-                        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-                    } else {
-                        $formatted_duration = sprintf("%02d:%02d", $minutes, $seconds);
-                    }
+                    $formatted_duration = $hours >= 1
+                        ? sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds)
+                        : sprintf("%02d:%02d", $minutes, $seconds);
 
                     $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
                     $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
@@ -243,11 +266,17 @@ class Student extends CI_Controller {
         'date_range' => $this->input->post('date_range', true) ?? ''
     ];
 
-    // Build query
+    // Build query for recordings with access restrictions
     $this->db->select('r.*, c.name as class_name');
     $this->db->from('recordings r');
     $this->db->join('classes c', 'r.class_id = c.id', 'left');
+    $this->db->join('appointments a', 'r.appointment_id = a.id', 'inner');
+    $this->db->join('appointment_participants ap', 'a.id = ap.appointment_id', 'left');
     $this->db->where('r.school_id', $school_id);
+    $this->db->where('
+        (ap.type = "class" AND ap.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+        OR (ap.type = "individual" AND ap.guest = ' . intval($user_id) . ')
+    ');
 
     // Apply filters
     if (!empty($filters['meeting_name'])) {
@@ -270,6 +299,7 @@ class Student extends CI_Controller {
         }
     }
 
+    $this->db->group_by('r.id');
     $this->db->order_by('r.created_at', 'DESC');
     $recordings = $this->db->get()->result_array();
 
