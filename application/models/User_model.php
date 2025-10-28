@@ -2035,8 +2035,8 @@ public function get_unread_messages_count($wayo_user_id)//user_model
  
     $sql = "
         SELECT COUNT(*) AS count
-        FROM humhub_new.message m
-        JOIN humhub_new.user_message um ON um.message_id = m.id
+        FROM humhub.message m
+        JOIN humhub.user_message um ON um.message_id = m.id
         WHERE um.user_id = ?
           AND (m.updated_at > um.last_viewed OR um.last_viewed IS NULL)
           AND m.updated_by != ?
@@ -2252,7 +2252,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 
 	public function join_school($school_id, $data_invoice = array())
 	{
-		die($school_id."jjjjjjjjjjjjjj");
+
 		if ($this->session->userdata('user_id') == null || $this->session->userdata('user_id') == "") {
 			$this->session->set_flashdata('error', get_phrase('please_login_before_continuing'));
 			if (isset($_SERVER['HTTP_REFERER'])) {

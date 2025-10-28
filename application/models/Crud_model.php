@@ -1091,7 +1091,7 @@ public function exam_update($param1 = '')
 		$this->db->from('invoices');
 		$this->db->join('students', 'students.user_id = invoices.student_id');
 		$this->db->where('students.code', $user_id);
-		
+		$this->db->group_by('invoices.id');
 		$query = $this->db->get();
 		
 		return $query;

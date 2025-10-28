@@ -1269,12 +1269,14 @@ class Student extends CI_Controller {
 		}elseif($payment_method == 'paystack'){
 			$this->load->model('addons/paystack_model');
 			$payment_status = $this->paystack_model->check_payment($reference);
-		}
+		}elseif($payment_method == 'paypal'){
+            $payment_status = true; // temporaire, car validé côté JS
+        }
     
 		$data['payment_method'] = $payment_method;
 		$data['invoice_id'] = $invoice_id;
 		$data['amount_paid'] = $amount_paid;
-	    
+	            
 		//Pour chaque mode de paiement, si succès → marquer facture ET ajouter étudiant
         if ($payment_method === 'stripe'  && $payment_status === true ||
                 $payment_method === 'paystack' && $payment_status === true ||
@@ -1283,11 +1285,11 @@ class Student extends CI_Controller {
             // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
             $details = $this->crud_model->get_invoice_by_id($invoice_id);
             // Marquer la facture comme payée
- 
+
             if($type == "community"){
 
-
-                $this->user_model->join_school($details['school_id'],$data);
+           
+            return    $this->user_model->join_school($details['school_id'],$data);
             }else{
 
                 $this->crud_model->payment_success($data);

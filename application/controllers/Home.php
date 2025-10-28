@@ -504,75 +504,75 @@ function community_details($school_id = '')
 	// }
 
 
-public function join_school($param1, $school_id)
-{
-    if ($param1 == 'assigned') {
+// public function join_school($param1, $school_id)
+// {
+//     if ($param1 == 'assigned') {
 
-        // 🔹 1. Récupération des données envoyées par le formulaire
-        $data['student_id'] = $this->session->userdata('user_id'); 
-        $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
-        $data['price']      = htmlspecialchars($this->input->post('price'));
-        $data['currency']   = htmlspecialchars($this->input->post('currency'));
-        $data['session']    = active_session();
+//         // 🔹 1. Récupération des données envoyées par le formulaire
+//         $data['student_id'] = $this->session->userdata('user_id'); 
+//         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
+//         $data['price']      = htmlspecialchars($this->input->post('price'));
+//         $data['currency']   = htmlspecialchars($this->input->post('currency'));
+//         $data['session']    = active_session();
 
-        // 🔹 2. Vérifier si l'école existe
-        $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
-        if (!$school_name) {
-            show_error('École non trouvée.');
-            return;
-        }
+//         // 🔹 2. Vérifier si l'école existe
+//         $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
+//         if (!$school_name) {
+//             show_error('École non trouvée.');
+//             return;
+//         }
 
-        // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
-        $existing_invoice = $this->db->get_where('invoices', [
-            'school_id'  => $data['school_id'],
-            'student_id' => $data['student_id']
-        ])->row();
+//         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
+//         $existing_invoice = $this->db->get_where('invoices', [
+//             'school_id'  => $data['school_id'],
+//             'student_id' => $data['student_id']
+//         ])->row();
 
-        if (!$existing_invoice) {
-            // 🔹 4. Créer la facture (invoice)
-            $invoice_data = [
-                'title'        => 'Adhésion - ' . $school_name,
-                'total_amount' => $data['price'],
-                'student_id'   => $data['student_id'],
-                'school_id'    => $data['school_id'],
-                'status'       => 'unpaid',
-                'currency'     => $data['currency'],
-                'session'      => $data['session'],
-                'created_at'   => strtotime(date('Y-m-d H:i:s')),
-                'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
-            ];
-            $this->db->insert('invoices', $invoice_data);
-            $invoice_id = $this->db->insert_id();
-        } else {
-            $invoice_id = $existing_invoice->id;
-        }
+//         if (!$existing_invoice) {
+//             // 🔹 4. Créer la facture (invoice)
+//             $invoice_data = [
+//                 'title'        => 'Adhésion - ' . $school_name,
+//                 'total_amount' => $data['price'],
+//                 'student_id'   => $data['student_id'],
+//                 'school_id'    => $data['school_id'],
+//                 'status'       => 'unpaid',
+//                 'currency'     => $data['currency'],
+//                 'session'      => $data['session'],
+//                 'created_at'   => strtotime(date('Y-m-d H:i:s')),
+//                 'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
+//             ];
+//             $this->db->insert('invoices', $invoice_data);
+//             $invoice_id = $this->db->insert_id();
+//         } else {
+//             $invoice_id = $existing_invoice->id;
+//         }
 
-        // 🔹 5. Vérifier s’il existe déjà un paiement
-        $existing_payment = $this->db->get_where('payments', [
-            'school_id'  => $data['school_id'],
-            'student_id' => $data['student_id']
-        ])->row();
+//         // 🔹 5. Vérifier s’il existe déjà un paiement
+//         $existing_payment = $this->db->get_where('payments', [
+//             'school_id'  => $data['school_id'],
+//             'student_id' => $data['student_id']
+//         ])->row();
 
-        if (!$existing_payment) {
-            // 🔹 6. Créer l'entrée de paiement dans la table "payments"
-            $payment_data = [
-                'student_id'     => $data['student_id'],
-                'school_id'      => $data['school_id'],
-                'amount'         => $data['price'],
-                'currency'       => $data['currency'],
-                'payment_type'   => 'community_join',
-                'payment_status' => 'pending',
-                'invoice_id'     => $invoice_id,
-                'created_at'     => date('Y-m-d H:i:s')
-            ];
-            $this->db->insert('payments', $payment_data);
-        }
-		// die($data['price']);
-        // 🔹 7. Redirection vers la page de paiement ou la facture
+//         if (!$existing_payment) {
+//             // 🔹 6. Créer l'entrée de paiement dans la table "payments"
+//             $payment_data = [
+//                 'student_id'     => $data['student_id'],
+//                 'school_id'      => $data['school_id'],
+//                 'amount'         => $data['price'],
+//                 'currency'       => $data['currency'],
+//                 'payment_type'   => 'community_join',
+//                 'payment_status' => 'pending',
+//                 'invoice_id'     => $invoice_id,
+//                 'created_at'     => date('Y-m-d H:i:s')
+//             ];
+//             $this->db->insert('payments', $payment_data);
+//         }
+// 		// die($data['price']);
+//         // 🔹 7. Redirection vers la page de paiement ou la facture
        
-		redirect(site_url('Student/invoice/' . $invoice_id), 'refresh');
-    }
-}
+// 		redirect(site_url('Student/invoice/' . $invoice_id), 'refresh');
+//     }
+// }
 
 
 

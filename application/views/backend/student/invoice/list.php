@@ -24,7 +24,7 @@
       ?>
       <tr>
         <td> <?php echo $student_data['name']; ?> </td>
-        <td> <?php echo $class_details['name']; ?> </td>
+        <td> <?= !empty($class_details) ? $class_details['name'] : get_phrase('school'); ?> </td>
         <td> <?php echo $invoice['title']; ?> </td>
         <td> <?php echo currency($invoice['total_amount']); ?> </td>
         <td> <?php echo currency($invoice['paid_amount']); ?> </td>
