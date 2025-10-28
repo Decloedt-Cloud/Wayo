@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 *  @author   : Creativeitem
@@ -9,8 +9,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 *  http://support.creativeitem.com
 */
 
-require APPPATH.'third_party/PHPExcel/IOFactory.php';
-class Crud_model extends CI_Model {
+require APPPATH . 'third_party/PHPExcel/IOFactory.php';
+class Crud_model extends CI_Model
+{
 
 	protected $school_id;
 	protected $active_session;
@@ -21,12 +22,13 @@ class Crud_model extends CI_Model {
 		$this->school_id = school_id();
 		$this->active_session = active_session();
 		$this->load->library('Humhub_sso'); // Chargez la bibliothèque ici
-        $this->humhub_sso = $this->humhub_sso; // Initialisez la propriété
+		$this->humhub_sso = $this->humhub_sso; // Initialisez la propriété
 	}
 
 
 	//START CLASS section
-	public function get_classes($id = "") {
+	public function get_classes($id = "")
+	{
 		$this->db->where('school_id', $this->school_id);
 		if ($id > 0) {
 			$this->db->where('id', $id);
@@ -37,24 +39,24 @@ class Crud_model extends CI_Model {
 		return $query;
 	}
 
-public function get_school_classes_count($school_id)
-{
-    $this->db->from('classes');       // préciser la table
-    $this->db->where('school_id', $school_id);
-    return $this->db->count_all_results();
-}
+	public function get_school_classes_count($school_id)
+	{
+		$this->db->from('classes');       // préciser la table
+		$this->db->where('school_id', $school_id);
+		return $this->db->count_all_results();
+	}
 
-public function get_school_classes($school_id)
-{
-    $this->db->select('*');                  // toutes les colonnes
-    $this->db->from('classes');              // table classes
-    $this->db->where('school_id', $school_id);
-    $query = $this->db->get();
-    return $query->result_array();           // retourne toutes les classes sous forme de tableau
-}
+	public function get_school_classes($school_id)
+	{
+		$this->db->select('*');                  // toutes les colonnes
+		$this->db->from('classes');              // table classes
+		$this->db->where('school_id', $school_id);
+		$query = $this->db->get();
+		return $query->result_array();           // retourne toutes les classes sous forme de tableau
+	}
 	public function class_create()
-    {
-        $data['name'] = html_escape($this->input->post('name'));
+	{
+		$data['name'] = html_escape($this->input->post('name'));
 		$type = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('type');
 
 		$price = html_escape($this->input->post('price'));;
@@ -69,104 +71,13 @@ public function get_school_classes($school_id)
 				$data['price'] = html_escape($price);
 			}
 		}
-        $data['date_debut'] = html_escape($this->input->post('start_date'));
-        $data['date_fin'] = html_escape($this->input->post('end_date'));
-        $data['statut'] = html_escape($this->input->post('status'));
-
-		    // Validate the uploaded file
-			if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-				$allowed_extensions = ['jpeg','gif', 'jpg', 'png'];
-				$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-
-				if (!in_array($file_ext, $allowed_extensions)) {
-					log_message('error', 'Invalid file extension: ' . $file_ext);
-					return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
-				}
-
-				$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-				$upload_path = 'uploads/class/' . $file_name;
-
-				// Check if a file with the same name already exists
-				if (file_exists($upload_path)) {
-					log_message('error', 'Photo already exists: ' . $upload_path);
-					return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
-				}
-
-				if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-					log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
-					return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
-				}
-
-			$data['photo'] = $file_name;
-			}
-
-       
-        $data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
-        $data['school_id'] = $this->school_id;
-        $this->db->insert('classes', $data);
-
-        $insert_id = $this->db->insert_id();
-
-
-        // Créer une class_room avec le même nom que la classe
-        $room_data = [
-            'name' => $data['name'],
-            'description' => 'Salle de classe pour ' . $data['name'],
-            'school_id' => $this->school_id,
-            'user_id' => $this->session->userdata('user_id'),
-            'class_id' => $insert_id
-        ];
-        $this->db->insert('rooms', $room_data);
-
-        // Créer un espace correspondant dans HumHub
-        $spaceData = [
-            'name' => $data['name'],
-            'description' => '',
-            'join_policy' => 0, // 0 = Ouvert : tout le monde peut rejoindre l’espace sans validation
-            'visibility' => 2,  // 2 = Public : visible par tout le monde
-			
-        ];
-
-        $humhubResponse = $this->humhub_sso->createSpace($spaceData);
-        log_message('debug', 'Réponse HumHub Space: ' . json_encode($humhubResponse));
-
-        // Ajouter l'admin comme membre
-        if (isset($humhubResponse['id'])) {
-            $adminEmail = $this->session->userdata('user')->email;
-            $adminHumhubUser = $this->humhub_sso->getUserByEmail($adminEmail);
-            
-            if ($adminHumhubUser && isset($adminHumhubUser['id'])) {
-                $addResponse = $this->humhub_sso->addUserSpace(
-                    $humhubResponse['id'],
-                    $adminHumhubUser['id']
-                );
-                log_message('debug', "Réponse HumHub addUserSpace: " . json_encode($addResponse));
-            } else {
-                log_message('error', 'Utilisateur HumHub introuvable pour email: ' . $adminEmail);
-            }
-            $this->db->where('id', $insert_id);
-            $this->db->update('classes', ['humhub_space_id' => $humhubResponse['id']]);
-        }
-
-        $response = array(
-            'status' => true,
-            'notification' => get_phrase('class_added_successfully'),
-            'humhub_space' => $humhubResponse
-        );
-        return $response;
-    }
-		
-	 public function class_update($param1 = '')
-    {
-        $data['name'] = html_escape($this->input->post('name'));
-        $data['price'] = html_escape($this->input->post('price'));
 		$data['date_debut'] = html_escape($this->input->post('start_date'));
-        $data['date_fin'] = html_escape($this->input->post('end_date'));
-        $data['statut'] = html_escape($this->input->post('status'));
+		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$data['statut'] = html_escape($this->input->post('status'));
 
-		    // Validate the uploaded file
+		// Validate the uploaded file
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-			$allowed_extensions = ['jpeg','gif', 'jpg', 'png'];
+			$allowed_extensions = ['jpeg', 'gif', 'jpg', 'png'];
 			$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
 
 			if (!in_array($file_ext, $allowed_extensions)) {
@@ -188,86 +99,256 @@ public function get_school_classes($school_id)
 				return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
 			}
 
-		$data['photo'] = $file_name;
+			$data['photo'] = $file_name;
 		}
 
-       
-        $data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
-        $this->db->where('id', $param1);
-        $this->db->update('classes', $data);
 
-        // Mettre à jour la class_room associée
-        $this->db->where('class_id', $param1);
-        $room = $this->db->get('rooms')->row();
-        if ($room) {
-            $room_data = [
-                'name' => $data['name'],
-                'description' => ''
-            ];
-            $this->db->where('class_id', $param1);
-            $this->db->update('rooms', $room_data);
-        }
+		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
+		$data['school_id'] = $this->school_id;
+		$this->db->insert('classes', $data);
 
-        // Mise à jour de l'espace HumHub
-        $class = $this->db->get_where('classes', ['id' => $param1])->row();
-        if (!empty($class->humhub_space_id)) {
-            $existing = $this->humhub_sso->getSpace($class->humhub_space_id);
-            if ($existing) {
-                $spaceUpdate = [
-                    'name' => $data['name'],
-                    'description' => '',
-                    'defaultStreamSort' => $existing['defaultStreamSort'],
-                ];
-                log_message('debug', 'Données envoyées à HumHub updateSpace: ' . json_encode($spaceUpdate));
-                $this->humhub_sso->updateSpace($class->humhub_space_id, $spaceUpdate);
-            } else {
-                log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$class->humhub_space_id}");
-            }
-        } else {
-            log_message('error', "ID HumHub manquant pour la classe ID {$param1}");
-        }
+		$insert_id = $this->db->insert_id();
+		$communitySpaceId = $this->school_id; // school_id correspond à la community
+		$communitySpace = $this->humhub_sso->getSpaceBySchoolId($this->school_id);
 
-        $response = array(
-            'status' => true,
-            'notification' => get_phrase('class_updated_successfully')
-        );
-        return $response;
-    }
+		if ($communitySpace) {
+			$communityName    = $communitySpace['name'];
+			$communitySpaceId = $communitySpace['id'];
+		} else {
+			$communityName    = '';
+			$communitySpaceId = null;
+		}
 
+		// Créer une class_room avec le même nom que la classe
+		// $room_data = [
+		//     'name' => $data['name'],
+		//     'description' => 'Salle de classe pour ' . $data['name'],
+		//     'school_id' => $this->school_id,
+		//     'user_id' => $this->session->userdata('user_id'),
+		//     'class_id' => $insert_id
+		// ];
+		// $this->db->insert('rooms', $room_data);
+
+		// Créer un espace correspondant dans HumHub
+		$spaceData = [
+			// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
+			'name' => $data['name'], // Nom :  <classe>
+			'community_name' => $communityName,
+			'community_id' => $communitySpaceId,
+			'description' => '',
+			'join_policy' => 0, // 0 = Ouvert : tout le monde peut rejoindre l’espace sans validation
+			'visibility' => 2,  // 2 = Public : visible par tout le monde
+
+		];
+
+		$humhubResponse = $this->humhub_sso->createSpace($spaceData);
+		if (isset($humhubResponse['id'])) {
+			// Mise à jour directe dans la base HumHub
+			$dbHumhub = $this->load->database('humhub', TRUE);
+			$dbHumhub->where('id', $humhubResponse['id']);
+			$dbHumhub->update('space', [
+				'community_name' => $communityName,
+				'community_id'   => $communitySpaceId
+			]);
+		}
+		log_message('debug', 'Réponse HumHub Space: ' . json_encode($humhubResponse));
+
+		// Ajouter l'admin comme membre
+		if (isset($humhubResponse['id'])) {
+			$adminEmail = $this->session->userdata('user')->email;
+			$adminHumhubUser = $this->humhub_sso->getUserByEmail($adminEmail);
+
+			if ($adminHumhubUser && isset($adminHumhubUser['id'])) {
+				$addResponse = $this->humhub_sso->addUserSpace(
+					$humhubResponse['id'],
+					$adminHumhubUser['id']
+				);
+				log_message('debug', "Réponse HumHub addUserSpace: " . json_encode($addResponse));
+			} else {
+				log_message('error', 'Utilisateur HumHub introuvable pour email: ' . $adminEmail);
+			}
+			$this->db->where('id', $insert_id);
+			$this->db->update('classes', ['humhub_space_id' => $humhubResponse['id']]);
+		}
+		// Sauvegarde de l’ID du space dans la classe
+		$this->db->where('id', $insert_id);
+		$this->db->update('classes', ['humhub_space_id' => $humhubResponse['id']]);
+
+		// Copier la photo vers HumHub (si présente)
+		if (!empty($data['photo']) && isset($humhubResponse['guid'])) {
+			$guid = $humhubResponse['guid'];
+			$sourceImage = FCPATH . 'uploads/class/' . $data['photo'];
+			$humhubUploadsPath = config_item('humhub_image');
+			$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
+			$destImage = $humhubUploadsPath . $guid . '.jpg';
+
+			if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
+				log_message('debug', '✅ Image de la classe copiée vers HumHub (GUID : ' . $guid . ')');
+			} else {
+				log_message('error', '❌ Erreur de copie de l’image de classe vers HumHub (GUID : ' . $guid . ')');
+			}
+		} else {
+			log_message('error', '⚠️ Aucune image de classe trouvée ou GUID manquant pour HumHub.');
+		}
+		$response = array(
+			'status' => true,
+			'notification' => get_phrase('class_added_successfully'),
+			'humhub_space' => $humhubResponse
+		);
+		return $response;
+	}
+
+	public function class_update($param1 = '')
+	{
+		$data['name'] = html_escape($this->input->post('name'));
+		$data['price'] = html_escape($this->input->post('price'));
+		$data['date_debut'] = html_escape($this->input->post('start_date'));
+		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$data['statut'] = html_escape($this->input->post('status'));
+
+		// Validate the uploaded file
+		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+			$allowed_extensions = ['jpeg', 'gif', 'jpg', 'png'];
+			$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+
+			if (!in_array($file_ext, $allowed_extensions)) {
+				log_message('error', 'Invalid file extension: ' . $file_ext);
+				return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
+			}
+
+			$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+			$upload_path = 'uploads/class/' . $file_name;
+
+			// Check if a file with the same name already exists
+			if (file_exists($upload_path)) {
+				log_message('error', 'Photo already exists: ' . $upload_path);
+				return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
+			}
+
+			if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+				log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
+				return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
+			}
+
+			$data['photo'] = $file_name;
+		}
+
+
+		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
+		$this->db->where('id', $param1);
+		$this->db->update('classes', $data);
+
+		// Mettre à jour la class_room associée
+		// $this->db->where('class_id', $param1);
+		// $room = $this->db->get('rooms')->row();
+		// if ($room) {
+		//     $room_data = [
+		//         'name' => $data['name'],
+		//         'description' => ''
+		//     ];
+		//     $this->db->where('class_id', $param1);
+		//     $this->db->update('rooms', $room_data);
+		// }
+
+		// Mise à jour de l'espace HumHub
+		$class = $this->db->get_where('classes', ['id' => $param1])->row();
+		// Récupérer la community associée à cette école
+		$communitySpace = $this->humhub_sso->getSpaceBySchoolId($this->school_id);
+		if ($communitySpace) {
+			$communityName    = $communitySpace['name'];
+			$communitySpaceId = $communitySpace['id'];
+		} else {
+			$communityName    = '';
+			$communitySpaceId = null;
+		}
+
+		// Mise à jour du Space HumHub lié à cette classe
+		if (!empty($class->humhub_space_id)) {
+			$existing = $this->humhub_sso->getSpace($class->humhub_space_id);
+
+			if ($existing) {
+				$spaceUpdate = [
+					// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
+					'name' => $data['name'], // Nom : <classe>
+					'community_name' => $communityName,
+					'community_id' => $communitySpaceId,
+					'description' => '',
+					'defaultStreamSort' => $existing['defaultStreamSort'] ?? ''
+				];
+
+				// Envoi à l’API HumHub
+				$this->humhub_sso->updateSpace($class->humhub_space_id, $spaceUpdate);
+
+				// Mise à jour directe dans la base HumHub
+				$dbHumhub = $this->load->database('humhub', TRUE);
+				$dbHumhub->where('id', $class->humhub_space_id);
+				$dbHumhub->update('space', [
+					'community_name' => $communityName,
+					'community_id'   => $communitySpaceId
+				]);
+				// Copier la nouvelle photo vers HumHub (si présente)
+				if (!empty($data['photo']) && isset($existing['guid'])) {
+					$guid = $existing['guid'];
+					$sourceImage = FCPATH . 'uploads/class/' . $data['photo'];
+					$humhubUploadsPath = config_item('humhub_image');
+					$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
+					$destImage = $humhubUploadsPath . $guid . '.jpg';
+
+					if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
+						log_message('debug', '✅ Nouvelle image de la classe copiée vers HumHub (GUID : ' . $guid . ')');
+					} else {
+						log_message('error', '❌ Erreur lors de la copie de la nouvelle image vers HumHub (GUID : ' . $guid . ')');
+					}
+				} else {
+					log_message('debug', 'ℹ️ Aucune nouvelle photo à copier ou GUID HumHub manquant.');
+				}
+			} else {
+				log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$class->humhub_space_id}");
+			}
+		} else {
+			log_message('error', "ID HumHub manquant pour la classe ID {$param1}");
+		}
+		$response = array(
+			'status' => true,
+			'notification' => get_phrase('class_updated_successfully')
+		);
+		return $response;
+	}
 
 
 	public function class_delete($param1 = '')
-    {
-        // Récupérer la classe
-        $class = $this->db->get_where('classes', ['id' => $param1])->row();
+	{
+		// Récupérer la classe
+		$class = $this->db->get_where('classes', ['id' => $param1])->row();
 
-        // Supprimer l’espace HumHub s’il existe
-        if (!empty($class->humhub_space_id)) {
-            $this->humhub_sso->deleteSpace($class->humhub_space_id);
-            log_message('debug', "Espace HumHub supprimé: ID {$class->humhub_space_id}");
-        }
+		// Supprimer l’espace HumHub s’il existe
+		if (!empty($class->humhub_space_id)) {
+			$this->humhub_sso->deleteSpace($class->humhub_space_id);
+			log_message('debug', "Espace HumHub supprimé: ID {$class->humhub_space_id}");
+		}
 
-        // Supprimer la class_room associée
-        $this->db->where('class_id', $param1);
-        $this->db->delete('rooms');
+		// Supprimer la class_room associée
+		$this->db->where('class_id', $param1);
+		$this->db->delete('rooms');
 
-        // Supprimer la classe
-        $this->db->where('id', $param1);
-        $this->db->delete('classes');
+		// Supprimer la classe
+		$this->db->where('id', $param1);
+		$this->db->delete('classes');
 
 
 
-        $response = array(
-            'status' => true,
-            'notification' => get_phrase('class_deleted_successfully')
-        );
-        return $response;
-    }
+		$response = array(
+			'status' => true,
+			'notification' => get_phrase('class_deleted_successfully')
+		);
+		return $response;
+	}
 
 
 
 	//get Class details by id
-	public function get_class_details_by_id($id) {
+	public function get_class_details_by_id($id)
+	{
 		$class_details = $this->db->get_where('classes', array('id' => $id));
 		return $class_details;
 	}
@@ -354,7 +435,8 @@ public function get_school_classes($school_id)
 		return json_encode($response);
 	}
 
-	public function active_session($param1 = ''){
+	public function active_session($param1 = '')
+	{
 		$previous_session_id = active_session();
 		$this->db->where('id', $previous_session_id);
 		$this->db->update('sessions', array('status' => 0));
@@ -371,9 +453,9 @@ public function get_school_classes($school_id)
 
 
 
-	
-	
-	
+
+
+
 
 
 
@@ -394,7 +476,7 @@ public function get_school_classes($school_id)
 		}
 
 		$allowed_extensions = array('pdf', 'doc', 'docx', 'txt');
-    	$file_ext = strtolower(pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION));
+		$file_ext = strtolower(pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION));
 		if (!in_array($file_ext, $allowed_extensions)) {
 			return array(
 				'status' => false,
@@ -407,8 +489,8 @@ public function get_school_classes($school_id)
 		$data['session_id'] = html_escape($this->input->post('session_id'));
 		$data['school_id'] = html_escape($this->input->post('school_id'));
 		$file_ext = pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION);
-    	$data['file'] = md5(rand(10000000, 20000000)).'.'.$file_ext;
-    	move_uploaded_file($_FILES['syllabus_file']['tmp_name'], 'uploads/syllabus/'.$data['file']);
+		$data['file'] = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+		move_uploaded_file($_FILES['syllabus_file']['tmp_name'], 'uploads/syllabus/' . $data['file']);
 		$this->db->insert('syllabuses', $data);
 
 		return array(
@@ -417,13 +499,14 @@ public function get_school_classes($school_id)
 		);
 		//return json_encode($response);
 	}
-	public function syllabus_delete($param1){
+	public function syllabus_delete($param1)
+	{
 		$syllabus_details = $this->get_syllabus_by_id($param1);
 		$this->db->where('id', $param1);
 		$this->db->delete('syllabuses');
-		$path = 'uploads/syllabus/'.$syllabus_details['file'];
-		if (file_exists($path)){
-				unlink($path);
+		$path = 'uploads/syllabus/' . $syllabus_details['file'];
+		if (file_exists($path)) {
+			unlink($path);
 		}
 		$response = array(
 			'status' => true,
@@ -432,78 +515,79 @@ public function get_school_classes($school_id)
 		return json_encode($response);
 	}
 
-	public function get_syllabus_by_id($syllabus_id = "") {
+	public function get_syllabus_by_id($syllabus_id = "")
+	{
 		return $this->db->get_where('syllabuses', array('id' => $syllabus_id))->row_array();
 	}
 	//END SYLLABUS section
 
 	//START CLASS ROUTINE section
-	 public function routine_create()
-    {
-        
-        $data['class_id'] = html_escape($this->input->post('class_id'));
-        $data['teacher_id'] = html_escape($this->input->post('teacher_id'));
-        $data['room_id'] = html_escape($this->input->post('class_room_id'));
-        $data['day'] = html_escape($this->input->post('day'));
-        $data['starting_hour'] = html_escape($this->input->post('starting_hour'));
-        $data['starting_minute'] = html_escape($this->input->post('starting_minute'));
-        $data['ending_hour'] = html_escape($this->input->post('ending_hour'));
-        $data['ending_minute'] = html_escape($this->input->post('ending_minute'));
-        $data['school_id'] = $this->school_id;
-        $data['session_id'] = $this->active_session;
+	public function routine_create()
+	{
+
+		$data['class_id'] = html_escape($this->input->post('class_id'));
+		$data['teacher_id'] = html_escape($this->input->post('teacher_id'));
+		$data['room_id'] = html_escape($this->input->post('class_room_id'));
+		$data['day'] = html_escape($this->input->post('day'));
+		$data['starting_hour'] = html_escape($this->input->post('starting_hour'));
+		$data['starting_minute'] = html_escape($this->input->post('starting_minute'));
+		$data['ending_hour'] = html_escape($this->input->post('ending_hour'));
+		$data['ending_minute'] = html_escape($this->input->post('ending_minute'));
+		$data['school_id'] = $this->school_id;
+		$data['session_id'] = $this->active_session;
 
 
-        $this->db->insert('routines', $data);
-        
+		$this->db->insert('routines', $data);
 
-        return array(
-            'status' => true,
-            'notification' => get_phrase('class_routine_added_successfully')
-        );
-    }
+
+		return array(
+			'status' => true,
+			'notification' => get_phrase('class_routine_added_successfully')
+		);
+	}
 
 	public function routine_update($param1 = '')
-{
-    // Récupérer les données du formulaire
-    
-    $data['class_id'] = html_escape($this->input->post('class_id'));
-    $data['teacher_id'] = html_escape($this->input->post('teacher_id'));
-    $data['room_id'] = html_escape($this->input->post('class_room_id'));
-    $data['day'] = html_escape($this->input->post('day'));
-    $data['starting_hour'] = html_escape($this->input->post('starting_hour'));
-    $data['starting_minute'] = html_escape($this->input->post('starting_minute'));
-    $data['ending_hour'] = html_escape($this->input->post('ending_hour'));
-    $data['ending_minute'] = html_escape($this->input->post('ending_minute'));
-    $data['school_id'] = $this->school_id;
-    $data['session_id'] = $this->active_session;
+	{
+		// Récupérer les données du formulaire
 
-    // Supprimer les anciennes entrées pour cette routine
-    $this->db->where('id', $param1);
-    $routine = $this->db->get('routines')->row_array();
-    if ($routine) {
-        $this->db->where('class_id', $routine['class_id']);
-        $this->db->where('day', $routine['day']);
-        $this->db->where('starting_hour', $routine['starting_hour']);
-        $this->db->where('starting_minute', $routine['starting_minute']);
-        $this->db->where('ending_hour', $routine['ending_hour']);
-        $this->db->where('ending_minute', $routine['ending_minute']);
-        $this->db->where('teacher_id', $routine['teacher_id']);
-        $this->db->where('room_id', $routine['room_id']);
-        $this->db->delete('routines');
-    }
+		$data['class_id'] = html_escape($this->input->post('class_id'));
+		$data['teacher_id'] = html_escape($this->input->post('teacher_id'));
+		$data['room_id'] = html_escape($this->input->post('class_room_id'));
+		$data['day'] = html_escape($this->input->post('day'));
+		$data['starting_hour'] = html_escape($this->input->post('starting_hour'));
+		$data['starting_minute'] = html_escape($this->input->post('starting_minute'));
+		$data['ending_hour'] = html_escape($this->input->post('ending_hour'));
+		$data['ending_minute'] = html_escape($this->input->post('ending_minute'));
+		$data['school_id'] = $this->school_id;
+		$data['session_id'] = $this->active_session;
 
-    // Insérer une nouvelle entrée pour chaque section sélectionnée
+		// Supprimer les anciennes entrées pour cette routine
+		$this->db->where('id', $param1);
+		$routine = $this->db->get('routines')->row_array();
+		if ($routine) {
+			$this->db->where('class_id', $routine['class_id']);
+			$this->db->where('day', $routine['day']);
+			$this->db->where('starting_hour', $routine['starting_hour']);
+			$this->db->where('starting_minute', $routine['starting_minute']);
+			$this->db->where('ending_hour', $routine['ending_hour']);
+			$this->db->where('ending_minute', $routine['ending_minute']);
+			$this->db->where('teacher_id', $routine['teacher_id']);
+			$this->db->where('room_id', $routine['room_id']);
+			$this->db->delete('routines');
+		}
 
-        $this->db->insert('routines', $data);
-    
+		// Insérer une nouvelle entrée pour chaque section sélectionnée
 
-    $response = array(
-        'status' => true,
-        'notification' => get_phrase('class_routine_updated_successfully')
-    );
+		$this->db->insert('routines', $data);
 
-    return json_encode($response);
-}
+
+		$response = array(
+			'status' => true,
+			'notification' => get_phrase('class_routine_updated_successfully')
+		);
+
+		return json_encode($response);
+	}
 
 	public function routine_delete($param1 = '')
 	{
@@ -526,21 +610,21 @@ public function get_school_classes($school_id)
 		$students = $this->input->post('student_id');
 		$data['timestamp'] = strtotime($this->input->post('date'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
-		
+
 		$data['school_id'] = $this->school_id;
 		$data['session_id'] = $this->active_session;
 		$check_data = $this->db->get_where('daily_attendances', array('timestamp' => $data['timestamp'], 'class_id' => $data['class_id'], 'session_id' => $data['session_id'], 'school_id' => $data['school_id']));
-		if($check_data->num_rows() > 0){
-			foreach($students as $key => $student):
-				$data['status'] = $this->input->post('status-'.$student);
+		if ($check_data->num_rows() > 0) {
+			foreach ($students as $key => $student):
+				$data['status'] = $this->input->post('status-' . $student);
 				$data['student_id'] = $student;
 				$attendance_id = $this->input->post('attendance_id');
 				$this->db->where('id', $attendance_id[$key]);
 				$this->db->update('daily_attendances', $data);
 			endforeach;
-		}else{
-			foreach($students as $student):
-				$data['status'] = $this->input->post('status-'.$student);
+		} else {
+			foreach ($students as $student):
+				$data['status'] = $this->input->post('status-' . $student);
 				$data['student_id'] = $student;
 				$this->db->insert('daily_attendances', $data);
 			endforeach;
@@ -556,7 +640,8 @@ public function get_school_classes($school_id)
 		//return json_encode($response);
 	}
 
-	public function get_todays_attendance() {
+	public function get_todays_attendance()
+	{
 		$checker = array(
 			'timestamp' => strtotime(date('Y-m-d')),
 			'school_id' => $this->school_id,
@@ -589,8 +674,8 @@ public function get_school_classes($school_id)
 	public function event_calendar_update($param1 = '')
 	{
 		$data['title'] = html_escape($this->input->post('title'));
-		$starting_date = strtotime(date('d/m/Y')) +1;
-		$ending_date = strtotime(date('d/m/Y')) -1;
+		$starting_date = strtotime(date('d/m/Y')) + 1;
+		$ending_date = strtotime(date('d/m/Y')) - 1;
 		$data['starting_date'] = $this->input->post('starting_date');
 		$data['ending_date'] = $this->input->post('ending_date');
 		$this->db->where('id', $param1);
@@ -617,36 +702,35 @@ public function get_school_classes($school_id)
 		return json_encode($response);
 	}
 
-	public function all_events(){
+	public function all_events()
+	{
 		$user_id = $this->session->userdata('user_id');
 		$role = $this->db->get_where('users', array('id' => $user_id))->row('role');
-		if($role == "student"){
+		if ($role == "student") {
 			$student_datas = $this->db->get_where('students', array('user_id' => $user_id))->result_array();
 			$all_event_calendars = array();
-	
+
 			foreach ($student_datas as $student_data) {
-				$enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_data['id'],'school_id' => $student_data['school_id']))->num_rows();
-				if($enrols_datas > 0){
+				$enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_data['id'], 'school_id' => $student_data['school_id']))->num_rows();
+				if ($enrols_datas > 0) {
 					$event_calendars = $this->db->get_where('announcement', array(
-						'school_id' => $student_data['school_id'], 
+						'school_id' => $student_data['school_id'],
 						'session' => $this->active_session
 					))->result_array();
-					
+
 					$all_event_calendars = array_merge($all_event_calendars, $event_calendars);
 				}
 			}
 			return json_encode($all_event_calendars);
-		}else {
+		} else {
 			$school_id = $this->db->get_where('users', array('id' => $user_id))->row('school_id');
 			$event_calendars = $this->db->get_where('announcement', array('school_id' => $school_id, 'session' => $this->active_session))->result_array();
 			return json_encode($event_calendars);
 		}
-
-
-
 	}
 
-	public function get_current_month_events() {
+	public function get_current_month_events()
+	{
 		$this->db->where('school_id', $this->school_id);
 		$this->db->where('session', $this->active_session);
 		$events = $this->db->get('announcement');
@@ -655,17 +739,18 @@ public function get_school_classes($school_id)
 	//END EVENT CALENDAR section
 
 	// START OF NOTICEBOARD SECTION
-	public function create_notice() {
+	public function create_notice()
+	{
 		$data['notice_title']     = html_escape($this->input->post('notice_title'));
 		$data['notice']           = html_escape($this->input->post('notice'));
 		$data['show_on_website']  = $this->input->post('show_on_website');
-		$data['date'] 						= $this->input->post('date').' 00:00:1';
+		$data['date'] 						= $this->input->post('date') . ' 00:00:1';
 		$data['school_id'] 				= $this->school_id;
 		$data['session'] 					= $this->active_session;
 		if ($_FILES['notice_photo']['name'] != '') {
-			$data['image']  = random(15).'.jpg';
-			move_uploaded_file($_FILES['notice_photo']['tmp_name'], 'uploads/images/notice_images/'. $data['image']);
-		}else{
+			$data['image']  = random(15) . '.jpg';
+			move_uploaded_file($_FILES['notice_photo']['tmp_name'], 'uploads/images/notice_images/' . $data['image']);
+		} else {
 			$data['image']  = 'placeholder.png';
 		}
 		$this->db->insert('noticeboard', $data);
@@ -678,14 +763,15 @@ public function get_school_classes($school_id)
 		//return json_encode($response);
 	}
 
-	public function update_notice($notice_id) {
+	public function update_notice($notice_id)
+	{
 		$data['notice_title']     = html_escape($this->input->post('notice_title'));
 		$data['notice']           = html_escape($this->input->post('notice'));
 		$data['show_on_website']  = $this->input->post('show_on_website');
-		$data['date'] 						= $this->input->post('date').' 00:00:1';
+		$data['date'] 						= $this->input->post('date') . ' 00:00:1';
 		if ($_FILES['notice_photo']['name'] != '') {
-			$data['image']  = random(15).'.jpg';
-			move_uploaded_file($_FILES['notice_photo']['tmp_name'], 'uploads/images/notice_images/'. $data['image']);
+			$data['image']  = random(15) . '.jpg';
+			move_uploaded_file($_FILES['notice_photo']['tmp_name'], 'uploads/images/notice_images/' . $data['image']);
 		}
 		$this->db->where('id', $notice_id);
 		$this->db->update('noticeboard', $data);
@@ -698,7 +784,8 @@ public function get_school_classes($school_id)
 		//return json_encode($response);
 	}
 
-	public function delete_notice($notice_id) {
+	public function delete_notice($notice_id)
+	{
 		$this->db->where('id', $notice_id);
 		$this->db->delete('noticeboard');
 
@@ -710,199 +797,200 @@ public function get_school_classes($school_id)
 		return json_encode($response);
 	}
 
-	public function get_all_the_notices() {
+	public function get_all_the_notices()
+	{
 		$notices = $this->db->get_where('noticeboard', array('school_id' => $this->school_id, 'session' => $this->active_session))->result_array();
 		return json_encode($notices);
 	}
 
-	public function get_noticeboard_image($image) {
-		if (file_exists('uploads/images/notice_images/'.$image))
-		return base_url().'uploads/images/notice_images/'.$image;
+	public function get_noticeboard_image($image)
+	{
+		if (file_exists('uploads/images/notice_images/' . $image))
+			return base_url() . 'uploads/images/notice_images/' . $image;
 		else
-		return base_url().'uploads/images/notice_images/placeholder.png';
+			return base_url() . 'uploads/images/notice_images/placeholder.png';
 	}
 	// END OF NOTICEBOARD SECTION
 
 	//START EXAM section
 	public function exam_create()
-{
-    // Générer un identifiant unique pour la requête
-    $request_id = uniqid('exam_create_');
+	{
+		// Générer un identifiant unique pour la requête
+		$request_id = uniqid('exam_create_');
 
-    // Prepare exam data
-    $data['name'] = html_escape($this->input->post('exam_name'));
-    $starting_date_input = $this->input->post('starting_date');
-    // Convertir datetime-local (YYYY-MM-DDTHH:MM) en timestamp
-    $data['starting_date'] = $starting_date_input ? strtotime(str_replace('T', ' ', $starting_date_input)) : false;
-    $data['class_id'] = html_escape($this->input->post('class_id'));
-   
-    $data['school_id'] = $this->school_id;
-    $data['session'] = $this->active_session;
+		// Prepare exam data
+		$data['name'] = html_escape($this->input->post('exam_name'));
+		$starting_date_input = $this->input->post('starting_date');
+		// Convertir datetime-local (YYYY-MM-DDTHH:MM) en timestamp
+		$data['starting_date'] = $starting_date_input ? strtotime(str_replace('T', ' ', $starting_date_input)) : false;
+		$data['class_id'] = html_escape($this->input->post('class_id'));
 
-    // Validate required fields
-    if (empty($data['name'])) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('exam_name_required')
-        );
-        return json_encode($response);
-    }
-    if (empty($data['class_id'])) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('class_required')
-        );
-        return json_encode($response);
-    }
+		$data['school_id'] = $this->school_id;
+		$data['session'] = $this->active_session;
 
-    if (!$data['starting_date']) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('invalid_date_format')
-        );
-        return json_encode($response);
-    }
+		// Validate required fields
+		if (empty($data['name'])) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('exam_name_required')
+			);
+			return json_encode($response);
+		}
+		if (empty($data['class_id'])) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('class_required')
+			);
+			return json_encode($response);
+		}
 
-    // Verify class_id exists
-    $class_exists = $this->db->get_where('classes', ['id' => $data['class_id'], 'school_id' => $this->school_id])->num_rows();
-    if (!$class_exists) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('invalid_class')
-        );
-        return json_encode($response);
-    }
+		if (!$data['starting_date']) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('invalid_date_format')
+			);
+			return json_encode($response);
+		}
 
-
-
-    // Check for duplicate exam
-    $this->db->where('name', $data['name']);
-    $this->db->where('starting_date', $data['starting_date']);
-    $this->db->where('class_id', $data['class_id']);
- 
-    $this->db->where('school_id', $data['school_id']);
-    $this->db->where('session', $data['session']);
-    $existing_exam = $this->db->get('exams')->row_array();
-
-    if ($existing_exam) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('exam_already_exists')
-        );
-        return json_encode($response);
-    }
-
-    // Insert the exam
-    $this->db->insert('exams', $data);
-    $exam_id = $this->db->insert_id();
-
-    if (empty($exam_id)) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('failed_to_create_exam')
-        );
-        return json_encode($response);
-    }
-
-
-    // Fetch the newly created exam details
-    $this->db->select('exams.*, classes.name as class_name');
-    $this->db->from('exams');
-    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->where('exams.id', $exam_id);
-    $exam = $this->db->get()->row_array();
-
-    // Prepare response
-    $response = array(
-
-        'status' => true,
-        'notification' => get_phrase('exam_created_successfully'),
-        'class_id' => $data['class_id'], // Added for filtering in frontend
-        'exam' => array(
-            'id' => $exam['id'],
-            'name' => $exam['name'] ?: 'Unnamed Exam',
-            'starting_date' => $exam['starting_date'],
-            'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
-            'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
-          
-            'calendar_event' => array(
-                'title' => $exam['name'] ?: 'Unnamed Exam',
-                'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
-            )
-        )
-    );
-
-
-    return json_encode($response);
-
-}
-public function exam_update($param1 = '')
-{
-    // Prepare exam data
-    $data['name'] = html_escape($this->input->post('exam_name'));
-    $data['starting_date'] = strtotime($this->input->post('starting_date'));
-    $data['class_id'] = html_escape($this->input->post('class_id'));
-   
-
-    // Validate required fields
-    if (empty($data['name']) || empty($data['class_id']) || !$data['starting_date']) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('all_fields_are_required')
-        );
-        return json_encode($response);
-    }
-
-    // Verify class_id exists
-    $class_exists = $this->db->get_where('classes', ['id' => $data['class_id'], 'school_id' => $this->school_id])->num_rows();
-    if (!$class_exists) {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('invalid_class')
-        );
-        return json_encode($response);
-    }
+		// Verify class_id exists
+		$class_exists = $this->db->get_where('classes', ['id' => $data['class_id'], 'school_id' => $this->school_id])->num_rows();
+		if (!$class_exists) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('invalid_class')
+			);
+			return json_encode($response);
+		}
 
 
 
-    // Update the exam
-    $this->db->where('id', $param1);
-    $update_result = $this->db->update('exams', $data);
+		// Check for duplicate exam
+		$this->db->where('name', $data['name']);
+		$this->db->where('starting_date', $data['starting_date']);
+		$this->db->where('class_id', $data['class_id']);
 
-    // Fetch the updated exam details
-    $this->db->select('exams.*, classes.name as class_name');
-    $this->db->from('exams');
-    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-    $this->db->where('exams.id', $param1);
-    $exam = $this->db->get()->row_array();
+		$this->db->where('school_id', $data['school_id']);
+		$this->db->where('session', $data['session']);
+		$existing_exam = $this->db->get('exams')->row_array();
 
-    if ($exam) {
-        $exam['formatted_date'] = $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date';
-        $response = array(
-            'status' => $update_result,
-            'notification' => $update_result ? get_phrase('exam_updated_successfully') : get_phrase('failed_to_update_exam'),
-            'exam' => array(
-                'id' => $exam['id'],
-                'name' => $exam['name'] ?: 'Unnamed Exam',
-                'starting_date' => $exam['starting_date'],
-                'formatted_date' => $exam['formatted_date'],
-                'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
-               
-                'calendar_event' => array(
-                    'title' => $exam['name'] ?: 'Unnamed Exam',
-                    'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
-                )
-            )
-        );
-    } else {
-        $response = array(
-            'status' => false,
-            'notification' => get_phrase('exam_not_found')
-        );
-    }
+		if ($existing_exam) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('exam_already_exists')
+			);
+			return json_encode($response);
+		}
 
-    return json_encode($response);
-}
+		// Insert the exam
+		$this->db->insert('exams', $data);
+		$exam_id = $this->db->insert_id();
+
+		if (empty($exam_id)) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('failed_to_create_exam')
+			);
+			return json_encode($response);
+		}
+
+
+		// Fetch the newly created exam details
+		$this->db->select('exams.*, classes.name as class_name');
+		$this->db->from('exams');
+		$this->db->join('classes', 'exams.class_id = classes.id', 'left');
+		$this->db->where('exams.id', $exam_id);
+		$exam = $this->db->get()->row_array();
+
+		// Prepare response
+		$response = array(
+
+			'status' => true,
+			'notification' => get_phrase('exam_created_successfully'),
+			'class_id' => $data['class_id'], // Added for filtering in frontend
+			'exam' => array(
+				'id' => $exam['id'],
+				'name' => $exam['name'] ?: 'Unnamed Exam',
+				'starting_date' => $exam['starting_date'],
+				'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
+				'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
+
+				'calendar_event' => array(
+					'title' => $exam['name'] ?: 'Unnamed Exam',
+					'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
+				)
+			)
+		);
+
+
+		return json_encode($response);
+	}
+	public function exam_update($param1 = '')
+	{
+		// Prepare exam data
+		$data['name'] = html_escape($this->input->post('exam_name'));
+		$data['starting_date'] = strtotime($this->input->post('starting_date'));
+		$data['class_id'] = html_escape($this->input->post('class_id'));
+
+
+		// Validate required fields
+		if (empty($data['name']) || empty($data['class_id']) || !$data['starting_date']) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('all_fields_are_required')
+			);
+			return json_encode($response);
+		}
+
+		// Verify class_id exists
+		$class_exists = $this->db->get_where('classes', ['id' => $data['class_id'], 'school_id' => $this->school_id])->num_rows();
+		if (!$class_exists) {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('invalid_class')
+			);
+			return json_encode($response);
+		}
+
+
+
+		// Update the exam
+		$this->db->where('id', $param1);
+		$update_result = $this->db->update('exams', $data);
+
+		// Fetch the updated exam details
+		$this->db->select('exams.*, classes.name as class_name');
+		$this->db->from('exams');
+		$this->db->join('classes', 'exams.class_id = classes.id', 'left');
+		$this->db->where('exams.id', $param1);
+		$exam = $this->db->get()->row_array();
+
+		if ($exam) {
+			$exam['formatted_date'] = $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date';
+			$response = array(
+				'status' => $update_result,
+				'notification' => $update_result ? get_phrase('exam_updated_successfully') : get_phrase('failed_to_update_exam'),
+				'exam' => array(
+					'id' => $exam['id'],
+					'name' => $exam['name'] ?: 'Unnamed Exam',
+					'starting_date' => $exam['starting_date'],
+					'formatted_date' => $exam['formatted_date'],
+					'class_name' => $exam['class_name'] ?: get_phrase('no_class'),
+
+					'calendar_event' => array(
+						'title' => $exam['name'] ?: 'Unnamed Exam',
+						'start' => $exam['starting_date'] ? date('Y-m-d H:i:s', $exam['starting_date']) : ''
+					)
+				)
+			);
+		} else {
+			$response = array(
+				'status' => false,
+				'notification' => get_phrase('exam_not_found')
+			);
+		}
+
+		return json_encode($response);
+	}
 
 	public function exam_delete($param1 = '')
 	{
@@ -916,15 +1004,17 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function get_exam_by_id($exam_id = "") {
+	public function get_exam_by_id($exam_id = "")
+	{
 		return $this->db->get_where('exams', array('id' => $exam_id))->row_array();
 	}
 
 	//START MARKS section
-	public function get_marks($class_id = "", $exam_id = "", $school_id = "") {
+	public function get_marks($class_id = "", $exam_id = "", $school_id = "")
+	{
 		$checker = array(
 			'class_id' => $class_id,
-						
+
 			'exam_id' => $exam_id,
 			'school_id' => $school_id,
 			'session' => $this->active_session
@@ -932,26 +1022,28 @@ public function exam_update($param1 = '')
 		$this->db->where($checker);
 		return $this->db->get('marks');
 	}
-	public function mark_insert($class_id = "", $exam_id = "") {
+	public function mark_insert($class_id = "", $exam_id = "")
+	{
 		$student_enrolments = $this->user_model->student_enrolment()->result_array();
 		foreach ($student_enrolments as $student_enrolment) {
 			$checker = array(
 				'student_id' => $student_enrolment['student_id'],
 				'class_id' => $class_id,
-								
+
 				'exam_id' => $exam_id,
 				'school_id' => $this->school_id,
 				'session' => $this->active_session
 			);
 			$this->db->where($checker);
 			$number_of_rows = $this->db->get('marks')->num_rows();
-			if($number_of_rows == 0) {
+			if ($number_of_rows == 0) {
 				$this->db->insert('marks', $checker);
 			}
 		}
 	}
 
-	public function mark_update(){
+	public function mark_update()
+	{
 		$data['student_id'] = html_escape($this->input->post('student_id'));
 		$data['class_id'] = html_escape($this->input->post('class_id'));
 		$data['exam_id'] = html_escape($this->input->post('exam_id'));
@@ -960,34 +1052,35 @@ public function exam_update($param1 = '')
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$query = $this->db->get_where('marks', array('student_id' => $data['student_id'], 'class_id' => $data['class_id'], 'exam_id' => $data['exam_id'], 'session' => $data['session'], 'school_id' => $data['school_id']));
-		if($query->num_rows() > 0){
+		if ($query->num_rows() > 0) {
 			$update_data['mark_obtained'] = html_escape($this->input->post('mark'));
 			$update_data['comment'] = html_escape($this->input->post('comment'));
 			$row = $query->row();
 			$this->db->where('id', $row->id);
 			$this->db->update('marks', $update_data);
-		}else{
+		} else {
 			$this->db->insert('marks', $data);
 		}
 	}
 	//END MARKS section
 
-		//START MARKS section
-		public function get_quiz($quiz_id = "" ,$student  = "" ) {
+	//START MARKS section
+	public function get_quiz($quiz_id = "", $student  = "")
+	{
 
-			$this->db->select('quiz_id, COUNT(*) as total_responses, SUM(submitted_answer_status) as correct_responses, user_id');
-			$this->db->from('quiz_responses');
-			$this->db->where('quiz_id', $quiz_id);
-			if($student != "")
+		$this->db->select('quiz_id, COUNT(*) as total_responses, SUM(submitted_answer_status) as correct_responses, user_id');
+		$this->db->from('quiz_responses');
+		$this->db->where('quiz_id', $quiz_id);
+		if ($student != "")
 			$this->db->where('user_id', $student);
-			$this->db->group_by('quiz_id,user_id');
-	
-			$query = $this->db->get();
-			return $query;
+		$this->db->group_by('quiz_id,user_id');
 
-		}
+		$query = $this->db->get();
+		return $query;
+	}
 	// Grade creation
-	public function grade_create() {
+	public function grade_create()
+	{
 		$data['name'] = html_escape($this->input->post('grade'));
 		$data['grade_point'] = htmlspecialchars($this->input->post('grade_point'));
 		$data['mark_from'] = htmlspecialchars($this->input->post('mark_from'));
@@ -1003,7 +1096,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function grade_update($id = "") {
+	public function grade_update($id = "")
+	{
 		$data['name'] = html_escape($this->input->post('grade'));
 		$data['grade_point'] = htmlspecialchars($this->input->post('grade_point'));
 		$data['mark_from'] = htmlspecialchars($this->input->post('mark_from'));
@@ -1034,7 +1128,8 @@ public function exam_update($param1 = '')
 	// Grade ends
 
 	// Student Promotion section Starts
-	public function get_student_list() {
+	public function get_student_list()
+	{
 		$session_from = htmlspecialchars($this->input->post('session_from'));
 		$session_to = htmlspecialchars($this->input->post('session_to'));
 		$class_id_from = htmlspecialchars($this->input->post('class_id_from'));
@@ -1048,7 +1143,8 @@ public function exam_update($param1 = '')
 	}
 
 	//promote student
-	public function promote_student($promotion_data = "") {
+	public function promote_student($promotion_data = "")
+	{
 		$promotion_data = explode('-', $promotion_data);
 		$enroll_id = $promotion_data[0];
 		$class_id = $promotion_data[1];
@@ -1064,11 +1160,13 @@ public function exam_update($param1 = '')
 	// Student Promotion section Ends
 
 	//STUDENT ACCOUNTING SECTION STARTS
-	public function get_invoice_by_id($id = "") {
+	public function get_invoice_by_id($id = "")
+	{
 		return $this->db->get_where('invoices', array('id' => $id))->row_array();
 	}
 
-	public function get_invoice_by_date_range($date_from = "", $date_to = "", $selected_class = "", $selected_status = "") {
+	public function get_invoice_by_date_range($date_from = "", $date_to = "", $selected_class = "", $selected_status = "")
+	{
 		if ($selected_class != "all") {
 			$this->db->where('class_id', $selected_class);
 		}
@@ -1082,8 +1180,9 @@ public function exam_update($param1 = '')
 		return $this->db->get('invoices');
 	}
 
-	public function get_invoice_by_student_id($user_id = "") {
-		
+	public function get_invoice_by_student_id($user_id = "")
+	{
+
 		// $this->db->where('session', $this->active_session);
 		// $this->db->where('student_id', $student_id);
 		// return $this->db->get('invoices');
@@ -1091,20 +1190,21 @@ public function exam_update($param1 = '')
 		$this->db->from('invoices');
 		$this->db->join('students', 'students.id = invoices.student_id');
 		$this->db->where('students.code', $user_id);
-		
+
 		$query = $this->db->get();
-		
+
 		return $query;
 	}
 
 	// This function will be triggered if parent logs in
-	public function get_invoice_by_parent_id() {
+	public function get_invoice_by_parent_id()
+	{
 		$parent_user_id = $this->session->userdata('user_id');
 		$parent_data = $this->db->get_where('parents', array('user_id' => $parent_user_id))->row_array();
 		$student_list = $this->user_model->get_student_list_of_logged_in_parent();
 		$student_ids = array();
 		foreach ($student_list as $student) {
-			if(!in_array($student['student_id'], $student_ids)){
+			if (!in_array($student['student_id'], $student_ids)) {
 				array_push($student_ids, $student['student_id']);
 			}
 		}
@@ -1114,12 +1214,13 @@ public function exam_update($param1 = '')
 			$this->db->where('school_id', $this->school_id);
 			$this->db->where('session', $this->active_session);
 			return $this->db->get('invoices')->result_array();
-		}else{
+		} else {
 			return array();
 		}
 	}
 
-	public function create_single_invoice() {
+	public function create_single_invoice()
+	{
 		$data['title'] = htmlspecialchars($this->input->post('title'));
 		$data['total_amount'] = htmlspecialchars($this->input->post('total_amount'));
 		$data['class_id'] = htmlspecialchars($this->input->post('class_id'));
@@ -1159,7 +1260,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function create_mass_invoice() {
+	public function create_mass_invoice()
+	{
 		$data['total_amount'] = htmlspecialchars($this->input->post('total_amount'));
 		$data['paid_amount'] = htmlspecialchars($this->input->post('paid_amount'));
 		$data['status'] = htmlspecialchars($this->input->post('status'));
@@ -1202,7 +1304,7 @@ public function exam_update($param1 = '')
 				'status' => true,
 				'notification' => get_phrase('invoice_added_successfully')
 			);
-		}else{
+		} else {
 			return array(
 				'status' => false,
 				'notification' => get_phrase('no_student_found')
@@ -1211,7 +1313,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function update_invoice($id = "") {
+	public function update_invoice($id = "")
+	{
 
 		/*GET THE PREVIOUS INVOICE DETAILS FOR GETTING THE PAID AMOUNT*/
 		$previous_invoice_data = $this->db->get_where('invoices', array('id' => $id))->row_array();
@@ -1245,7 +1348,7 @@ public function exam_update($param1 = '')
 		/*KEEPING TRACK OF PAYMENT DATE*/
 		if ($this->input->post('paid_amount') != $previous_invoice_data && $this->input->post('paid_amount') > 0) {
 			$data['updated_at'] = strtotime(date('d-M-Y'));
-		}elseif ($this->input->post('paid_amount') == 0 || $this->input->post('paid_amount') == "") {
+		} elseif ($this->input->post('paid_amount') == 0 || $this->input->post('paid_amount') == "") {
 			$data['updated_at'] = 0;
 		}
 
@@ -1259,7 +1362,8 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function delete_invoice($id = "") {
+	public function delete_invoice($id = "")
+	{
 		$this->db->where('id', $id);
 		$this->db->delete('invoices');
 
@@ -1272,7 +1376,8 @@ public function exam_update($param1 = '')
 	//STUDENT ACCOUNTING SECTION ENDS
 
 	//Expense Category Starts
-	public function get_expense_categories($id = "") {
+	public function get_expense_categories($id = "")
+	{
 		if ($id > 0) {
 			$this->db->where('id', $id);
 		}
@@ -1280,7 +1385,8 @@ public function exam_update($param1 = '')
 		$this->db->where('session', $this->active_session);
 		return $this->db->get('expense_categories');
 	}
-	public function create_expense_category() {
+	public function create_expense_category()
+	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
@@ -1292,7 +1398,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function update_expense_category($id) {
+	public function update_expense_category($id)
+	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$this->db->where('id', $id);
 		$this->db->update('expense_categories', $data);
@@ -1303,7 +1410,8 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function delete_expense_category($id) {
+	public function delete_expense_category($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete('expense_categories');
 		$response = array(
@@ -1315,11 +1423,13 @@ public function exam_update($param1 = '')
 	//Expense Category Ends
 
 	//Expense Manager Starts
-	public function get_expense_by_id($id = "") {
+	public function get_expense_by_id($id = "")
+	{
 		return $this->db->get_where('expenses', array('id' => $id))->row_array();
 	}
 
-	public function get_expense($date_from = "", $date_to = "", $expense_category_id = "") {
+	public function get_expense($date_from = "", $date_to = "", $expense_category_id = "")
+	{
 		if ($expense_category_id > 0) {
 			$this->db->where('expense_category_id', $expense_category_id);
 		}
@@ -1331,7 +1441,8 @@ public function exam_update($param1 = '')
 	}
 
 	// creating
-	public function create_expense() {
+	public function create_expense()
+	{
 		$data['date'] = strtotime($this->input->post('date'));
 		$data['amount'] = htmlspecialchars($this->input->post('amount'));
 		$data['expense_category_id'] = htmlspecialchars($this->input->post('expense_category_id'));
@@ -1348,7 +1459,8 @@ public function exam_update($param1 = '')
 	}
 
 	// updating
-	public function update_expense($id = "") {
+	public function update_expense($id = "")
+	{
 		$data['date'] = strtotime($this->input->post('date'));
 		$data['amount'] = htmlspecialchars($this->input->post('amount'));
 		$data['expense_category_id'] = htmlspecialchars($this->input->post('expense_category_id'));
@@ -1365,7 +1477,8 @@ public function exam_update($param1 = '')
 	}
 
 	// deleting
-	public function delete_expense($id = "") {
+	public function delete_expense($id = "")
+	{
 		$this->db->where('id', $id);
 		$this->db->delete('expenses');
 
@@ -1378,7 +1491,8 @@ public function exam_update($param1 = '')
 	// Expense Manager Ends
 
 	// PROVIDE ENTRY AFTER PAYMENT SUCCESS
-	public function payment_success($data = array()) {
+	public function payment_success($data = array())
+	{
 		$this->db->where('id', $data['invoice_id']);
 		$invoice_details = $this->db->get('invoices')->row_array();
 		$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
@@ -1392,21 +1506,22 @@ public function exam_update($param1 = '')
 			$this->db->where('id', $data['invoice_id']);
 			$this->db->update('invoices', $updater);
 
-			        // Récupérer les données de la session
-					$enrolment_data = $this->session->userdata('enrolment_data');
-					
-					// Utiliser les données
-					$data_enrols['student_id'] = $enrolment_data['student_id'];
-					$data_enrols['class_id'] = $enrolment_data['class_id'];
-					
-					$data_enrols['school_id'] = $enrolment_data['school_id'];
-					$data_enrols['session'] = $enrolment_data['session'];
-					$this->db->insert('enrols', $data_enrols);
+			// Récupérer les données de la session
+			$enrolment_data = $this->session->userdata('enrolment_data');
+
+			// Utiliser les données
+			$data_enrols['student_id'] = $enrolment_data['student_id'];
+			$data_enrols['class_id'] = $enrolment_data['class_id'];
+
+			$data_enrols['school_id'] = $enrolment_data['school_id'];
+			$data_enrols['session'] = $enrolment_data['session'];
+			$this->db->insert('enrols', $data_enrols);
 		}
 	}
 
 	// Back Office Section Starts
-	public function get_session($id = "") {
+	public function get_session($id = "")
+	{
 		if ($id > 0) {
 			$this->db->where('id', $id);
 		}
@@ -1415,7 +1530,8 @@ public function exam_update($param1 = '')
 	}
 
 	// Book Manager
-	public function get_books() {
+	public function get_books()
+	{
 		$checker = array(
 			'session' => $this->active_session,
 			'school_id' => $this->school_id
@@ -1423,11 +1539,13 @@ public function exam_update($param1 = '')
 		return $this->db->get_where('books', $checker);
 	}
 
-	public function get_book_by_id($id = "") {
+	public function get_book_by_id($id = "")
+	{
 		return $this->db->get_where('books', array('id' => $id))->row_array();
 	}
 
-	public function create_book() {
+	public function create_book()
+	{
 		$data['name']      = htmlspecialchars($this->input->post('name'));
 		$data['author']    = htmlspecialchars($this->input->post('author'));
 		$data['copies']    = htmlspecialchars($this->input->post('copies'));
@@ -1442,7 +1560,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function update_book($id = "") {
+	public function update_book($id = "")
+	{
 		$data['name']      = htmlspecialchars($this->input->post('name'));
 		$data['author']    = htmlspecialchars($this->input->post('author'));
 		$data['copies']    = htmlspecialchars($this->input->post('copies'));
@@ -1459,7 +1578,8 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function delete_book($id = "") {
+	public function delete_book($id = "")
+	{
 		$this->db->where('id', $id);
 		$this->db->delete('books');
 
@@ -1471,23 +1591,27 @@ public function exam_update($param1 = '')
 	}
 
 	// Book Issue
-	public function get_book_issues($date_from = "", $date_to = "") {
+	public function get_book_issues($date_from = "", $date_to = "")
+	{
 		$this->db->where('session', $this->active_session);
 		$this->db->where('school_id', $this->school_id);
 		$this->db->where('issue_date >=', $date_from);
 		$this->db->where('issue_date <=', $date_to);
 		return $this->db->get('book_issues');
 	}
-	public function get_book_issues_by_student_id($student_id = "") {
+	public function get_book_issues_by_student_id($student_id = "")
+	{
 		$this->db->where('student_id', $student_id);
 		return $this->db->get('book_issues');
 	}
 
-	public function get_book_issue_by_id($id = "") {
+	public function get_book_issue_by_id($id = "")
+	{
 		return $this->db->get_where('book_issues', array('id' => $id))->row_array();
 	}
 
-	public function create_book_issue() {
+	public function create_book_issue()
+	{
 		$data['book_id']    = htmlspecialchars($this->input->post('book_id'));
 		$data['class_id']   = htmlspecialchars($this->input->post('class_id'));
 		$data['student_id'] = htmlspecialchars($this->input->post('student_id'));
@@ -1504,7 +1628,8 @@ public function exam_update($param1 = '')
 		//return json_encode($response);
 	}
 
-	public function update_book_issue($id = "") {
+	public function update_book_issue($id = "")
+	{
 		$data['book_id']    = htmlspecialchars($this->input->post('book_id'));
 		$data['class_id']   = htmlspecialchars($this->input->post('class_id'));
 		$data['student_id'] = htmlspecialchars($this->input->post('student_id'));
@@ -1522,7 +1647,8 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function return_issued_book($id = "") {
+	public function return_issued_book($id = "")
+	{
 		$data['status']   = 1;
 
 		$this->db->where('id', $id);
@@ -1535,11 +1661,13 @@ public function exam_update($param1 = '')
 		return json_encode($response);
 	}
 
-	public function get_number_of_issued_book_by_id($id) {
+	public function get_number_of_issued_book_by_id($id)
+	{
 		return $this->db->get_where('book_issues', array('book_id' => $id, 'status' => 0))->num_rows();
 	}
 
-	public function delete_book_issue($id = "") {
+	public function delete_book_issue($id = "")
+	{
 		$this->db->where('id', $id);
 		$this->db->delete('book_issues');
 
@@ -1551,30 +1679,34 @@ public function exam_update($param1 = '')
 	}
 
 	//SCHOOL DETAILS
-	public function get_schools() {
+	public function get_schools()
+	{
 		// if (!addon_status('multi-school')) {
 		// 	$this->db->where('id', school_id());
 		// }
 		$schools = $this->db->get('schools');
 		return $schools;
 	}
-	public function get_school_details_by_id($school_id = "") {
+	public function get_school_details_by_id($school_id = "")
+	{
 		return $this->db->get_where('schools', array('id' => $school_id))->row_array();
 	}
 	// Back Office Section Ends
 
 	// GET INSTALLED ADDONS
-	public function get_addons($unique_identifier = "") {
+	public function get_addons($unique_identifier = "")
+	{
 		if ($unique_identifier != "") {
 			$addons = $this->db->get_where('addons', array('unique_identifier' => $unique_identifier));
-		}else{
+		} else {
 			$addons = $this->db->get_where('addons');
 		}
 		return $addons;
 	}
 
 	// A function to convert excel to csv
-	public function excel_to_csv($file_path = "", $rename_to = "") {
+	public function excel_to_csv($file_path = "", $rename_to = "")
+	{
 		//read file from path
 		$inputFileType = PHPExcel_IOFactory::identify($file_path);
 		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -1584,78 +1716,80 @@ public function exam_update($param1 = '')
 		if ($objPHPExcel->getSheetCount() > 1) {
 			foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
 				$objPHPExcel->setActiveSheetIndex($index);
-				$fileName = strtolower(str_replace(array("-"," "), "_", $worksheet->getTitle()));
-				$outFile = str_replace(".", "", $fileName) .".csv";
+				$fileName = strtolower(str_replace(array("-", " "), "_", $worksheet->getTitle()));
+				$outFile = str_replace(".", "", $fileName) . ".csv";
 				$objWriter->setSheetIndex($index);
-				$objWriter->save("assets/csv_file/".$outFile);
+				$objWriter->save("assets/csv_file/" . $outFile);
 				$index++;
 			}
-		}else{
+		} else {
 			$outFile = $rename_to;
 			$objWriter->setSheetIndex($index);
-			$objWriter->save("assets/csv_file/".$outFile);
+			$objWriter->save("assets/csv_file/" . $outFile);
 		}
 
 		return true;
 	}
 
-	public function check_recaptcha(){
-        if (isset($_POST["g-recaptcha-response"])) {
-            $url = 'https://www.google.com/recaptcha/api/siteverify';
-            $data = array(
-                'secret' => get_common_settings('recaptcha_secretkey'),
-                'response' => $_POST["g-recaptcha-response"]
-            );
-                $query = http_build_query($data);
-                $options = array(
-                'http' => array (
-                    'header' => "Content-Type: application/x-www-form-urlencoded\r\n".
-                        "Content-Length: ".strlen($query)."\r\n".
-                        "User-Agent:MyAgent/1.0\r\n",
-                    'method' => 'POST',
-                    'content' => $query
-                )
-            );
-            $context  = stream_context_create($options);
-            $verify = file_get_contents($url, false, $context);
-            $captcha_success = json_decode($verify);
-            if ($captcha_success->success == false) {
-                return false;
-            } else if ($captcha_success->success == true) {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
+	public function check_recaptcha()
+	{
+		if (isset($_POST["g-recaptcha-response"])) {
+			$url = 'https://www.google.com/recaptcha/api/siteverify';
+			$data = array(
+				'secret' => get_common_settings('recaptcha_secretkey'),
+				'response' => $_POST["g-recaptcha-response"]
+			);
+			$query = http_build_query($data);
+			$options = array(
+				'http' => array(
+					'header' => "Content-Type: application/x-www-form-urlencoded\r\n" .
+						"Content-Length: " . strlen($query) . "\r\n" .
+						"User-Agent:MyAgent/1.0\r\n",
+					'method' => 'POST',
+					'content' => $query
+				)
+			);
+			$context  = stream_context_create($options);
+			$verify = file_get_contents($url, false, $context);
+			$captcha_success = json_decode($verify);
+			if ($captcha_success->success == false) {
+				return false;
+			} else if ($captcha_success->success == true) {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 
-	public function get_total_questions($exam_id) {
+	public function get_total_questions($exam_id)
+	{
 		$this->db->where('exam_id', $exam_id);
 		return $this->db->count_all_results('exam_questions');
 	}
 
-	public function check_admins_in_teachers($school_id) {
-    // Définir les rôles à vérifier
-    $roles = ['admin', 'superadmin'];
-    
-    foreach ($roles as $role) {
-        // Récupérer l'utilisateur avec le rôle spécifié
-        $user = $this->db->get_where('users', array('school_id' => $school_id, 'role' => $role))->row_array();
-        
-        if ($user) {
-            // Vérifier si l'utilisateur existe déjà dans la table teachers
-            $existing_teacher = $this->db->get_where('teachers', array('user_id' => $user['id'], 'school_id' => $school_id))->row_array();
-            
-            if (!$existing_teacher) {
-                // Insérer l'utilisateur comme enseignant
-                $teacher_data = array(
-                    'user_id' => $user['id'],
-                    'school_id' => $school_id
-                );
-                $this->db->insert('teachers', $teacher_data);
-            }
-        }
-    }
-}
+	public function check_admins_in_teachers($school_id)
+	{
+		// Définir les rôles à vérifier
+		$roles = ['admin', 'superadmin'];
 
+		foreach ($roles as $role) {
+			// Récupérer l'utilisateur avec le rôle spécifié
+			$user = $this->db->get_where('users', array('school_id' => $school_id, 'role' => $role))->row_array();
+
+			if ($user) {
+				// Vérifier si l'utilisateur existe déjà dans la table teachers
+				$existing_teacher = $this->db->get_where('teachers', array('user_id' => $user['id'], 'school_id' => $school_id))->row_array();
+
+				if (!$existing_teacher) {
+					// Insérer l'utilisateur comme enseignant
+					$teacher_data = array(
+						'user_id' => $user['id'],
+						'school_id' => $school_id
+					);
+					$this->db->insert('teachers', $teacher_data);
+				}
+			}
+		}
+	}
 }
