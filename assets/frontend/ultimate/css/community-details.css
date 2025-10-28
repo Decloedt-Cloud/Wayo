@@ -15,7 +15,20 @@ body{
 .btn-wayo{
     background:var(--wayo);
     color:#fff !important;
+    cursor: pointer !important;
     border:0;
+}
+.btn-wayo:hover{
+    background:var(--wayo);
+    color:#fff !important;
+    border:0;
+}
+.btn-outline-wayo{
+  background-color: #fff;
+  cursor: pointer !important;
+}
+.btn-outline-wayo:hover{
+  background-color: #fff;
 }
 .join-button {
   width: 100%;
@@ -88,6 +101,25 @@ body{
     border-radius: 14px;
     display: flex ;
 }
+
+.img-card-dt-communitites{
+  height:500px;
+  width:100%;
+}
+/* Pour les écrans ≤ 768px (tablette/mobile) */
+@media (max-width: 768px) {
+  .img-card-dt-communitites {
+    height: 300px; 
+  }
+}
+
+/* Pour les écrans très petits ≤ 480px (mobile) */
+@media (max-width: 480px) {
+  .img-card-dt-communitites {
+    height: 200px; 
+  }
+}
+
 .class-card .fomo-badge{
   background:linear-gradient(135deg,#ffedd5,#fed7aa);
   color:#b45309; border:1px solid #FBD38D;
