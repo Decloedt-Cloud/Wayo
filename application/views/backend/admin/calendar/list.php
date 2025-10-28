@@ -33,7 +33,7 @@
                     <h5 class="modal-title" id="createEventModalLabel"><?php echo get_phrase('New_Event'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body modal-body-calendar">
                     <form id="createEventForm">
                         <input type="hidden" id="createRecurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="createRecurrenceEndDate" name="recurrence_end_date">
@@ -176,6 +176,7 @@
                             <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Start Meeting') ?></button>
                         </div>
                     </div>
+                    <div class="modal-body-calendar-edit">
                     <form id="eventForm" style="display: none;">
                         <input type="hidden" id="eventId" name="id">
                         <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
@@ -209,9 +210,9 @@
                                 <div class="dropdown-menu" id="editParticipantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
                             </div>
                         <input type="hidden" name="participants" id="editParticipantsInput">
-                    </div>
-              </div>
-        </div>
+                                    </div>
+                            </div>
+                        </div>
                         <div class="form-group-calendar-date-time mt-3">
                             <span class="mdi mdi-clock-time-three-outline"></span>
                             <div class="input-container">
@@ -267,6 +268,7 @@
                             <button type="button" class="btn btn-secondary" id="cancelEditBtn"><?php echo get_phrase('Cancel') ?></button>
                         </div>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -278,7 +280,7 @@
                     <h5 class="modal-title" id="recurrenceModalLabel"><?php echo get_phrase('repeat') ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body modal-body-calendar">
                     <form id="recurrenceForm">
                         <div class="form-group-calendar mb-2">
                             <span class="mdi mdi-calendar-sync"></span>
