@@ -396,7 +396,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Delete error:', xhr, status, error);
-                    showNotification('error', '<?php echo get_phrase("Failed to delete recording"); ?>');
+                    showNotification('error', "<?php echo get_phrase("Failed to delete recording"); ?>");
                 }
             });
         }
