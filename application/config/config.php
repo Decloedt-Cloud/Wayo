@@ -659,4 +659,6 @@ $config['enable_hooks'] = TRUE;
 
 // Dans config.php ou constants.php
 $config['humhub_url'] = 'https://preprodwayosocial.wayo.site/';
-    
+// $config['humhub_url'] = 'http://localhost/social-voicemessage/humhub-1.17.2/';   
+// $config['humhub_image'] = 'C:/xampp/htdocs/social-voicemessage/humhub-1.17.2/uploads/profile_image/';   
+$config['humhub_image'] = 'https://preprodwayosocial.wayo.site/uploads/profile_image/';  
