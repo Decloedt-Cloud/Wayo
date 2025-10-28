@@ -366,7 +366,7 @@ $(document).ready(function() {
 
         Swal.fire({
         title: '<?php echo get_phrase("Are you sure?"); ?>',
-        text: '<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>',
+        text: "<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -386,7 +386,7 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 'success') {
-                        showNotification('success', '<?php echo get_phrase("Recording deleted successfully"); ?>');
+                        showNotification('success', "<?php echo get_phrase("Recording deleted successfully"); ?>");
                         $('a.delete-recording[data-recording-id="' + recordingId + '"]').closest('tr').remove();
                         if (response.csrf_token) {
                             $('input[name="<?php echo $this->security->get_csrf_token_name(); ?>"]').val(response.csrf_token);
