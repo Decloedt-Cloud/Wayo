@@ -93,45 +93,51 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
         }
     }
 
-/* Styles généraux pour le sidebar */
-.leftside-menu {
-    min-width: 280px;
-    max-width: 280px;
-    background: #fff; /* Ajustez selon votre thème */
-    z-index: 1000; /* Assurez-vous que le sidebar est au-dessus du contenu */
-    transition: transform 0.3s ease-in-out; /* Transition fluide */
-}
-/* Par défaut, le sidebar est visible sur les grands écrans */
-@media (min-width: 768px) {
-    .leftside-menu {
-        display: block !important;
-    }
-}
-@media (max-width: 767px) {
+    /* Styles généraux pour le sidebar */
     .leftside-menu {
         min-width: 280px;
-    max-width: 280px;
-    background: #fff; /* Ajustez selon votre thème */
-    z-index: 1000; /* Assurez-vous que le sidebar est au-dessus du contenu */
-    transition: transform 0.3s ease-in-out;
-        display: none !important;
+        max-width: 280px;
+        background: #fff;
+        /* Ajustez selon votre thème */
+        z-index: 1000;
+        /* Assurez-vous que le sidebar est au-dessus du contenu */
+        transition: transform 0.3s ease-in-out;
+        /* Transition fluide */
     }
- 
-    .leftside-menu.show-sidebar {
-        display: block !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        z-index: 999;
-        transform: translateX(0);
+
+    /* Par défaut, le sidebar est visible sur les grands écrans */
+    @media (min-width: 768px) {
+        .leftside-menu {
+            display: block !important;
+        }
     }
-    .content-page, .container-fluid {
-        width: 100% !important;
-        margin-left: 0 !important;
+
+    @media (max-width: 767px) {
+        .leftside-menu {
+            min-width: 280px;
+            max-width: 280px;
+            background: #fff;/* Ajustez selon votre thème */
+            z-index: 1000;/* Assurez-vous que le sidebar est au-dessus du contenu */
+            transition: transform 0.3s ease-in-out;
+            display: none !important;
+        }
+
+        .leftside-menu.show-sidebar {
+            display: block !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 999;
+            transform: translateX(0);
+        }
+
+        .content-page,.container-fluid {
+            width: 100% !important;
+            margin-left: 0 !important;
+        }
+
     }
- 
-}
 </style>
 <!-- ========== Left Sidebar Start ========== -->
 <div class="leftside-menu leftside-menu-detached" style="min-width: 280px; max-width: 280px;">
@@ -179,7 +185,18 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
                     // Cas particulier : "academic" redirige vers "calendar"
                     if ($main_menu['unique_identifier'] == 'academic'):
                         $route = $controller . '/calendar';
-                ?>
+                ?><a data-bs-toggle="collapse"
+                            href="#<?php echo $main_menu['unique_identifier']; ?>"
+                            aria-expanded="false"
+                            aria-controls="<?php echo $main_menu['unique_identifier']; ?>"
+                            class="side-nav-link py-2"
+                            onclick="window.location='<?php echo site_url($route); ?>'">
+                            <i class="<?php echo $main_menu['icon']; ?>"></i>
+                            <span><?php echo get_phrase($main_menu['displayed_name']); ?></span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                    <?php elseif ($main_menu['unique_identifier'] == 'exam'):
+                        $route = $controller . '/exam'; ?>
                         <a data-bs-toggle="collapse"
                             href="#<?php echo $main_menu['unique_identifier']; ?>"
                             aria-expanded="false"
@@ -284,11 +301,11 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
                         <span><?php echo get_phrase($main_menu['displayed_name']); ?></span>
 
                         <?php if ($main_menu['unique_identifier'] == 'online_admission'): ?>
-                             <span class="badge bg-danger float-end"><?php echo $this->db->get_where('students', array('status' => 0, 'school_id' => school_id()))->num_rows(); ?></span>
+                            <span class="badge bg-danger float-end"><?php echo $this->db->get_where('students', array('status' => 0, 'school_id' => school_id()))->num_rows(); ?></span>
                         <?php endif; ?>
 
                         <?php if ($main_menu['unique_identifier'] == 'online_admission_school'): ?>
-                              <span class="badge bg-danger float-end"><?php echo $this->db->get_where('schools', array('status' => 0, 'Etat' => 1))->num_rows(); ?></span>
+                            <span class="badge bg-danger float-end"><?php echo $this->db->get_where('schools', array('status' => 0, 'Etat' => 1))->num_rows(); ?></span>
                         <?php endif; ?>
 
                         <?php if ($main_menu['unique_identifier'] == 'exam' && $total_exams > 0): ?>
@@ -320,15 +337,22 @@ $unread_messages = $this->user_model->get_unread_messages_count($this->session->
     <!-- Sidebar -left -->
 </div>
 <!-- Left Sidebar End -->
- <script>
-$(document).ready(function() {
-    var currentUrl = window.location.pathname;
+<script>
+    $(document).ready(function() {
+        var currentUrl = window.location.pathname;
 
-    if (currentUrl.includes('/calendar')) {
-        var parentMenu = $('.side-nav-item').find('a[href="#academic"]');
-        var subMenu = $('#academic');
-        parentMenu.attr('aria-expanded', 'true');
-        subMenu.addClass('show');
-    }
-});
+        if (currentUrl.includes('/calendar')) {
+            var parentMenu = $('.side-nav-item').find('a[href="#academic"]');
+            var subMenu = $('#academic');
+            parentMenu.attr('aria-expanded', 'true');
+            subMenu.addClass('show');
+        }
+        // Cas 2 : Si on est sur /exam → ouvrir le menu "exam"
+        if (currentUrl.includes('/exam')) {
+            var parentMenu = $('.side-nav-item').find('a[href="#exam"]');
+            var subMenu = $('#exam');
+            parentMenu.attr('aria-expanded', 'true');
+            subMenu.addClass('show');
+        }
+    });
 </script>
