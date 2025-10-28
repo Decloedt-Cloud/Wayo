@@ -12,12 +12,12 @@
     </div>
 </div>
 <div class="row">
-  <div class="col-12">
-    <div class="mb-3">
-    <div class="main-card">
-      <div class="card-body">
-            <div class="row mt-4 d-print-none">
-                <div class="col-md-1 mb-2"></div>
+    <div class="col-12">
+        <div class="mb-3">
+            <div class="main-card">
+                <div class="card-body">
+                    <div class="row mt-4 d-print-none">
+                        <div class="col-md-1 mb-2"></div>
                         <form class="row justify-content-center" action="javascript:void(0)" method="get">
                             <div class="col-md-1 mb-2"></div>
                             <div class="col-md-2 mb-1">
@@ -61,35 +61,85 @@
 
                             </div>
                             <div class="col-md-2 mb-1" <?php if ($this->session->userdata('teacher_login') == 1) echo 'hidden'; ?>>
+                                <?php
+                                $teacher_ids = [];
+                                $user_id = $this->session->userdata('user_id');
+
+                                // Récupérer les cours filtrés par école + classe
+                                $this->db->select('course.id, course.user_id')
+                                    ->from('course')
+                                    ->join('course_classes', 'course_classes.course_id = course.id');
+
+                                if ($selected_class_id != 'all') {
+                                    $this->db->where('course_classes.class_id', $selected_class_id);
+                                }
+
+                                if ($selected_school_id != 'all') {
+                                    $this->db->where('course.school_id', $selected_school_id);
+                                }
+
+                                $courses_filtered = $this->db->get()->result_array();
+
+                                // Boucle sur chaque cours filtré
+                                foreach ($courses_filtered as $course) {
+                                    // Ajouter les mentors du cours
+                                    $course_teachers = $this->lms_model->get_teachers_by_course($course['id']);
+                                    foreach ($course_teachers as $teacher) {
+                                        $teacher_ids[$teacher['id']] = $teacher['name'];
+                                    }
+                                }
+
+                                ?>
 
                                 <label for="user_id"><?php echo get_phrase('instructor'); ?></label>
-                                <select class="form-control" name="user_id" id='user_id'>
+                                <select class="form-control" name="user_id" id="user_id">
                                     <option value="all" <?php if ($selected_user_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
-                                    <?php foreach ($all_teachers->result_array() as $teacher): ?>
-                                        <option value="<?php echo $teacher['id']; ?>" <?php if ($selected_user_id == $teacher['id']) echo 'selected'; ?>><?php echo $teacher['name']; ?></option>
+                                    <?php foreach ($teacher_ids as $id => $name): ?>
+                                        <option value="<?php echo $id; ?>" <?php if ($selected_user_id == $id) echo 'selected'; ?>><?php echo $name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
+
+
 
 
                             </div>
 
                             <div class="col-md-1 btncol btnfilter">
-                                    <label for=".." class="text-white">..</label>
+                                <label for=".." class="text-white">..</label>
                                 <button type="submit" class="btn btn-block btn-secondary" onclick="filterCourse()"><?php echo get_phrase('filter'); ?></button>
 
                             </div>
                         </form>
 
                         <!-- Simple card -->
+                        <?php
+                        // --- Récupération des cours filtrés ---
+                        $this->db->select('course.*')
+                            ->from('course')
+                            ->join('course_classes', 'course_classes.course_id = course.id');
 
+                        if ($selected_class_id != 'all') {
+                            $this->db->where('course_classes.class_id', $selected_class_id);
+                        }
+
+                        if ($selected_school_id != 'all') {
+                            $this->db->where('course.school_id', $selected_school_id);
+                        }
+
+                        $courses = $this->db->get()->result_array();
+                        $user_id = $this->session->userdata('user_id');
+                        ?>
 
                         <?php if (count($courses) > 0): ?>
 
                             <div class="row mt-2">
+
                                 <?php foreach ($courses as $key => $course):
+
                                     $teacher_details = $this->user_model->get_user_details($course['user_id']);
                                     // $class_details = $this->crud_model->get_classes($course['class_id'])->row_array();
-                                    $this->db->where('id', $course['class_id']);
+                                    // $this->db->where('id', $course['class_id']);
+                                    $class_details = $this->lms_model->get_classes_by_course($course['id']);
                                     $class_details = $this->db->get('classes')->row_array();
                                     $sections = $this->lms_model->get_section('course', $course['id']);
 
@@ -101,7 +151,7 @@
 
                                     $this->db->where('student_id', $check_student['id']);
                                     $this->db->where('school_id', $course['school_id']);
-                                    $this->db->where('class_id', $course['class_id']);
+                                    // $this->db->where('class_id', $course['class_id']);
                                     $query = $this->db->get('enrols');
                                     $count = $query->num_rows();
 
@@ -123,7 +173,31 @@
                                                     <div class="media">
                                                         <img class="mr-2 rounded-circle" src="<?= $this->user_model->get_user_image($course['user_id']); ?>" width="30" alt="Generic placeholder image">
                                                         <div class="media-body pt-1">
-                                                            <span class="font-13 text-muted"><?php echo $this->user_model->get_user_details($course['user_id'], 'name'); ?></span>
+                                                            <span class="font-13 text-muted"><?php
+                                                                                                $owner_names = [];
+
+                                                                                                // Si course.user_id existe, ajoute-le
+                                                                                                if (!empty($course['user_id'])) {
+                                                                                                    $name = $this->user_model->get_user_details($course['user_id'], 'name');
+                                                                                                    if (!empty($name)) $owner_names[] = $name;
+                                                                                                }
+
+                                                                                                // Récupérer tous les mentors pour ce cours
+                                                                                                $mentors = $this->db->where('course_id', $course['id'])
+                                                                                                    ->get('course_teachers')
+                                                                                                    ->result_array();
+
+                                                                                                foreach ($mentors as $mentor) {
+                                                                                                    if (!empty($mentor['user_id'])) {
+                                                                                                        $name = $this->user_model->get_user_details($mentor['user_id'], 'name');
+                                                                                                        if (!empty($name)) $owner_names[] = $name;
+                                                                                                    }
+                                                                                                }
+                                                                                                //afficher tous les noms séparés par une virgule
+                                                                                                echo implode(', ', $owner_names);
+                                                                                                ?>
+
+                                                            </span>
 
                                                             <div class="btn-group float-right">
                                                                 <div class="btn-group">
@@ -147,7 +221,7 @@
                                                 <div class="row">
                                                     <div class="col-sm-10 col-md-10">
                                                         <?php if ($progress_value >= 100):  ?>
-                                                            
+
                                                             <div class="progress mb-2 h-5px">
                                                                 <div class="progress-bar bg-green-low" role="progressbar" style="width: <?php echo $progress_value; ?>%;" aria-valuenow="<?php echo $progress_value; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
@@ -206,5 +280,4 @@
             }
         });
     }
-
 </script>

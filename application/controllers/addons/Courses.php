@@ -149,12 +149,12 @@ class Courses extends CI_Controller {
     $page_data['course_teachers'] = $this->lms_model->get_teachers_by_course($course_id);
 
     // Sujets en fonction de la 1ère classe (ou tu peux adapter pour plusieurs classes)
-    if (!empty($page_data['course_classes'])) {
-        $first_class_id = $page_data['course_classes'][0]['id'];
-        $page_data['subjects'] = $this->db->get_where('subjects', array('class_id' => $first_class_id))->result_array();
-    } else {
-        $page_data['subjects'] = [];
-    }
+    // if (!empty($page_data['course_classes'])) {
+    //     $first_class_id = $page_data['course_classes'][0]['id'];
+    //     $page_data['subjects'] = $this->db->get_where('subjects', array('class_id' => $first_class_id))->result_array();
+    // } else {
+    //     $page_data['subjects'] = [];
+    // }
     $page_data['folder_name']     = 'academy';
     $page_data['page_title']      = 'courses_edit';
     $page_data['page_name']       = 'edit';
