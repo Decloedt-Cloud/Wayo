@@ -2618,9 +2618,6 @@
     "18_years": "18 عامًا",
     "or_parental_authorization_for_minors.": "أو الحصول على إذن الوالدين للقُصّر.",
     "the_user_is_responsible_for_keeping_their_login_details_confidential._any_unauthorized_use_must_be_reported_immediately.": "يتحمل المستخدم مسؤولية الحفاظ على سرية بيانات تسجيل الدخول الخاصة به. يجب الإبلاغ فورًا عن أي استخدام غير مصرح به.",
-    "the_platform_is_intended_for": "المنصة مخصصة لأغراض",
-    "educational_and_non-commercial": "تعليمية وغير تجارية",
-    "use_only.": "فقط.",
     "all_educational_materials_remain_the": "جميع المواد التعليمية تظل",
     "intellectual_property_of_the_coaches.": "ملكية فكرية للمدربين.",
     "reproduction,_distribution,_sale,_or_sharing_of_content_is_strictly_prohibited.": "يُحظر تمامًا نسخ أو توزيع أو بيع أو مشاركة المحتوى.",
@@ -2816,5 +2813,6 @@
     "cover_image_is_too_large!_maximum": "صورة الغلاف كبيرة جدًا! الحد الأقصى",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "تعذر تحميل هذه الصورة. يرجى التحقق من الصيغة (PNG/JPEG).",
     "visible_on_website": "مرئية على الموقع",
-    "website_visibility": "رؤية الموقع"
+    "website_visibility": "رؤية الموقع",
+    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": ".المنصّة هي منصّة تكنولوجية تعليمية وتهدف إلى تسويق خدمات التدريب والتوجيه"
 }

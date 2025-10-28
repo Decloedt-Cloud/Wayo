@@ -2675,9 +2675,6 @@
     "18_years": "18 ans",
     "or_parental_authorization_for_minors.": "Ou une autorisation parentale pour les mineurs.",
     "the_user_is_responsible_for_keeping_their_login_details_confidential._any_unauthorized_use_must_be_reported_immediately.": "L’utilisateur est responsable de la confidentialité de ses identifiants de connexion. Toute utilisation non autorisée doit être signalée immédiatement.",
-    "the_platform_is_intended_for": "La plateforme est destinée à un usage",
-    "educational_and_non-commercial": "éducatif et non commercial",
-    "use_only.": "uniquement.",
     "all_educational_materials_remain_the": "Tous les supports éducatifs restent la",
     "intellectual_property_of_the_coaches.": "propriété intellectuelle des coachs.",
     "reproduction,_distribution,_sale,_or_sharing_of_content_is_strictly_prohibited.": "La reproduction, la distribution, la vente ou le partage du contenu sont strictement interdits.",
@@ -2890,5 +2887,6 @@
     "cover_image_is_too_large!_maximum": "L'image de couverture est trop grande ! Maximum",
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Impossible de charger cette image. Veuillez vérifier le format (PNG/JPEG).",
     "visible_on_website": "Visible sur le site Internet",
-    "website_visibility": "Visibilité du site Web"
+    "website_visibility": "Visibilité du site Web",
+    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": "La plateforme est une plateforme EdTech et a pour objectif de commercialiser le coaching et le mentorat."
 }
