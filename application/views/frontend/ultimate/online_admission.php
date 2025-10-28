@@ -458,6 +458,40 @@
   </section>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- uploader -->
+<script>
+$(document).ready(function() {
+    function setupUploader(inputId, previewId) {
+        const input = $(inputId);
+        const preview = $(previewId);
+
+        if (!input.length || !preview.length) return;
+
+        input.on('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!/^image\//.test(file.type)) {
+                preview.html('<p style="color:red;">Le fichier sélectionné n\'est pas une image.</p>');
+                input.val('');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                preview.html(`<img src="${ev.target.result}" alt="Preview" style="max-width:100%; border-radius:8px;">`);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    setupUploader('#communityLogo', '#logoPreview');
+    setupUploader('#communityCover', '#coverPreview');
+});
+</script>
+
 <script>
 (function(){
   // =================== Helpers ===================
@@ -568,10 +602,10 @@ updateCurrencyUI();
     if(!validateStep(current)) return;
     if(current < panes.length-1) goTo(current+1);
   }));
-  $$('.prev').forEach(btn => btn.addEventListener('click', ()=> {
-     e.preventDefault();
+$$('.prev').forEach(btn => btn.addEventListener('click', (e) => {
+    e.preventDefault();
     if(current > 0) goTo(current-1);
-  }));
+}));
 
    // Clic sur les steps déjà terminés
   steps.forEach((s, idx) => {
@@ -666,23 +700,6 @@ updateCurrencyUI();
     return ok;
   }
 
-  // =================== Uploaders ===================
-  function setupUploader(inputId, previewId){
-    const input = $(inputId);
-    const preview = $(previewId);
-    if(!input || !preview) return;
-    input.addEventListener('change', e=>{
-      const file = e.target.files[0];
-      if(file && /^image\//.test(file.type)){
-        const reader = new FileReader();
-        reader.onload = ev => preview.innerHTML = `<img src="${ev.target.result}" alt="Preview" style="max-width:100%; border-radius:8px;">`;
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  setupUploader('#communityLogo','#logoPreview');
-  setupUploader('#communityCover','#coverPreview');
 
   // =================== Résumé ===================
 function updateSummary(){

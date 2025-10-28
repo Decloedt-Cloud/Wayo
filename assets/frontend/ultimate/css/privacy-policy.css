@@ -102,7 +102,7 @@
 .pp-section p, .pp-section li{ color:var(--pp-ink); }
 .pp-section ul{ padding-left: 1.1rem; list-style: none; }
 .pp-section ul li{ position:relative; padding-left:.9rem; margin:.35rem 0; }
-.pp-section ul li:before{ content:"▸"; position:absolute; left:0; top:0; color:var(--wayo-orange); font-weight:900; }
+.pp-section ul li:before{ content:" - ";  left:0; top:0; color:var(--wayo-orange); font-weight:900; }
 
 /* ===== Cards ===== */
 .pp-card{
