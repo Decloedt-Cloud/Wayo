@@ -33,7 +33,7 @@
       <div class="pp-search">
         <input id="pp-search" type="search" placeholder="<?php echo get_phrase("Search_in_page…"); ?>" aria-label="<?php echo get_phrase("Search_in_privacy_policy"); ?>" />
       </div>
-      <ol id="tocList">
+      <ul id="tocList">
         <li><a href="#s1-intro"><?php echo get_phrase("1._Introduction"); ?></a></li>
         <li>
           <a href="#s2-donnees"><?php echo get_phrase("2._Data_We_Collect"); ?></a>
@@ -58,7 +58,7 @@
         <li><a href="#s13-transferts"><?php echo get_phrase("13._International_Transfers"); ?></a></li>
         <li><a href="#s14-modifs"><?php echo get_phrase("14._Changes"); ?></a></li>
         <li><a href="#coordonnees"><?php echo get_phrase("Contact_Information"); ?></a></li>
-      </ol>
+      </ul>
       <a class="pp-download" href="#" onclick="window.print();return false;"><?php echo get_phrase("Print_/_PDF"); ?></a>
     </div>
   </aside>
@@ -71,7 +71,7 @@
       <div class="pp-card">
         <h2 class="h5 mb-2"><?php echo get_phrase("Privacy_Policy_–_Wayo_Academy"); ?></h2>
         <p class="mb-1"><strong><?php echo get_phrase("Last_updated:"); ?></strong> <?php echo get_phrase("October_7,_2025"); ?></p>
-        <p class="mb-1"><strong><?php echo get_phrase("Website:"); ?></strong> <a href="https://preprod.wayo.site" rel="noopener">https://preprod.wayo.site</a></p>
+        <p class="mb-1"><strong><?php echo get_phrase("Website:"); ?></strong> <a href="https://preprod.wayo.site" rel="noopener">www.wayo.ma</a></p>
         <p class="mb-0"><strong><?php echo get_phrase("Contact:"); ?></strong> <a href="mailto:info@wayo.cloud">info@wayo.cloud</a></p>
         <p class="mb-0"><strong><?php echo get_phrase("Data_Controller:"); ?></strong> <?php echo get_phrase("Wayo_Academy,_[R320 Umm Hurair 2, Dubai, UAE]"); ?></p>
       </div>

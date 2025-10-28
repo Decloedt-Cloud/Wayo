@@ -33,7 +33,7 @@
       <div class="pp-search">
         <input id="pp-search" type="search" placeholder="<?php echo get_phrase("Search_in_page…"); ?>" aria-label="<?php echo get_phrase("Search_in_privacy_policy"); ?>" />
       </div>
-      <ol id="tocList">
+      <ul id="tocList">
         <li><a href="#s1-intro"><?php echo get_phrase("1._Introduction"); ?></a></li>
         <li><a href="#s2-definitions"><?php echo get_phrase("2._Definitions"); ?></a></li>
         <li><a href="#s3-access"><?php echo get_phrase("3._Access_and_Use"); ?></a></li>
@@ -50,7 +50,7 @@
         <li><a href="#s14-waiver"><?php echo get_phrase("14._Waiver_and_acknowledgment"); ?></a></li>
         <li><a href="#s15-additional"><?php echo get_phrase("15._Additional_clauses"); ?></a></li>
         <li><a href="#coordonnees"><?php echo get_phrase("Contact_Information"); ?></a></li>
-      </ol>
+    </ul>
       <a class="pp-download" href="#" onclick="window.print();return false;"><?php echo get_phrase("Print_/_PDF"); ?></a>
     </div>
   </aside>
@@ -63,7 +63,7 @@
       <div class="pp-card">
         <h2 class="h5 mb-2"><?php echo get_phrase("Terms_and_Conditions_–_Wayo_Academy"); ?></h2>
         <p class="mb-1"><strong><?php echo get_phrase("Last_updated:"); ?></strong> <?php echo get_phrase("October_7,_2025"); ?></p>
-        <p class="mb-1"><strong><?php echo get_phrase("Website:"); ?></strong> <a href="https://preprod.wayo.site" rel="noopener">https://preprod.wayo.site</a></p>
+        <p class="mb-1"><strong><?php echo get_phrase("Website:"); ?></strong> <a href="https://preprod.wayo.site" rel="noopener">www.wayo.ma</a></p>
         <p class="mb-0"><strong><?php echo get_phrase("Contact:"); ?></strong> <a href="mailto:info@wayo.cloud">info@wayo.cloud</a></p>
         <p class="mb-0"><strong><?php echo get_phrase("Data_Controller:"); ?></strong> <?php echo get_phrase("Wayo_Academy,_[R320_Umm_Hurair_2,_Dubai,_UAE]"); ?></p>
       </div>
