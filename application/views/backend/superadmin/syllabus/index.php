@@ -23,7 +23,7 @@
                             <div class="col-md-3 mb-1"></div>
                             <div class="col-md-4 mb-1">
                                 <select name="class" id="class_id_syllabus" class="form-control" required>
-                                    <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                                    <option value="all"><?php echo get_phrase('all_programs'); ?></option>
                                     <?php
                                     $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
                                     $school_id = school_id();
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="col-md-2 btncol ">
-                                
+
                                 <button class="btn btn-block btn-secondary" onclick="filter_syllabus()"><?php echo get_phrase('filter'); ?></button>
                             </div>
                         </div>
@@ -61,31 +61,27 @@
                 dropdownParent: '#right-modal'
             });
         }); //initSelect2(['#class_id', ]);
+        showAllSyllabuses('all');
     });
 
 
 
     function filter_syllabus() {
         var class_id = $('#class_id_syllabus').val();
-
-        if (class_id != "") {
-            showAllSyllabuses();
-        } else {
-            toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
-        }
+        showAllSyllabuses(class_id);
     }
 
-    var showAllSyllabuses = function() {
-        var class_id = $('#class_id_syllabus').val();
 
-        if (class_id != "") {
-            $.ajax({
-                url: '<?php echo route('syllabus/list/') ?>' + class_id,
-                success: function(response) {
-                    $('.syllabus_content').html(response);
-                    initDataTable('basic-datatable');
-                }
-            });
-        }
+    var showAllSyllabuses = function(class_id = null) {
+        class_id = class_id || $('#class_id_syllabus').val();
+
+        // Si 'all', on charge sans filtre
+        $.ajax({
+            url: '<?php echo route('syllabus/list/') ?>' + class_id,
+            success: function(response) {
+                $('.syllabus_content').html(response);
+                initDataTable('basic-datatable');
+            }
+        });
     }
 </script>
