@@ -684,7 +684,6 @@ setupResizeListener() {
                     extendedProps: {
                         description: event.description || '',
                         school_id: event.school_id,
-                        class_id: event.class_id,
                         recurrence_type: event.recurrence_type,
                         recurrence_end_date: event.recurrence_end_date || null,
                         custom_recurrence: event.custom_recurrence || null,
@@ -716,7 +715,6 @@ setupResizeListener() {
                 extendedProps: {
                     description: event.description || '',
                     school_id: event.school_id,
-                    class_id: event.class_id,
                     recurrence_type: event.recurrence_type,
                     recurrence_end_date: event.recurrence_end_date || null,
                     custom_recurrence: event.custom_recurrence || null,

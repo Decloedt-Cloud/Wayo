@@ -647,7 +647,6 @@ setupResizeListener() {
             data: {
                 start_date: adjustedStart,
                 end_date: adjustedEnd,
-                class_id: this.selectedClass,
                 [csrfName]: csrfHash
             },
             beforeSend: () => { $('#calendar').addClass('loading'); },
@@ -693,9 +692,8 @@ setupResizeListener() {
                     extendedProps: {
                         description: event.description || '',
                         school_id: event.school_id,
-                        class_id: event.class_id,
                         recurrence_type: event.recurrence_type,
-                       recurrence_end_date: event.recurrence_end_date || null,
+                        recurrence_end_date: event.recurrence_end_date || null,
                         custom_recurrence: event.custom_recurrence || null,
                         visio: event.visio == 1,
                         school_name: event.school_name || '',
@@ -725,7 +723,6 @@ setupResizeListener() {
                 extendedProps: {
                     description: event.description || '',
                     school_id: event.school_id,
-                    class_id: event.class_id,
                     recurrence_type: event.recurrence_type,
                     recurrence_end_date: event.recurrence_end_date || null,
                     custom_recurrence: event.custom_recurrence || null,

@@ -2527,14 +2527,6 @@ public function create_event() {
     $permitted_classes = $this->db->get()->result_array();
     $permitted_class_ids = array_column($permitted_classes, 'class_id');
 
-    if (empty($permitted_class_ids)) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        echo json_encode(['status' => 'error', 'message' => 'No authorized classes found', 'csrf' => $csrf]);
-        return;
-    }
 
     // Récupérer l'ID de l'école
     $user_details = $this->user_model->get_user_details($user_id);
@@ -2588,12 +2580,7 @@ public function create_event() {
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('users', 'event_calendars.created_by = users.id', 'left');
-    $this->db->join('participants', 'event_calendars.id = participants.event_id', 'left');
     $this->db->where('event_calendars.school_id', $school_id);
-    $this->db->where('
-        (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
-        OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
-    ');
 
     if ($event_id) {
         $this->db->where('event_calendars.id', $event_id);
@@ -2601,17 +2588,6 @@ public function create_event() {
         $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
     }
 
-    if ($class_id && in_array($class_id, $permitted_class_ids)) {
-        $this->db->where('participants.guest', $class_id);
-        $this->db->where('participants.type', 'class');
-    } elseif ($class_id) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        echo json_encode(['status' => 'error', 'message' => 'Unauthorized class', 'csrf' => $csrf]);
-        return;
-    }
     $this->db->group_by('event_calendars.id');
     $events = $this->db->get()->result_array();
 
@@ -2625,23 +2601,35 @@ public function create_event() {
     $now = new DateTime('now', new DateTimeZone('UTC'));
     $threshold = (clone $now)->modify('-24 hours');
     foreach ($events as $event) {
+        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
+
+        // Check access (class OR individual)
+        $has_access = false;
+        foreach ($participants as $p) {
+            if ($p['type'] === 'class' && in_array($p['guest'], $permitted_class_ids)) {
+                $has_access = true;
+                break;
+            }
+            if ($p['type'] === 'individual' && $p['guest'] == $user_id) {
+                $has_access = true;
+                break;
+            }
+        }
+        if (!$has_access) continue;
         $event['school_name'] = $event['school_name'] ?? '';
         $event['created_by_name'] = $event['created_by_name'] ?? 'Unknown';
         $event['participants'] = [];
-        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
-        foreach ($participants as $participant) {
-            $participant_data = [
-                'id' => $participant['guest'],
-                'type' => $participant['type']
-            ];
-            if ($participant['type'] === 'class') {
-                $class = $this->db->get_where('classes', ['id' => $participant['guest']])->row();
-                $participant_data['name'] = $class ? $class->name : 'Unknown';
-            } elseif ($participant['type'] === 'individual') {
-                $user = $this->db->get_where('users', ['id' => $participant['guest']])->row();
-                $participant_data['name'] = $user ? $user->name : 'Unknown';
+
+        foreach ($participants as $p) {
+            $data = ['id' => $p['guest'], 'type' => $p['type']];
+            if ($p['type'] === 'class') {
+                $class = $this->db->get_where('classes', ['id' => $p['guest']])->row();
+                $data['name'] = $class ? $class->name : 'Unknown';
+            } else {
+                $user = $this->db->get_where('users', ['id' => $p['guest']])->row();
+                $data['name'] = $user ? $user->name : 'Unknown';
             }
-            $event['participants'][] = $participant_data;
+            $event['participants'][] = $data;
         }
 
         // Normaliser les dates
@@ -2782,20 +2770,7 @@ public function create_event() {
                 ];
             }
         }
-
-        // Add to processed events
-        if ($event_id) {
-            $processed_events[] = $event;
-        } else {
-            $event_start = new DateTime($event['starting_date']);
-            $event_end = $event['ending_date'] ? new DateTime($event['ending_date']) : $event_start;
-            $range_start = new DateTime($start_date);
-            $range_end = new DateTime($end_date);
-
-            if ($event_start <= $range_end && $event_end >= $range_start) {
-                $processed_events[] = $event;
-            }
-        }
+        $processed_events[] = $event;
     }
 
     echo json_encode([
