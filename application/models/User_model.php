@@ -2035,8 +2035,8 @@ public function get_unread_messages_count($wayo_user_id)//user_model
  
     $sql = "
         SELECT COUNT(*) AS count
-        FROM humhub.message m
-        JOIN humhub.user_message um ON um.message_id = m.id
+        FROM humhub_new.message m
+        JOIN humhub_new.user_message um ON um.message_id = m.id
         WHERE um.user_id = ?
           AND (m.updated_at > um.last_viewed OR um.last_viewed IS NULL)
           AND m.updated_by != ?
@@ -2250,8 +2250,9 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 	}
 
 
-	public function join_school($school_id)
+	public function join_school($school_id, $data_invoice = array())
 	{
+		die($school_id."jjjjjjjjjjjjjj");
 		if ($this->session->userdata('user_id') == null || $this->session->userdata('user_id') == "") {
 			$this->session->set_flashdata('error', get_phrase('please_login_before_continuing'));
 			if (isset($_SERVER['HTTP_REFERER'])) {
@@ -2299,14 +2300,29 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 				$this->db->where_in('role', array('admin', 'superadmin'));
 				$user_email_admin = $this->db->get('users')->row('email');
 
+				$this->db->where('id', $data_invoice['invoice_id']);
+				$invoice_details = $this->db->get('invoices')->row_array();
+				
+				$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+				if ($due_amount == $data_invoice['amount_paid']) {
+					$updater = array(
+						'status' => 'paid',
+						'payment_method' => $data_invoice['payment_method'],
+						'paid_amount' => $data_invoice['amount_paid'] + $invoice_details['paid_amount'],
+						'updated_at'  => strtotime(date('d-M-Y'))
+					);
+					// print_r($updater);die;
+					$this->db->where('id', $data_invoice['invoice_id']);
+					$this->db->update('invoices', $updater);
+				}
 
 				$this->email_model->join_student_email($user_email, $user_name, $data['code'], $row->name, $school_id);
 				$this->email_model->join_student_email_for_admin($user_email_admin, $user_name, $data['code'], $row->name, $school_id);
 
 
-				if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
-				}
+				// if (isset($_SERVER['HTTP_REFERER'])) {
+				// 	redirect($_SERVER['HTTP_REFERER'], 'refresh');
+				// }
 			}
 		}
 	}

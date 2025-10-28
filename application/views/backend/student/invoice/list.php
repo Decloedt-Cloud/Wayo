@@ -14,9 +14,14 @@
     </tr>
   </thead>
   <tbody>
-    <?php $invoices = $this->crud_model->get_invoice_by_student_id($student_data['code'])->result_array();
+    <?php
+   
+    $invoices = $this->crud_model->get_invoice_by_student_id($student_data['code'])->result_array();
+
     foreach ($invoices as $invoice):
-      $class_details = $this->crud_model->get_class_details_by_id($invoice['class_id'])->row_array(); ?>
+      $class_details = $this->crud_model->get_class_details_by_id($invoice['class_id'])->row_array(); 
+      
+      ?>
       <tr>
         <td> <?php echo $student_data['name']; ?> </td>
         <td> <?php echo $class_details['name']; ?> </td>
