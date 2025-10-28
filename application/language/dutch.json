@@ -3051,5 +3051,12 @@
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Dieses Bild konnte nicht hochgeladen werden. Bitte überprüfen Sie das Format (PNG/JPEG).",
     "visible_on_website": "Zichtbaar op website",
     "website_visibility": "Zichtbaarheid van de website",
-    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": "Die Plattform ist eine EdTech-Plattform und zielt darauf ab, Coaching und Mentoring zu kommerzialisieren."
+    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": "Die Plattform ist eine EdTech-Plattform und zielt darauf ab, Coaching und Mentoring zu kommerzialisieren.",
+    "your_account_has_been_deactivated": "Uw account is gedeactiveerd",
+    "limited_offer": "Limited offer",
+    "class_description": "Class description",
+    "maximum_number": "Maximale Anzahl",
+    "see_more": "Mehr anzeigen",
+    "certifications": "Certificeringen",
+    "all_programs":"Alle programma's"
 }

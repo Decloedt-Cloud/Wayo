@@ -2888,5 +2888,9 @@
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "Impossible de charger cette image. Veuillez vérifier le format (PNG/JPEG).",
     "visible_on_website": "Visible sur le site Internet",
     "website_visibility": "Visibilité du site Web",
-    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": "La plateforme est une plateforme EdTech et a pour objectif de commercialiser le coaching et le mentorat."
+    "the_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring.": "La plateforme est une plateforme EdTech et a pour objectif de commercialiser le coaching et le mentorat.",
+    "your_account_has_been_deactivated": "Votre compte a été désactivé",
+    "maximum_number": "Nombre maximum",
+    "certifications": "Certifications",
+    "all_programs":"Tous les programmes"
 }

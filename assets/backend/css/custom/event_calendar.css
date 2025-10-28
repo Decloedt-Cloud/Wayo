@@ -389,6 +389,15 @@ input:checked + .slider:before {
   flex: 1;
 }
 
+@media (min-width: 769px) {
+.modal-body-calendar {
+    padding-right: 47px !important;
+}
+.modal-body-calendar-edit {
+    padding-right: 30px !important;
+}
+}
+
 .form-group-calendar .required {
   position: absolute;
   right: 2px;
