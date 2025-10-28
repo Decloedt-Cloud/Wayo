@@ -151,7 +151,7 @@
                         <?php endforeach; ?>
                             <?php if (empty($recordings)): ?>
                                 <tr>
-                                <td colspan="5" class="text-center"><?php echo get_phrase('No recordings found'); ?></td>
+                                <td colspan="5" class="text-center"><?php echo get_phrase("No recordings found"); ?></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -270,7 +270,7 @@ $(document).ready(function() {
         },
         autoUpdateInput: false,
         ranges: {
-            '<?php echo get_phrase('today'); ?>': [moment(), moment()],
+            "<?php echo get_phrase('today'); ?>": [moment(), moment()],
             '<?php echo get_phrase('yesterday'); ?>': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             '<?php echo get_phrase('last_7_days'); ?>': [moment().subtract(6, 'days'), moment()],
             '<?php echo get_phrase('this_month'); ?>': [moment().startOf('month'), moment().endOf('month')],
@@ -316,12 +316,12 @@ $(document).ready(function() {
                 updateRecordingTable(response.recordings);
             } else {
                 console.error('Invalid response status:', response);
-                showNotification('error', '<?php echo get_phrase("Failed to load recordings"); ?>');
+                showNotification('error', "<?php echo get_phrase("Failed to load recordings"); ?>");
             }
         },
         error: function(xhr, status, error) {
             console.error('Filter error:', xhr.responseText, status, error);
-            showNotification('error', '<?php echo get_phrase("Failed to load recordings"); ?>');
+            showNotification('error', "<?php echo get_phrase("Failed to load recordings"); ?>");
         }
     });
 });

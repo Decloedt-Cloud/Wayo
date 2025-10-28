@@ -154,7 +154,7 @@
                         <?php endforeach; ?>
                             <?php if (empty($recordings)): ?>
                                 <tr>
-                                <td colspan="5" class="text-center"><?php echo get_phrase('No recordings found'); ?></td>
+                                <td colspan="5" class="text-center"><?php echo get_phrase("No recordings found"); ?></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -276,7 +276,7 @@ $(document).ready(function() {
         },
         autoUpdateInput: false,
         ranges: {
-            '<?php echo get_phrase('today'); ?>': [moment(), moment()],
+            "<?php echo get_phrase('today'); ?>": [moment(), moment()],
             '<?php echo get_phrase('yesterday'); ?>': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             '<?php echo get_phrase('last_7_days'); ?>': [moment().subtract(6, 'days'), moment()],
             '<?php echo get_phrase('this_month'); ?>': [moment().startOf('month'), moment().endOf('month')],
@@ -365,8 +365,8 @@ $(document).ready(function() {
         var recordingId = $(this).data('recording-id');
 
         Swal.fire({
-        title: '<?php echo get_phrase("Are you sure?"); ?>',
-        text: '<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>',
+        title: "<?php echo get_phrase("Are you sure?"); ?>",
+        text: "<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -386,7 +386,7 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 'success') {
-                        showNotification('success', '<?php echo get_phrase("Recording deleted successfully"); ?>');
+                        showNotification('success', "<?php echo get_phrase("Recording deleted successfully"); ?>");
                         $('a.delete-recording[data-recording-id="' + recordingId + '"]').closest('tr').remove();
                         if (response.csrf_token) {
                             $('input[name="<?php echo $this->security->get_csrf_token_name(); ?>"]').val(response.csrf_token);
@@ -397,7 +397,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Delete error:', xhr, status, error);
-                    showNotification('error', '<?php echo get_phrase("Failed to delete recording"); ?>');
+                    showNotification('error', "<?php echo get_phrase("Failed to delete recording"); ?>");
                 }
             });
         }
