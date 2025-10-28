@@ -2043,7 +2043,6 @@ public function get_unread_messages_count($wayo_user_id)//user_model
     ";
  
     $result = $this->db->query($sql, [$humhub_id, $humhub_id]);
-   
     return ($result && $result->num_rows() > 0) ? (int) $result->row()->count : 0;
 }
 	public function update_password()
