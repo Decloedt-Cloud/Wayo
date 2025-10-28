@@ -2224,6 +2224,15 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 		return $count;
 	}
 
+	public function get_creator_by_school($school_id)
+{
+    return $this->db->select('name')
+                    ->from('users')
+                    ->where('school_id', $school_id)
+                    ->get()
+                    ->row_array();
+}
+
 
 
 

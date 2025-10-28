@@ -2817,6 +2817,11 @@
     "unable_to_upload_this_image._please_check_the_format_(png/jpeg).": "تعذر تحميل هذه الصورة. يرجى التحقق من الصيغة (PNG/JPEG).",
     "visible_on_website": "مرئية على الموقع",
     "website_visibility": "رؤية الموقع",
+    "your_account_has_been_deactivated": "لقد تم إلغاء تنشيط حسابك",
+    "limited_offer": "عرض محدود",
+    "class_description": "وصف الصف",
+    "maximum_number": "العدد الأقصى",
+    "see_more": "عرض المزيد",
     "certifications": "الشهادات",
     "all_programs": "جميع البرامج"
 }
