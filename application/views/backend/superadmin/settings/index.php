@@ -15,7 +15,7 @@ $class = 'col-xl-10 offset-xl-1';
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                     <i class="mdi mdi-cog title_icon"></i><?php echo ucfirst(get_phrase($settings_type)); ?> 
+                     <i class="fas fa-cog"></i><?php echo ucfirst(get_phrase($settings_type)); ?> 
                 </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->

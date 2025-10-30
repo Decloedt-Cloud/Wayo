@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                    <i class="mdi mdi-format-list-numbered title_icon"></i> <?php echo get_phrase('manage_marks'); ?>
+                    <i class="fas fa-star fa-fw"></i> <?php echo get_phrase('manage_marks'); ?>
                 </h4>
             </div> <!-- end card body-->
         </div> <!-- end card -->

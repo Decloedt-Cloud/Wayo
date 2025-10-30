@@ -4,7 +4,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-translate title_icon"></i> <?php echo get_phrase('languages'); ?>
+          <i class="fas fa-language"></i> <?php echo get_phrase('languages'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/language/create'); ?>', '<?php echo get_phrase('add_language'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_language'); ?></button>
       </div> <!-- end card body-->

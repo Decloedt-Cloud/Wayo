@@ -6,7 +6,7 @@
          <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                <h4 class="page-title d-inline-block">
-                  <i class="mdi mdi-calendar-clock title_icon"></i> <?php echo get_phrase('event_calendar'); ?>
+                  <i class="fas fa-bell"></i> <?php echo get_phrase('event_calendar'); ?>
                </h4>
                <div class="alert-modern d-flex align-items-center space-between-icon" role="alert">
                   <div class="icon flex-shrink-0"

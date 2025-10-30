@@ -190,7 +190,7 @@
     document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.getElementById('hamburger');
 
-     const sidebar = document.querySelector('.leftside-menu');
+     const sidebar = document.querySelector('.sidebar-nav');
 
     if (hamburger && sidebar) {
         hamburger.addEventListener('click', function() {

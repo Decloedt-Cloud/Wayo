@@ -5,7 +5,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-database title_icon"></i> <?php echo get_phrase('expense_category'); ?>
+        <i class="fas fa-tags"></i> <?php echo get_phrase('expense_category'); ?>
       </h4>
       <div class="action-buttons-container">
         <button type="button" class="btn-modern btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/expense_category/create'); ?>', '<?php echo get_phrase('add_expense_category'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_expense_category'); ?></button>

@@ -22,7 +22,7 @@
     <div class="header-card">
       <div class="card-body">
         <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-view-dashboard title_icon"></i> <?php echo get_phrase('dashboard'); ?>
+          <i class="fas fa-home fa-fw"></i> <?php echo get_phrase('dashboard'); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
@@ -37,12 +37,12 @@
         <div class="container">
           <div class="row justify-content-md-center">
             <div class="col-lg-6">
-              <div class="card widget-flat" id="student" style="on">
+              <div class="card widget-flat" id="student">
                 <div class="card-body">
                   <div class="float-end">
                     <i class="mdi mdi-account-multiple widget-icon"></i>
                   </div>
-                  <h5 class="text-muted font-weight-normal mt-0" title="Number of Student"> <i class="mdi mdi-account-group title_icon"></i> <?php echo get_phrase('schools'); ?> <a href="" style="color: #6c757d; display: none;" id="student_list"><i class="mdi mdi-export"></i></a></h5>
+                  <h5 class="text-muted font-weight-normal mt-0" title="Number of Student"> <i class="fas fa-people-arrows fa-lg" style="margin-right: 4px;"></i> <?php echo get_phrase('schools'); ?> <a href="" style="color: #6c757d; display: none;" id="student_list"><i class="mdi mdi-export"></i></a></h5>
                   <h3 class="mt-3 mb-3">
                     <?php
 
@@ -57,12 +57,12 @@
             </div> <!-- end col-->
 
             <div class="col-lg-6">
-              <div class="card widget-flat" id="teacher" style="on">
+              <div class="card widget-flat" id="teacher">
                 <div class="card-body">
                   <div class="float-end">
                     <i class="mdi mdi-account-multiple widget-icon"></i>
                   </div>
-                  <h5 class="text-muted font-weight-normal mt-0" title="Number of Teacher"> <i class="mdi mdi-account-group title_icon"></i><?php echo get_phrase('classes'); ?> <a href="" style="color: #6c757d; display: none;" id="teacher_list"><i class="mdi mdi-export"></i></a></h5>
+                  <h5 class="text-muted font-weight-normal mt-0" title="Number of Teacher"> <i class="fas fa-chalkboard fa-lg" style="margin-right: 10px;"></i><?php echo get_phrase('classes'); ?> <a href="" style="color: #6c757d; display: none;" id="teacher_list"><i class="mdi mdi-export"></i></a></h5>
                   <h3 class="mt-3 mb-3">
                     <?php
                     if ($student_data->num_rows() > 0) {
@@ -109,7 +109,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
+        <i class="fas fa-globe fa-fw"></i> <?php echo get_phrase('social'); ?> </h4>
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-clipboard-text title_icon"></i> <?php echo get_phrase('spaces'); ?> </h4>
+                <i class="fas fa-user-shield fa-fw"></i> <?php echo get_phrase('spaces'); ?> </h4>
             </div>
         </div>
     </div>

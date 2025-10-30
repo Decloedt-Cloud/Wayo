@@ -4,7 +4,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-calendar-range title_icon"></i> <?php echo get_phrase('session'); ?>
+          <i class="fas fa-clock"></i> <?php echo get_phrase('session'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/session/create'); ?>', '<?php echo get_phrase('create_new_session'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_session'); ?></button>
       </div> <!-- end card body-->

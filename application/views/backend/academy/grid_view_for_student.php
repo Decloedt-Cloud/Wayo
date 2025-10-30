@@ -7,7 +7,7 @@
 <div class="col-xl-12">
     <div class="header-card">
         <div class="card-body">
-            <h4 class="page-title d-inline-block"><i class="mdi mdi-book-open-variant title_icon"></i> <?php echo get_phrase('online_course'); ?></h4>
+            <h4 class="page-title d-inline-block"><i class="fas fa-layer-group fa-fw"></i> <?php echo get_phrase('online_course'); ?></h4>
         </div>
     </div>
 </div>
