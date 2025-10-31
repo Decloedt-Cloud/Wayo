@@ -5,7 +5,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                    <i class="mdi mdi-account-outline title_icon"></i> <?php echo get_phrase('student'); ?>
+                    <i class="fas fa-user-group fa-fw"></i> <?php echo get_phrase('student'); ?>
                 </h4>
                 <a href="<?php echo route('student/create'); ?>"
                     class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1"> <i class="mdi mdi-plus"></i>

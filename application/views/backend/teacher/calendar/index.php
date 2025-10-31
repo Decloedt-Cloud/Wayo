@@ -4,7 +4,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('calendar'); ?>
+        <i class="fas fa-calendar-alt fa-fw"></i> <?php echo get_phrase('calendar'); ?>
       </h4>
     </div> <!-- end card body-->
   </div> <!-- end card -->

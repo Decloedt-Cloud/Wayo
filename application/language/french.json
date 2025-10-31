@@ -2893,5 +2893,7 @@
     "your_account_has_been_deactivated": "Votre compte a été désactivé",
     "maximum_number": "Nombre maximum",
     "certifications": "Certifications",
-    "all_programs":"Tous les programmes"
+    "all_programs": "Tous les programmes",
+    "management": "Gestion",
+    "communication": "Communication"
 }

@@ -5,7 +5,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                  <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
+                  <i class="fas fa-stream"></i> <?php echo get_phrase('social'); ?> </h4>
       </div> 
     </div> 
   </div>

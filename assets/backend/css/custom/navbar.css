@@ -420,7 +420,7 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
     display: block;
     height: 3px;
     width: 100%;
-    background: #4a90e2;
+    background: #ff8a3d;
     margin: 5px 0;
     border-radius: 3px;
     transition: all 0.4s ease;
