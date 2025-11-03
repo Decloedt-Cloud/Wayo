@@ -3062,5 +3062,14 @@
     "certifications": "Certificeringen",
     "all_programs": "Alle programma's",
     "management": "Beheer",
-    "communication": "Mededeling"
+    "communication": "Mededeling",
+    "please_correct_duplicate_fields": "Corrigeer dubbele velden",
+    "no_file_selected": "Geen bestand geselecteerd",
+    "too_heavy_max": "Te zwaar max",
+    "mb": "Mb",
+    "required_format": "Vereist formaat",
+    "current": "Huidig",
+    "width": "Breedte",
+    "corrupted_image": "Beschadigde afbeelding",
+    "spanish_(es)": "Spaans (es)"
 }

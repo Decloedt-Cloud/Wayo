@@ -2895,5 +2895,14 @@
     "certifications": "Certifications",
     "all_programs": "Tous les programmes",
     "management": "Gestion",
-    "communication": "Communication"
+    "communication": "Communication",
+    "please_correct_duplicate_fields": "Veuillez corriger les champs dupliqués",
+    "no_file_selected": "Aucun fichier sélectionné",
+    "too_heavy_max": "Trop lourd max",
+    "mb": "Mo",
+    "required_format": "Format requis",
+    "current": "Actuel",
+    "width": "Largeur",
+    "corrupted_image": "Image corrompue",
+    "spanish_(es)": "Espagnol (Es)"
 }
