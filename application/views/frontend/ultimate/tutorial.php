@@ -1,6 +1,6 @@
 
   <!-- ===== PAGE BODY ===== -->
-<main class="tutorial-body py-5">
+<main class="tutorial-body">
   <div class="container">
     <div class="row align-items-center">
       
