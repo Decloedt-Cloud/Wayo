@@ -1216,7 +1216,7 @@ main [dir="rtl"] {
 video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Remplit le conteneur sans déformation */
+  /* object-fit: cover;  */
   display: block;
 }
 
@@ -1255,14 +1255,58 @@ main{font-family:var(--font); color:var(--text); background:var(--bg); line-heig
 img{max-width:100%; display:block}
 a{text-decoration:none; color:inherit}
 
-.bg-mesh{position:fixed; inset:-12vmax; z-index:-3; pointer-events:none; background:radial-gradient(40vmax 32vmax at 8% -10%, rgba(244,122,31,.10), transparent 60%), radial-gradient(45vmax 30vmax at 110% 0%, rgba(251,176,64,.08), transparent 60%), conic-gradient(from 0deg at 60% 40%, rgba(244,122,31,.06), transparent 35%, rgba(244,122,31,.05) 50%, transparent 75%, rgba(251,176,64,.07) 90%, transparent 100%); animation:meshSpin 50s linear infinite}
-@keyframes meshSpin{to{transform:rotate(360deg)}}
+.hero {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
 
-.bg-orbs{position:fixed; inset:-10vh -10vw -10vh -10vw; z-index:-2; pointer-events:none}
-.orb{position:absolute; border-radius:50%; filter:blur(42px); opacity:.26}
-.o1{width:60vmin;height:60vmin; background:radial-gradient(closest-side, rgba(244,122,31,.26), transparent 70%); left:-8vmin; top:-6vmin}
-.o2{width:52vmin;height:52vmin; background:radial-gradient(closest-side, rgba(251,176,64,.22), transparent 70%); right:-10vmin; top:10vmin}
-.o3{width:58vmin;height:58vmin; background:radial-gradient(closest-side, rgba(244,122,31,.18), transparent 70%); left:10vmin; bottom:-12vmin}
+/* Effet mesh (dégradé tournant) */
+.bg-mesh {
+  position: absolute; /* ✅ fixé à la section hero */
+  inset: -12vmax;
+  z-index: -3;
+  pointer-events: none;
+  background: radial-gradient(40vmax 32vmax at 8% -10%, rgba(244,122,31,.10), transparent 60%),
+              radial-gradient(45vmax 30vmax at 110% 0%, rgba(251,176,64,.08), transparent 60%),
+              conic-gradient(from 0deg at 60% 40%, rgba(244,122,31,.06), transparent 35%, rgba(244,122,31,.05) 50%, transparent 75%, rgba(251,176,64,.07) 90%, transparent 100%);
+  animation: meshSpin 50s linear infinite;
+}
+
+@keyframes meshSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Effet orbes lumineuses */
+.bg-orbs {
+  position: absolute; /* ✅ fixé à la section hero */
+  inset: -10vh -10vw -10vh -10vw;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(42px);
+  opacity: .26;
+}
+
+.o1 {
+  width: 60vmin; height: 60vmin;
+  background: radial-gradient(closest-side, rgba(244,122,31,.26), transparent 70%);
+  left: -8vmin; top: -6vmin;
+}
+.o2 {
+  width: 52vmin; height: 52vmin;
+  background: radial-gradient(closest-side, rgba(251,176,64,.22), transparent 70%);
+  right: -10vmin; top: 10vmin;
+}
+.o3 {
+  width: 58vmin; height: 58vmin;
+  background: radial-gradient(closest-side, rgba(244,122,31,.18), transparent 70%);
+  left: 10vmin; bottom: -12vmin;
+}
 
 .hero{position:relative; isolation:isolate; padding:84px 0 96px; overflow:hidden}
 .hero h1{font-size:clamp(30px, 4.5vw, 46px); line-height:1.1; margin:6px 0 10px; font-weight:900; letter-spacing:-.02em}

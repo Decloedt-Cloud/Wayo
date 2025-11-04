@@ -470,7 +470,7 @@ function loginSubmit() {
     const emailInput = document.getElementById("loginEmail");
     const passwordInput = document.getElementById("loginPassword");
     const errorDiv = document.getElementById("loginError");
-    const loginDropdown = document.querySelector(".login-dropdown");
+    const loginDropdown = document.querySelector(".login-inline");
 
     if (!emailInput || !passwordInput || !errorDiv || !loginDropdown) {
         console.warn("Login form elements not found");

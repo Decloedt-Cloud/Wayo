@@ -3,10 +3,19 @@
 
 <!-- Hero Section avec Bootstrap Grid -->
 <section id="hero" class="hero">
-  <span class="hero-glow a"></span><span class="hero-glow b"></span>
+   <!-- Éléments décoratifs -->
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb o1"></span>
+    <span class="orb o2"></span>
+    <span class="orb o3"></span>
+  </div>
+
+  <!-- Effets lumineux -->
+  <span class="hero-glow a"></span>
+  <span class="hero-glow b"></span>
   <div class="container-md">
     <div class="row align-items-center g-4">
-
       <!-- Colonne Gauche: Texte -->
       <div class="col-lg-6 col-xl-6">
         <div class="hero-copy">

@@ -2829,5 +2829,13 @@
     "courses_&_live": "الدورات والبث المباشر",
     "built-in_social": "ميزات اجتماعية مدمجة",
     "how_it_works": "كيف يعمل",
-    "menu": "القائمة"
+    "menu": "القائمة                            ",
+    "remember_me": "تذكرني",
+    "forgot_password": "نسيت كلمة المرور ",
+    "enter_your_email": "أدخل بريدك الإلكتروني",
+    "sign_up_as_a_member": "التسجيل كعضو",
+    "join_communities,_follow_courses_&_live_sessions.": "انضم إلى المجتمعات، تابع الدورات والجلسات المباشرة.",
+    "sign_up_as_a_mentor": "التسجيل كمرشد",
+    "create_a_community,_courses_&_live_sessions.": "إنشاء مجتمع، دورات وجلسات مباشرة.",
+    "already_registered_?": "هل أنت مسجل بالفعل؟"
 }

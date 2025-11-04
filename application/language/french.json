@@ -2420,7 +2420,7 @@
     "6_private_classes": "6 private classes",
     "(seo,_social_ads,_content,_growth,_e-commerce,_automation)_and_connect_with_over": "(seo, social ads, content, growth, e-commerce, automation) and connect with over",
     "6,000_marketers": "6,000 marketers",
-    "sign_up": "Sign up",
+    "sign_up": "S’inscrire                                                                                                                                      ",
     "aymane": "Aymane",
     "class_schedule": "Class schedule",
     "aucune_classe_disponible_pour_cette_communauté.": "Aucune classe disponible pour cette communauté.",
@@ -2900,5 +2900,13 @@
     "courses_&_live": "Cours & Live",
     "built-in_social": "Réseau social intégré",
     "how_it_works": "Comment ça marche",
-    "menu": "Menu"
+    "menu": "Menu",
+    "enter_your_email": "Entrez votre e-mail",
+    "remember_me": "Se souvenir de moi",
+    "forgot_password": "Mot de passe oublié",
+    "sign_up_as_a_member": "S’inscrire comme Membre",
+    "join_communities,_follow_courses_&_live_sessions.": "Rejoignez des communautés, suivez des cours & lives.",
+    "sign_up_as_a_mentor": "S’inscrire comme Mentor",
+    "create_a_community,_courses_&_live_sessions.": "Créez une communauté, des cours & sessions live.",
+    "already_registered_?": "Déjà inscrit ?"
 }
