@@ -3060,8 +3060,9 @@
     "maximum_number": "Maximale Anzahl",
     "see_more": "Mehr anzeigen",
     "certifications": "Certificeringen",
-    "all_programs":"Alle programma's",
     "already_joined": "Al toegetreden",
-    "join_community": "Word lid van de community"
-
+    "join_community": "Word lid van de community",
+    "all_programs": "Alle programma's",
+    "management": "Beheer",
+    "communication": "Mededeling"
 }

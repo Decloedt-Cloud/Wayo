@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-file-document title_icon"></i> <?php echo get_phrase('student_fee_manager'); ?>
+          <i class="fas fa-users-cog"></i> <?php echo get_phrase('student_fee_manager'); ?>
         </h4>
          <!-- Container des boutons d'action -->
           <div class="action-buttons-container">

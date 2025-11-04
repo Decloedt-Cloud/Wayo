@@ -2865,7 +2865,9 @@
     "until": "Until",
     "maximum_number": "Maximum number",
     "certifications": "Certifications",
-    "all_programs": "All programs",
     "already_joined": "Already joined",
-    "join_community": "Join community"
+    "join_community": "Join community",
+    "management": "Management",
+    "communication": "Communication",
+    "all_programs": "All programs"
 }

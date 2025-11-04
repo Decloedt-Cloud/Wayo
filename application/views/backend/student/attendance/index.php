@@ -5,7 +5,7 @@
     <div class="header-card">
         <div class="card-body">
             <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('daily_attendance'); ?>
+                <i class="fas fa-clipboard-user fa-fw"></i> <?php echo get_phrase('daily_attendance'); ?>
             </h4>
         </div> <!-- end card body-->
     </div> <!-- end card -->

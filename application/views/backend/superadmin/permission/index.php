@@ -4,7 +4,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-account-multiple-check title_icon"></i> <?php echo get_phrase('assigned_permission_for_teacher'); ?>
+          <i class="fas fa-shield-halved fa-fw"></i> <?php echo get_phrase('assigned_permission_for_teacher'); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->

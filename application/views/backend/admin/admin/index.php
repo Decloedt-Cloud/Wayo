@@ -4,7 +4,7 @@
     <div class="card">
       <div class="card-body py-2">
         <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('all_admins'); ?>
+          <i class="fas fa-user-cog"></i> <?php echo get_phrase('all_admins'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded align-middle mt-1 float-end" onclick="rightModal('<?php echo site_url('modal/popup/admin/create'); ?>', '<?php echo get_phrase('create_admin'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_admin'); ?></button>
       </div> <!-- end card body-->

@@ -62,7 +62,7 @@ $school_id = school_id();
     <!-- HEADER -->
     <?php include 'header.php'; ?>
 
-    <div class="container-fluid">
+    <div class="">
         <div class="wrapper">
             <!-- BEGIN CONTENT -->
             <!-- SIDEBAR -->

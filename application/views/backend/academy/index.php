@@ -8,7 +8,7 @@
     <div class="header-card">
               <div class="card-body">
                 <h4 class="page-title d-inline-block">
-              <i class="mdi mdi-calendar-range title_icon"></i> <?php echo get_phrase('all_courses'); ?></h4>
+              <i class="fas fa-layer-group fa-fw"></i> <?php echo get_phrase('all_courses'); ?></h4>
               <div class="action-buttons-container">
                   <a href="<?php echo site_url('addons/courses/course_add'); ?>"type="button" class="btn-modern btn btn-outline-primary btn-rounded alignToTitle" > 
                   <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_new_course'); ?></a>

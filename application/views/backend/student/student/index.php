@@ -4,7 +4,7 @@
         <div class="col-12">
             <div class="page-title-box">
                 <h4 class="page-title">
-                	<i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('student'); ?>
+                	<i class="fas fa-user-group fa-fw"></i> <?php echo get_phrase('student'); ?>
                 	<a href="<?php echo route('student/create'); ?>" class="btn btn-icon btn-success btn-rounded mb-1 mt-3 alignToTitle float-end"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_new_student'); ?></a>
             	</h4>
             </div>

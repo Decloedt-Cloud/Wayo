@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                   <i class="mdi mdi-view-dashboard title_icon"></i> <?php echo get_phrase('dashboard'); ?> 
+                   <i class="fas fa-home fa-fw"></i> <?php echo get_phrase('dashboard'); ?> 
                 </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
@@ -22,12 +22,12 @@
             <div class="container">
   <div class="row justify-content-md-center">
           <div class="col-sm-4">
-            <div class="card widget-flat" id="student" style="on">
+            <div class="card widget-flat" id="student">
               <div class="card-body">
                 <div class="float-end">
                   <i class="mdi mdi-account-multiple widget-icon"></i>
                 </div>
-                <h5 class="text-muted font-weight-normal mt-0" title="Number of Student"> <i class="mdi mdi-account-group title_icon"></i>  <?php echo get_phrase('students'); ?> <a href="<?php echo route('student'); ?>" style="color: #6c757d; display: none;" id = "student_list"><i class = "mdi mdi-export"></i></a></h5>
+                <h5 class="text-muted font-weight-normal mt-0" title="Number of Student"><i class="fas fa-users fa-lg" style="margin-right: 10px;"></i><?php echo get_phrase('students'); ?> <a href="<?php echo route('student'); ?>" style="color: #6c757d; display: none;" id = "student_list"><i class = "mdi mdi-export"></i></a></h5>
                 <h3 class="mt-3 mb-3">
                   <?php
                   $current_session_students = $this->user_model->get_session_wise_student();
@@ -43,12 +43,12 @@
           
 
           <div class="col-sm-4">
-            <div class="card widget-flat" id="teacher" style="on">
+            <div class="card widget-flat" id="teacher">
               <div class="card-body">
                 <div class="float-end">
                   <i class="mdi mdi-account-multiple widget-icon"></i>
                 </div>
-                <h5 class="text-muted font-weight-normal mt-0" title="Number of Teacher"> <i class="mdi mdi-account-group title_icon"></i><?php echo get_phrase('teacher'); ?>  <a href="<?php echo route('teacher'); ?>" style="color: #6c757d; display: none;" id = "teacher_list"><i class = "mdi mdi-export"></i></a></h5>
+                <h5 class="text-muted font-weight-normal mt-0" title="Number of Teacher"><i class="fas fa-chalkboard-teacher fa-lg" style="margin-right: 10px;"></i><?php echo get_phrase('teacher'); ?>  <a href="<?php echo route('teacher'); ?>" style="color: #6c757d; display: none;" id = "teacher_list"><i class = "mdi mdi-export"></i></a></h5>
                 <h3 class="mt-3 mb-3">
                   <?php
                   $teachers = $this->user_model->get_teachers();
@@ -68,7 +68,7 @@
                 <div class="float-end">
                   <i class="mdi mdi-account-multiple widget-icon"></i>
                 </div>
-                <h5 class="text-muted font-weight-normal mt-0" title="Number of Staff"> <i class="mdi mdi-account-group title_icon"></i> <?php echo get_phrase('staff'); ?></h5>
+                <h5 class="text-muted font-weight-normal mt-0" title="Number of Staff"><i class="fas fa-user-tie fa-lg" style="margin-right: 3px;"></i><?php echo get_phrase('staff'); ?></h5>
                 <h3 class="mt-3 mb-3">
                   <?php
                   $accountants = $this->user_model->get_accountants()->num_rows();
@@ -146,7 +146,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                   <i class="dripicons-network-1 title_icon"></i> <?php echo get_phrase('social'); ?> </h4>
+                   <i class="fas fa-globe fa-fw"></i> <?php echo get_phrase('social'); ?> </h4>
       </div>
     </div> 
   </div>

@@ -2,7 +2,7 @@
 <div class="col-xl-12">
   <div class="header-card">
     <div class="card-body">
-      <h4 class="page-title d-inline-block"> <i class="dripicons-message title_icon"></i> <?php echo get_phrase('chat'); ?> </h4>
+      <h4 class="page-title d-inline-block"> <i class="fas fa-comments fa-fw"></i> <?php echo get_phrase('chat'); ?> </h4>
     </div>
   </div>
 </div>
