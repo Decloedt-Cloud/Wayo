@@ -2852,5 +2852,8 @@
     "maximum_number": "Número máximo",
     "certifications": "Certificaciones",
     "all_programs":"Todos los programas",
-    "inicio": "Inicio"
+    "inicio": "Inicio",
+    "already_joined": "Ya te has unido",
+    "join_community": "Unirse a la comunidad"
+
 }

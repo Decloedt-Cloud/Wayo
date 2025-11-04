@@ -207,7 +207,7 @@ class Lms_model extends CI_Model
             ->join('course_classes', 'course_classes.class_id = classes.id')// On fait un JOIN avec la table pivot 'course_classes' qui relie les cours aux classes
             ->where('course_classes.course_id', $course_id)// On filtre uniquement les classes qui appartiennent au cours $course_id
             ->get()
-            ->result_array();
+            ->row_array();
     }
 
     // Cette fonction met à jour les classes liées à un cours

@@ -2865,5 +2865,7 @@
     "until": "Until",
     "maximum_number": "Maximum number",
     "certifications": "Certifications",
-    "all_programs": "All programs"
+    "all_programs": "All programs",
+    "already_joined": "Already joined",
+    "join_community": "Join community"
 }
