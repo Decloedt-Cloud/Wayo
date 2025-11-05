@@ -2837,5 +2837,9 @@
     "join_communities,_follow_courses_&_live_sessions.": "انضم إلى المجتمعات، تابع الدورات والجلسات المباشرة.",
     "sign_up_as_a_mentor": "التسجيل كمرشد",
     "create_a_community,_courses_&_live_sessions.": "إنشاء مجتمع، دورات وجلسات مباشرة.",
-    "already_registered_?": "هل أنت مسجل بالفعل؟"
+    "already_registered_?": "هل أنت مسجل بالفعل؟",
+    "already_joined": "تم الانضمام بالفعل",
+    "join_community": "انضم إلى المجتمع",
+    "management": "إدارة",
+    "communication": "تواصل"
 }

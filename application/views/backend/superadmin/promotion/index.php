@@ -4,7 +4,7 @@
      <div class="header-card">
        <div class="card-body">
          <h4 class="page-title d-inline-block">
-           <i class="mdi mdi-account-switch title_icon"></i><?php echo get_phrase('student_promotion'); ?>
+           <i class="fas fa-user-graduate"></i><?php echo get_phrase('student_promotion'); ?>
          </h4>
        </div> <!-- end card body-->
      </div> <!-- end card -->

@@ -27,8 +27,17 @@ body{
   background-color: #fff;
   cursor: pointer !important;
 }
+.btn-outline-wayo-join{
+  background-color: #FC7B30;
+  cursor: pointer !important;
+  color: #fff !important;
+}
 .btn-outline-wayo:hover{
   background-color: #fff;
+}
+.btn-outline-wayo-join:hover{
+    background-color: #FC7B30;
+    color: #fff !important;
 }
 .join-button {
   width: 100%;

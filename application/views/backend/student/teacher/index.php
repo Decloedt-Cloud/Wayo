@@ -4,7 +4,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('teachers'); ?>
+        <i class="fa-chalkboard-teacher"></i> <?php echo get_phrase('teachers'); ?>
       </h4>
     </div> <!-- end card body-->
   </div> <!-- end card -->

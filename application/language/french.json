@@ -2908,5 +2908,10 @@
     "join_communities,_follow_courses_&_live_sessions.": "Rejoignez des communautés, suivez des cours & lives.",
     "sign_up_as_a_mentor": "S’inscrire comme Mentor",
     "create_a_community,_courses_&_live_sessions.": "Créez une communauté, des cours & sessions live.",
-    "already_registered_?": "Déjà inscrit ?"
+    "already_registered_?": "Déjà inscrit ?",
+    "all_programs":"Tous les programmes",
+    "already_joined": "Déjà membre",
+    "join_community": "Rejoindre la communauté",
+    "management": "Gestion",
+    "communication": "Communication"
 }

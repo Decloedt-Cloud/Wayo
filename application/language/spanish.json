@@ -2867,5 +2867,11 @@
     "create_a_community,_courses_&_live_sessions.": "Crea una comunidad, cursos y sesiones en vivo.",
     "already_registered_?": "¿Ya estás registrado?",
     "how_it_works": "Cómo funciona",
-    "menu": "Menú"
+    "menu": "Menú",
+    "inicio": "Inicio",
+    "already_joined": "Ya te has unido",
+    "join_community": "Unirse a la comunidad",
+    "all_programs": "Todos los programas",
+    "management": "Gestión",
+    "communication": "Comunicación"
 }

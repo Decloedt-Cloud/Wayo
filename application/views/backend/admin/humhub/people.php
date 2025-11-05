@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-account-group title_icon"></i> <?php echo get_phrase('membres'); ?> </h4>
+                <i class="fa-solid fa-user"></i> <?php echo get_phrase('membres'); ?> </h4>
             </div>
         </div>
     </div>

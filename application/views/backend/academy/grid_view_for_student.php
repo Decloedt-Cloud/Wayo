@@ -7,7 +7,7 @@
 <div class="col-xl-12">
     <div class="header-card">
         <div class="card-body">
-            <h4 class="page-title d-inline-block"><i class="mdi mdi-book-open-variant title_icon"></i> <?php echo get_phrase('online_course'); ?></h4>
+            <h4 class="page-title d-inline-block"><i class="fas fa-layer-group fa-fw"></i> <?php echo get_phrase('online_course'); ?></h4>
         </div>
     </div>
 </div>
@@ -140,8 +140,9 @@
                                     // $class_details = $this->crud_model->get_classes($course['class_id'])->row_array();
                                     // $this->db->where('id', $course['class_id']);
                                     $class_details = $this->lms_model->get_classes_by_course($course['id']);
-                                    $class_details = $this->db->get('classes')->row_array();
-                                    $sections = $this->lms_model->get_section('course', $course['id']);
+                               
+                                    // $class_details = $this->db->get('classes')->row_array();
+                                    // $sections = $this->lms_model->get_section('course', $course['id']);
 
                                     $lessons = $this->lms_model->get_lessons('course', $course['id']);
 

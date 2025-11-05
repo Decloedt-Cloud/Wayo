@@ -71,7 +71,7 @@
    <div class="header-card">
       <div class="card-body">
          <h4 class="page-title d-inline-block">
-            <i class="mdi mdi-calendar-clock title_icon"></i> <?php echo get_phrase('Recordings'); ?>
+            <i class="fas fa-save fa-fw"></i> <?php echo get_phrase('Recordings'); ?>
          </h4>
       </div> <!-- end card body-->
    </div> <!-- end card -->

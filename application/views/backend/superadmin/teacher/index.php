@@ -4,7 +4,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('teachers'); ?>
+        <i class="fas fa-user-plus fa-fw"></i> <?php echo get_phrase('teachers'); ?>
       </h4>
       <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/teacher/create'); ?>', '<?php echo get_phrase('create_teacher'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_teacher'); ?></button>
     </div> <!-- end card body-->

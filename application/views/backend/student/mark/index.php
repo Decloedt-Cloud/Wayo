@@ -18,7 +18,7 @@ $enrolments = $this->db->get()->result_array();
 <div class="col-xl-12">
     <div class="header-card">
              <div class="card-body">
-                <h4 class="page-title d-inline-block"> <i class="mdi mdi-format-list-numbered title_icon"></i> <?php echo get_phrase('manage_marks'); ?> </h4>
+                <h4 class="page-title d-inline-block"> <i class="fas fa-star fa-fw"></i> <?php echo get_phrase('marks'); ?> </h4>
             </div>
         </div>
     </div>
