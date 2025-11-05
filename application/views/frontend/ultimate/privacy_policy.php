@@ -1,5 +1,5 @@
 <!-- ====== HERO compact ====== -->
-<section class="pp-hero pt-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+<section class="pp-hero" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container pp-hero-inner">
     <div class="pp-hero-text">
       <h1><?php echo get_phrase("Privacy_Policy") ?></h1>

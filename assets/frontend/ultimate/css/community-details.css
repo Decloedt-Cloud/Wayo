@@ -4,7 +4,7 @@
   --font:'Urbanist',sans-serif;
 }
 body{
-   font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+   font-family:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 }
 .hero-grad{
     margin-top: 70px !important;

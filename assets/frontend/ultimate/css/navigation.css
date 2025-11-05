@@ -4,7 +4,36 @@ Navigation Styling
 
 /* Style pour afficher/masquer le menu */
 
+:root {
+  --hover-width: 75%;
+  --other-width: 25%;
+  --bg-left-fill: rgba(87, 84, 236, 0.7);
+  --bg-right-fill: rgba(43, 43, 43, 0.8);
+  --btn-left-hover: rgba(87, 84, 236, 1);
+  --btn-right-hover: rgba(28, 122, 28, 1);
+  --font:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  /* New root */
+  --white:#fff; --text:#171717; --muted:#6b7280; --line:#eee; --line-2:#f3f4f6;
+  --orange:#F47A1F; --orange-2:#fbb040; --orange-3:#ffebd8;
+  --green:#16a34a; --red:#dc2626;
+  --bg:#ffffff;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --shadow-2:0 30px 80px rgba(0,0,0,.12);
+  --radius:16px;
+  --logo-h-desktop: 88px; --logo-h-tablet: 60px; --logo-h-mobile: 52px;
+}
 
+header, .navbar, .sticky-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  overflow-x: clip; 
+  box-sizing: border-box;
+}
+
+.language-selector .dropdown-toggle::after {
+  display: none !important;
+}
 
 .user-dropdown.active {
     display: block;
@@ -51,10 +80,10 @@ Navigation Styling
 }
 
 .navbar-nav {
-    background-color: #fff;
+    /* background-color: #fff; */
   display: flex;
   align-items: center;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .navbar-user-dashboard a {
@@ -92,31 +121,35 @@ Navigation Styling
 
 .nav-link {
   color: #000000 !important;
-  font-size: 15px !important;
   text-transform: none;
   transition: all 0.5s ease-in-out;
+  font-size:17px;
 }
 
 .btn-login {
-  background-color: #FC7B30 !important;
-  color: #ffffff !important;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 25px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  cursor: pointer !important;
+  padding: 0.75rem 1.15rem;
+            border-radius: 14px;
+            font-weight: 900;
+            transition: transform 0.18s, filter 0.18s, box-shadow 0.18s;
 }
 
 .btn-login:hover {
-  background-color: #ee7626;
-  color: #ffffff !important;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 25px;
-  font-size: 14px;
-  transition: all 0.3s ease;
+ transform: translateY(-1px);
+
 }
+.btn-ghost {
+            background: #fff;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: #f7f7f7;
+            color: var(--text);
+        }
+
+        
+
 
 #menu_checkbox {
   display: none;
@@ -248,7 +281,7 @@ label div:last-child {
   padding-left: 20px;
   padding-right: 20px;
   right: 0;
-  background-color: #dadada91;
+  background-color: #dadadae8;
   border-radius: 6px;
   transition: all 0.3s ease-in-out;
   backdrop-filter: blur(10px);
@@ -289,7 +322,7 @@ label div:last-child {
   right: 0;
   padding-left: 50px;
   padding-right: 20px;
-  background-color: #dadada91;
+  background-color: #dadadae8;
   border-radius: 6px;
   transition: all 0.3s ease-in-out;
   backdrop-filter: blur(10px);
@@ -303,7 +336,7 @@ label div:last-child {
   right: 0;
   padding-left: 20px;
   padding-right: 20px;
-  background-color: #dadada91;
+  background-color: #dadadae8;
   border-radius: 6px;
   transition: all 0.3s ease-in-out;
   backdrop-filter: blur(10px);
@@ -315,7 +348,7 @@ label div:last-child {
   font-size: 12px !important;
   padding-bottom: 15px !important;
   right: 20px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .login-button {
@@ -521,9 +554,9 @@ label div:last-child {
 }
 
 .login-link {
-  position: absolute;
+  /* position: absolute;
   top: 20px;
-  left: 20px;
+  left: 20px; */
   color: #1c1c1c !important;
   text-decoration: underline;
   font-size: 11px !important;
@@ -674,12 +707,12 @@ select.invalid {
 
 .navbar[dir="rtl"] .nav-link,
 .navbar[dir="rtl"] .btn-login {
-  font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+  font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   text-align: center;
 }
 
 .navbar[dir="rtl"] .navbar-user-dashboard a {
-  font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+  font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   padding-left: 10px; 
   padding-right: 10px; 
   font-size: 18px; 
@@ -756,7 +789,6 @@ Responsive Styling
   .navbar-nav {
     flex-direction: column;
     align-items: center;
-    text-align: center;
     width: 100%;
   }
   .navbar-nav.mx-auto {
@@ -815,9 +847,15 @@ Responsive Styling
     align-items: center;
   }
   .navbar-toggler {
-    margin-right: auto;
+    margin-right: 20px;
     margin-left: 0;
   }
+  /* Spécifique à la langue arabe (RTL) */
+  [dir="rtl"] .navbar-toggler {
+    margin-right: 250px !important;
+    margin-right: 0;
+  }
+
   .navbar[dir="rtl"] .navbar-toggler {
     margin-left: auto;
     margin-right: 0;
@@ -830,8 +868,8 @@ Responsive Styling
   .language-selector .nav-link {
         padding: 5px 8px;
         font-size: 12px;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
+        /* background-color: #f8fafc;
+        border: 1px solid #e2e8f0; */
         border-radius: 5px;
     }
     .language-selector .dropdown-menu {
@@ -847,7 +885,7 @@ Responsive Styling
   .register-dropdown,
   .forget-dropdown {
     position: fixed; /* Use fixed positioning to keep it within the viewport */
-    top: -320px; /* Increase top spacing to account for expanded navbar height */
+    top: -250px; /* Increase top spacing to account for expanded navbar height */
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -898,7 +936,7 @@ Responsive Styling
 
 @media (max-width: 767px) {
   .btn-login {
-    width: 30%;
+    width: 100%;
     margin: 10px 0;
     padding: 8px 25px;
   }
@@ -929,7 +967,7 @@ Responsive Styling
     text-transform: capitalize;
     transition: color 0.2s ease;
     border-radius: 5px;
-    font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+    font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;
 }
 
 .language-selector .nav-link:hover {
@@ -1218,3 +1256,5 @@ Responsive Styling
         padding: 2px 6px;
     }
 }
+
+
