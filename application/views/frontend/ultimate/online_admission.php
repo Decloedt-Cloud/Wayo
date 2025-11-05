@@ -8,7 +8,7 @@
 <style>
   /* ----------------- Hero ----------------- */
 
-  .hero {
+ .hero {
     position: relative;
     min-height: 68vh;
     display: grid;
@@ -73,7 +73,43 @@
   }
 
   @media (max-width: 992px) {
-    .panel--community .grid {
+    .hero {
+      position: relative;
+      min-height: 68vh;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background-image: url('../uploads/images/decloedt/img/cover-wayo.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));
+    }
+
+    .hero .hero-content {
+      position: relative;
+      text-align: center;
+    }
+
+    .hero .lead {
+      max-width: 760px;
+      margin-inline: auto;
+      color: #e9e9ef
+    }
+
+    .btn-pill {
+      border-radius: 999px;
+      font-weight: 700;
+      padding: .8rem 1.2rem;
+    }
+
+    /* ====== Step 2 layout ====== */
+ .panel--community .grid {
       grid-template-columns: 1fr;
     }
   }
@@ -124,7 +160,7 @@
   }
 </style>
 
-<main class="mt-5">
+<main>
   <!-- HERO -->
   <section class="hero">
     <div class="container hero-content py-5" data-animate>

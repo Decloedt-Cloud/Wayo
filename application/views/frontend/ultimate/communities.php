@@ -1,4 +1,4 @@
-<main class="mt-5">
+<main>
   <!-- ===== HERO ===== -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>

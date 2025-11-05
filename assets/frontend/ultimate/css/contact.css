@@ -3,7 +3,7 @@
   --clr-orange-d:#d65e10;
   --clr-black:#000;
   --clr-gray:#333;
-  --ff:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+  --ff:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 }
 
 *{box-sizing:border-box}
