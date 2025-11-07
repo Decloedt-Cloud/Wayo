@@ -640,8 +640,8 @@ $$('.prev').forEach(btn => btn.addEventListener('click', (e) => {
       if(!name.value.trim() || name.value.trim().length<2) ok = setInvalid(name,'Nom obligatoire (2 caractères min)') && ok; else clearInvalid(name);
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) ok = setInvalid(email,'Email invalide') && ok; else clearInvalid(email);
       if(((phone.value)||'').replace(/\D/g,'').length < 8) ok = setInvalid(phone,'Téléphone obligatoire (au moins 8 chiffres)') && ok; else clearInvalid(phone);
-      if((pass.value||'').length < 6) ok = setInvalid(pass,'6 caractères minimum') && ok; else clearInvalid(pass);
-      if(pass.value !== pass2.value || (pass2.value||'').length<6) ok = setInvalid(pass2,'Les mots de passe ne correspondent pas') && ok; else clearInvalid(pass2);
+      if((pass.value||'').length < 8) ok = setInvalid(pass,'8 caractères minimum') && ok; else clearInvalid(pass);
+      if(pass.value !== pass2.value || (pass2.value||'').length<8) ok = setInvalid(pass2,'Les mots de passe ne correspondent pas') && ok; else clearInvalid(pass2);
     }
 
 
