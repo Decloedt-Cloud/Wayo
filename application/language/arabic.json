@@ -2845,5 +2845,15 @@
     "please_enter_a_valid_first_name": "يرجى إدخال اسم أول صالح",
     "please_enter_a_valid_last_name": "يرجى إدخال اسم عائلة صالح",
     "phone_must_start_with_+_and_contain_10–15_digits": "يجب أن يبدأ رقم الهاتف بعلامة + ويحتوي على 10 إلى 15 رقمًا",
-    "please_write_a_message_of_at_least_5_characters": "يرجى كتابة رسالة لا تقل عن 5 أحرف"
+    "please_write_a_message_of_at_least_5_characters": "يرجى كتابة رسالة لا تقل عن 5 أحرف",
+    "document_chargé": "تم تحميل المستند",
+    "remplacer": "استبدال",
+    "fichier_trop_volumineux_(4mo_max)": "الملف كبير جدًا (الحد الأقصى 4 ميغابايت)",
+    "format_non_supporté": "تنسيق غير مدعوم",
+    "Êtes-vous_sûr_de_vouloir_supprimer_ce_document_?": "هل أنت متأكد أنك تريد حذف هذا المستند؟",
+    "suppression...": "جارٍ الحذف...",
+    "document_supprimé_avec_succès": "تم حذف المستند بنجاح",
+    "suppression_impossible": "تعذر حذف المستند",
+    "veuillez_télécharger_un_document_justificatif": "يرجى تحميل مستند إثبات",
+    "document_deleted_successfully": "تم حذف المستند بنجاح"
 }

@@ -2876,6 +2876,15 @@
     "please_enter_a_valid_first_name": "Por favor, introduzca un nombre válido",
     "please_enter_a_valid_last_name": "Por favor, introduzca un apellido válido",
     "phone_must_start_with_+_and_contain_10–15_digits": "El número de teléfono debe comenzar con + y contener entre 10 y 15 dígitos",
-    "please_write_a_message_of_at_least_5_characters": "Por favor, escriba un mensaje de al menos 5 caracteres"
-
+    "please_write_a_message_of_at_least_5_characters": "Por favor, escriba un mensaje de al menos 5 caracteres",
+    "document_chargé": "Documento cargado",
+    "remplacer": "Reemplazar",
+    "fichier_trop_volumineux_(4mo_max)": "Archivo demasiado grande (máximo 4 MB)",
+    "format_non_supporté": "Formato no compatible",
+    "Êtes-vous_sûr_de_vouloir_supprimer_ce_document_?": "¿Está seguro de que desea eliminar este documento?",
+    "suppression...": "Eliminando...",
+    "document_supprimé_avec_succès": "Documento eliminado con éxito",
+    "suppression_impossible": "No se pudo eliminar el documento",
+    "veuillez_télécharger_un_document_justificatif": "Por favor, suba un documento justificativo",
+    "document_deleted_successfully": "Documento eliminado con éxito"
 }

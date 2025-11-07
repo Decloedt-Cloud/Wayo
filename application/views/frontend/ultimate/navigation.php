@@ -5,6 +5,7 @@ $system_name = get_frontend_settings('website_title');
 ?>
 
 <style>
+   
  /* Header Styles */
         @media (min-width: 991px) {
             #openLoginBtnM {
@@ -59,12 +60,18 @@ $system_name = get_frontend_settings('website_title');
             margin: 0;  
         }
 
+         .user-section {
+            display: flex;
+            align-items: center;
+            /* gap: 8px; */
+            }
+
         /* Language Button */
         .btn-lang {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.5rem 0.7rem;
+            padding: .75rem 1.15rem;
             border-radius: 12px;
             border: 1px solid var(--line);
             background: #fff;
@@ -201,7 +208,7 @@ $system_name = get_frontend_settings('website_title');
 <!-- ========== HEADER ========== -->
     <header class="site-header" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid container-customize">
+            <div class="container">
                 <!-- Logo -->
                 <a class="navbar-brand" href="#" aria-label="Wayo Academy">
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
@@ -229,7 +236,7 @@ $system_name = get_frontend_settings('website_title');
                
 
                 <!-- Desktop Navigation -->
-                <div class="collapse navbar-collapse" id="navbarNav"> 
+                <div class="collapse navbar-collapse" id="navbarNav"<?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>> 
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item" style="margin:0 4px">
                             <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo site_url('home'); ?>"><?php echo get_phrase('Home'); ?></a>
@@ -306,10 +313,11 @@ $system_name = get_frontend_settings('website_title');
                         <a id="openLoginBtn" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"><?php echo get_phrase('Login'); ?> </a>
                         <?php include 'components/navigation-components/login_register_component.php'; ?>
                         </li>
-                    <?php } ?>
+                    
                         <a class="btn btn-accent btn-custom btn-create" href="<?php echo site_url('admission/online_admission'); ?>">
                             <?php echo get_phrase('Create_Community'); ?>
                         </a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -383,8 +391,8 @@ $system_name = get_frontend_settings('website_title');
                             </div>
                         </li>
                     <?php endif; ?>
- 
-                   <?php if ($this->session->userdata('user_id')): ?>
+                        
+                   <?php if ($this->session->userdata('user_id')){  ?>
                         <li class="nav-item navbar-user-profile mb-3" style="margin:0 2px; list-style:none;">
                             <div class="user-section p-2 border rounded">
                                 <div class="d-flex align-items-center gap-2">
@@ -397,12 +405,11 @@ $system_name = get_frontend_settings('website_title');
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
                             </div>
                         </li>
-                    <?php endif; ?>
-                   
-                       
-                    <a class="btn btn-accent btn-custom w-100" href="<?php echo site_url('admission/online_admission'); ?>">
+                    <?php } else { ?>
+                        <a class="btn btn-accent btn-custom w-100" href="<?php echo site_url('admission/online_admission'); ?>">
                         <?php echo get_phrase('Create_Community'); ?>
-                    </a>
+                        </a>
+                    <?php } ?>
                 </div>
             </div>
         </div>
