@@ -959,7 +959,7 @@ Responsive Styling
 .language-selector .nav-link {
     display: flex;
     align-items: center;
-    gap: 6px;
+    /* gap: 6px; */
     padding: 6px 10px;
     font-size: 17px !important;
     font-weight: 500;
