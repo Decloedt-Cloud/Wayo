@@ -129,39 +129,88 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         </div>
                     </div>
                     <div id="document_upload" style="display: <?php echo ($settings_school['Tax_residence'] == 'MA' || $settings_school['Tax_residence'] == 'UAE') ? 'block' : 'none'; ?>;">
-                        <div class="form-group row mb-3" >
+                        <div class="form-group row mb-3">
                             <label class="col-md-3 col-form-label" for="tax_document">
                                 <i class="mdi mdi-file-document-outline"></i> <?php echo get_phrase("Document_justificatif") ?><span class="required"> * </span>
                             </label>
                             <div class="col-md-9">
-                                <input type="file" id="tax_document" name="tax_document" class="form-control" accept="application/pdf,image/*">
-                                <small id="document_hint" class="form-text text-muted">
-                                    <?php if ($settings_school['Tax_residence'] == 'MA'): ?>
-                                       
-                                        <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
-                                    <?php elseif ($settings_school['Tax_residence'] == 'UAE'): ?>
-                                        
-                                        <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
-                                    <?php endif; ?>
-                                </small>
-                            </div>
-
-                        </div>
-
-                    </div>
-                     <div class="form-group row mb-3" id="document_upload">
+                                <!-- État: Document chargé -->
                                 <?php if (!empty($settings_school['file']) && file_exists('uploads/community_tax/' . $settings_school['file'])): ?>
-                                    <div class="alert alert-success d-flex align-items-center" role="alert">
-                                        <i class="mdi mdi-check-circle-outline me-2"></i>
-                                        <div>
-                                            <?php echo get_phrase("Un_document_est_déjà_téléchargé.") ?>
-                                           
-                                            <a href="<?php echo base_url('uploads/community_tax/' . $settings_school['file']); ?>" target="_blank" class="btn btn-link btn-sm p-0">
-                                               <?php echo get_phrase("Voir_le_document") ?>
-                                            </a>
+                                    <?php
+                                        $docPath   = 'uploads/community_tax/' . $settings_school['file'];
+                                        $fileUrl   = base_url($docPath);
+                                        $fileName  = basename($docPath);
+                                        $fileSizeK = file_exists($docPath) ? round(filesize($docPath) / 1024) : 0;
+                                        $fileMTime = file_exists($docPath) ? filemtime($docPath) : 0;
+                                    ?>
+                                    <div id="document-loaded-state" class="mb-3">
+                                        <div class="doc-card border rounded p-3">
+                                            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="mdi mdi-cloud-check-outline text-success me-2 fs-4"></i>
+                                                    <div class="fw-semibold"><?php echo get_phrase("Document chargé"); ?></div>
+                                                </div>
+                                                <a href="<?php echo $fileUrl; ?>" target="_blank" class="text-primary fw-semibold small" title="<?php echo get_phrase("Voir le document"); ?>"><?php echo get_phrase("Voir le document"); ?></a>
+                                            </div>
+
+                                            <div class="text-muted small mt-1">
+                                                <span class="me-2"><?php echo htmlspecialchars($fileName); ?></span>
+                                                <?php if ($fileSizeK): ?><span class="me-2"><?php echo $fileSizeK; ?> Ko</span><?php endif; ?>
+                                                <?php if ($fileMTime): ?><span>maj <?php echo date('d M. Y', $fileMTime); ?></span><?php endif; ?>
+                                            </div>
+
+                                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                                <button type="button" id="replace-document-btn" class="btn btn-sm btn-light border" title="<?php echo get_phrase("Remplacer"); ?>">
+                                                    <?php echo get_phrase("Remplacer"); ?>
+                                                </button>
+                                                <button type="button" id="delete-document-btn" class="btn btn-sm btn-outline-danger" title="<?php echo get_phrase("Supprimer"); ?>">
+                                                    <?php echo get_phrase("Supprimer"); ?>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+                                    <style>
+                                      .doc-card{background:#fff}
+                                      @media (prefers-color-scheme:dark){.doc-card{background:var(--bs-body-bg)}}
+                                    </style>
+                                    <!-- Input file caché quand document chargé -->
+                                    <div id="document-upload-section" style="display: none;">
+                                        <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
+                                        <small id="document_hint" class="form-text text-muted mt-1">
+                                            <?php if ($settings_school['Tax_residence'] == 'MA'): ?>
+                                                <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
+                                            <?php elseif ($settings_school['Tax_residence'] == 'UAE'): ?>
+                                                <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
+                                            <?php endif; ?>
+                                        </small>
+                                        <small id="document-help" class="form-text text-muted">
+                                            <i class="mdi mdi-information-outline"></i> PDF, PNG, JPG (max 4 Mo)
+                                        </small>
+                                        <!-- Zone d'erreur -->
+                                        <div id="tax-document-error" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
+                                    </div>
+                                    <input type="hidden" id="delete_tax_document" name="delete_tax_document" value="0">
+                                <?php else: ?>
+                                    <!-- État: Pas de document -->
+                                    <div id="document-upload-section">
+                                        <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
+                                        <small id="document_hint" class="form-text text-muted mt-1">
+                                            <?php if ($settings_school['Tax_residence'] == 'MA'): ?>
+                                                <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
+                                            <?php elseif ($settings_school['Tax_residence'] == 'UAE'): ?>
+                                                <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
+                                            <?php endif; ?>
+                                        </small>
+                                        <small id="document-help" class="form-text text-muted">
+                                            <i class="mdi mdi-information-outline"></i> PDF, PNG, JPG (max 4 Mo)
+                                        </small>
+                                        <!-- Zone d'erreur -->
+                                        <div id="tax-document-error" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
+                                    </div>
+                                    <input type="hidden" id="delete_tax_document" name="delete_tax_document" value="0">
                                 <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -378,15 +427,164 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
 
         if (country === 'MA') {
             documentUpload.style.display = 'block';
-            documentHint.textContent = 'Veuillez télécharger une attestation fiscale marocaine.';
+            if (documentHint) {
+                documentHint.textContent = 'Veuillez télécharger une attestation fiscale marocaine.';
+            }
         } else if (country === 'UAE') {
             documentUpload.style.display = 'block';
-            documentHint.textContent = 'Veuillez télécharger une licence commerciale.';
+            if (documentHint) {
+                documentHint.textContent = 'Veuillez télécharger une licence commerciale.';
+            }
         } else {
             documentUpload.style.display = 'none';
-            documentHint.textContent = '';
+            if (documentHint) {
+                documentHint.textContent = '';
+            }
         }
     }
+</script>
+
+<!-- Script de gestion du document justificatif -->
+<script>
+$(document).ready(function() {
+    const maxFileSizeMB = 4;
+    const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg'];
+    const errorDiv = $('#tax-document-error');
+    const fileInput = $('#tax_document');
+    const deleteInput = $('#delete_tax_document');
+    const documentUploadSection = $('#document-upload-section');
+    const documentLoadedState = $('#document-loaded-state');
+    const replaceBtn = $('#replace-document-btn');
+    const deleteBtn = $('#delete-document-btn');
+
+    // Fonction de validation du fichier
+    function validateTaxDocument(file) {
+        errorDiv.hide().text('');
+
+        if (!file) {
+            return false;
+        }
+
+        // Vérification de la taille
+        if (file.size > maxFileSizeBytes) {
+            errorDiv.text('⚠️ <?php echo get_phrase("Fichier trop volumineux (4Mo max)"); ?>').show();
+            fileInput.val('');
+            return false;
+        }
+
+        // Vérification de l'extension
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(fileExtension)) {
+            errorDiv.text('⚠️ <?php echo get_phrase("Format non supporté"); ?>').show();
+            fileInput.val('');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Validation lors de la sélection du fichier
+    fileInput.on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (validateTaxDocument(file)) {
+                errorDiv.hide();
+            }
+        }
+    });
+
+    // Bouton "Remplacer"
+    if (replaceBtn.length) {
+        replaceBtn.on('click', function() {
+            documentLoadedState.hide();
+            documentUploadSection.show();
+            fileInput.val('');
+            deleteInput.val('0');
+        });
+    }
+
+    // Bouton "Supprimer"
+    if (deleteBtn.length) {
+        deleteBtn.on('click', function() {
+            if (confirm('<?php echo get_phrase("Êtes-vous sûr de vouloir supprimer ce document ?"); ?>')) {
+                deleteTaxDocument();
+            }
+        });
+    }
+
+    // Fonction de suppression du document via AJAX
+    function deleteTaxDocument() {
+        const btn = deleteBtn;
+        const originalText = btn.html();
+        
+        btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin me-1"></i><?php echo get_phrase("Suppression..."); ?>');
+
+        $.ajax({
+            url: '<?php echo base_url("admin/school_settings/delete_tax_document"); ?>',
+            type: 'POST',
+            data: {
+                <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    // Mise à jour du token CSRF
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    
+                    // Masquer l'état "Document chargé" et afficher l'input file
+                    documentLoadedState.hide();
+                    documentUploadSection.show();
+                    fileInput.val('');
+                    deleteInput.val('0');
+                    
+                    success_notify(response.notification || '<?php echo get_phrase("Document supprimé avec succès"); ?>');
+                } else {
+                    error_notify(response.notification || '<?php echo get_phrase("Suppression impossible"); ?>');
+                    btn.prop('disabled', false).html(originalText);
+                }
+            },
+            error: function() {
+                error_notify('<?php echo get_phrase("Suppression impossible"); ?>');
+                btn.prop('disabled', false).html(originalText);
+            }
+        });
+    }
+
+    // Validation avant soumission du formulaire
+    $('#schoolForm').on('submit', function(e) {
+        const taxResidence = $('#tax_residence').val();
+        const hasDocument = documentLoadedState.is(':visible');
+        const hasFileSelected = fileInput[0] && fileInput[0].files.length > 0;
+        const isDeleteRequested = deleteInput.val() === '1';
+
+        // Si résidence fiscale requiert un document
+        if ((taxResidence === 'MA' || taxResidence === 'UAE')) {
+            // Vérifier qu'un document existe OU qu'un nouveau fichier est sélectionné
+            if (!hasDocument && !hasFileSelected && !isDeleteRequested) {
+                error_notify('<?php echo get_phrase("Veuillez télécharger un document justificatif"); ?>');
+                e.preventDefault();
+                return false;
+            }
+
+            // Si un fichier est sélectionné, le valider
+            if (hasFileSelected) {
+                const file = fileInput[0].files[0];
+                if (!validateTaxDocument(file)) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }
+    });
+
+    // Réinitialiser le champ delete_tax_document si un nouveau fichier est sélectionné
+    fileInput.on('change', function() {
+        if (this.files.length > 0) {
+            deleteInput.val('0');
+        }
+    });
+});
 </script>
 
 <script>
