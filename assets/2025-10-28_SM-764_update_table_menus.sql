@@ -1,3 +1,7 @@
+ALTER TABLE menus
+ADD COLUMN  category_order INT(11) NOT NULL ;
+ALTER TABLE menus
+ADD COLUMN  category varchar(255) NOT NULL ;
 UPDATE
     menus
 SET
@@ -60,6 +64,7 @@ SET
         WHEN 'expense_category' THEN 'fas fa-tags'
         WHEN 'SMTP_settings' THEN 'fas fa-envelope-open-text'
         WHEN 'about' THEN 'fas fa-info-circle'
+        WHEN 'certifications' THEN 'fas fa-file-signature fa-fw'
         ELSE icon
     END,
     unique_identifier = CASE
@@ -145,3 +150,11 @@ WHERE
         'about',
         'Dashboard'
     );
+
+    INSERT INTO `menus` (`id`,`displayed_name`, `route_name`, `parent`, `icon`, `status`, `superadmin_access`, `admin_access`, `teacher_access`,
+     `student_access`, `accountant_access`, `librarian_access`, `sort_order`, `is_addon`, `unique_identifier`,`category`,`category_order`) VALUES
+(142, 'Dashboard', 'dashboard', 0, 'fas fa-home', 1, 1, 1, 1, 1, 1, 1, 1, 7, 0, 'dashboard', 'management', 1);
+
+
+UPDATE `menus` SET `status` = '0' WHERE `menus`.`id` = 20;
+UPDATE `menus` SET `category` = 'management' WHERE `menus`.`id` = 19;

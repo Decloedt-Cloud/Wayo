@@ -2909,9 +2909,19 @@
     "sign_up_as_a_mentor": "S’inscrire comme Mentor",
     "create_a_community,_courses_&_live_sessions.": "Créez une communauté, des cours & sessions live.",
     "already_registered_?": "Déjà inscrit ?",
-    "all_programs":"Tous les programmes",
     "already_joined": "Déjà membre",
     "join_community": "Rejoindre la communauté",
     "management": "Gestion",
-    "communication": "Communication"
+    "communication": "Communication",
+    "details": "Details",
+    "document_chargé": "Document chargé",
+    "remplacer": "Remplacer",
+    "fichier_trop_volumineux_(4mo_max)": "Fichier trop volumineux (4mo max)",
+    "format_non_supporté": "Format non supporté",
+    "Êtes-vous_sûr_de_vouloir_supprimer_ce_document_?": "Êtes-vous sûr de vouloir supprimer ce document ?",
+    "suppression...": "Suppression...",
+    "document_supprimé_avec_succès": "Document supprimé avec succès",
+    "suppression_impossible": "Suppression impossible",
+    "veuillez_télécharger_un_document_justificatif": "Veuillez télécharger un document justificatif",
+    "document_deleted_successfully": "Document deleted successfully"
 }

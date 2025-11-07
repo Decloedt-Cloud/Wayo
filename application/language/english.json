@@ -2885,5 +2885,14 @@
     "join_community": "Join community",
     "management": "Management",
     "communication": "Communication",
-    "all_programs": "All programs"
+    "document_chargé": "Document uploaded",
+    "remplacer": "Replace",
+    "fichier_trop_volumineux_(4mo_max)": "File too large (4MB max)",
+    "format_non_supporté": "Unsupported format",
+    "Êtes-vous_sûr_de_vouloir_supprimer_ce_document_?": "Are you sure you want to delete this document?",
+    "suppression...": "Deleting...",
+    "document_supprimé_avec_succès": "Document deleted successfully",
+    "suppression_impossible": "Unable to delete document",
+    "veuillez_télécharger_un_document_justificatif": "Please upload a supporting document",
+    "document_deleted_successfully": "Document deleted successfully"
 }
