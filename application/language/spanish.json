@@ -2868,10 +2868,14 @@
     "already_registered_?": "¿Ya estás registrado?",
     "how_it_works": "Cómo funciona",
     "menu": "Menú",
-    "inicio": "Inicio",
     "already_joined": "Ya te has unido",
     "join_community": "Unirse a la comunidad",
-    "all_programs": "Todos los programas",
     "management": "Gestión",
-    "communication": "Comunicación"
+    "communication": "Comunicación",
+    "contáctanos": "Contáctanos",
+    "please_enter_a_valid_first_name": "Por favor, introduzca un nombre válido",
+    "please_enter_a_valid_last_name": "Por favor, introduzca un apellido válido",
+    "phone_must_start_with_+_and_contain_10–15_digits": "El número de teléfono debe comenzar con + y contener entre 10 y 15 dígitos",
+    "please_write_a_message_of_at_least_5_characters": "Por favor, escriba un mensaje de al menos 5 caracteres"
+
 }

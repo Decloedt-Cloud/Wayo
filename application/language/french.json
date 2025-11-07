@@ -2909,9 +2909,12 @@
     "sign_up_as_a_mentor": "S’inscrire comme Mentor",
     "create_a_community,_courses_&_live_sessions.": "Créez une communauté, des cours & sessions live.",
     "already_registered_?": "Déjà inscrit ?",
-    "all_programs":"Tous les programmes",
     "already_joined": "Déjà membre",
     "join_community": "Rejoindre la communauté",
     "management": "Gestion",
-    "communication": "Communication"
+    "communication": "Communication",
+    "please_enter_a_valid_first_name": "Veuillez entrer un prénom valide",
+    "please_enter_a_valid_last_name": "Veuillez entrer un nom valide",
+    "phone_must_start_with_+_and_contain_10–15_digits": "Le numéro de téléphone doit commencer par + et contenir entre 10 et 15 chiffres",
+    "please_write_a_message_of_at_least_5_characters": "Veuillez écrire un message d’au moins 5 caractères"
 }

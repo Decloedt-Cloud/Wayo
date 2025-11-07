@@ -2841,5 +2841,9 @@
     "already_joined": "تم الانضمام بالفعل",
     "join_community": "انضم إلى المجتمع",
     "management": "إدارة",
-    "communication": "تواصل"
+    "communication": "تواصل",
+    "please_enter_a_valid_first_name": "يرجى إدخال اسم أول صالح",
+    "please_enter_a_valid_last_name": "يرجى إدخال اسم عائلة صالح",
+    "phone_must_start_with_+_and_contain_10–15_digits": "يجب أن يبدأ رقم الهاتف بعلامة + ويحتوي على 10 إلى 15 رقمًا",
+    "please_write_a_message_of_at_least_5_characters": "يرجى كتابة رسالة لا تقل عن 5 أحرف"
 }

@@ -2885,5 +2885,8 @@
     "join_community": "Join community",
     "management": "Management",
     "communication": "Communication",
-    "all_programs": "All programs"
+    "please_enter_a_valid_first_name": "Please enter a valid first name",
+    "please_enter_a_valid_last_name": "Please enter a valid last name",
+    "phone_must_start_with_+_and_contain_10–15_digits": "Phone must start with + and contain 10–15 digits",
+    "please_write_a_message_of_at_least_5_characters": "Please write a message of at least 5 characters"
 }
