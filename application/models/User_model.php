@@ -497,7 +497,7 @@ class User_model extends CI_Model
 				'linkedin' => $this->input->post('linkedin_link')
 			);
 			$teacher_table_data['social_links'] = json_encode($social_links);
-			$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
+			//$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
 			$this->db->where('school_id', $this->input->post('school_id'));
 			$this->db->where('user_id', $param1);
 			$this->db->update('teachers', $teacher_table_data);

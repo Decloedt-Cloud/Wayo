@@ -2895,5 +2895,6 @@
     "certifications": "Certifications",
     "all_programs": "Tous les programmes",
     "management": "Gestion",
-    "communication": "Communication"
+    "communication": "Communication",
+    "quiz_question_deleted_successfully": "Question du quiz supprimée avec succès"
 }
