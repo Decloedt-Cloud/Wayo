@@ -85,7 +85,27 @@ class Admission extends CI_Controller
             $this->load->view('frontend/' . $this->theme . '/index', $page_data);
         }
 
+    public function check_duplication_ajax()
+    {
+        $type = $this->input->post('type'); // 'email' or 'school_name'
+        $value = $this->input->post('value');
 
+        $response = ['available' => true];
+
+        if ($type === 'email') {
+            $exists = $this->user_model->check_duplication('on_create', $value);
+            if (!$exists) {
+                $response = ['available' => false, 'message' => get_phrase('this_email_already_exist')];
+            }
+        } elseif ($type === 'school_name') {
+            $exists = $this->user_model->check_duplication_school('on_create', $value);
+            if (!$exists) {
+                $response = ['available' => false, 'message' => get_phrase('this_school_name_already_exist')];
+            }
+        }
+
+        echo json_encode($response);
+    }
     
 }
 

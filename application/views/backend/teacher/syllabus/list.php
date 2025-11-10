@@ -1,7 +1,20 @@
 <?php
 $school_id = school_id();
 if (isset($class_id) ):
-    $syllabuses = $this->db->get_where('syllabuses', array('class_id' => $class_id,  'session_id' => active_session()))->result_array();
+       if ($class_id == 'all') {
+        // Tous les syllabus de l'école et session active
+        $syllabuses = $this->db->get_where('syllabuses', array(
+            'school_id' => $school_id,
+            'session_id' => active_session()
+        ))->result_array();
+    } else {
+        //Syllabus filtrés par classe
+        $syllabuses = $this->db->get_where('syllabuses', array(
+            'class_id' => $class_id,
+            'session_id' => active_session()
+        ))->result_array();
+    }
+    
     if(count($syllabuses) > 0):?>
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
       <thead>
