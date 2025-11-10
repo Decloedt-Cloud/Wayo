@@ -48,7 +48,7 @@
     <div class="main-card">
         <div class="card-body">
         <h4 class="header-title"><?php echo get_phrase('VAT') ;?></h4>
-        <form method="POST" class="col-12 systemvatAjaxForm," action="<?php echo route('payment_settings/vat') ;?>" id = "vat_settings">
+        <form method="POST" class="col-12 systemvatAjaxForm" action="<?php echo route('payment_settings/vat') ;?>" id = "vat_settings">
           <!-- Champ caché pour le jeton CSRF -->
            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 

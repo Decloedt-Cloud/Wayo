@@ -1,5 +1,5 @@
 <!-- ========== HERO ========== -->
-  <section class="contact-hero position-relative text-center mt-5">
+  <section class="contact-hero position-relative text-center">
     <div class="hero-overlay"></div>
     <div class="container position-relative hero-inner">
       <h1 class="fw-extrabold text-dark"><?php echo get_phrase("Contact Us") ?></h1>

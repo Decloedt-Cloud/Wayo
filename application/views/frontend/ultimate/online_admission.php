@@ -12,12 +12,7 @@
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
-
     .btn-pill{ border-radius:999px; font-weight:700; padding:.8rem 1.2rem; }
-    .btn-accent{ background:var(--accent); color:#fff; box-shadow:0 8px 20px rgba(252,123,48,.25) }
-    .btn-accent:hover{ background:var(--accent-600); color:#fff; }
-    .btn-ghost{ background:#ffffff14; color:#fff; border:1px solid #ffffff40 }
-    .btn-ghost:hover{ background:#ffffff26; color:#fff; }
 
     /* ====== Step 2 layout ====== */
     .panel--community .grid {
@@ -52,7 +47,7 @@
 
 </style>
 
-<main class="mt-5">
+<main>
   <!-- HERO -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>
@@ -645,8 +640,8 @@ $$('.prev').forEach(btn => btn.addEventListener('click', (e) => {
       if(!name.value.trim() || name.value.trim().length<2) ok = setInvalid(name,'Nom obligatoire (2 caractères min)') && ok; else clearInvalid(name);
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) ok = setInvalid(email,'Email invalide') && ok; else clearInvalid(email);
       if(((phone.value)||'').replace(/\D/g,'').length < 8) ok = setInvalid(phone,'Téléphone obligatoire (au moins 8 chiffres)') && ok; else clearInvalid(phone);
-      if((pass.value||'').length < 6) ok = setInvalid(pass,'6 caractères minimum') && ok; else clearInvalid(pass);
-      if(pass.value !== pass2.value || (pass2.value||'').length<6) ok = setInvalid(pass2,'Les mots de passe ne correspondent pas') && ok; else clearInvalid(pass2);
+      if((pass.value||'').length < 8) ok = setInvalid(pass,'8 caractères minimum') && ok; else clearInvalid(pass);
+      if(pass.value !== pass2.value || (pass2.value||'').length<8) ok = setInvalid(pass2,'Les mots de passe ne correspondent pas') && ok; else clearInvalid(pass2);
     }
 
 

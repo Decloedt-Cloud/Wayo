@@ -11257,7 +11257,7 @@ public function download_csv_get() {
     $header = array("Student ID", "Name", "Class", "Section", "Email", "Phone");
     
     // Retrieve data from the database (modify this query as per your requirements)
-    $school_id = $this->session->userdata('school_id'); // Assuming school_id is stored in session
+   $school_id = $this->session->userdata('school_id'); // Assuming school_id is stored in session
     $students = $this->db->select('id, full_name, class_id, section_id, email, phone') // Use actual column names from your table
                          ->where('school_id', $school_id)
                          ->get('students')
@@ -11303,23 +11303,6 @@ private function getSectionName($section_id) {
     $section = $this->db->get_where('sections', array('id' => $section_id))->row_array();
     return $section ? $section['name'] : 'N/A';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 public function syllabus_operations($operation, $class_id = null, $section_id = null, $syllabus_id = null) {
     switch ($operation) {

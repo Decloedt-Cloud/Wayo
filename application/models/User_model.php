@@ -1593,7 +1593,7 @@ class User_model extends CI_Model
 
 			);
 			$enrol_data = $this->db->get_where('enrols', $checker)->row_array();
-			$student_details = $this->db->get_where('students', array('id' => $id))->row_array();
+			$student_details = $this->db->get_where('students', array('user_id' => $id))->row_array();
 			$enrol_data['code'] = $student_details['code'];
 			$enrol_data['user_id'] = $student_details['user_id'];
 
@@ -2088,7 +2088,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 		} else {
 			$student_data = $this->db->get_where('students', array('user_id' => $user_id))->row_array();
 		}
-		$student_details = $this->get_student_details_by_id('student', $student_data['id']);
+		$student_details = $this->get_student_details_by_id('student', $student_data['user_id']);
 		return $student_details;
 	}
 
