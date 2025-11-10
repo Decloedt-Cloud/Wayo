@@ -94,14 +94,14 @@ foreach($users as $user):
         <small id="" class="form-text text-muted"><?php echo get_phrase('provide_a_small_about'); ?></small>
       </div>
 
-      <div class="form-group mb-1">
+      <!-- <div class="form-group mb-1">
         <label for="show_on_website"><?php echo get_phrase('show_on_website'); ?></label>
         <select name="show_on_website" id="show_on_website" class="form-control" >
           <option value="1" <?php if($teacher['show_on_website'] == 1) echo 'selected'; ?>><?php echo get_phrase('show'); ?></option>
           <option value="0" <?php if($teacher['show_on_website'] == 0) echo 'selected'; ?>><?php echo get_phrase('do_not_need_to_show'); ?></option>
         </select>
         <small id="" class="form-text text-muted"><?php echo get_phrase('show_this_teacher_on_website'); ?></small>
-      </div>
+      </div> -->
 
       <div class="form-group mb-1">
           <label for="image_file"><?php echo get_phrase('upload_image'); ?></label>

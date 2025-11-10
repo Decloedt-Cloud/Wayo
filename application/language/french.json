@@ -2913,6 +2913,7 @@
     "join_community": "Rejoindre la communauté",
     "management": "Gestion",
     "communication": "Communication",
+    "quiz_question_deleted_successfully": "Question du quiz supprimée avec succès",
     "please_enter_a_valid_first_name": "Veuillez entrer un prénom valide",
     "please_enter_a_valid_last_name": "Veuillez entrer un nom valide",
     "phone_must_start_with_+_and_contain_10–15_digits": "Le numéro de téléphone doit commencer par + et contenir entre 10 et 15 chiffres",
