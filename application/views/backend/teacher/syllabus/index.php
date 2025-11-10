@@ -23,7 +23,7 @@
                             <div class="col-md-3 mb-1"></div>
                             <div class="col-md-4 mb-1">
                                 <select name="class" id="class_id_teachaer" class="form-control" required>
-                                    <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                                    <option value="all"><?php echo get_phrase('all_programs'); ?></option>
                                     <?php
                                     $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
                                     $school_id = school_id();
@@ -60,6 +60,7 @@
                 dropdownParent: '#right-modal'
             });
         }); //initSelect2(['#class_id']);
+        showAllSyllabuses('all');
     });
 
 
