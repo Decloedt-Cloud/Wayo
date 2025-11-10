@@ -2937,5 +2937,19 @@
     "document_supprimé_avec_succès": "Document supprimé avec succès",
     "suppression_impossible": "Suppression impossible",
     "veuillez_télécharger_un_document_justificatif": "Veuillez télécharger un document justificatif",
-    "document_deleted_successfully": "Document deleted successfully"
+    "document_deleted_successfully": "Document deleted successfully",
+    "name_required_(minimum_2_characters).": "Nom obligatoire (2 caractères minimum).",
+    "first_name_required_(minimum_2_characters).": "Prénom obligatoire (2 caractères minimum).",
+    "please_use_a_valid_email_address.": "Veuillez utiliser une adresse e-mail valide.",
+    "invalid_date_(no_future_dates_allowed).": "Date invalide (pas de date future autorisée).",
+    "minimum_6_characters.": "6 caractères minimum.",
+    "passwords_do_not_match.": "Les mots de passe ne correspondent pas.",
+    "invalid_date_(no_future_date_allowed).": "Date invalide (pas de date future autorisée).",
+    "minimum_6_characters": "6 caractères minimum",
+    "use_a_valid_email_address_(e.g.,_example@domain.com).": "Utilisez une adresse e-mail valide (ex. exemple@domaine.com).",
+    "enter_your_date_of_birth_(no_future_dates).": "Entrez votre date de naissance (pas de date future).",
+    "gmail": "Gmail",
+    "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Entrez votre date de naissance (vous devez avoir au moins 18 ans).",
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Date invalide (vous devez avoir au moins 18 ans)."
+
 }

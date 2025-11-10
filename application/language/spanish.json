@@ -2896,5 +2896,19 @@
     "document_supprimé_avec_succès": "Documento eliminado con éxito",
     "suppression_impossible": "No se pudo eliminar el documento",
     "veuillez_télécharger_un_document_justificatif": "Por favor, suba un documento justificativo",
-    "document_deleted_successfully": "Documento eliminado con éxito"
+    "document_deleted_successfully": "Documento eliminado con éxito",
+    "miembro_de_admisión_en_línea": "Miembro de admisión en línea",
+    "use_a_valid_email_address_(e.g.,_example@domain.com).": "Utiliza una dirección de correo electrónico válida (por ejemplo, ejemplo@dominio.com).",
+    "enter_your_date_of_birth_(no_future_dates).": "Introduce tu fecha de nacimiento (no se permiten fechas futuras).",
+    "gmail": "Gmail",
+    "name_required_(minimum_2_characters).": "Nombre obligatorio (mínimo 2 caracteres).",
+    "first_name_required_(minimum_2_characters).": "Nombre de pila obligatorio (mínimo 2 caracteres).",
+    "please_use_a_valid_email_address.": "Por favor, utiliza una dirección de correo electrónico válida.",
+    "invalid_date_(no_future_dates_allowed).": "Fecha inválida (no se permiten fechas futuras).",
+    "minimum_6_characters.": "Mínimo 6 caracteres.",
+    "passwords_do_not_match.": "Las contraseñas no coinciden.",
+    "invalid_date_(no_future_date_allowed).": "Fecha inválida (no se permite una fecha futura).",
+    "minimum_6_characters": "Mínimo 6 caracteres",
+    "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Introduce tu fecha de nacimiento (debes tener al menos 18 años).",
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años)."
 }

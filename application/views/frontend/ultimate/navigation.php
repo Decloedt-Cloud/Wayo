@@ -210,7 +210,7 @@ $system_name = get_frontend_settings('website_title');
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <!-- Logo -->
-                <a class="navbar-brand" href="#" aria-label="Wayo Academy">
+                <a class="navbar-brand" href="<?php echo base_url('home'); ?>" aria-label="Wayo Academy">
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
                 </a>
                  <!-- Mobile Toggle -->
