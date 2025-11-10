@@ -2868,10 +2868,8 @@
     "already_registered_?": "¿Ya estás registrado?",
     "how_it_works": "Cómo funciona",
     "menu": "Menú",
-    "inicio": "Inicio",
     "already_joined": "Ya te has unido",
     "join_community": "Unirse a la comunidad",
-    "all_programs": "Todos los programas",
     "management": "Gestión",
     "communication": "Comunicación",
     "please_correct_duplicate_fields": "Corrija los campos duplicados",
@@ -2882,5 +2880,15 @@
     "current": "Actual",
     "width": "Ancho",
     "corrupted_image": "Imagen corrupta",
-    "spanish_(es)": "Español (es)"
+    "spanish_(es)": "Español (es)",
+     "document_chargé": "Documento cargado",
+    "remplacer": "Reemplazar",
+    "fichier_trop_volumineux_(4mo_max)": "Archivo demasiado grande (máximo 4 MB)",
+    "format_non_supporté": "Formato no compatible",
+    "Êtes-vous_sûr_de_vouloir_supprimer_ce_document_?": "¿Está seguro de que desea eliminar este documento?",
+    "suppression...": "Eliminando...",
+    "document_supprimé_avec_succès": "Documento eliminado con éxito",
+    "suppression_impossible": "No se pudo eliminar el documento",
+    "veuillez_télécharger_un_document_justificatif": "Por favor, suba un documento justificativo",
+    "document_deleted_successfully": "Documento eliminado con éxito"
 }

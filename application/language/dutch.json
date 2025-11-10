@@ -3078,7 +3078,6 @@
     "already_registered_?": "Bereits registriert?",
     "already_joined": "Al toegetreden",
     "join_community": "Word lid van de community",
-    "all_programs": "Alle programma's",
     "management": "Beheer",
     "communication": "Mededeling",
     "please_correct_duplicate_fields": "Corrigeer dubbele velden",
@@ -3089,5 +3088,11 @@
     "current": "Huidig",
     "width": "Breedte",
     "corrupted_image": "Beschadigde afbeelding",
-    "spanish_(es)": "Spaans (es)"
+    "spanish_(es)": "Spaans (es)",
+    "document_loaded_status": "Document geladen",
+    "replace_action": "Vervangen",
+    "pdf_png_jpg_max_4mb_help": "PDF, PNG, JPG (max 4MB)",
+    "unsupported_format_error": "Niet-ondersteund formaat",
+    "file_too_large_max_4mb_error": "Bestand te groot (max 4MB)",
+    "deletion_impossible_error": "Verwijderen onmogelijk"
 }
