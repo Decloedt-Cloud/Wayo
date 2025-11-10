@@ -15,7 +15,7 @@
 
 </style>
 
-<main class="mt-5">
+<main>
 <!-- HERO -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>
@@ -64,7 +64,7 @@
           <label class="field">
             <span class="field-label">
               <?php echo get_phrase("Email") ?> <span class="req">*</span>
-              <span class="info" data-tooltip="Utilisez une adresse e-mail valide (ex. exemple@domaine.com).">
+              <span class="info" data-tooltip="<?php echo get_phrase("Use_a_valid_email_address_(e.g.,_example@domain.com).") ?>">
                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
               </span>
             </span>
@@ -76,18 +76,27 @@
             <div class="error" data-for="gmail"></div>
           </label>
 
-          <label class="field">
+       <?php 
+        // Calculer la date limite pour 18 ans
+        $today = date('Y-m-d');
+        $eighteen_years_ago = date('Y-m-d', strtotime('-18 years'));
+        ?>
+
+        <label class="field">
             <span class="field-label">
-              <?php echo get_phrase("Date_of_birth") ?> <span class="req">*</span>
-              <span class="info" data-tooltip="Entrez votre date de naissance (pas de date future).">
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-              </span>
+                <?php echo get_phrase("Date_of_birth") ?> <span class="req">*</span>
+                <span class="info" data-tooltip="<?php echo get_phrase('Enter_your_date_of_birth_(must_be_at_least_18_years_old).'); ?>">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                </span>
             </span>
-            <input id="birthdate" type="date" class="form-control rounded-end shadow-none" name="date_of_birth" required aria-required="true"
-                data-msg="Please enter your date of birth" data-error-class="u-has-error"
-                data-success-class="u-has-success">
+            <input id="birthdate" type="date" class="form-control rounded-end shadow-none" 
+                  name="date_of_birth" required aria-required="true"
+                  max="<?php echo $eighteen_years_ago; ?>"
+                  data-msg="Please enter your date of birth" 
+                  data-error-class="u-has-error"
+                  data-success-class="u-has-success">
             <div class="error" data-for="birthdate"></div>
-          </label>
+        </label>
         </div>
 
         <div class="grid-2">
@@ -193,7 +202,7 @@
 
         if (i === 1) updateSummary(); // étape Résumé
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
         qsa('.next').forEach(b => b.addEventListener('click', () => {
@@ -225,10 +234,10 @@
       const first = qs('#firstName')?.value?.trim() || '—';
       const mail  = qs('#gmail')?.value?.trim() || '—';
       const birth = qs('#birthdate')?.value || '—';
-      dd(s, 'Nom', last);
-      dd(s, 'Prénom', first);
-      dd(s, 'Gmail', mail);
-      dd(s, 'Date de naissance', birth);
+      dd(s, '<?php echo get_phrase("Last_name") ?>', last);
+      dd(s, '<?php echo get_phrase("First_name") ?>', first);
+      dd(s, '<?php echo get_phrase("Gmail") ?>', mail);
+      dd(s, '<?php echo get_phrase("Date_of_birth") ?>', birth);
     }
 
     // ===== Validation =====
@@ -261,12 +270,12 @@
 
     // Vérifs au blur
     [
-      ['lastName', 'Nom obligatoire (2 caractères min).', v => v.trim().length >= 2],
-      ['firstName', 'Prénom obligatoire (2 caractères min).', v => v.trim().length >= 2],
-      ['gmail', 'Veuillez utiliser une adresse e-mail valide.', v => isEmail(v)],
-      ['birthdate', 'Date invalide (pas de date future).', v => notFuture(v)],
-      ['password', '6 caractères minimum.', v => (v || '').length >= 6],
-      ['confirmPassword', 'Les mots de passe ne correspondent pas.', v => qs('#password')?.value === v && v.length >= 6],
+      ['lastName', '<?php echo get_phrase("Name_required_(minimum_2_characters)."); ?>', v => v.trim().length >= 2],
+      ['firstName', '<?php echo get_phrase("First_name_required_(minimum_2_characters)."); ?>', v => v.trim().length >= 2],
+      ['gmail', '<?php echo get_phrase("Please_use_a_valid_email_address."); ?>', v => isEmail(v)],
+      ['birthdate', '<?php echo get_phrase("Invalid_date_(you_must_be_at_least_18_years_old)."); ?>', v => notFuture(v)],
+      ['password', '<?php echo get_phrase("Minimum_6_characters."); ?>', v => (v || '').length >= 6],
+      ['confirmPassword', '<?php echo get_phrase("Passwords_do_not_match."); ?>', v => qs('#password')?.value === v && v.length >= 6],
     ].forEach(([id, msg, test]) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -288,16 +297,16 @@
         const conf = qs('#confirmPassword');
         let ok = true;
 
-        if (!last.value.trim() || last.value.trim().length < 2) { ok = setInvalid(last, 'Nom obligatoire (2 caractères min).'); } else { clearInvalid(last); }
-        if (!first.value.trim() || first.value.trim().length < 2) { ok = setInvalid(first, 'Prénom obligatoire (2 caractères min).'); } else { clearInvalid(first); }
+        if (!last.value.trim() || last.value.trim().length < 2) { ok = setInvalid(last, '<?php echo get_phrase("Name_required_(minimum_2_characters)."); ?>'); } else { clearInvalid(last); }
+        if (!first.value.trim() || first.value.trim().length < 2) { ok = setInvalid(first, '<?php echo get_phrase("First_name_required_(minimum_2_characters)."); ?>'); } else { clearInvalid(first); }
         if (!isEmail(mail.value)) {
-          ok = setInvalid(mail, 'Veuillez utiliser une adresse e-mail valide.');
+          ok = setInvalid(mail, '<?php echo get_phrase("Please_use_a_valid_email_address."); ?>');
         } else {
           clearInvalid(mail);
         }
-        if (!notFuture(birth.value)) { ok = setInvalid(birth, 'Date invalide (pas de date future).'); } else { clearInvalid(birth); }
-        if ((pass.value || '').length < 6) { ok = setInvalid(pass, '6 caractères minimum.'); } else { clearInvalid(pass); }
-        if (conf.value !== pass.value || (conf.value || '').length < 6) { ok = setInvalid(conf, 'Les mots de passe ne correspondent pas.'); } else { clearInvalid(conf); }
+        if (!notFuture(birth.value)) { ok = setInvalid(birth, '<?php echo get_phrase("Invalid_date_(you_must_be_at_least_18_years_old)."); ?>'); } else { clearInvalid(birth); }
+        if ((pass.value || '').length < 6) { ok = setInvalid(pass, '<?php echo get_phrase("Minimum_6_characters"); ?>'); } else { clearInvalid(pass); }
+        if (conf.value !== pass.value || (conf.value || '').length < 6) { ok = setInvalid(conf, '<?php echo get_phrase("Passwords_do_not_match"); ?>'); } else { clearInvalid(conf); }
         return ok;
       }
 

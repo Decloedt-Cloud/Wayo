@@ -2894,5 +2894,18 @@
     "document_supprimé_avec_succès": "Document deleted successfully",
     "suppression_impossible": "Unable to delete document",
     "veuillez_télécharger_un_document_justificatif": "Please upload a supporting document",
-    "document_deleted_successfully": "Document deleted successfully"
+    "document_deleted_successfully": "Document deleted successfully",
+    "name_required_(minimum_2_characters).": "Name required (minimum 2 characters).",
+    "first_name_required_(minimum_2_characters).": "First name required (minimum 2 characters).",
+    "please_use_a_valid_email_address.": "Please use a valid email address.",
+    "invalid_date_(no_future_dates_allowed).": "Invalid date (no future dates allowed).",
+    "minimum_6_characters.": "Minimum 6 characters.",
+    "passwords_do_not_match.": "Passwords do not match.",
+    "invalid_date_(no_future_date_allowed).": "Invalid date (no future date allowed).",
+    "minimum_6_characters": "Minimum 6 characters",
+    "use_a_valid_email_address_(e.g.,_example@domain.com).": "Use a valid email address (e.g., example@domain.com).",
+    "enter_your_date_of_birth_(no_future_dates).": "Enter your date of birth (no future dates).",
+    "gmail": "Gmail",
+    "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Enter your date of birth (must be at least 18 years old).",
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Invalid date (you must be at least 18 years old)."
 }
