@@ -864,8 +864,8 @@ if ($active_school_id) {
                         <div class="form-group-community" id="priceFieldWrapper">
                             <label for="community-price"><?php echo get_phrase("community_price") ?></label>
                             <div class="input-with-prefix-saas">
-                                <span id="currencySymbol"><?php echo get_phrase("MAD") ?></span>
-                                <input type="text" id="community-price" name="price" class="form-input-community" placeholder="299.00">
+                                <span id="currencySymbol" style="color: #9CA3AF;">—</span>
+                                <input type="text" id="community-price" name="price" class="form-input-community" placeholder="299.00" inputmode="decimal">
                             </div>
                             <small class="form-text"><?php echo get_phrase("leave_blank_for_a_free community.") ?></small>
                         </div>
@@ -1265,7 +1265,7 @@ if ($active_school_id) {
                             const name = item.querySelector('span').textContent.trim();
                             const roleLabel = roleLower === 'teacher' ? 'Mentor' :
                                 roleLower.charAt(0).toUpperCase() + roleLower.slice(1);
-                            display.innerHTML = `${name} <span class="current-role">${roleLabel}</span>`;
+                            display.innerHTML = '<?php echo get_phrase('loading...'); ?>';
                         }
 
                         window.location.replace(response.redirect_url);
@@ -1309,12 +1309,35 @@ if ($active_school_id) {
         const particulierNotice = document.getElementById('particulierNotice');
         const currencySymbol = document.getElementById('currencySymbol');
 
+        taxSelect?.addEventListener('change', function() {
+            updateCurrency();
+            togglePriceField();
+        });
         // === DEVISE DYNAMIQUE ===
         function updateCurrency() {
-            const tax = taxSelect?.value || 'MA';
-            currencySymbol.textContent = tax === 'UAE' ? 'د.إ' : 'DH';
-            if (priceInput && !priceInput.disabled) {
-                priceInput.placeholder = `299.00 ${tax === 'UAE' ? '(AED)' : '(MAD)'}`;
+            const tax = taxSelect?.value || '';
+            const symbolSpan = document.getElementById('currencySymbol');
+            const priceInput = document.getElementById('community-price');
+
+            if (!symbolSpan || !priceInput) return;
+
+            let symbol = '—'; // Par défaut : neutre
+            let placeholder = '299.00';
+
+            if (tax === 'MA') {
+                symbol = 'DH';
+                placeholder = '299.00';
+            } else if (tax === 'UAE') {
+                symbol = 'AED';
+                placeholder = '299.00';
+            }
+
+            symbolSpan.textContent = symbol;
+            symbolSpan.style.color = symbol === '—' ? '#9CA3AF' : '#6B7280';
+
+            // Ne pas écraser la valeur saisie
+            if (!priceInput.value || priceInput.value === '0') {
+                priceInput.placeholder = placeholder;
             }
         }
 
