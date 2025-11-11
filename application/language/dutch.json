@@ -3085,5 +3085,13 @@
     "pdf_png_jpg_max_4mb_help": "PDF, PNG, JPG (max 4MB)",
     "unsupported_format_error": "Niet-ondersteund formaat",
     "file_too_large_max_4mb_error": "Bestand te groot (max 4MB)",
-    "deletion_impossible_error": "Verwijderen onmogelijk"
+    "deletion_impossible_error": "Verwijderen onmogelijk",
+    "document_deleted_successfully": "Document succesvol verwijderd",
+    "read": "Lezen",
+    "not_visible_on_website": "Niet zichtbaar op de website",
+    "no_information_provided": "Geen informatie verstrekt",
+    "no_social_links": "Geen sociale links",
+    "maximum_members": "Maximaal aantal leden",
+    "not_specified": "Niet gespecificeerd"
+
 }

@@ -22,6 +22,8 @@ if (count($classes) > 0): ?>
                         <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item" onclick="largeModal('<?php echo site_url('modal/popup/class/read/'.$class['id'])?>', '<?php echo $class['name']; ?>');"><?php echo get_phrase('read'); ?></a>
+                            
                             <a href="javascript:void(0);" class="dropdown-item" onclick="rightModal('<?php echo site_url('modal/popup/class/edit/'.$class['id'])?>', '<?php echo get_phrase('update_class'); ?>');"><?php echo get_phrase('edit'); ?></a>
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item" onclick="confirmModal('<?php echo route('manage_class/delete/'.$class['id']); ?>', showAllClasses)"><?php echo get_phrase('delete'); ?></a>

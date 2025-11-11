@@ -2881,5 +2881,13 @@
     "document_supprimé_avec_succès": "Documento eliminado con éxito",
     "suppression_impossible": "No se pudo eliminar el documento",
     "veuillez_télécharger_un_document_justificatif": "Por favor, suba un documento justificativo",
-    "document_deleted_successfully": "Documento eliminado con éxito"
+    "document_deleted_successfully": "Documento eliminado con éxito",
+    "read": "Leer",
+    "not_visible_on_website": "No visible en el sitio web",
+    "no_information_provided": "No se proporcionó información",
+    "no_social_links": "No hay enlaces sociales",
+    "maximum_members": "Número máximo de miembros",
+    "not_specified": "No especificado"
+
+
 }

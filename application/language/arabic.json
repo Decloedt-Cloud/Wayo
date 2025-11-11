@@ -2851,5 +2851,12 @@
     "document_supprimé_avec_succès": "تم حذف المستند بنجاح",
     "suppression_impossible": "تعذر حذف المستند",
     "veuillez_télécharger_un_document_justificatif": "يرجى تحميل مستند إثبات",
-    "document_deleted_successfully": "تم حذف المستند بنجاح"
+    "document_deleted_successfully": "تم حذف المستند بنجاح",
+    "read": "قراءة",
+    "not_visible_on_website": "غير مرئي على الموقع",
+    "no_information_provided": "لم يتم تقديم أي معلومات",
+    "no_social_links": "لا توجد روابط اجتماعية",
+    "maximum_members": "الحد الأقصى للأعضاء",
+    "not_specified": "غير محدد"
+
 }
