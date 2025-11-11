@@ -1,22 +1,21 @@
 <!-- start page title -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<?php
+$user_id = $this->session->userdata('user_id');
+$student_data = $this->db->get_where('students', array('user_id' => $user_id));
+
+if ($student_data->num_rows() == 0) {
+?>
+  <div class="alert alert-warning-community text-center" role="alert" style="font-size: 15px;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <?php echo get_phrase('no_course_or_school'); ?>
+    <strong><a style="color: black; font-weight: bold;text-decoration: underline !important;" target="_blank" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase('click_here'); ?></a>
+    </strong>.
+  </div>
+<?php
+}
+?>
 <div class="row ">
-
-  <?php
-  $user_id = $this->session->userdata('user_id');
-  $student_data = $this->db->get_where('students', array('user_id' => $user_id));
-
-  if ($student_data->num_rows() == 0) {
-  ?>
-    <div class="alert alert-warning" role="alert" style="font-size: 15px;">
-      <i class="dripicons-information me-2"></i>
-      <?php echo get_phrase('no_course_or_school'); ?>
-      <strong><a style="color: black; font-weight: bold;text-decoration: underline !important;" target="_blank" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase('click_here'); ?></a>
-      </strong>.
-    </div>
-  <?php
-  }
-  ?>
 
   <div class="col-xl-12">
     <div class="header-card">
@@ -109,10 +108,11 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="fas fa-globe fa-fw"></i> <?php echo get_phrase('social'); ?> </h4>
-      </div>
+        <i class="fas fa-globe fa-fw"></i> <?php echo get_phrase('social'); ?>
+      </h4>
     </div>
   </div>
+</div>
 
 <div class="iframe-container">
 
