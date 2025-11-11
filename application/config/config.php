@@ -569,8 +569,12 @@ $config['csrf_exclude_uris'] = array(
     'teacher/get_users_by_school',
     'student/get_school_data',
     'student/recording/.*',
-    'admission/online_admission/.*'
-
+    'admission/online_admission/.*',
+    'login/validate_login_frontend',
+    'home/online_admission_school',
+    'superadmin/check_teacher_email',
+    'admin/check_teacher_email',
+    'admin/teacher/create'
 );
  
 /*

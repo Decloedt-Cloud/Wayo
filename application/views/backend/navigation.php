@@ -335,7 +335,25 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
 </style>
 
 
-<aside class="sidebar" id="sidebar">
+<?php
+$school_approved = true;
+$allowed_in_menu = false;
+
+if ($this->session->userdata('user_type') == 'admin') {
+    $school_id = $this->session->userdata('school_id');
+    $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+    $school_approved = ($school && $school['status'] == 1);
+
+    // Si non approuvé → on autorise seulement dashboard et logout dans le menu
+    $current_method = $this->router->method;
+    $allowed_in_menu = in_array($current_method, ['dashboard', 'logout', 'language']);
+}
+?>
+<aside class="sidebar" id="sidebar"
+    <?php if (!$school_approved): ?>
+    style="opacity: 0.5; pointer-events: none; user-select: none;"
+    onclick="event.preventDefault(); return false;"
+    <?php endif; ?>>
     <div class="sidebar-header">
         <a href="<?php echo route('profile'); ?>">
             <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="avatar">
@@ -609,5 +627,31 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
                 }
             });
         });
+        <?php if (!$school_approved): ?>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Réactiver le lien Dashboard
+                const dashboardLinks = document.querySelectorAll('a[href*="admin/dashboard"], a[href*="dashboard"]');
+                dashboardLinks.forEach(link => {
+                    link.style.pointerEvents = 'auto';
+                    link.style.opacity = '1';
+                    link.closest('li')?.style.pointerEvents = 'auto';
+                });
+
+                // Réactiver le lien Logout
+                const logoutLinks = document.querySelectorAll('a[href*="logout"], a[onclick*="logout"]');
+                logoutLinks.forEach(link => {
+                    link.style.pointerEvents = 'auto';
+                    link.style.opacity = '1';
+                    link.closest('li')?.style.pointerEvents = 'auto';
+                });
+
+                // Optionnel : ajouter un message au survol
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    if (!link.href.includes('dashboard') && !link.href.includes('logout')) {
+                        link.title = "<?php echo get_phrase('feature_disabled_until_community_approval'); ?>";
+                    }
+                });
+            });
+        <?php endif; ?>
     });
 </script>

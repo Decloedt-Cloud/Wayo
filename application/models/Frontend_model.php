@@ -799,7 +799,11 @@ class Frontend_model extends CI_Model
     // Insert user
     $this->db->insert('users', $admin_data);
     $user_id = $this->db->insert_id();
-
+    $this->db->insert('user_schools', [
+      'user_id'   => $user_id,
+      'school_id' => $school_id,
+      'role'      => 'admin'
+    ]);
     
     // Handle school image upload
     if (isset($_FILES['school_image']) && $_FILES['school_image']['error'] == UPLOAD_ERR_OK) {
