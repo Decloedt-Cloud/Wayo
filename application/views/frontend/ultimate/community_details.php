@@ -124,8 +124,25 @@
                       <div class="d-flex gap-2 mt-2">
                           <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
                                   <?php 
-                              $status = $this->user_model->check_student_status($school_id);
-                              if($status == -1){
+                              // Vérifier d'abord le nombre d'inscriptions
+                              $enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_id, 'school_id' => $school_id, 'class_id' =>$class['id']))->num_rows();
+                              $enrols_max = $this->db->get_where('enrols', array('school_id' => $school_id, 'class_id' =>$class['id']))->num_rows();
+                              
+                              // Vérifier si le nombre maximum est atteint
+                              $nombre_max = isset($class['nombre_max_membre']) ? (int)$class['nombre_max_membre'] : 0;
+                              $is_max_reached = ($nombre_max > 0 && $enrols_max >= $nombre_max);
+                              
+                              if($enrols_datas > 0): ?>
+                                  <a id="paye-button" class="btn btn-outline-wayo-join btn-sm flex-fill" > <?php echo htmlspecialchars(get_phrase("start_course")); ?> </a>
+                                  
+                              <?php elseif($is_max_reached): ?>
+                                  <!-- Afficher "waiting list" si le nombre maximum est atteint -->
+                                  <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled><?php echo htmlspecialchars(get_phrase("waiting_list")); ?></button>
+                                  
+                              <?php else:
+                                  // Afficher le formulaire seulement si le maximum n'est pas atteint
+                                  $status = $this->user_model->check_student_status($school_id);
+                                  if($status == -1){
                                 ?>
                      
                           <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
@@ -146,17 +163,10 @@
                               <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
                               <?php 
                               }
-                              $enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_id, 'school_id' => $school_id, 'class_id' =>$class['id']))->num_rows();
-                              // var_dump($enrols_datas);
                               ?>
-
-                              <?php if($enrols_datas > 0): ?>
-                                  <a id="paye-button" class="btn btn-outline-wayo-join btn-sm flex-fill" > <?php echo htmlspecialchars(get_phrase("start_course")); ?> </a>
-                                  
-                              <?php else: ?>                                  
                                   <button id="paye-button" type="submit" class="btn btn-outline-wayo-join btn-sm flex-fill"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
-                              <?php endif; ?>
                           </form>
+                              <?php endif; ?>
                       </div>
                     </div>
                   </div>

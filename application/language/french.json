@@ -2923,5 +2923,6 @@
     "document_supprimé_avec_succès": "Document supprimé avec succès",
     "suppression_impossible": "Suppression impossible",
     "veuillez_télécharger_un_document_justificatif": "Veuillez télécharger un document justificatif",
-    "document_deleted_successfully": "Document deleted successfully"
+    "document_deleted_successfully": "Document deleted successfully",
+    "waiting_list" : "Liste d’attente"
 }
