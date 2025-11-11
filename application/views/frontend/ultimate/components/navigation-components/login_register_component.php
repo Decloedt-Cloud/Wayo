@@ -1,586 +1,216 @@
-<div class="login-section">
-  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-  </div>
-  <!-- Login Section -->
-  <div class="login-dropdown hidden-section display-none">
-    <svg class="login-exit-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z" />
-      <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
-    </svg>
-    <form class="login-form mt-8" id="login-form" action="<?php echo site_url('login/validate_login_frontend'); ?>" method="post">
-<div id="loginError" class="text-danger display-none" style="background-color: #fef2f2; border: none; border-radius: 12px; padding: 5px 22px; width: fit-content; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); color: #b91c1c; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; transition: all 0.3s ease; margin-left: auto; margin-right: auto;"></div>
-      <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-      <div class="mb-4 mt-4 login-input">
-        <label for="loginEmail" class="login-input-label login-input-label-rtl text-uppercase"><?php echo get_phrase("e-mail") ?> <span class="required"> * </span></label>
-        <input type="email" class="form-control shadow-none" id="loginEmail" placeholder="<?php echo get_phrase("e-mail") ?>" aria-describedby="emailHelp" name="login_email">
-      </div>
-      <div class="mb-3 login-input">
-        <label for="loginPassword" class="login-input-label login-input-label-rtl text-uppercase"><?php echo get_phrase("password") ?> <span class="required"> * </span></label>
-        <input type="password" class="form-control shadow-none" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password">
-      </div>
-      <button type="submit" id="loginSubmit" class="login-button text-uppercase mb-3" style="background-color: #FC7B30;"><?php echo get_phrase("login") ?></button>
-      <!-- Conteneur pour le message d'erreur -->
-    </form>
-    <a class="register-phrase text-uppercase"><?php echo get_phrase("no account yet? ") ?> <span class="ml-1 register-link"><span>(</span> <?php echo get_phrase("register") ?> <span>)</span></span></a>
-    <a class="forget-phrase text-uppercase"><?php echo get_phrase("Forgot account?") ?> <span class="ml-1 forget-link"><span>(</span> <?php echo get_phrase("forget password") ?> <span>)</span></span></a>
-  </div>
-
-  <!-- Forget Section (independent) -->
-  <div class="forget-dropdown hidden-section display-none">
-    <a class="text-uppercase"><span class="loginforge-link"><svg class="m-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" /></svg><?php echo get_phrase("login") ?></span></a>
-    <form class="forget-form mt-10" id="forget-form" method="post" enctype="multipart/form-data" action="<?php echo site_url('login/send_reset_link'); ?>">
-      <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-      <div class="mb-4 login-input">
-        <label for="forgetEmail" class="login-input-label login-input-label-forget text-uppercase" style="padding-right: 20px !important;"><?php echo get_phrase("Email") ?><span class="required"> * </span></label>
-        <input type="text" class="form-control shadow-none information" id="forgotEmail" name="email" required data-msg="<?php echo get_phrase("required") ?>">
-      </div>
-      <button type="submit" id="registerSubmit" class="login-button text-uppercase mb-3" style="background-color: #FC7B30;"><?php echo get_phrase("sent_password_reset_link") ?></button>
-    </form>
-  </div>
-
-  <!-- Register Section -->
-  <div class="register-dropdown hidden-section display-none">
-    <svg class="register-exit-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z" />
-      <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
-    </svg>
-
-      <div class="learner-form-container">
-        <form class="learner-form" id="learner-form" method="post" enctype="multipart/form-data" action="<?php echo site_url('admission/online_admission_student/submit/student'); ?>">
-        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-        <div class="form-layout">
-          <div class="step-indicators">
-            <div class="step active" data-step="1">1</div>
-            <div class="step" data-step="2">2</div>
-          </div>
-          <div class="form-steps-container">
-            <div class="mb-4 title-register">
-              <div style="font-size: 1rem;"><?php echo get_phrase("Member Register") ?></div>
-            </div>
-            <div class="form-step" data-step="1">
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("First Name") ?> <span class="required"> * </span></label>
-                <input type="text" class="form-control shadow-none" name="first_name" required placeholder="<?php echo get_phrase("First Name") ?>">
-              </div>
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("Last Name") ?> <span class="required"> * </span></label>
-                <input type="text" class="form-control shadow-none" name="last_name" required placeholder="<?php echo get_phrase("Last Name") ?>">
-              </div>
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("Email") ?> <span class="required"> * </span></label>
-                <input type="email" class="form-control shadow-none" name="student_email" required placeholder="<?php echo get_phrase("Email") ?>">
-              </div>
-              <div class="form-buttons">
-                <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
-                <button type="button" class="next-btn text-uppercase"><?php echo get_phrase("Next") ?></button>
-              </div>
-            </div>
-            <div class="form-step display-none" data-step="2">
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("Date of Birth") ?> <span class="required"> * </span></label>
-                <input type="date" class="form-control shadow-none" name="date_of_birth" required>
-              </div>
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("Password") ?> <span class="required"> * </span></label>
-                <input type="password" class="form-control shadow-none" name="password-student" placeholder="<?php echo get_phrase("password") ?>" id="password-student" required>
-              </div>
-              <div class="mb-4 login-input">
-                <label class="login-input-label-register text-uppercase"><?php echo get_phrase("Repeat Password") ?> <span class="required"> * </span></label>
-                <input type="password" class="form-control shadow-none" name="repeat-password-student" placeholder="<?php echo get_phrase("repeat password") ?>" id="repeat-password-student" required>
-                <span id="errorMessage" class="text-danger display-none"><?php echo get_phrase("Passwords need to match.") ?></span>
-              </div>
-              <div class="form-buttons">
-                <button type="button" class="back-btn text-uppercase"><?php echo get_phrase("Back") ?></button>
-                <button type="submit" class="register-btn text-uppercase"><?php echo get_phrase("Register") ?></button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-<div class="loading-spinner display-none">
-    <div class="spinner"></div>
-  </div>
-    </div>
-  </div>
-</div>
 <style>
-  /* Loading Spinner */
-.loading-spinner {
-  position: absolute;
-  top: 7%;
-  left: 50%;
-  transform: translate(-50%, 100%);
-  z-index: 1001; /* Above other content (z-index 1000 for .register-dropdown) */
-  background: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
-  padding: 20px;
-  border-radius: 8px;
-  width: 100px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+     :root{
+  --white:#fff; --text:#171717; --muted:#6b7280; --line:#eee; --line-2:#f3f4f6;
+  --orange:#F47A1F; --orange-2:#fbb040; --orange-3:#ffebd8;
+  --green:#16a34a; --red:#dc2626;
+  --bg:#ffffff;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --shadow-2:0 30px 80px rgba(0,0,0,.12);
+  --radius:16px;
+  --font:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  --logo-h-desktop: 88px; --logo-h-tablet: 60px; --logo-h-mobile: 52px;
 }
 
-.spinner {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #FC7B30; /* Match your theme color */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
-.visibility-selector {
-  list-style-type: none;
+
+
+/* ===== Connexion inline ===== */
+/* === Login dropdown compact, ancré au bouton === */
+#loginInline[hidden]{ display:none !important; }
+
+.login-inline{
+  position: fixed;                 /* on la positionne par JS */
+  z-index: 60;
+  pointer-events: none;            /* clics ignorés hors de la carte */
+  animation: dropdownFade .14s ease both;
+}
+@keyframes dropdownFade{ from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none} }
+
+.login-card{
+  width: 340px;                    /* compact */
+  max-height: 78vh;
+  pointer-events: auto;            /* clics actifs sur la carte */
+  background:#fff;
+  border:1px solid var(--line,#ececec);
+  border-radius:14px;
+  box-shadow:0 16px 40px rgba(0,0,0,.12);
+  padding:12px 12px 14px;
   position: relative;
-  display: flex; /* Ensure buttons are side by side */
-  width: 100%;
+  right:0px;
+  top: 20px;
 }
 
-.visibility-selector .vis-button {
-  width: 50%; /* Each button takes half the width */
-  position: relative;
-  min-height: 36px; /* Consistent height */
+/* caret (triangle) */
+.login-card::after{
+  content:"";
+  position:absolute;
+  top:-7px;
+  right:18px;                      /* pointe vers le bouton (côté droit) */
+  width:14px; height:14px;
+  background:#fff;
+  border-left:1px solid var(--line,#ececec);
+  border-top:1px solid var(--line,#ececec);
+  transform: rotate(45deg);
+}
+.signup-style, .signin-style, .backlogin{
+  color:inherit;
+  text-decoration:none;
+  color: #fc7b30;
+}
+.signup-style:hover,.signin-style:hover, .backlogin:hover{
+  color: #fc7b30;
 }
 
-.visibility-selector label {
-  display: block;
-  position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  min-height: 36px;
-  cursor: pointer;
-  text-align: center;
-  align-content: center;
-  background: #2e2e2e; /* Default background */
-  color: #fff; /* Text color */
-  transition: all 0.5s ease-in-out;
-  border-radius: 0; /* Reset any default rounding */
+/* typo & éléments, version compacte */
+.login-head{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 4px;}
+.login-head h2{margin:0;font-size:1.2rem;font-weight:900;color:#20286f;}
+.login-close{border:0;background:#f2f3f7;color:#111;width:32px;height:32px;border-radius:10px;font-size:18px;line-height:1;display:grid;place-items:center;cursor:pointer;}
+.login-pane{padding:2px 0;}
+.login-field{display:grid;gap:4px;margin:8px 0;}
+.login-field span{font-weight:800;}
+.login-field input{height:46px;padding:0 12px;border-radius:12px;border:2px solid #ececec;font:inherit;outline:none;transition:.15s;background:#fff;}
+.login-field input:focus{border-color:#ffd3b2;box-shadow:0 0 0 4px rgba(244,122,31,.12);}
+.login-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 8px;}
+.login-check{display:inline-flex;align-items:center;gap:.45rem;font-weight:600;color:#3b3b3b;}
+.login-check input{width:16px;height:16px;}
+.login-link{font-weight:900;color:#Fc7b30 !important;}
+.login-submit{width:100%;height:50px;border-radius:12px;font-size:1rem;}
+.login-switch{margin:.65rem 0 0;text-align:center;color:#666;font-weight:600;font-size:.95rem;}
+
+/* hauteur d’en-tête utilisée si fallback centré mobile */
+:root{ --header-h: 86px; }
+@media (max-width:1024px){ :root{ --header-h: 66px; } }
+@media (max-width:640px){
+  :root{ --header-h: 58px; }
+  .login-card{ width: min(94vw, 360px); } /* un peu plus souple sur mobile */
+}
+/* === Choix d'inscription: cartes Membre / Mentor === */
+.role-chooser{ display:grid; gap:10px; margin:6px 0 8px; }
+.role-card{
+  text-decoration:none;
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
+  padding:12px; border-radius:14px; background:#fff;
+  border:1px solid var(--line,#ececec);
+  box-shadow:0 8px 22px rgba(0,0,0,.06);
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+}
+.role-card:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 28px rgba(0,0,0,.08);
+  border-color:#ffd7b7;
+  background:#fffdf9;
+}
+.role-icon{
+  width:42px; height:42px; border-radius:12px;
+  display:grid; place-items:center;
+  background:#ffefe1; color:#F47A1F;
+  border:1px solid #ffd7b7;
+}
+.role-icon.star{ background:#fff4cc; color:#f3a400; border-color:#ffe29a; }
+.role-text h3{ margin:0; font-size:1.02rem; font-weight:900; color:#111; }
+.role-text p{ margin:2px 0 0; font-size:.92rem; color:#6b7280; }
+.role-arrow{
+  width:28px; height:28px; border-radius:8px;
+  display:grid; place-items:center;
+  background:#f6f7fb; color:#111; font-weight:900; font-size:18px;
+  border:1px solid #ececec;
+}
+@media (max-width:420px){
+  .role-text h3{ font-size:1rem; }
+  .role-text p{ font-size:.9rem; }
 }
 
-.visibility-selector input[type="radio"] {
-  opacity: 0; /* Completely hide the radio input */
-  position: absolute; /* Remove it from the flow */
-  width: 0; /* Ensure it doesn't take up space */
-  height: 0;
-}
+    </style>
 
-.visibility-label {
-  position: relative;
-  top: -22px;
-}
+ <section id="loginInline" class="login-inline" hidden>
+    <div class="container">
+      <div class="login-card" role="dialog" aria-labelledby="loginTitle">
+        <div class="login-head">
+          <h2 id="loginTitle"><?php echo get_phrase("Sign_in") ?></h2>
+          <button class="login-close" id="loginClose" aria-label="Fermer">×</button>
+        </div>
 
-.public-button {
-  border-radius: 0 5px 5px 0 !important;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-}
+        <!-- Formulaire : Connexion -->
+        <form id="login-form" class="login-pane" action="<?php echo site_url('login/validate_login_frontend'); ?>" method="post" novalidate>
+          <div id="loginError" class="text-danger display-none" style="background-color: #fef2f2; border: none; border-radius: 12px; padding: 5px 22px; width: fit-content; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); color: #b91c1c; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; transition: all 0.3s ease; margin-left: auto; margin-right: auto;"></div>
+          <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+          <label class="login-field" for="loginEmail">
+            <span><?php echo get_phrase("e-mail") ?>*</span>
+            <input type="email" id="loginEmail" placeholder="<?php echo get_phrase("e-mail") ?>" aria-describedby="emailHelp" name="login_email">
+          </label>
+ 
+          <label for="loginPassword" class="login-field">
+            <span><?php echo get_phrase("password") ?> *</span>
+            <input type="password" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password">
+          </label>
+ 
+          <div class="login-row">
+            <label class="login-check">
+              <input type="checkbox"> <span><?php echo get_phrase("Remember_me") ?></span>
+            </label>
+            <a href="#" class="login-link"><?php echo get_phrase("Forgot_password") ?>&nbsp;?</a>
+          </div>
+ 
+          <button type="submit" id="loginSubmit" class="btn btn-accent login-submit"><?php echo get_phrase("Log_in") ?></button>
+          <p class="login-switch">Ou <a href="#" class="signup-style" id="goSignup"><?php echo get_phrase("Sign_up") ?></a></p>
+        </form>
 
-.private-button {
-  border-radius: 5px 0 0 5px !important;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-}
+        <!-- Formulaire : Mot de passe oublié -->
+        <form id="forget-form" class="login-pane" hidden method="post" enctype="multipart/form-data" action="<?php echo site_url('login/send_reset_link'); ?>">
+          <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+          <!--  -->
+          <label class="login-field" for="forgetEmail">
+            <span><?php echo get_phrase("Email") ?>*</span>
+            <input id="forgotEmail" name="email" type="text" id="forgotEmail" placeholder="<?php echo get_phrase("Enter_your_email") ?>" required data-msg="<?php echo get_phrase("required") ?>">
+          </label>
+          <button type="submit" id="registerSubmit" class="btn btn-accent login-submit">
+            <?php echo get_phrase("sent_password_reset_link") ?>
+          </button>
+
+          <p class="login-switch">
+            <a href="#" class="backlogin" id="backToLogin"><?php echo get_phrase("Back_to_login") ?></a>
+          </p>
+        </form>
+
+        <!-- Formulaire : Inscription -->
+       <form id="signupForm" class="login-pane" hidden novalidate>
+        <div class="role-chooser">
+          <a class="role-card" href="<?php echo site_url('admission/online_admission_student'); ?>" id="ctaMember">
+            <div class="role-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z"/>
+              </svg>
+            </div>
+            <div class="role-text">
+              <h3><?php echo get_phrase("Sign_up_as_a_Member") ?></h3>
+              <p><?php echo get_phrase("Join_communities,_follow_courses_& live_sessions.") ?></p>
+            </div>
+            <span class="role-arrow" aria-hidden="true">›</span>
+          </a>
+
+          <a class="role-card" href="<?php echo site_url('admission/online_admission'); ?>" id="ctaMentor">
+            <div class="role-icon star">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <path fill="currentColor" d="m12 2 2.6 5.7 6.3.9-4.6 4.5 1.1 6.3L12 16.9 6.6 19.4l1.1-6.3L3 8.6l6.3-.9L12 2z"/>
+              </svg>
+            </div>
+            <div class="role-text">
+              <h3><?php echo get_phrase("Sign_up_as_a_Mentor") ?></h3>
+              <p><?php echo get_phrase("Create_a_community,_courses_&_live_sessions.") ?></p>
+            </div>
+            <span class="role-arrow" aria-hidden="true">›</span>                                                                                                                                                        
+          </a>
+        </div>
+          <p class="login-switch">
+            <?php echo get_phrase("Already_registered ?") ?> <a href="#" class="signin-style" id="goLogin"><?php echo get_phrase("Log in") ?></a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
 
 
-.visibility-selector input[type="radio"] + label {
-  background: #2e2e2e;
-  transition: all 0.5s ease-in-out;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-}
-
-.space-label-button input[type="radio"] + label {
-  margin-top: 10px;
-}
-
-
-.visibility-selector input[type="radio"]:checked + label {
-  background-color: #FC7B30 !important;
-  box-shadow: none; /* Remove shadow when active */
-  transition: all 0.5s ease-in-out;
-}
-
-  /* Ensure the parent container has a proper background */
-  .login-section {
-    position: relative; /* Ensure dropdowns are positioned correctly */
-  }
-
-  /* Style for hidden sections */
-  .hidden-section {
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    position: absolute;
-  }
-
-  .hidden-section:not(.display-none) {
-  opacity: 1;
-}
-
-  /* When hidden */
-  .display-none {
-    display: none;
-  }
-
-  /* When shown */
-  .show {
-    opacity: 1;
-  }
-
-  /* Specific styling for register-dropdown */
-  .register-dropdown {
-    width: 300px; /* Adjust as needed */
-    padding: 10px; /* Optional: Add padding for spacing */
-    z-index: 1000; /* Ensure it’s on top */
-  }
-
-  .title-register {
-       margin-bottom: 28px !important;
-    margin-top: -14px !important;
-  } 
-
-  .learner-form-container
-  {
-    width: 90%;
-    margin-top: 10%;
-    padding: 20px;
-    
-  }
-
-  .form-buttons-popup{
-      display: flex;
-      justify-content: space-between;
-      margin-top: 68px;
-  }
-
-  .form-layout {
-    display: flex;
-    flex-direction: row; /* Indicateurs à gauche, champs à droite */
-    align-items: flex-start; /* Alignement en haut */
-    gap: 20px; /* Espacement entre les indicateurs et les champs */
-  }
-
-  /* Indicateurs d'étapes en colonne à gauche */
-  .step-indicators {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 23px;
-  }
-
-  /* Style des étapes */
-  .step {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #ccc;
-    color: #fff !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: default;
-  }
-
-  .step.active {
-    background-color: #FC7B30;
-    color: #fff;
-  }
-
-  /* Conteneur des étapes du formulaire */
-  .form-steps-container {
-    flex: 1; /* Prend tout l'espace restant à droite */
-  }
-
-  /* Transition pour les étapes */
-  .form-step {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .form-step:not(.display-none) {
-  opacity: 1;
-}
-
-  /* Boutons */
-  .form-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-
-  .back-btn, .next-btn, .register-btn {
-    background-color: #FC7B30;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.8em;
-  }
-
-  .photo-preview-popup {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background-color: #f0f0f0;
-    overflow: hidden;
-    margin: 0 auto;
-    margin-bottom: 8%;
-  }
-
-  .photo-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  #loginError {
-    font-size: 0.9em;
-    text-align: center !important;
-  }
-
-  .login-input-label-register {
-    color: #3a3a3a;
-    font-size: 12px !important;
-    padding-bottom: 15px !important;
-    left: 80px;
-    font-weight: 500;
-}
-
-.login-input-label-forget{
-   color: #3a3a3a;
-    font-size: 12px !important;
-    padding-bottom: 15px !important;
-    left: 50px;
-    font-weight: 500;
-}
-
-[dir="rtl"] .login-input-label-forget{ 
-  right: auto !important;
-  left: 0 !important;
-  text-align: right !important;
-  width: 100% !important;
-  padding-right: 80px !important;
-  padding-bottom: 20px !important;
-}
-  [dir="rtl"] .login-dropdown,
-[dir="rtl"] .register-dropdown,
-[dir="rtl"] .forget-dropdown {
-  right: auto !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important; /* Keep centered for consistency */
-}
-
-/* Exit SVG positioning for RTL */
-[dir="rtl"] .login-exit-svg,
-[dir="rtl"] .register-exit-svg {
-  right: auto !important;
-  left: 20px !important;
-}
-
-/* Login and Forget links for RTL */
-[dir="rtl"] .loginforge-link,
-[dir="rtl"] .login-link {
-  left: auto !important;
-  right: 20px !important;
-  text-align: right !important;
-}
-
-[dir="rtl"] .form-layout {
-  flex-direction: row-reverse !important;
-  gap: 20px !important;
-}
-
-/* Step indicators for RTL */
-[dir="rtl"] .step-indicators {
-  align-items: flex-end !important; /* Align indicators to the right */
-  order: 2 !important;
-}
-
-[dir="rtl"] .form-steps-container {
-  order: 1 !important; /* Place les champs avant les indicateurs */
-}
-
-/* Form buttons for RTL */
-[dir="rtl"] .form-buttons {
-  flex-direction: row-reverse !important; /* Reverse button order */
-}
-
-/* Next and Back buttons for RTL */
-[dir="rtl"] .next-btn {
-  order: 1 !important;
-  margin-left: 5px !important; /* Next à gauche */
-  margin-right: auto !important;
-}
-
-[dir="rtl"] .back-btn {
-   order: 2 !important;
-  margin-right: 5px !important; /* Back à droite */
-  margin-left: auto !important;
-}
-
-[dir="rtl"] .register-btn {
-  margin-left: 10px !important; /* Register à gauche */
-  margin-right: auto !important;
-}
-
-/* Input labels for RTL */
-[dir="rtl"] .login-input-label {
-  right: auto !important;
-  left: 0 !important;
-  text-align: right !important;
-  width: 100% !important;
-  padding-right: 70px !important;
-  padding-bottom: 20px !important;
-}
-
- [dir="rtl"] .login-input-label-register {
-  right: auto !important;
-  left: 0 !important;
-  text-align: right !important;
-  width: 100% !important;
-  padding-right: 80px !important;
-  padding-bottom: 20px !important;
- }
-
-[dir="rtl"] .login-input-label-rtl {
-  right: auto !important;
-  left: 0 !important;
-  text-align: right !important;
-  padding-right: 20px !important;
-}
-
-/* Photo preview label for RTL */
-[dir="rtl"] .login-input-label[for="popup_student_image"],
-[dir="rtl"] .login-input-label[for="popup_mentor_image"] {
-  right: auto !important;
-  left: 0 !important;
-  text-align: right !important;
-  padding-right: 70px !important;
-}
-
-/* Visibility selector for RTL */
-[dir="rtl"] .visibility-selector {
-  flex-direction: row-reverse !important; /* Reverse button order */
-}
-
-[dir="rtl"] .public-button {
-  border-radius: 5px 0 0 5px !important; /* Invert border-radius */
-}
-
-[dir="rtl"] .private-button {
-  border-radius: 0 5px 5px 0 !important; /* Invert border-radius */
-}
-
-/* Text alignment for inputs and textareas */
-[dir="rtl"] .login-input input,
-[dir="rtl"] .login-input select,
-[dir="rtl"] .login-input textarea {
-  text-align: right !important;
-}
-
-/* Error message alignment for RTL */
-[dir="rtl"] #loginError,
-[dir="rtl"] #errorMessage,
-[dir="rtl"] #errorMessageMentor {
-  text-align: right !important;
-  margin-right: 10px !important;
-}
-
-/* Photo preview alignment for RTL */
-[dir="rtl"] .photo-preview-popup {
-  margin: 0 auto !important; /* Keep centered */
-}
-
-@media (max-width: 991px) {
-[dir="rtl"] .register-dropdown {
-  height: 400px !important;
-    width: 300px; /* Adjust as needed */
-    padding: 10px; /* Optional: Add padding for spacing */
-    z-index: 1000; /* Ensure it’s on top */
-  }
-
- [dir="rtl"] .learner-form-container
-  {
-    width: 90%;
-    margin-top: -10%;
-    padding: 20px;
-    
-  }
-  .login-input {
-    position: relative; /* Assure que les labels sont positionnés relativement au conteneur */
-    margin-left: 10px; /* Marge commune pour aligner labels et champs en LTR */
-    margin-right: 10px; /* Marge pour cohérence */
-  }
-  .login-input-label {
-  color: #3a3a3a;
-    font-size: 12px !important;
-    padding-bottom: 15px !important;
-    padding-left: 3px !important; /* Espacement à gauche pour LTR */
-    left: 0 !important; /* Alignement à gauche pour LTR */
-    font-weight: 500;
-    width: 100% !important; /* S'assurer que le label prend toute la largeur */
-    text-align: left !important;
-}
-  .login-input-label-register {
-    color: #3a3a3a;
-    font-size: 12px !important;
-    padding-bottom: 15px !important;
-    padding-left: 3px !important; /* Espacement cohérent à gauche pour LTR */
-    left: 0 !important; /* Alignement au début pour LTR */
-    font-weight: 500;
-    width: 100% !important; /* Prend toute la largeur */
-    text-align: left !important;
-}
-[dir="rtl"] .login-input-label,
-  [dir="rtl"] .login-input-label-register {
-    left: auto !important;
-    right: 0 !important; /* Alignement à droite pour RTL */
-    text-align: right !important; /* Alignement texte à droite pour RTL */
-    padding-left: 0 !important; /* Supprimer padding gauche pour RTL */
-    padding-right: 10px !important; /* Espacement à droite pour RTL */
-    padding-bottom: 15px !important; /* Conserver padding-bottom cohérent */
-  }
-  [dir="rtl"] .form-layout {
-    flex-direction: column !important; /* Empile verticalement */
-    align-items: center !important;
-  }
-
-  [dir="rtl"] .step-indicators {
-    flex-direction: row !important; /* Indicateurs en ligne */
-    justify-content: center !important;
-    margin-bottom: 20px !important;
-    order: 0 !important; /* Indicateurs en haut sur mobile */
-  }
-
-  [dir="rtl"] .form-steps-container {
-    order: 1 !important; /* Champs en bas */
-  }
-
-  [dir="rtl"] .next-btn {
-    margin-left: 10px !important;
-    margin-right: auto !important;
-  }
-
-  [dir="rtl"] .back-btn {
-    margin-right: 10px !important;
-    margin-left: auto !important;
-  }
-
-  [dir="rtl"] .register-btn {
-    margin-left: 10px !important;
-    margin-right: auto !important;
-  }
-}
-</style>
 
 <script type="text/javascript">
   var checkEmailExistsUrl = '<?php echo site_url('login/check_email_exists'); ?>';
@@ -682,3 +312,167 @@
     });
   }
 </script>
+
+ <script>
+  /* Drawer (pour mobile) : rien à faire, c’est CSS avec #drawerToggle */
+
+/* Parallax doux des orbes + reveal */
+const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!prefersReduced) {
+  const orbs = document.querySelectorAll(".bg-orbs .orb");
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  window.addEventListener("scroll", ()=>{
+    const t = Math.min(1, window.scrollY/1200);
+    orbs.forEach((o,i)=>{
+      const dx = lerp(0, (i%2? 22 : -22), t);
+      const dy = lerp(0, (i%2? -18 : 26), t);
+      o.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+  }, {passive:true});
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
+  },{threshold:.14});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+}
+
+/* Tabs des fonctionnalités (CSS radios) – pas de JS requis */
+
+/* ===== Connexion inline (affiche sous la navbar) ===== */
+document.addEventListener("DOMContentLoaded", function () {
+
+  // === Sélection des éléments principaux ===
+  const box        = document.getElementById('loginInline');
+  const btnOpen    = document.getElementById('openLoginBtn');      // bouton navbar desktop
+  const btnOpenM   = document.getElementById('openLoginBtnM');     // bouton mobile offcanvas
+  const btnClose   = document.getElementById('loginClose');        // bouton X
+  const formLogin  = document.getElementById('login-form');
+  const formSignup = document.getElementById('signupForm');
+  const formForgot = document.getElementById('forget-form');
+  const goSignup   = document.getElementById('goSignup');
+  const goLogin    = document.getElementById('goLogin');
+  const forgotLink = document.querySelector('.login-link');       // lien "Mot de passe oublié ?"
+  const backToLogin = document.getElementById('backToLogin');
+  const loginTitle  = document.getElementById('loginTitle');
+
+  // --- Fonction pour afficher / cacher le bloc login-inline
+  function toggleLogin(show, btn) {
+    const isHidden = box.hasAttribute('hidden');
+    const willShow = (show !== undefined) ? show : isHidden;
+
+    // fermer le drawer mobile si ouvert (Bootstrap offcanvas)
+    const offcanvasEl = document.getElementById('navbarOffcanvas');
+    if (offcanvasEl) {
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
+      offcanvas.hide();
+    }
+
+    // attendre que l'offcanvas se ferme avant d'afficher le popup
+    setTimeout(() => {
+      box.toggleAttribute('hidden', !willShow);
+
+      if (willShow) {
+        // positionner le dropdown sous le bouton actif
+        positionLoginDropdown(btn);
+
+        // focus sur le 1er champ visible
+        const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
+        activeForm.querySelector('input')?.focus();
+
+        // scroll vers le bloc
+        box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150); // 150ms correspond à l’animation de fermeture Bootstrap
+  }
+
+  // === Positionne le login-inline sous le bouton
+  function positionLoginDropdown(btn) {
+    const card = box?.querySelector('.login-card');
+    if (!box || !card || !btn) return;
+
+    const w = Math.min(340, window.innerWidth * 0.94); // largeur finale
+    card.style.width = w + 'px';
+
+    const r = btn.getBoundingClientRect();
+    const gap = 8;
+    let left = r.right - w;
+    let top  = r.bottom + gap;
+
+    // garde-fous bords d'écran
+    left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+
+    // centrer si très petit écran
+    if (window.innerWidth < 480) {
+      left = Math.max(8, (window.innerWidth - w) / 2);
+      top  = Math.max(parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--header-h')) + gap, top);
+    }
+
+    box.style.left = left + 'px';
+    box.style.top  = top + 'px';
+  }
+
+  // === Événements pour ouvrir / fermer
+  btnOpen?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpen); });
+  btnOpenM?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpenM); });
+  btnClose?.addEventListener('click', () => toggleLogin(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hasAttribute('hidden')) toggleLogin(false);
+  });
+
+  // === Switch Login -> Signup
+  goSignup?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true;
+    formForgot.hidden = true;
+    formSignup.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Create_an_account') ?>";
+    formSignup.querySelector('input')?.focus();
+  });
+
+  // === Switch Signup -> Login
+  goLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formSignup.hidden = true;
+    formForgot.hidden = true;
+    formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+
+  // === Switch Login -> Forgot Password
+  forgotLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true;
+    formSignup.hidden = true;
+    formForgot.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Forgot_password') ?>";
+    formForgot.querySelector('input')?.focus();
+  });
+
+  // === Switch Forgot -> Login
+  backToLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formForgot.hidden = true;
+    formSignup.hidden = true;
+    formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+
+  // --- Repositionner lors du scroll / resize si visible
+  ['scroll','resize'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (!box?.hasAttribute('hidden')) {
+        // utiliser btnOpen ou btnOpenM selon la largeur
+        const btn = window.innerWidth < 480 ? btnOpenM : btnOpen;
+        positionLoginDropdown(btn);
+      }
+    }, { passive: true });
+  });
+
+  // --- Empêcher la soumission réelle pour demo
+  [formLogin, formSignup].forEach(f => f?.addEventListener('submit', (e) => e.preventDefault()));
+});
+</script>
+
+

@@ -823,7 +823,7 @@ class Student extends CI_Controller {
 		}
 
 
-	  redirect(site_url('Student/payment/' . $invoice_id), 'refresh');
+	  redirect(site_url('Student/payment/classe/' . $invoice_id), 'refresh');
 
     //   $this->session->set_flashdata('flash_message', get_phrase('admission_request_has_been_updated'));
     //   redirect(site_url('addons/courses'), 'refresh');

@@ -1,35 +1,74 @@
 <!-- ========== MAIN ========== -->
 <main class="main-content" id="content" role="main">
-  <!-- Intro Section -->
-<div class="intro-section">
-  <div id="intro-container" class="intro-container position-relative" style="min-height: 97vh;">
-    <!-- Background -->
-    <div rel="preload" class="position-absolute top-0 start-0 end-0 bottom-0 opacity-100" style="background-image: url('uploads/images/decloedt/home/bg_header.webp'); background-size: cover; background-position: center; filter: brightness(50%); z-index: 0;"></div>
-    <!-- Container for content -->
-    <div class="container d-flex align-items-center justify-content-center" style="min-height: 97vh; padding-bottom: 0px;">
-      <div class="row position-relative justify-content-center" style="z-index: 1;">
-        <!-- Centered Column -->
-        <div class="col-lg-12 d-flex flex-column align-items-center text-center">
-          <div class="text-container">
-            <h1 class="text-white display-2 fw-bold display-md-4 display-lg-5" style="font-size: 3rem; letter-spacing: 2px; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); margin-bottom: 1rem;"><?php echo get_phrase("Build your digital future") ?></h1>
-            <p class="text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Practical training, human support and concrete results") ?></p>
+
+<!-- Hero Section avec Bootstrap Grid -->
+<section id="hero" class="hero">
+   <!-- Éléments décoratifs -->
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb o1"></span>
+    <span class="orb o2"></span>
+    <span class="orb o3"></span>
+  </div>
+
+  <!-- Effets lumineux -->
+  <span class="hero-glow a"></span>
+  <span class="hero-glow b"></span>
+  <div class="container-md">
+    <div class="row align-items-center g-4">
+      <!-- Colonne Gauche: Texte -->
+      <div class="col-lg-6 col-xl-6">
+        <div class="hero-copy">
+          <h1><span class="accent"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
+          <p class="sub"><?php echo get_phrase("We_specialize_in_secure_payment_platforms_that_don’t_freeze_mentors’_accounts._Build,_engage,_and_grow_your_revenue_without_limitations.") ?></p>
+          <div class="hero-ctas">
+            <a href="<?php echo site_url('admission/online_admission_student'); ?>" class="btn accent"><?php echo get_phrase("I'm a member") ?></a>
+            <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn outline"><?php echo get_phrase("I'm a Mentor") ?></a>
           </div>
-          <!-- Buttons -->
-          <div class="row justify-content-center g-3">
-            <!-- Student Admission Button -->
-            <div class="col-auto">
-              <a class="btn btn-member border-3 shadow-sm rounded-3 w-100 w-md-auto px-4.5 py-2.5" href="<?php echo site_url('admission/online_admission_student'); ?>"><?php echo get_phrase("I'm a member") ?></a>
+
+          <div class="chips">
+            <div class="chip pill">
+              <span class="chip-icon money"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 6h18v12H3z" opacity=".15"/><path fill="currentColor" d="M2 5h20v14H2zM5 9a3 3 0 0 0-3-3v12a3 3 0 0 0 3-3h14a3 3 0 0 0 3 3V6a3 3 0 0 0-3 3zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg></span>
+              <strong><?php echo get_phrase("Monetize_your_expertise") ?></strong>
             </div>
-            <!-- Mentor Admission Button -->
-            <div class="col-auto">
-              <a class="btn btn-mentor border-3 shadow-sm rounded-3 w-100 w-md-auto px-4.5 py-2.5"  href="<?php echo site_url('admission/online_admission'); ?>"><?php echo get_phrase("I'm a Mentor") ?></a>
+            <div class="chip pill">
+              <span class="chip-icon users"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2"/><path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z"/></svg></span>
+              <strong><?php echo get_phrase("Create_communities") ?></strong>
+            </div>
+            <div class="chip pill">
+              <span class="chip-icon course"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v12H4z" opacity=".2"/><path fill="currentColor" d="M3 5h18v14H3zM6 9h8v2H6zm0 4h12v2H6z"/></svg></span>
+              <strong><?php echo get_phrase("Courses_&_live") ?></strong>
+            </div>
+            <div class="chip pill">
+              <span class="chip-icon social"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 5h16v10H4z" opacity=".2"/><path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z"/></svg></span>
+              <strong><?php echo get_phrase("Built-in_social") ?></strong>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="col-lg-1 col-xl-1"></div>
+
+      <!-- Colonne Droite: Vidéo locale -->
+      <div class="col-lg-5 col-xl-5">
+        <figure class="yt-card" aria-label="Vidéo de présentation">
+          <div class="ratio ratio-16x9 yt-desktop">
+            <video autoplay muted loop playsinline controls>
+              <source src="<?php echo base_url('uploads/videos/v2_Wayo_Academy_Promo_Video.mp4'); ?>" type="video/mp4">
+              Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
+          </div>
+          <div class="ratio ratio-9x16 yt-mobile">
+            <video autoplay muted loop playsinline controls>
+              <source src="<?php echo base_url('uploads/videos/v2_Wayo_Academy_Promo_Video.mp4'); ?>" type="video/mp4">
+              Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
+          </div>
+        </figure>
+      </div>
     </div>
   </div>
-</div>
+</section>
 </div>
     <!-- Our key features -->
   <section class="feature-nav-section" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>

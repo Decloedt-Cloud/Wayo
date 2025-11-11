@@ -179,9 +179,23 @@ class Settings_model extends CI_Model
         return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
     }
 
+    // Gestion de la suppression du document
+    if ($this->input->post('delete_tax_document') == '1') {
+        // Récupérer le nom du fichier actuel
+        $current_settings = $this->db->get_where('settings_school', array('school_id' => $schoolId))->row_array();
+        if (!empty($current_settings['file'])) {
+            $file_path = 'uploads/community_tax/' . $current_settings['file'];
+            // Supprimer le fichier s'il existe
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+            $data_settings_school['file'] = NULL;
+        }
+    }
+
     // Validate the uploaded file
     if (isset($_FILES['tax_document']) && $_FILES['tax_document']['error'] === UPLOAD_ERR_OK) {
-        $allowed_extensions = ['pdf', 'jpg', 'png'];
+        $allowed_extensions = ['pdf', 'jpg', 'png', 'jpeg'];
         $file_ext = strtolower(pathinfo($_FILES['tax_document']['name'], PATHINFO_EXTENSION));
 
         if (!in_array($file_ext, $allowed_extensions)) {
@@ -189,14 +203,31 @@ class Settings_model extends CI_Model
             return json_encode(['status' => false, 'notification' => 'Invalid file type. Only PDF, JPG, and PNG are allowed.']);
         }
 
-        $file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-        $upload_path = 'uploads/community_tax/' . $file_name;
-
-        // Check if a file with the same name already exists
-        if (file_exists($upload_path)) {
-            log_message('error', 'File already exists: ' . $upload_path);
-            return json_encode(['status' => false, 'notification' => 'A file with the same name already exists.']);
+        // Vérifier la taille du fichier (4 Mo max)
+        $max_file_size = 4 * 1024 * 1024; // 4 Mo en bytes
+        if ($_FILES['tax_document']['size'] > $max_file_size) {
+            log_message('error', 'File too large: ' . $_FILES['tax_document']['size']);
+            return json_encode(['status' => false, 'notification' => 'File is too large. Maximum size is 4 MB.']);
         }
+
+        // Supprimer l'ancien fichier s'il existe
+        $current_settings = $this->db->get_where('settings_school', array('school_id' => $schoolId))->row_array();
+        if (!empty($current_settings['file'])) {
+            $old_file_path = 'uploads/community_tax/' . $current_settings['file'];
+            if (file_exists($old_file_path)) {
+                unlink($old_file_path);
+            }
+        }
+
+        $file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+        $upload_path = 'uploads/community_tax/';
+        
+        // Créer le répertoire s'il n'existe pas
+        if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0777, true);
+        }
+
+        $upload_path = $upload_path . $file_name;
 
         if (!move_uploaded_file($_FILES['tax_document']['tmp_name'], $upload_path)) {
             log_message('error', 'Failed to move uploaded file to ' . $upload_path);
@@ -240,6 +271,52 @@ class Settings_model extends CI_Model
       'notification' => get_phrase('school_settings_updated_successfully')
     );
     return json_encode($response);
+  }
+
+  // Delete tax document
+  public function delete_tax_document()
+  {
+    $schoolId = school_id();
+    
+    // Récupérer les paramètres actuels
+    $current_settings = $this->db->get_where('settings_school', array('school_id' => $schoolId))->row_array();
+    
+    if (empty($current_settings['file'])) {
+      return json_encode([
+        'status' => false,
+        'notification' => get_phrase('No document found to delete')
+      ]);
+    }
+
+    $file_path = 'uploads/community_tax/' . $current_settings['file'];
+    
+    // Supprimer le fichier s'il existe
+    if (file_exists($file_path)) {
+      if (unlink($file_path)) {
+        // Mettre à jour la base de données
+        $this->db->where('school_id', $schoolId);
+        $this->db->update('settings_school', array('file' => NULL));
+        
+        return json_encode([
+          'status' => true,
+          'notification' => get_phrase('Document deleted successfully')
+        ]);
+      } else {
+        return json_encode([
+          'status' => false,
+          'notification' => get_phrase('Failed to delete file')
+        ]);
+      }
+    } else {
+      // Le fichier n'existe plus, mais on supprime quand même la référence en base
+      $this->db->where('school_id', $schoolId);
+      $this->db->update('settings_school', array('file' => NULL));
+      
+      return json_encode([
+        'status' => true,
+        'notification' => get_phrase('Document reference removed successfully')
+      ]);
+    }
   }
 
   // PAYMENT SETTINGS

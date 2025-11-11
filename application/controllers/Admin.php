@@ -2841,6 +2841,23 @@ class Admin extends CI_Controller
 		
 		}
 
+		if ($param1 == 'delete_tax_document') {
+			$response = json_decode($this->settings_model->delete_tax_document(), true);
+			
+			// Préparer la réponse avec un nouveau jeton CSRF
+			$csrf = array(
+				'name' => $this->security->get_csrf_token_name(),
+				'hash' => $this->security->get_csrf_hash(),
+			);
+			
+			// Renvoyer la réponse avec un nouveau jeton CSRF
+			echo json_encode(array(
+				'status' => $response['status'],
+				'notification' => $response['notification'],
+				'csrf' => $csrf
+			));
+		}
+
 		// showing the System Settings file
 		if (empty($param1)) {
 			$page_data['folder_name'] = 'settings';

@@ -12,7 +12,9 @@
   /* Hauteur du header sticky (ajuste si besoin) */
   --pp-sticky:84px;
 }
-
+.navbar{
+  font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
 /* ===== HERO ===== */
 .pp-hero{
   background:

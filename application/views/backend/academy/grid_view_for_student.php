@@ -140,8 +140,9 @@
                                     // $class_details = $this->crud_model->get_classes($course['class_id'])->row_array();
                                     // $this->db->where('id', $course['class_id']);
                                     $class_details = $this->lms_model->get_classes_by_course($course['id']);
-                                    $class_details = $this->db->get('classes')->row_array();
-                                    $sections = $this->lms_model->get_section('course', $course['id']);
+                               
+                                    // $class_details = $this->db->get('classes')->row_array();
+                                    // $sections = $this->lms_model->get_section('course', $course['id']);
 
                                     $lessons = $this->lms_model->get_lessons('course', $course['id']);
 

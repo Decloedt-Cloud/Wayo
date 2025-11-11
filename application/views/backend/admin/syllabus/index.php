@@ -23,7 +23,7 @@
                             <div class="col-md-3 mb-1"></div>
                             <div class="col-md-4 mb-1">
                                 <select name="class" id="class_id_syllabus" class="form-control" required>
-                                    <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                                     <option value="all"><?php echo get_phrase('all_programs'); ?></option>
                                     <?php
                                     $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
                                     $school_id = school_id();
@@ -61,18 +61,19 @@
                 dropdownParent: '#right-modal'
             });
         }); //initSelect2(['#class_id', ]);
+        showAllSyllabuses('all');
     });
 
 
 
     function filter_syllabus() {
         var class_id = $('#class_id_syllabus').val();
-
-        if (class_id != "") {
+        showAllSyllabuses(class_id);
+        /* if (class_id != "") {
             showAllSyllabuses();
         } else {
             toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
-        }
+        } */
     }
 
     var showAllSyllabuses = function() {
