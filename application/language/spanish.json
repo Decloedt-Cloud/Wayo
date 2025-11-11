@@ -2897,6 +2897,7 @@
     "suppression_impossible": "No se pudo eliminar el documento",
     "veuillez_télécharger_un_document_justificatif": "Por favor, suba un documento justificativo",
     "document_deleted_successfully": "Documento eliminado con éxito",
+    "waiting_list": "Lista de espera",
     "miembro_de_admisión_en_línea": "Miembro de admisión en línea",
     "use_a_valid_email_address_(e.g.,_example@domain.com).": "Utiliza una dirección de correo electrónico válida (por ejemplo, ejemplo@dominio.com).",
     "enter_your_date_of_birth_(no_future_dates).": "Introduce tu fecha de nacimiento (no se permiten fechas futuras).",

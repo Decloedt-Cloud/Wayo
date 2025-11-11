@@ -2938,6 +2938,7 @@
     "suppression_impossible": "Suppression impossible",
     "veuillez_télécharger_un_document_justificatif": "Veuillez télécharger un document justificatif",
     "document_deleted_successfully": "Document deleted successfully",
+    "waiting_list" : "Liste d’attente",
     "name_required_(minimum_2_characters).": "Nom obligatoire (2 caractères minimum).",
     "first_name_required_(minimum_2_characters).": "Prénom obligatoire (2 caractères minimum).",
     "please_use_a_valid_email_address.": "Veuillez utiliser une adresse e-mail valide.",
