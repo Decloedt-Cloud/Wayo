@@ -662,7 +662,41 @@ class Frontend_model extends CI_Model
 
 
 
+  public function validateUploadedImage($file, $type)
+  {
+    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
+      return get_phrase('upload_error');
+    }
 
+    $maxMB = $type === 'logo' ? 1 : 2;
+    if ($file['size'] > $maxMB * 1024 * 1024) {
+      return get_phrase('file_too_large') . " (max {$maxMB} Mo)";
+    }
+
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+    if (!in_array($mime, ['image/jpeg', 'image/jpg', 'image/png'])) {
+      return get_phrase('invalid_image_format');
+    }
+
+    list($width, $height) = getimagesize($file['tmp_name']);
+    if (!$width || !$height) return get_phrase('corrupted_image');
+
+    $ratio = $width / $height;
+    $target = $type === 'logo' ? 1 : 16 / 9;
+    if (abs($ratio - $target) / $target > 0.1) {
+      $expected = $type === 'logo' ? '1:1' : '16:9';
+      return get_phrase('invalid_image_ratio') . " {$expected} (actuel: {$width}×{$height})";
+    }
+
+    $minWidth = $type === 'logo' ? 400 : 1200;
+    if ($width < $minWidth) {
+      return get_phrase('image_too_small') . " (min {$minWidth}px)";
+    }
+
+    return true;
+  }
   function online_admission_school()
 {
  
@@ -805,36 +839,61 @@ class Frontend_model extends CI_Model
       'role'      => 'admin'
     ]);
     
-    // Handle school image upload
+
+    
+    // Handle school image upload (logo)
     if (isset($_FILES['school_image']) && $_FILES['school_image']['error'] == UPLOAD_ERR_OK) {
-        $upload_path = 'Uploads/schools/' . $school_id . '.jpg';
-        if (!move_uploaded_file($_FILES['school_image']['tmp_name'], $upload_path)) {
-            return json_encode([
-                'status' => false,
-                'message' => get_phrase('image_upload_failed'),
-                'csrf' => [
-                    'csrfName' => $this->security->get_csrf_token_name(),
-                    'csrfHash' => $this->security->get_csrf_hash()
-                ]
-            ]);
-        }
+      $validation = $this->validateUploadedImage($_FILES['school_image'], 'logo');
+      if ($validation !== true) {
+        return json_encode([
+          'status' => false,
+          'message' => $validation,
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+          ]
+        ]);
+      }
+
+      $upload_path = 'Uploads/schools/' . $school_id . '.jpg';
+      if (!move_uploaded_file($_FILES['school_image']['tmp_name'], $upload_path)) {
+        return json_encode([
+          'status' => false,
+          'message' => get_phrase('image_upload_failed'),
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+          ]
+        ]);
+      }
     }
 
-        // Handle school cover upload
+    // Handle school cover upload
     if (isset($_FILES['communityCover']) && $_FILES['communityCover']['error'] == UPLOAD_ERR_OK) {
-        $upload_path = 'Uploads/communityCover/' . $school_id . '.jpg';
-        if (!move_uploaded_file($_FILES['communityCover']['tmp_name'], $upload_path)) {
-            return json_encode([
-                'status' => false,
-                'message' => get_phrase('image_upload_failed'),
-                'csrf' => [
-                    'csrfName' => $this->security->get_csrf_token_name(),
-                    'csrfHash' => $this->security->get_csrf_hash()
-                ]
-            ]);
-        }
-    }
+      $validation = $this->validateUploadedImage($_FILES['communityCover'], 'cover');
+      if ($validation !== true) {
+        return json_encode([
+          'status' => false,
+          'message' => $validation,
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+          ]
+        ]);
+      }
 
+      $upload_path = 'Uploads/communityCover/' . $school_id . '.jpg';
+      if (!move_uploaded_file($_FILES['communityCover']['tmp_name'], $upload_path)) {
+        return json_encode([
+          'status' => false,
+          'message' => get_phrase('image_upload_failed'),
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+          ]
+        ]);
+      }
+    }
 
     // Send confirmation emails
     $this->email_model->School_online_admission($admin_data['email'], $school_data['name'], $admin_data['name']);

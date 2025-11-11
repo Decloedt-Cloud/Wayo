@@ -211,23 +211,31 @@ class Lms_model extends CI_Model
     }
 
     // Cette fonction met à jour les classes liées à un cours
-    public function update_course_classes($course_id, $class_ids)
-    {
-        // Supprime les anciennes relations
-        $this->db->where('course_id', $course_id)->delete('course_classes');
 
-        // Ajoute les nouvelles classes sélectionnées
-        // Si $class_ids est un tableau (ex: [1, 2, 3])
-        if (is_array($class_ids)) {
-            foreach ($class_ids as $class_id) {
-                // Pour chaque class_id, on crée une nouvelle entrée dans la table pivot
-                $this->db->insert('course_classes', [
-                    'course_id' => $course_id,
-                    'class_id'  => $class_id
-                ]);
+        public function update_course_classes($course_id, $class_ids)
+        {
+            // Nettoyage
+            $this->db->where('course_id', $course_id)->delete('course_classes');
+
+            // Normalisation du format
+            if (!is_array($class_ids)) {
+                $decoded = json_decode($class_ids, true);
+                $class_ids = is_array($decoded) ? $decoded : explode(',', $class_ids);
             }
+
+            // Insertion
+            foreach ($class_ids as $class_id) {
+                if (!empty($class_id)) {
+                    $this->db->insert('course_classes', [
+                        'course_id' => $course_id,
+                        'class_id'  => (int)$class_id
+                    ]);
+                }
+            }
+
+            log_message('debug', 'Classes liées au cours ' . $course_id . ': ' . json_encode($class_ids));
         }
-    }
+
 
     // === TEACHERS ===
     // Cette fonction récupère tous les enseignants (mentors) associés à un cours

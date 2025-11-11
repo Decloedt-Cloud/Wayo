@@ -11,14 +11,14 @@
       --radius:14px;
       --shadow:0 10px 30px rgba(0,0,0,.08);
       --dark:#333333;
-      font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+      font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     }
 
     html{ 
         scroll-behavior:smooth; 
     }
     body{
-          font-family: 'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif;
+          font-family: 'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
         }
     img{
          max-width:100%; height:auto;
@@ -33,8 +33,8 @@
     .btn-pill{ border-radius:999px; font-weight:700; padding:.8rem 1.2rem; }
     .btn-accent{ background:var(--accent); color:#fff; box-shadow:0 8px 20px rgba(252,123,48,.25) }
     .btn-accent:hover{ background:var(--accent-600); color:#fff; }
-    .btn-ghost{ background:#ffffff14; color:#fff; border:1px solid #ffffff40 }
-    .btn-ghost:hover{ background:#ffffff26; color:#fff; }
+    .btn-ghost-about{ background:#ffffff14; color:#fff; border:1px solid #ffffff40 }
+    .btn-ghost-about:hover{ background:#ffffff26; color:#fff; }
 
     /* Sections */
     .section-subtitle{ color:var(--muted); }
@@ -70,7 +70,7 @@
 
 
 
-  <main class="mt-5">
+  <main>
     <!-- HERO -->
     <section class="hero">
       <div class="container hero-content py-5" data-animate>
@@ -84,7 +84,7 @@
         </a>
       </div>
       <div class="col-12 col-md-auto">
-        <a class="btn btn-ghost btn-pill w-100" href="#histoire" aria-label="Aller à notre histoire">
+        <a class="btn btn-ghost-about btn-pill w-100" href="#histoire" aria-label="Aller à notre histoire">
           <?php echo get_phrase("Discover_the_story ") ?>
         </a>
       </div>
@@ -318,7 +318,7 @@
                 <!-- Team Member 8 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/avatar-teams.webp" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
+                    <img src="../uploads/teams/fettah.jpg" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>

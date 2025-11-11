@@ -574,7 +574,8 @@ $config['csrf_exclude_uris'] = array(
     'home/online_admission_school',
     'superadmin/check_teacher_email',
     'admin/check_teacher_email',
-    'admin/teacher/create'
+    'admin/teacher/create',
+    'admission/check_duplication_ajax'
 );
  
 /*

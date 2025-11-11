@@ -123,7 +123,50 @@
                       </div>
                       <div class="d-flex gap-2 mt-2">
                           <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
-                          <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button>
+                                  <?php 
+                              // Vérifier d'abord le nombre d'inscriptions
+                              $enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_id, 'school_id' => $school_id, 'class_id' =>$class['id']))->num_rows();
+                              $enrols_max = $this->db->get_where('enrols', array('school_id' => $school_id, 'class_id' =>$class['id']))->num_rows();
+                              
+                              // Vérifier si le nombre maximum est atteint
+                              $nombre_max = isset($class['nombre_max_membre']) ? (int)$class['nombre_max_membre'] : 0;
+                              $is_max_reached = ($nombre_max > 0 && $enrols_max >= $nombre_max);
+                              
+                              if($enrols_datas > 0): ?>
+                                  <a id="paye-button" class="btn btn-outline-wayo-join btn-sm flex-fill" > <?php echo htmlspecialchars(get_phrase("start_course")); ?> </a>
+                                  
+                              <?php elseif($is_max_reached): ?>
+                                  <!-- Afficher "waiting list" si le nombre maximum est atteint -->
+                                  <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled><?php echo htmlspecialchars(get_phrase("waiting_list")); ?></button>
+                                  
+                              <?php else:
+                                  // Afficher le formulaire seulement si le maximum n'est pas atteint
+                                  $status = $this->user_model->check_student_status($school_id);
+                                  if($status == -1){
+                                ?>
+                     
+                          <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
+                              <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                              <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
+                              <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
+                              <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
+                                <?php 
+                                }else{
+                                ?> 
+                          <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
+                          <form action="<?php echo site_url('student/online_admission/assigned'); ?>" method="post">
+                              <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                              <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
+                              <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
+                              <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
+                              <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                              <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
+                              <?php 
+                              }
+                              ?>
+                                  <button id="paye-button" type="submit" class="btn btn-outline-wayo-join btn-sm flex-fill"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+                          </form>
+                              <?php endif; ?>
                       </div>
                     </div>
                   </div>
@@ -167,9 +210,9 @@
                 <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
                 <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
                 <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
-                <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+                <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
             </form>
-                <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
+                <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
           </div>
         </div>
         <div class="row justify-content-center">
@@ -228,7 +271,7 @@
       </div>
       <div class="modal-footer d-flex justify-content-between">
         <span class="fw-bold text-brand" id="classPrice">—</span>
-        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
+        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo "eeeeeee".get_phrase("Sign up") ?></button>
       </div>
     </div>
   </div>
@@ -301,6 +344,8 @@ topBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smo
             dataType: "json",
             success: function (response) {
                 var button = $("#join-button");
+                var button_paye = $("#paye-button");
+                
                 var loginButton = $("#login-join-button");
                 var dashboardCommunityAppButton = $("#dashboard-community-app-button");
 
@@ -308,7 +353,7 @@ topBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smo
                     loginButton.show();
                     button.hide();
                     dashboardCommunityAppButton.hide();
-                } else {
+          } else {
                     loginButton.hide();
                     button.show();
                     if (response.status == 1) {
@@ -322,10 +367,20 @@ topBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smo
                         } else if (response.status == 2) {
                             button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
                         } else {
-                            button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join')); ?>");
+                             button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join_community')); ?>");
+                            // button_paye.prop("disabled", false).text("<?php // echo htmlspecialchars(get_phrase('join_community')); ?>");
+                            
+                            
+                            $(".btn-outline-wayo-join, #paye-button").each(function () {
+                              $(this).prop("disabled", false)
+                                    .text("<?php echo htmlspecialchars(get_phrase('join_community')); ?>")
+                                    .removeClass("btn-outline-wayo-join")
+                                    .addClass("btn-wayo");
+                            });
+
                         }
                     }
-                }
+                 }
             }
       });
     }

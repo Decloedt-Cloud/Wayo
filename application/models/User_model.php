@@ -508,7 +508,7 @@ class User_model extends CI_Model
 				'linkedin' => $this->input->post('linkedin_link')
 			);
 			$teacher_table_data['social_links'] = json_encode($social_links);
-			$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
+			//$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
 			$this->db->where('school_id', $this->input->post('school_id'));
 			$this->db->where('user_id', $param1);
 			$this->db->update('teachers', $teacher_table_data);
@@ -1604,7 +1604,7 @@ class User_model extends CI_Model
 
 			);
 			$enrol_data = $this->db->get_where('enrols', $checker)->row_array();
-			$student_details = $this->db->get_where('students', array('id' => $id))->row_array();
+			$student_details = $this->db->get_where('students', array('user_id' => $id))->row_array();
 			$enrol_data['code'] = $student_details['code'];
 			$enrol_data['user_id'] = $student_details['user_id'];
 
@@ -2099,7 +2099,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 		} else {
 			$student_data = $this->db->get_where('students', array('user_id' => $user_id))->row_array();
 		}
-		$student_details = $this->get_student_details_by_id('student', $student_data['id']);
+		$student_details = $this->get_student_details_by_id('student', $student_data['user_id']);
 		return $student_details;
 	}
 
