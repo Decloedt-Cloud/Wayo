@@ -55,6 +55,22 @@ class Admin extends CI_Controller
 		if ($this->session->userdata('admin_login') != 1) {
 			redirect(site_url('login'), 'refresh');
 		}
+        if ($this->session->userdata('user_type') == 'admin') {
+            $school_id = $this->session->userdata('school_id');
+            $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+
+            $current_method = $this->router->method;
+
+            // Si l'école n'est PAS approuvée
+            if (!$school || $school['status'] != 1) {
+                // Autoriser uniquement : dashboard, logout, et waiting_approval (au cas où)
+                $allowed_methods = ['dashboard', 'logout', 'language'];
+
+                if (!in_array($current_method, $allowed_methods)) {
+                    redirect(site_url('admin/dashboard')); // ← toujours vers dashboard
+                }
+            }
+        }
 	}
 	//dashboard
 	public function index()
@@ -4693,5 +4709,41 @@ public function get_school_data() {
         ]);
     }
 }
+
+    public function check_teacher_email()
+    {
+        $email = $this->input->post('email');
+        $school_id = school_id();
+
+        $this->db->where('email', $email);
+        $user = $this->db->get('users')->row_array();
+
+        if (!$user) {
+            echo json_encode(['status' => 'new']);
+            return;
+        }
+
+        $this->db->where('user_id', $user['id']);
+        $this->db->where('school_id', $school_id);
+        $this->db->where('role', 'teacher');
+        $existing_teacher = $this->db->get('user_schools')->row();
+
+        if ($existing_teacher) {
+            echo json_encode([
+                'status' => 'exists_in_school',
+                'message' => get_phrase("this_email_already_exists_as_teacher_in_this_community")
+            ]);
+            return;
+        }
+
+        echo json_encode([
+            'status' => 'exists',
+            'user' => [
+                'id' => $user['id'],
+                'name' => html_entity_decode($user['name']),
+                'email' => $user['email']
+            ]
+        ]);
+    }
 	
 }

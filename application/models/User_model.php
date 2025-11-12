@@ -365,32 +365,56 @@ class User_model extends CI_Model
 	//START TEACHER section
 	public function create_teacher()
 	{
-		$data['school_id'] = html_escape($this->input->post('school_id'));
-		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
-		$data['email'] = html_escape($this->input->post('email'));
-		$plainPassword = $this->input->post('password'); // <- mot de passe en clair
-		$data['password'] = sha1($plainPassword); // stocké dans ta BDD locale
-		$data['phone'] = html_escape($this->input->post('phone'));
-		$data['gender'] = html_escape($this->input->post('gender'));
-		$data['address'] = html_escape($this->input->post('address'));
-		$data['role'] = 'teacher';
-		$data['watch_history'] = '[]';
-		$data['status'] = 1; // Active by default
-		// check email duplication
-		$duplication_status = $this->check_duplication('on_create', $data['email']);
-		if ($duplication_status) {
+		$school_id = school_id();
+		$existing_user_id = $this->input->post('existing_user_id');
+
+		if ($existing_user_id) {
+			// Vérifie qu’il n’est PAS déjà teacher dans cette école
+			$already = $this->db->get_where('user_schools', [
+				'user_id' => $existing_user_id,
+				'school_id' => $school_id,
+				'role' => 'teacher'
+			])->num_rows();
+
+			if ($already > 0) {
+				return [
+					'status' => false,
+					'notification' => get_phrase("this_email_already_exists_as_teacher_in_this_school")
+				];
+			}
+
+			$teacher_id = $existing_user_id;
+		} else {
+			// === Création d'un nouvel utilisateur ===
+			$data['school_id'] = html_escape($this->input->post('school_id'));
+			$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
+			$data['email'] = html_escape($this->input->post('email'));
+			$plainPassword = $this->input->post('password');
+			$data['password'] = sha1($plainPassword);
+			$data['phone'] = html_escape($this->input->post('phone'));
+			$data['gender'] = html_escape($this->input->post('gender'));
+			$data['address'] = html_escape($this->input->post('address'));
+			$data['role'] = 'teacher';
+			$data['watch_history'] = '[]';
+			$data['status'] = 1;
+
+			$duplication_status = $this->check_duplication('on_create', $data['email']);
+			if (!$duplication_status) {
+				return [
+					'status' => false,
+					'notification' => get_phrase("sorry_this_email_has_been_taken")
+				];
+			}
+
 			$this->db->insert('users', $data);
-
-
 			$teacher_id = $this->db->insert_id();
-			// CREATION DANS HUMHUB
-			// Extraire prénom et nom
+
+			// === HumHub + Image (nouvel utilisateur) ===
 			$nameParts = explode(' ', $data['name'], 2);
 			$firstname = $nameParts[0];
 			$lastname = isset($nameParts[1]) ? $nameParts[1] : '';
 			$username = $this->sanitizeUsername($data['name']);
 
-			// 6) Préparer le payload complet pour createUser() vers HumHub
 			$infouser = [
 				'account' => [
 					'email' => $data['email'],
@@ -402,75 +426,62 @@ class User_model extends CI_Model
 					'language' => 'fr',
 					'firstname' => $firstname,
 					'lastname' => $lastname,
-					'title' => $data['role']
+					'title' => 'teacher'
 				]
 			];
 
-			// Ajouter la photo Base64 si disponible
-
-			// 7) Appel unique à l'API HumHub pour créer l'utilisateur (avec photo si fournie)
-			log_message('debug', 'Payload HumHub createUser(): ' . json_encode($infouser));
 			$humhubResponse = $this->humhub_sso->createUser($infouser);
-			log_message('debug', 'Réponse HumHub user table: ' . json_encode($humhubResponse));
-			// Stocker l’ID HumHub si dispo
 			if (isset($humhubResponse['id'])) {
-				$this->db->where('id', $teacher_id);
-				$this->db->update('users', ['humhub_id' => $humhubResponse['id']]);
-				// Ajout explicite au groupe dans HumHub
-				$humhubUserId = $humhubResponse['id']; // <- Utilisez l'ID numérique, pas le GUID
-				$humhubGroupId = $this->getHumhubGroupId($data['role']); // ex. 3 pour Mentors
-				// Appel à l'API pour ajouter l'utilisateur au groupe "Admin"
-				$addToGroupResult = $this->humhub_sso->addUserToGroup($humhubUserId, $humhubGroupId);
-				log_message('debug', 'Résultat ajout groupe HumHub : ' . json_encode($addToGroupResult));
-			} else {
-				log_message('error', 'Erreur lors de la création HumHub pour user ID=' . $teacher_id);
+				$this->db->where('id', $teacher_id)->update('users', ['humhub_id' => $humhubResponse['id']]);
+				$humhubGroupId = $this->getHumhubGroupId('teacher');
+				$this->humhub_sso->addUserToGroup($humhubResponse['id'], $humhubGroupId);
 			}
 
+			// Upload image
+			if (!empty($_FILES['image_file']['name'])) {
+				$sourceLocal = 'uploads/users/' . $teacher_id . '.jpg';
+				move_uploaded_file($_FILES['image_file']['tmp_name'], $sourceLocal);
 
-			$teacher_table_data['user_id'] = $teacher_id;
-			$teacher_table_data['about'] = html_escape($this->input->post('about'));
-			$social_links = array(
+				if (isset($humhubResponse['guid'])) {
+					$sourceImage = FCPATH . $sourceLocal;
+					$humhubUploadsPath = 'C:/xampp/htdocs/humhub/humhub-1.17.2/uploads/profile_image/';
+					$guid = $humhubResponse['guid'];
+					$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
+					$destImage = $humhubUploadsPath . $guid . '.jpg';
+					copy($sourceImage, $destImageOrg);
+					copy($sourceImage, $destImage);
+				}
+			}
+		}
+
+		// =============================================
+		// BLOC COMMUN : exécuté dans les DEUX cas
+		// =============================================
+		$teacher_table_data = [
+			'user_id' => $teacher_id,
+			'about' => html_escape($this->input->post('about')),
+			'social_links' => json_encode([
 				'facebook' => $this->input->post('facebook_link'),
 				'twitter' => $this->input->post('twitter_link'),
 				'linkedin' => $this->input->post('linkedin_link')
-			);
-			$teacher_table_data['social_links'] = json_encode($social_links);
-			$teacher_table_data['designation'] = html_escape($this->input->post('designation'));
-			$teacher_table_data['school_id'] = html_escape($this->input->post('school_id'));
-			$teacher_table_data['show_on_website'] = $this->input->post('show_on_website');
-			$this->db->insert('teachers', $teacher_table_data);
+			]),
+			'designation' => html_escape($this->input->post('designation')),
+			'school_id' => $school_id,
+			'show_on_website' => $this->input->post('show_on_website') ? 1 : 0
+		];
+		$this->db->insert('teachers', $teacher_table_data);
 
-			if ($_FILES['image_file']['name'] != "") {
-				// 1. Déplacer l'image vers le dossier local Wayo
-				$sourceLocal = 'uploads/users/' . $teacher_id . '.jpg';
+		// Ajout dans user_schools
+		$this->db->replace('user_schools', [
+			'user_id' => $teacher_id,
+			'school_id' => $school_id,
+			'role' => 'teacher'
+		]);
 
-				move_uploaded_file($_FILES['image_file']['tmp_name'], $sourceLocal);
-				// 2. Copier vers HumHub
-				$sourceImage = FCPATH . $sourceLocal;
-				$humhubUploadsPath = 'C:/xampp/htdocs/humhub/humhub-1.17.2/uploads/profile_image/';
-				$guid = $humhubResponse['guid'];
-				$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
-				$destImage = $humhubUploadsPath . $guid . '.jpg';
-
-				if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
-					log_message('debug', ' Image copiée vers HumHub avec succès.');
-				} else {
-					log_message('error', ' Erreur lors de la copie de l\'image vers HumHub.');
-				}
-			}
-
-			return array(
-				'status' => true,
-				'notification' => get_phrase('teacher_added_successfully')
-			);
-		} else {
-			return array(
-				'status' => false,
-				'notification' => get_phrase('sorry_this_email_has_been_taken')
-			);
-		}
-
-		//return json_encode($response);
+		return [
+			'status' => true,
+			'notification' => get_phrase("teacher_added_successfully")
+		];
 	}
 
 	public function update_teacher($param1 = '')
@@ -2384,7 +2395,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$data['password'] = sha1($this->input->post('register_password'));
 			$data['role'] = 'student';
 			$data['status'] = 1;
-			$data['school_id'] = 1;
+			$data['school_id'] = null;
 			$data['watch_history'] = '[]';
 
 			$this->db->insert('users', $data);
@@ -2399,7 +2410,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$this->session->set_userdata('user_login_type', true);
 			$this->session->set_userdata('student_login', true);
 			$this->session->set_userdata('user_id', $user_id);
-			$this->session->set_userdata('school_id', 1);
+			$this->session->set_userdata('school_id', null);
 			$this->session->set_userdata('user_name', $data['name']);
 			$this->session->set_userdata('user_type', 'student');
 			$this->session->set_flashdata('success', get_phrase('registration_successful'));
@@ -2458,13 +2469,18 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			'password' => sha1($this->input->post('password-student')),
 			'role' => 'student',
 			'status' => 1,
-			'school_id' => 1, // Ajustez selon votre logique
+			'school_id' => null, // Ajustez selon votre logique
 			'watch_history' => '[]'
 		];
 
 		// Insérer l'utilisateur dans la base de données
 		$this->db->insert('users', $data);
 		$user_id = $this->db->insert_id();
+		$this->db->insert('user_schools', [
+			'user_id'   => $user_id,
+			'school_id' => $data['school_id'], // ou l'ID de la communauté
+			'role'      => 'student'
+		]);
 		// Extraire prénom et nom
 		$nameParts = explode(' ', $data['name'], 2);
 		$firstname = $nameParts[0];
