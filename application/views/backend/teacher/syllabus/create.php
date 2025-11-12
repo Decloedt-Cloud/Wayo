@@ -94,7 +94,7 @@ $('document').ready(function(){
                 }
             },
             error: function () {
-                error_notify('<?php echo js_phrase(get_phrase('an_error_occurred_during_submission')); ?>');
+                error_notify('<?php echo htmlspecialchars(get_phrase('an_error_occurred_during_submission'), ENT_QUOTES); ?>');
                 submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo get_phrase('create_syllabus'); ?>');
             }
         });

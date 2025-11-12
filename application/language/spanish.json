@@ -2910,7 +2910,7 @@
     "width": "Ancho",
     "corrupted_image": "Imagen corrupta",
     "spanish_(es)": "Español (es)",
-     "document_chargé": "Documento cargado",
+    "document_chargé": "Documento cargado",
     "contáctanos": "Contáctanos",
     "please_enter_a_valid_first_name": "Por favor, introduzca un nombre válido",
     "please_enter_a_valid_last_name": "Por favor, introduzca un apellido válido",
@@ -2945,5 +2945,9 @@
     "invalid_date_(no_future_date_allowed).": "Fecha inválida (no se permite una fecha futura).",
     "minimum_6_characters": "Mínimo 6 caracteres",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Introduce tu fecha de nacimiento (debes tener al menos 18 años).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años).",
+    "el_tamaño_del_archivo_excede_los_10_mb": "El tamaño del archivo excede los 10 mb",
+    "tipo_de_archivo_no_válido": "Tipo de archivo no válido",
+    "acción_no_permitida": "Acción no permitida",
+    "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío"
 }

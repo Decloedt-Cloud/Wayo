@@ -2,7 +2,7 @@
 <!--title-->
 <div class="col-xl-12">
   <div class="header-card">
-    <div class="card-body">
+    <div class="card-body d-flex justify-content-between align-items-center">
       <h4 class="page-title d-inline-block">
         <i class="fas fa-user-plus fa-fw"></i> <?php echo get_phrase('teachers'); ?>
       </h4>
