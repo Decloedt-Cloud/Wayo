@@ -2881,13 +2881,12 @@
     "width": "Ancho",
     "corrupted_image": "Imagen corrupta",
     "spanish_(es)": "Español (es)",
-     "document_chargé": "Documento cargado",
+    "document_chargé": "Documento cargado",
     "contáctanos": "Contáctanos",
     "please_enter_a_valid_first_name": "Por favor, introduzca un nombre válido",
     "please_enter_a_valid_last_name": "Por favor, introduzca un apellido válido",
     "phone_must_start_with_+_and_contain_10–15_digits": "El número de teléfono debe comenzar con + y contener entre 10 y 15 dígitos",
     "please_write_a_message_of_at_least_5_characters": "Por favor, escriba un mensaje de al menos 5 caracteres",
-    "document_chargé": "Documento cargado",
     "remplacer": "Reemplazar",
     "fichier_trop_volumineux_(4mo_max)": "Archivo demasiado grande (máximo 4 MB)",
     "format_non_supporté": "Formato no compatible",
@@ -2911,5 +2910,9 @@
     "invalid_date_(no_future_date_allowed).": "Fecha inválida (no se permite una fecha futura).",
     "minimum_6_characters": "Mínimo 6 caracteres",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Introduce tu fecha de nacimiento (debes tener al menos 18 años).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años).",
+    "el_tamaño_del_archivo_excede_los_10_mb": "El tamaño del archivo excede los 10 mb",
+    "tipo_de_archivo_no_válido": "Tipo de archivo no válido",
+    "acción_no_permitida": "Acción no permitida",
+    "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío"
 }

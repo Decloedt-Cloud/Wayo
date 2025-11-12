@@ -6,7 +6,7 @@
 
 <div class="col-xl-12">
     <div class="header-card">
-              <div class="card-body">
+              <div class="card-body d-flex justify-content-between align-items-center">
                 <h4 class="page-title d-inline-block">
               <i class="fas fa-layer-group fa-fw"></i> <?php echo get_phrase('all_courses'); ?></h4>
               <div class="action-buttons-container">

@@ -3123,5 +3123,7 @@
     "minimum_6_characters": "Mindestens 6 Zeichen",
     "gmail": "Gmail",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Geben Sie Ihr Geburtsdatum ein (Sie müssen mindestens 18 Jahre alt sein).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Ungültiges Datum (Sie müssen mindestens 18 Jahre alt sein)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Ungültiges Datum (Sie müssen mindestens 18 Jahre alt sein).",
+    "bestandsgrootte_is_groter_dan_10_mb": "Bestandsgrootte is groter dan 10 mb",
+    "ongeldig_bestandstype": "Ongeldig bestandstype"
 }
