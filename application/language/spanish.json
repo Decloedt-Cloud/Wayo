@@ -2917,5 +2917,6 @@
     "invalid_date_(no_future_date_allowed).": "Fecha inválida (no se permite una fecha futura).",
     "minimum_6_characters": "Mínimo 6 caracteres",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Introduce tu fecha de nacimiento (debes tener al menos 18 años).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años).",
+    "under_construction": "en construcción"
 }

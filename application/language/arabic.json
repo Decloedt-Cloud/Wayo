@@ -2894,5 +2894,7 @@
     "invalid_date_(no_future_date_allowed).": "تاريخ غير صالح (لا يسمح بالتاريخ المستقبلي).",
     "minimum_6_characters": "ستة أحرف على الأقل",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "أدخل تاريخ ميلادك (يجب أن يكون عمرك 18 سنة على الأقل).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "تاريخ غير صالح (يجب أن يكون عمرك 18 سنة على الأقل)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "تاريخ غير صالح (يجب أن يكون عمرك 18 سنة على الأقل).",
+    "under_construction": "قيد الإنشاء",
+    "class_courses": "Class courses"
 }

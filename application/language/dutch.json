@@ -3130,5 +3130,7 @@
     "minimum_6_characters": "Mindestens 6 Zeichen",
     "gmail": "Gmail",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Geben Sie Ihr Geburtsdatum ein (Sie müssen mindestens 18 Jahre alt sein).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Ungültiges Datum (Sie müssen mindestens 18 Jahre alt sein)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Ungültiges Datum (Sie müssen mindestens 18 Jahre alt sein).",
+    "under_construction": "in aanbouw",
+    "class_courses": "Class courses"
 }
