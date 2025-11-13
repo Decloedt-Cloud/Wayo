@@ -178,3 +178,11 @@ iframe {
     transform: translateY(0);
   }
 }
+
+.alert-warning-community {
+    color: #6c757d;
+    background-color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
