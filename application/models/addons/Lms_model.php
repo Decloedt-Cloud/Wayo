@@ -210,6 +210,18 @@ class Lms_model extends CI_Model
             ->result_array();
     }
 
+    public function get_courses_by_class($class_id)
+    {
+        return $this->db
+            ->select('course.*, course.id as id, course.thumbnail as thumbnail')
+            ->from('course')
+            ->join('course_classes', 'course_classes.course_id = course.id')
+            ->where('course_classes.class_id', $class_id)
+            ->where('course.status', 'active')
+            ->get()
+            ->result_array();
+    }
+
     // Cette fonction met à jour les classes liées à un cours
 
         public function update_course_classes($course_id, $class_ids)

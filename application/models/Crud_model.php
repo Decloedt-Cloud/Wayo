@@ -46,7 +46,7 @@ class Crud_model extends CI_Model
 		$this->db->where('statut', "active");
 		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
 		$this->db->group_start();
-		$this->db->where('date_fin <=', date('Y-m-d'));
+		$this->db->where('date_fin >=', date('Y-m-d'));
 		$this->db->or_where('date_fin', NULL);
 		$this->db->group_end();
 
@@ -61,7 +61,7 @@ class Crud_model extends CI_Model
 		$this->db->where('statut', "active");
 		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
 		$this->db->group_start();
-		$this->db->where('date_fin <=', date('Y-m-d'));
+		$this->db->where('date_fin >=', date('Y-m-d'));
 		$this->db->or_where('date_fin', NULL);
 		$this->db->group_end();
 		$query = $this->db->get();

@@ -2989,6 +2989,7 @@
     "member": "Membre",
     "choose_a_community": "Choisissez une communauté",
     "no_community_found": "Aucune communauté trouvée",
+    "under_construction": "en construction",
     "type_de_fichier_invalide": "Type de fichier invalide",
     "la_taille_du_fichier_dépasse_10_mo": "La taille du fichier dépasse 10 mo"
 }

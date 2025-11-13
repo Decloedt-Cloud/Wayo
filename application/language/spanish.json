@@ -2948,5 +2948,6 @@
     "invalid_date_(you_must_be_at_least_18_years_old).": "Fecha inválida (debes tener al menos 18 años).",
     "choose_a_community": "Elige una comunidad",
     "member": "Miembro",
-    "no_community_found": "No se encontró ninguna comunidad"
+    "no_community_found": "No se encontró ninguna comunidad",
+    "under_construction": "en construcción"
 }

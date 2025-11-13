@@ -30,6 +30,7 @@ class Student extends CI_Controller {
 		$this->load->model('Addon_model',    'addon_model');
 		$this->load->model('Frontend_model', 'frontend_model');
 		$this->load->model('Room_model','room_model');
+		$this->load->model('addons/Lms_model','lms_model');
 
 		/*cache control*/
 		$this->output->set_header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
@@ -115,16 +116,107 @@ class Student extends CI_Controller {
 		// show data from database
 		if ($param1 == 'list') {
 			$this->load->view('backend/student/class/list');
+			return;
+		}
+
+		if ($param1 == 'courses' && !empty($param2)) {
+			$user_id = $this->session->userdata('user_id');
+			$student = $this->db
+				->where('user_id', $user_id)
+				->where('status', 1)
+				->get('students')
+				->row_array();
+
+			if (!$student) {
+				show_error(get_phrase('student_profile_not_found'));
+			}
+
+			$class = $this->db
+				->where('id', $param2)
+				->get('classes')
+				->row_array();
+
+			if (!$class) {
+				show_404();
+			}
+
+
+
+			$page_data['class_details'] = $class;
+			$page_data['courses'] = $this->lms_model->get_courses_by_class($class['id']);
+			$page_data['student'] = $student;
+			$page_data['folder_name'] = 'class';
+			$page_data['page_title'] = 'class_courses';
+			$page_data['page_name'] = 'courses';
+			$this->load->view('backend/index', $page_data);
+			return;
 		}
 
 		if(empty($param1)){
 			$page_data['folder_name'] = 'class';
 			$page_data['page_title'] = 'class';
+			$page_data['page_name'] = 'index';
 			$this->load->view('backend/index', $page_data);
 		}
 	}
 	//END CLASS section
 
+	// Show all courses linked to a given class for the logged-in student
+	public function courses($class_id = '') {
+		if ($this->session->userdata('student_login') != 1) {
+			redirect(site_url('login'), 'refresh');
+		}
+
+		if (empty($class_id)) {
+			show_404();
+		}
+
+		$user_id = $this->session->userdata('user_id');
+		$student = $this->db
+			->where('user_id', $user_id)
+			->where('status', 1)
+			->get('students')
+			->row_array();
+
+		if (!$student) {
+			show_error(get_phrase('student_profile_not_found'));
+		}
+
+		$class = $this->db->get_where('classes', ['id' => $class_id])->row_array();
+		if (!$class) {
+			show_404();
+		}
+
+		// $is_enrolled = $this->db
+		// 	->where('student_id', $student['id'])
+		// 	->where('class_id', $class['id'])
+		// 	->count_all_results('enrols');
+        //     print_r($student['id']." ------ ");
+        //     print_r($class['id']);
+            
+           
+
+		// if (!$is_enrolled) {
+		// 	// Not enrolled: show payment/join page
+		// 	$currency = $this->db->get_where('settings_school', array('school_id' => $class['school_id']))->row('system_currency');
+		// 	$page_data['class_details'] = $class;
+		// 	$page_data['student'] = $student;
+		// 	$page_data['currency'] = $currency ?: 'USD';
+		// 	$page_data['folder_name'] = 'class';
+		// 	$page_data['page_title'] = 'class_payment';
+		// 	$page_data['page_name'] = 'pay';
+		// 	$this->load->view('backend/index', $page_data);
+		// 	return;
+		// }
+
+		$page_data['class_details'] = $class;
+		$page_data['courses'] = $this->lms_model->get_courses_by_class($class['id']);
+		$page_data['student'] = $student;
+		$page_data['folder_name'] = 'class';
+		$page_data['page_title'] = 'class_courses';
+		$page_data['page_name'] = 'courses';
+		$this->load->view('backend/index', $page_data);
+	}
       public function recording($param1 = '', $param2 = '', $param3 = '') {
     // Check authentication
     if ($this->session->userdata('student_login') != 1) {

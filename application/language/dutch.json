@@ -3163,5 +3163,7 @@
     "invalid_date_(you_must_be_at_least_18_years_old).": "Ungültiges Datum (Sie müssen mindestens 18 Jahre alt sein).",
     "choose_a_community": "Kies een gemeenschap",
     "member": "Lid",
-    "no_community_found": "Geen gemeenschap gevonden"
+    "no_community_found": "Geen gemeenschap gevonden",
+    "under_construction": "in aanbouw",
+    "class_courses": "klascursussen"
 }

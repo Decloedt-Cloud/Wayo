@@ -2927,5 +2927,7 @@
     "invalid_date_(you_must_be_at_least_18_years_old).": "تاريخ غير صالح (يجب أن يكون عمرك 18 سنة على الأقل).",
     "choose_a_community": "اختر مجتمعًا",
     "no_community_found": "لم يتم العثور على المجتمع",
-    "member": "عضو"
+    "member": "عضو",
+    "under_construction": "قيد الإنشاء",
+    "class_courses": "دورات الطبقة"
 }
