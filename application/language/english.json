@@ -2959,5 +2959,8 @@
     "enter_your_date_of_birth_(no_future_dates).": "Enter your date of birth (no future dates).",
     "gmail": "Gmail",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Enter your date of birth (must be at least 18 years old).",
-    "invalid_date_(you_must_be_at_least_18_years_old).": "Invalid date (you must be at least 18 years old)."
+    "invalid_date_(you_must_be_at_least_18_years_old).": "Invalid date (you must be at least 18 years old).",
+    "choose_a_community": "Choose a community",
+    "switched_to_member_account": "Switched to member account",
+    "no_community_found": "No community found"
 }

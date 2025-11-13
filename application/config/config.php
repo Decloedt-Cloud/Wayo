@@ -567,6 +567,8 @@ $config['csrf_exclude_uris'] = array(
     'superadmin/get_users_by_school',
     'admin/get_users_by_school',
     'teacher/get_users_by_school',
+    'admin/get_school_data',
+    'teacher/get_school_data',
     'student/get_school_data',
     'student/recording/.*',
     'admission/online_admission/.*',
@@ -575,7 +577,8 @@ $config['csrf_exclude_uris'] = array(
     'superadmin/check_teacher_email',
     'admin/check_teacher_email',
     'admin/teacher/create',
-    'admission/check_duplication_ajax'
+    'admission/check_duplication_ajax',
+    'home/get_communities_by_role'
 );
  
 /*

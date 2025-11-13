@@ -43,28 +43,6 @@
         padding: .8rem 1.2rem;
     }
 
-    .btn-accent {
-        background: var(--accent);
-        color: #fff;
-        box-shadow: 0 8px 20px rgba(252, 123, 48, .25)
-    }
-
-    .btn-accent:hover {
-        background: var(--accent-600);
-        color: #fff;
-    }
-
-    .btn-ghost {
-        background: #ffffff14;
-        color: #fff;
-        border: 1px solid #ffffff40
-    }
-
-    .btn-ghost:hover {
-        background: #ffffff26;
-        color: #fff;
-    }
-
     /* ====== Step 2 layout ====== */
     .panel--community .grid {
         display: grid;

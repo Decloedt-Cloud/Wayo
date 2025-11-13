@@ -341,8 +341,7 @@
     </div>
 </div>
 <script>
-const csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
-let csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
 
 const CalendarApp = {
   calendar: null,
