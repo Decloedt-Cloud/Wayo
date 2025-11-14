@@ -159,23 +159,27 @@
                                     </div>
                                 </div> -->
 
-                                <div class="col-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('start_date'); ?></div>
-                                        <div class="info-value">
-                                            <?php echo !empty($class['date_debut']) ? date('d/m/Y', strtotime($class['date_debut'])) : get_phrase('no_information_provided'); ?>
+                                <?php if (!empty($class['date_debut']) && $class['date_debut'] != '0000-00-00'): ?>
+                                    <div class="col-12">
+                                        <div class="info-block">
+                                            <div class="info-title"><?php echo get_phrase('start_date'); ?></div>
+                                            <div class="info-value">
+                                                <?php echo date('d/m/Y', strtotime($class['date_debut'])); ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
 
+                                <?php if(!empty($class['date_fin'] && $class['date_fin'] != '0000-00-00')): ?>
                                 <div class="col-12">
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('end_date'); ?></div>
                                         <div class="info-value">
-                                            <?php echo !empty($class['date_fin']) ? date('d/m/Y', strtotime($class['date_fin'])) : get_phrase('no_information_provided'); ?>
+                                            <?php echo date('d/m/Y', strtotime($class['date_fin'])); ?>
                                         </div>
                                     </div>
                                 </div>
+                                <?php endif; ?>
 
                                 <!-- Social Links -->
 
