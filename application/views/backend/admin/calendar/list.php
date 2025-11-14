@@ -788,7 +788,7 @@ setupResizeListener() {
             this.showNotification('error', data.message);
           }
         } catch (e) {
-          this.showNotification('error', 'Invalid server response');
+         this.showNotification('error', 'No existing class.');
         }
       },
       error: () => { this.showNotification('error', 'Failed to load school'); }
