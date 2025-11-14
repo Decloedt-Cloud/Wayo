@@ -71,13 +71,13 @@
                 <label for="about"><?php echo get_phrase("about"); ?><span class="required"> * </span></label>
                 <textarea class="form-control" id="about" name="about" rows="5" required></textarea>
             </div>
-            <div class="form-group mb-1">
+            <!-- <div class="form-group mb-1">
                 <label for="show_on_website"><?php echo get_phrase("show_on_website"); ?></label>
                 <select name="show_on_website" id="show_on_website" class="form-control">
                     <option value="1"><?php echo get_phrase("show"); ?></option>
                     <option value="0"><?php echo get_phrase("do_not_need_to_show"); ?></option>
                 </select>
-            </div>
+            </div> -->
             <div class="form-group mt-3">
                 <button class="btn btn-primary btn-l px-4" id="submit-btn" type="submit" disabled>
                     <i class="mdi mdi-plus"></i><?php echo get_phrase("create_teacher"); ?>

@@ -1,13 +1,13 @@
 <?php
-    // Fetch class data based on the provided class ID
-    $class = $this->db->get_where('classes', array('id' => $param1))->row_array();
-    if (empty($class)) {
-        // Handle case where class is not found
-        include APPPATH . 'views/backend/empty.php';
-        return;
-    }
-     // Fetch currency
-    $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency');
+// Fetch class data based on the provided class ID
+$class = $this->db->get_where('classes', array('id' => $param1))->row_array();
+if (empty($class)) {
+    // Handle case where class is not found
+    include APPPATH . 'views/backend/empty.php';
+    return;
+}
+// Fetch currency
+$currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency');
 ?>
 <div class="container py-4">
     <div class="row g-4 align-items-start">
@@ -76,16 +76,16 @@
                         </div>
                     </div>
                     <div class="row g-2 text-center small pt-2">
-                            <div class="col-12">
-                                <div class="mini-stat">
-                                    <div class="label text-muted"><?php echo get_phrase('maximum_members'); ?></div>
-                                    <div class="value">
-                                        <?php echo !empty($class['nombre_max_membre']) ? $class['nombre_max_membre'] : get_phrase('not_specified'); ?>
-                                    </div>
+                        <div class="col-12">
+                            <div class="mini-stat">
+                                <div class="label text-muted"><?php echo get_phrase('maximum_members'); ?></div>
+                                <div class="value">
+                                    <?php echo !empty($class['nombre_max_membre']) ? $class['nombre_max_membre'] : get_phrase('not_specified'); ?>
                                 </div>
                             </div>
+                        </div>
                     </div>
-                    
+
                 </div>
 
                 <div class="card-footer bg-transparent border-0 pt-0">
@@ -131,7 +131,7 @@
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('price'); ?></div>
                                         <div class="info-value">
-                                            <?php echo $class['price'].' '.$currencies; ?>
+                                            <?php echo $class['price'] . ' ' . $currencies; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -150,32 +150,37 @@
                                         <div class="info-title"><?php echo get_phrase('Address'); ?></div>
                                         <div class="info-value">
                                             <?php
-                                                echo $this->user_model->get_user_details($class['user_id'], 'Rue')
-                                                     .', '.$this->user_model->get_user_details($class['user_id'], 'Numero')
-                                                     .', '.$this->user_model->get_user_details($class['user_id'], 'Ville')
-                                                     .', '.$this->user_model->get_user_details($class['user_id'], 'Codepostal');
+                                            echo $this->user_model->get_user_details($class['user_id'], 'Rue')
+                                                . ', ' . $this->user_model->get_user_details($class['user_id'], 'Numero')
+                                                . ', ' . $this->user_model->get_user_details($class['user_id'], 'Ville')
+                                                . ', ' . $this->user_model->get_user_details($class['user_id'], 'Codepostal');
                                             ?>
                                         </div>
                                     </div>
                                 </div> -->
 
-                                <div class="col-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('start_date'); ?></div>
-                                        <div class="info-value">
-                                            <?php echo !empty($class['date_debut']) ? date('d/m/Y', strtotime($class['date_debut'])) : get_phrase('no_information_provided'); ?>
+
+                                <?php if (!empty($class['date_debut']) && $class['date_debut'] != '0000-00-00'): ?>
+                                    <div class="col-12">
+                                        <div class="info-block">
+                                            <div class="info-title"><?php echo get_phrase('start_date'); ?></div>
+                                            <div class="info-value">
+                                                <?php echo date('d/m/Y', strtotime($class['date_debut'])); ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
 
+                                <?php if(!empty($class['date_fin'] && $class['date_fin'] != '0000-00-00')): ?>
                                 <div class="col-12">
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('end_date'); ?></div>
                                         <div class="info-value">
-                                            <?php echo !empty($class['date_fin']) ? date('d/m/Y', strtotime($class['date_fin'])) : get_phrase('no_information_provided'); ?>
+                                            <?php echo date('d/m/Y', strtotime($class['date_fin'])); ?>
                                         </div>
                                     </div>
                                 </div>
+                                <?php endif; ?>
 
                                 <!-- Social Links -->
 
@@ -184,10 +189,10 @@
                                         <div class="info-title mb-2"><?php echo get_phrase('social_links'); ?></div>
                                         <div class="info-value">
                                             <?php if ($class['social_links']): ?>
-                                                <?php 
-                                                    // Assuming social_links is stored as JSON or a serialized format
-                                                    $social_links = json_decode($class['social_links'], true);
-                                                    if (is_array($social_links) && !empty($social_links)): ?>
+                                                <?php
+                                                // Assuming social_links is stored as JSON or a serialized format
+                                                $social_links = json_decode($class['social_links'], true);
+                                                if (is_array($social_links) && !empty($social_links)): ?>
                                                         <div class="d-flex flex-wrap gap-2">
                                                             <?php foreach ($social_links as $platform => $url): ?>
                                                                 <a href="<?php echo htmlspecialchars($url); ?>" target="_blank" class="chip chip-outline">
@@ -227,82 +232,103 @@
 
 <!-- Custom CSS (unchanged from original) -->
 <style>
-/* General */
-.card { border-radius: 16px; }
-.shadow { box-shadow: 0 10px 24px rgba(20, 20, 43, 0.06) !important; }
+    /* General */
+    .card {
+        border-radius: 16px;
+    }
 
-/* Profile: cover + avatar */
-.profile-card { position: relative; }
-.profile-cover {
-    height: 86px;
-    background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
-}
-.avatar-wrap {
-    margin-top: -60px;
-}
-.avatar-img {
-    border-radius: 50%;
-    border: 4px solid #fff;
-    outline: 3px solid var(--bs-primary);
-    object-fit: cover;
-}
+    .shadow {
+        box-shadow: 0 10px 24px rgba(20, 20, 43, 0.06) !important;
+    }
 
-/* Chips (social links, visibility) */
-.chip {
-    display: inline-block;
-    padding: .35rem .65rem;
-    border-radius: 999px;
-    background: #f5f7fb;
-    border: 1px solid #eef1f7;
-    font-size: .8125rem;
-    line-height: 1;
-}
-.chip-outline {
-    background: transparent;
-    border-color: #dfe6f3;
-}
+    /* Profile: cover + avatar */
+    .profile-card {
+        position: relative;
+    }
 
-/* Mini stats in card footer */
-.mini-stat .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; }
-.mini-stat .value { font-weight: 600; }
+    .profile-cover {
+        height: 86px;
+        background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
+    }
 
-/* Soft pills */
-.soft-pills .nav-link {
-    border-radius: 10px;
-    background: #f6f8fb;
-    color: #4d5a75;
-    margin-right: .5rem;
-}
-.soft-pills .nav-link.active {
-    background: var(--bs-primary);
-    color: #fff;
-    box-shadow: 0 6px 14px rgba(35, 99, 255, .2);
-}
+    .avatar-wrap {
+        margin-top: -60px;
+    }
 
-/* Info blocks */
-.info-block {
-    padding: 1rem 1.125rem;
-    border: 1px solid #eef1f7;
-    border-radius: 12px;
-    background: #ffffffcc;
-    backdrop-filter: blur(6px);
-}
-.info-title {
-    font-size: .8rem;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: #6b7280;
-    margin-bottom: .25rem;
-}
-.info-value {
-    font-size: 1rem;
-    color: #0f172a;
-}
+    .avatar-img {
+        border-radius: 50%;
+        border: 4px solid #fff;
+        outline: 3px solid var(--bs-primary);
+        object-fit: cover;
+    }
 
-/* Helpers */
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    /* Chips (social links, visibility) */
+    .chip {
+        display: inline-block;
+        padding: .35rem .65rem;
+        border-radius: 999px;
+        background: #f5f7fb;
+        border: 1px solid #eef1f7;
+        font-size: .8125rem;
+        line-height: 1;
+    }
+
+    .chip-outline {
+        background: transparent;
+        border-color: #dfe6f3;
+    }
+
+    /* Mini stats in card footer */
+    .mini-stat .label {
+        font-size: .7rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .mini-stat .value {
+        font-weight: 600;
+    }
+
+    /* Soft pills */
+    .soft-pills .nav-link {
+        border-radius: 10px;
+        background: #f6f8fb;
+        color: #4d5a75;
+        margin-right: .5rem;
+    }
+
+    .soft-pills .nav-link.active {
+        background: var(--bs-primary);
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(35, 99, 255, .2);
+    }
+
+    /* Info blocks */
+    .info-block {
+        padding: 1rem 1.125rem;
+        border: 1px solid #eef1f7;
+        border-radius: 12px;
+        background: #ffffffcc;
+        backdrop-filter: blur(6px);
+    }
+
+    .info-title {
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #6b7280;
+        margin-bottom: .25rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: #0f172a;
+    }
+
+    /* Helpers */
+    .truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 </style>
