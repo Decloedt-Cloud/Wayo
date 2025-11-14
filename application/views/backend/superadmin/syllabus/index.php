@@ -2,11 +2,11 @@
 <!--title-->
 <div class="col-xl-12">
     <div class="header-card">
-        <div class="card-body">
+        <div class="card-body d-flex justify-content-between align-items-center">
             <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-chart-timeline title_icon"></i> <?php echo get_phrase('syllabus'); ?>
+                <i class="fas fa-folder-open fa-fw"></i> <?php echo get_phrase('syllabus'); ?>
             </h4>
-            <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/syllabus/create'); ?>', '<?php echo get_phrase('create_syllabus'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_syllabus'); ?></button>
+            <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/syllabus/create'); ?>', '<?php echo htmlspecialchars(get_phrase('create_syllabus'), ENT_QUOTES); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_syllabus'); ?></button>
         </div> <!-- end card body-->
     </div> <!-- end card -->
 </div><!-- end col-->

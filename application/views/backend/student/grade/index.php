@@ -4,7 +4,7 @@
   <div class="header-card">
     <div class="card-body">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-grease-pencil title_icon"></i> <?php echo get_phrase('Grade'); ?> </h4>
+        <i class="fas fa-clipboard-check fa-fw"></i> <?php echo get_phrase('Grade'); ?> </h4>
     </div> <!-- end card body-->
   </div> <!-- end card -->
 </div><!-- end col-->

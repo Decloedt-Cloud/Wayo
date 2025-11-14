@@ -5,7 +5,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                    <i class="mdi mdi-account-multiple-plus title_icon"></i> <?php echo get_phrase('student_admission_form'); ?>
+                    <i class="fas fa-user-plus fa-fw"></i> <?php echo get_phrase('student_admission_form'); ?>
                 </h4>
                 
             </div> <!-- end card body-->

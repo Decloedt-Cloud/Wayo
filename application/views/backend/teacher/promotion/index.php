@@ -2,7 +2,7 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
-            <h4 class="page-title"> <i class="mdi mdi-account-switch title_icon"></i><?php echo get_phrase('student_promotion'); ?>
+            <h4 class="page-title"> <i class="fas fa-user-graduate"></i><?php echo get_phrase('student_promotion'); ?>
             </div>
         </div>
     </div>

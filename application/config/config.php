@@ -567,10 +567,19 @@ $config['csrf_exclude_uris'] = array(
     'superadmin/get_users_by_school',
     'admin/get_users_by_school',
     'teacher/get_users_by_school',
+    'admin/get_school_data',
+    'teacher/get_school_data',
     'student/get_school_data',
     'student/recording/.*',
-    'admission/online_admission/.*'
-
+    'admission/online_admission/.*',
+    'login/validate_login_frontend',
+    'home/online_admission_school',
+    'superadmin/check_teacher_email',
+    'admin/check_teacher_email',
+    'admin/teacher/create',
+    'admission/check_duplication_ajax',
+    'home/get_communities_by_role',
+    'home/check_community_name_exists'
 );
  
 /*

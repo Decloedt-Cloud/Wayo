@@ -6,8 +6,10 @@
     
     <div class="form-row">
         <?php $school_id = school_id(); ?>
+
         <input type="hidden" name="school_id" value="<?php echo $school_id; ?>">
         <input type="hidden" name="session_id" value="<?php echo active_session(); ?>">
+        
         <div class="form-group col-md-12 mb-2">
             <label for="title"><?php echo get_phrase('title'); ?><span class="required"> * </span></label>
             <input type="text" class="form-control" id="title" name = "title" required>
@@ -62,7 +64,7 @@ $('document').ready(function(){
 
         // Cible uniquement le bouton de ce formulaire
         var submitButton = $(this).find('button[type="submit"]');
-        var adding_text = "<?php echo get_phrase('creating'); ?>...";
+        var adding_text = "<?php echo htmlspecialchars(get_phrase('creating'), ENT_QUOTES); ?>...";
         
         // Désactive et met à jour uniquement ce bouton
         submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+adding_text);
@@ -79,6 +81,9 @@ $('document').ready(function(){
             contentType: false,
             dataType: 'json',
             success: function (response) {
+                // return false;
+                console.log(`Status is ${response.status} so response is success`);
+                
                 if (response.status) {
                     success_notify(response.notification);
                     // Met à jour le token CSRF
@@ -89,15 +94,17 @@ $('document').ready(function(){
                         location.reload();
                     }, 3500);
                 } else {
+                    console.log('else')
+                    
                     error_notify(response.notification || '<?php echo js_phrase(get_phrase('action_not_allowed')); ?>');
-                    submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo get_phrase('create_syllabus'); ?>');
+                    submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo htmlspecialchars(get_phrase('create_syllabus'), ENT_QUOTES); ?>');
                 }
             },
             error: function () {
-                error_notify('<?php echo js_phrase(get_phrase('an_error_occurred_during_submission')); ?>');
-                submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo get_phrase('create_syllabus'); ?>');
+                error_notify('<?php echo htmlspecialchars(get_phrase('an_error_occurred_during_submission'), ENT_QUOTES); ?>');
+                submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo htmlspecialchars(get_phrase('create_syllabus'), ENT_QUOTES); ?>');
             }
-        });
+        }); 
     });
 
     function getCsrfToken() {

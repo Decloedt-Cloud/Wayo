@@ -5,7 +5,7 @@
         <div class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
             
             <h4 class="page-title mb-2 mb-md-0">
-                <i class="mdi mdi-power-plug title_icon me-2"></i> 
+                <i class="fas fa-puzzle-piece"></i> 
                 <?php echo get_phrase('manage_addons'); ?>
             </h4>
             

@@ -7,7 +7,16 @@
   --line:rgba(0,0,0,.08); --card:#fff;
   --shadow:0 8px 28px rgba(0,0,0,.07);
   --radius:18px;
-  --font:'Shayan', 'Cairo', 'Tajawal', 'Arial', sans-serif !important;
+  --font:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  /* New root */
+  --white:#fff; --text:#171717; --muted:#6b7280; --line:#eee; --line-2:#f3f4f6;
+  --orange:#F47A1F; --orange-2:#fbb040; --orange-3:#ffebd8;
+  --green:#16a34a; --red:#dc2626;
+  --bg:#ffffff;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --shadow-2:0 30px 80px rgba(0,0,0,.12);
+  --radius:16px;
+  --logo-h-desktop: 88px; --logo-h-tablet: 60px; --logo-h-mobile: 52px;
 }
 *,::before,::after{box-sizing:border-box}
 body{margin:0;font-family:var(--font);color:var(--g-dark);background:var(--white);line-height:1.6}
@@ -126,6 +135,5 @@ img{max-width:100%;}
 .footer-credits{text-align:center;font-size:.78rem;color:rgba(255,255,255,.7)}
 
 .tutorial-body{
-  margin-top: 80px;
   background-color: #f6f7fb !important;
 }

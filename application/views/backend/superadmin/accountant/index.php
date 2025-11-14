@@ -2,9 +2,9 @@
 <!--title-->
 <div class="col-xl-12">
   <div class="header-card">
-    <div class="card-body">
+    <div class="card-body d-flex justify-content-between align-items-center">
       <h4 class="page-title d-inline-block">
-        <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('accountant'); ?>
+        <i class="fas fa-calculator"></i> <?php echo get_phrase('accountant'); ?>
       </h4>
       <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/accountant/create'); ?>', '<?php echo get_phrase('create_accountant'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_accountant'); ?></button>
     </div> <!-- end card body-->

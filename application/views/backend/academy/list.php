@@ -106,11 +106,11 @@
                                 // Récupérer toutes les classes pour le cours
                                 $classes = $this->lms_model->get_classes_by_course($course['id']);
                                 $class_names = [];
-                                if (!empty($classes)) {
-                                    foreach ($classes as $c) {
-                                        $class_names[] = $c['name'];
+                                    if (!empty($classes)) {
+                                        foreach ($classes as $c) {
+                                            $class_names[] = $c['name'];
+                                        }
                                     }
-                                }
                                 $sections = $this->lms_model->get_section('course', $course['id']);
                                 $lessons = $this->lms_model->get_lessons('course', $course['id']);
                                 // if ($course['status'] == 'inactive' && $selected_status == 'all') {

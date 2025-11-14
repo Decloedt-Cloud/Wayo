@@ -4,7 +4,7 @@
         <div class="header-card">
             <div class="card-body">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-cog title_icon"></i><?php echo ucfirst(get_phrase('website_settings')); ?>
+          <i class="fas fa-cogs"></i><?php echo ucfirst(get_phrase('website_settings')); ?>
         </h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->

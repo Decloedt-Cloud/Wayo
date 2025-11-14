@@ -2,9 +2,9 @@
 <!--title-->
 <div class="col-xl-12">
     <div class="header-card">
-             <div class="card-body">
+             <div class="card-body d-flex justify-content-between align-items-center">
                 <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-school title_icon"></i> <?php echo get_phrase('school'); ?>
+          <i class="fas fa-users"></i> <?php echo get_phrase('school'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded align-middle mt-1 float-end" onclick="rightModal('<?php echo site_url('modal/popup/school/create'); ?>', '<?php echo get_phrase('create_school'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_School'); ?></button>
       </div> <!-- end card body-->

@@ -2,9 +2,9 @@
 <!--title-->
 <div class="col-xl-12">
     <div class="header-card">
-             <div class="card-body">
+             <div class="card-body d-flex justify-content-between align-items-center">
                 <h4 class="page-title d-inline-block">
-                  <i class="mdi mdi-account-circle title_icon"></i> <?php echo get_phrase('all_admins'); ?>
+                  <i class="fas fa-user-cog"></i> <?php echo get_phrase('all_admins'); ?>
               </h4>
               <div class="action-buttons-container">
                    <button type="button" class="btn-modern btn btn-outline-primary btn-rounded align-middle mt-1 float-end" onclick="rightModal('<?php echo site_url('modal/popup/admin/create'); ?>', '<?php echo get_phrase('create_admin'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('create_admin'); ?></button>

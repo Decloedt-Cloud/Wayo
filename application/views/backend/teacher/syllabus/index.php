@@ -2,11 +2,11 @@
 <!--title-->
 <div class="col-xl-12">
     <div class="header-card">
-        <div class="card-body">
+        <div class="card-body d-flex justify-content-between align-items-center">
             <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-chart-timeline title_icon"></i> <?php echo get_phrase('syllabus'); ?>
+                <i class="fas fa-folder-open fa-fw"></i> <?php echo get_phrase('syllabus'); ?>
             </h4>
-            <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/syllabus/create'); ?>', '<?php echo get_phrase('create_syllabus'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_syllabus'); ?></button>
+            <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/syllabus/create'); ?>', '<?php echo htmlspecialchars(get_phrase('create_syllabus'), ENT_QUOTES); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_syllabus'); ?></button>
         </div> <!-- end card body-->
     </div> <!-- end card -->
 </div><!-- end col-->
@@ -23,7 +23,7 @@
                             <div class="col-md-3 mb-1"></div>
                             <div class="col-md-4 mb-1">
                                 <select name="class" id="class_id_teachaer" class="form-control" required>
-                                    <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                                    <option value="all"><?php echo get_phrase('all_programs'); ?></option>
                                     <?php
                                     $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
                                     $school_id = school_id();
@@ -60,6 +60,7 @@
                 dropdownParent: '#right-modal'
             });
         }); //initSelect2(['#class_id']);
+        showAllSyllabuses('all');
     });
 
 

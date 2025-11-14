@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-                <i class="mdi mdi-grease-pencil title_icon"></i> <?php echo get_phrase('Exam'); ?>
+                <i class="fas fa-file-signature fa-fw"></i> <?php echo get_phrase('certifications'); ?>
             </h4>
         </div>
     </div>

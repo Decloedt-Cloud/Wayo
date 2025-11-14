@@ -35,8 +35,9 @@
                             <?php echo $teacher['designation']; ?>
                         </span>
                     </div>
+                    <!-- Commenter "Visibility" Temporarely -->
 
-                    <div class="text-start mt-3">
+                    <!-- <div class="text-start mt-3">
                         <div class="section-title text-center small text-uppercase fw-bold text-muted mb-2">
                             <?php echo get_phrase('visibility'); ?>
                         </div>
@@ -45,7 +46,10 @@
                                 <?php echo $teacher['show_on_website'] ? get_phrase('visible_on_website') : get_phrase('not_visible_on_website'); ?>
                             </span>
                         </div>
-                    </div>
+                    </div> -->
+                    
+                    <!--------------------------------------->
+
                 </div>
 
                 <div class="card-footer bg-transparent border-0 pt-0">
@@ -154,7 +158,10 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12">
+
+                                <!-- Commenter "website_visibility" Temporarely -->
+
+                                <!-- <div class="col-12">
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('website_visibility'); ?></div>
                                         <div class="info-value">
@@ -163,8 +170,10 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
+                                <!------------end-------------------------------------->
+                                 
                             </div><!-- /row -->
                         </div><!-- /tab -->
                     </div><!-- /tab-content -->

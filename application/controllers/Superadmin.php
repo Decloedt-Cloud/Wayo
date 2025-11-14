@@ -5200,4 +5200,43 @@ public function get_school_data() {
         ]);
     }
 }
+
+  public function check_teacher_email()
+  {
+    $email = $this->input->post('email');
+    $school_id = school_id();
+
+    $this->db->where('email', $email);
+    $user = $this->db->get('users')->row_array();
+
+    if (!$user) {
+      // Email n'existe pas
+      echo json_encode(['status' => 'new']);
+      return;
+    }
+
+    // Vérifier si c'est déjà un teacher dans cette école
+    $this->db->where('user_id', $user['id']);
+    $this->db->where('school_id', $school_id);
+    $this->db->where('role', 'teacher');
+    $existing_teacher = $this->db->get('user_schools')->row();
+
+    if ($existing_teacher) {
+      echo json_encode([
+        'status' => 'exists_in_school',
+        'message' => get_phrase('this_email_already_exists_as_teacher_in_this_school')
+      ]);
+      return;
+    }
+
+    // Email existe mais pas teacher dans cette école → on peut réutiliser le compte
+    echo json_encode([
+      'status' => 'exists',
+      'user' => [
+        'id' => $user['id'],
+        'name' => html_entity_decode($user['name']),
+        'email' => $user['email']
+      ]
+    ]);
+  }
 }
