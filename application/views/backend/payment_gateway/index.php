@@ -164,8 +164,9 @@
 	<body>
 
 	<?php
-	    $paypal_activity = json_decode(get_payment_settings('paypal_settings'));
-	    $stripe_activity = json_decode(get_payment_settings('stripe_settings'));
+	    $paypal_activity = json_decode(get_payment_settings('paypal_settings',$invoice_details['school_id']));
+	    $stripe_activity = json_decode(get_payment_settings('stripe_settings',$invoice_details['school_id']));
+		
 	?>
 
 	<div class="container">

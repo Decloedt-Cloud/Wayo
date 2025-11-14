@@ -78,13 +78,14 @@ if (!function_exists('get_common_settings')) {
 }
 
 if (!function_exists('get_payment_settings')) {
-  function get_payment_settings($key = '')
+  function get_payment_settings($key = '',$school_id = '')
   {
     $CI = &get_instance();
     $CI->load->database();
-
+    // die("dfdd");
+    // if()
     $CI->db->where('key', $key);
-    $CI->db->where('school_id', $CI->session->userdata('school_id'));
+    $CI->db->where('school_id', $school_id);
 
     $result = $CI->db->get('payment_settings')->row('value');
     return $result;

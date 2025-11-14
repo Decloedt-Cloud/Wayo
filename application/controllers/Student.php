@@ -1373,10 +1373,15 @@ class Student extends CI_Controller {
 	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "", $type_parm = "") {
 
         $type    = $type_parm;
+        $data['payment_method'] = $payment_method;
+		$data['invoice_id'] = $invoice_id;
+		$data['amount_paid'] = $amount_paid;
+        // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
+        $details = $this->crud_model->get_invoice_by_id($invoice_id);
      
 		if ($payment_method == 'stripe') {
            $type    = htmlspecialchars($this->input->post('type'));
-			$stripe = json_decode(get_payment_settings('stripe_settings'));
+			$stripe = json_decode(get_payment_settings('stripe_settings',$details['school_id']));
 			$token_id = $this->input->post('stripeToken');
 			$stripe_test_mode = $stripe[0]->stripe_mode;
             if ($stripe_test_mode == 'on') {
@@ -1395,17 +1400,14 @@ class Student extends CI_Controller {
             $payment_status = true; // temporaire, car validé côté JS
         }
     
-		$data['payment_method'] = $payment_method;
-		$data['invoice_id'] = $invoice_id;
-		$data['amount_paid'] = $amount_paid;
+		
 	            
 		//Pour chaque mode de paiement, si succès → marquer facture ET ajouter étudiant
         if ($payment_method === 'stripe'  && $payment_status === true ||
                 $payment_method === 'paystack' && $payment_status === true ||
                 $payment_method === 'paypal'  && $payment_status === true) {
 
-            // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
-            $details = $this->crud_model->get_invoice_by_id($invoice_id);
+
             // Marquer la facture comme payée
 
             if($type == "community"){

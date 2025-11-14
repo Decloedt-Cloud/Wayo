@@ -11,7 +11,9 @@
     <body>
 <!--required for getting the stripe token-->
         <?php
-            $stripe = json_decode(get_payment_settings('stripe_settings'));
+            $invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+            $stripe = json_decode(get_payment_settings('stripe_settings',$invoice_details['school_id']));
+            // $stripe = json_decode(get_payment_settings('stripe_settings'));
             $stripe_test_mode = $stripe[0]->stripe_mode;
         ?>
         <?php

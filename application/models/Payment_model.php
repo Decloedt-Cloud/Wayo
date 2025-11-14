@@ -20,10 +20,11 @@ class Payment_model extends CI_Model {
     }
 
     public function stripe_payment($token_id = "", $invoice_id = "", $amount_paid = "", $stripe_secret_key = "") {
-        $stripe_currency = json_decode(get_payment_settings('stripe_settings'));
+        $invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+        $stripe_currency = json_decode(get_payment_settings('stripe_settings',$invoice_details['school_id']));
         
         $stripe_currency = $stripe_currency[0]->stripe_currency;
-        $invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+        
         $user_id = $this->session->userdata('user_id'); 
          $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
 

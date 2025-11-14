@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/payment-settings.css">
 <?php
-  $paypal = json_decode(get_payment_settings('paypal_settings'));
-  $stripe = json_decode(get_payment_settings('stripe_settings'));
+  $paypal = json_decode(get_payment_settings('paypal_settings',1));
+  $stripe = json_decode(get_payment_settings('stripe_settings',1));
   $school_data = $this->settings_model->get_current_school_data();
   $settings_school = $this->settings_model->get_current_settings_school_data();
 ?>

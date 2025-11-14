@@ -9,8 +9,9 @@
   <link name="favicon" type="image/x-icon" href="<?php echo base_url();?>uploads/system/logo/favicon.png" rel="shortcut icon" />
 </head>
 <body>
-<?php
-    $paypal = json_decode(get_payment_settings('paypal_settings'));
+<?php 
+    $invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+    $paypal = json_decode(get_payment_settings('paypal_settings',$invoice_details['school_id']));
     $paypal_mode = $paypal[0]->paypal_mode;
     $paypal_client_id_sandbox = $paypal[0]->paypal_client_id_sandbox;
     $paypal_client_id_production = $paypal[0]->paypal_client_id_production;
