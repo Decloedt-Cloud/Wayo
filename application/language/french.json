@@ -2972,7 +2972,7 @@
     "no_social_links": "Aucun lien social",
     "maximum_members": "Nombre maximum de membres",
     "not_specified": "Non spécifié",
-    "waiting_list" : "Liste d’attente",
+    "waiting_list": "Liste d’attente",
     "name_required_(minimum_2_characters).": "Nom obligatoire (2 caractères minimum).",
     "first_name_required_(minimum_2_characters).": "Prénom obligatoire (2 caractères minimum).",
     "please_use_a_valid_email_address.": "Veuillez utiliser une adresse e-mail valide.",
@@ -2986,6 +2986,9 @@
     "gmail": "Gmail",
     "enter_your_date_of_birth_(must_be_at_least_18_years_old).": "Entrez votre date de naissance (vous devez avoir au moins 18 ans).",
     "invalid_date_(you_must_be_at_least_18_years_old).": "Date invalide (vous devez avoir au moins 18 ans).",
+    "member": "Membre",
+    "choose_a_community": "Choisissez une communauté",
+    "no_community_found": "Aucune communauté trouvée",
     "under_construction": "en construction",
     "type_de_fichier_invalide": "Type de fichier invalide",
     "la_taille_du_fichier_dépasse_10_mo": "La taille du fichier dépasse 10 mo"

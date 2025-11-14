@@ -47,7 +47,9 @@ class Admission extends CI_Controller
     /*Admissions*/
     function online_admission($param1 = "", $param2 = "")
     {
-
+        if ($this->session->userdata('user_id')) {
+            redirect(site_url('home'), 'refresh');
+        }
         if ($param1 == 'submit') {
             if (!$this->crud_model->check_recaptcha() && get_common_settings('recaptcha_status') == true) {
                 redirect(site_url('home/contact'), 'refresh');
@@ -67,7 +69,9 @@ class Admission extends CI_Controller
         /*Admissions*/
         function online_admission_student($param1 = "", $param2 = "")
         {
-    
+            if ($this->session->userdata('user_id')) {
+                redirect(site_url('home'), 'refresh');
+            }
             if ($param1 == 'submit') {
                 if (!$this->crud_model->check_recaptcha() && get_common_settings('recaptcha_status') == true) {
                     redirect(site_url('home/contact'), 'refresh');

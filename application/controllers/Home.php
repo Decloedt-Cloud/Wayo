@@ -20,7 +20,7 @@ class Home extends CI_Controller
 
 		$this->load->database();
 		$this->load->library('session');
-
+		
 		/*LOADING ALL THE MODELS HERE*/
 		$this->load->model('Crud_model', 'crud_model');
 		$this->load->model('User_model', 'user_model');
@@ -512,82 +512,82 @@ function community_details($school_id = '')
 	// function join_school($param1 ,$school_id)
 	// {
 	// 	$this->user_model->join_school($school_id);
-	
+
 	// }
 
 
-// public function join_school($param1, $school_id)
-// {
-//     if ($param1 == 'assigned') {
+	// public function join_school($param1, $school_id)
+	// {
+	//     if ($param1 == 'assigned') {
 
-//         // 🔹 1. Récupération des données envoyées par le formulaire
-//         $data['student_id'] = $this->session->userdata('user_id'); 
-//         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
-//         $data['price']      = htmlspecialchars($this->input->post('price'));
-//         $data['currency']   = htmlspecialchars($this->input->post('currency'));
-//         $data['session']    = active_session();
+	//         // 🔹 1. Récupération des données envoyées par le formulaire
+	//         $data['student_id'] = $this->session->userdata('user_id'); 
+	//         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
+	//         $data['price']      = htmlspecialchars($this->input->post('price'));
+	//         $data['currency']   = htmlspecialchars($this->input->post('currency'));
+	//         $data['session']    = active_session();
 
-//         // 🔹 2. Vérifier si l'école existe
-//         $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
-//         if (!$school_name) {
-//             show_error('École non trouvée.');
-//             return;
-//         }
+	//         // 🔹 2. Vérifier si l'école existe
+	//         $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
+	//         if (!$school_name) {
+	//             show_error('École non trouvée.');
+	//             return;
+	//         }
 
-//         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
-//         $existing_invoice = $this->db->get_where('invoices', [
-//             'school_id'  => $data['school_id'],
-//             'student_id' => $data['student_id']
-//         ])->row();
+	//         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
+	//         $existing_invoice = $this->db->get_where('invoices', [
+	//             'school_id'  => $data['school_id'],
+	//             'student_id' => $data['student_id']
+	//         ])->row();
 
-//         if (!$existing_invoice) {
-//             // 🔹 4. Créer la facture (invoice)
-//             $invoice_data = [
-//                 'title'        => 'Adhésion - ' . $school_name,
-//                 'total_amount' => $data['price'],
-//                 'student_id'   => $data['student_id'],
-//                 'school_id'    => $data['school_id'],
-//                 'status'       => 'unpaid',
-//                 'currency'     => $data['currency'],
-//                 'session'      => $data['session'],
-//                 'created_at'   => strtotime(date('Y-m-d H:i:s')),
-//                 'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
-//             ];
-//             $this->db->insert('invoices', $invoice_data);
-//             $invoice_id = $this->db->insert_id();
-//         } else {
-//             $invoice_id = $existing_invoice->id;
-//         }
+	//         if (!$existing_invoice) {
+	//             // 🔹 4. Créer la facture (invoice)
+	//             $invoice_data = [
+	//                 'title'        => 'Adhésion - ' . $school_name,
+	//                 'total_amount' => $data['price'],
+	//                 'student_id'   => $data['student_id'],
+	//                 'school_id'    => $data['school_id'],
+	//                 'status'       => 'unpaid',
+	//                 'currency'     => $data['currency'],
+	//                 'session'      => $data['session'],
+	//                 'created_at'   => strtotime(date('Y-m-d H:i:s')),
+	//                 'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
+	//             ];
+	//             $this->db->insert('invoices', $invoice_data);
+	//             $invoice_id = $this->db->insert_id();
+	//         } else {
+	//             $invoice_id = $existing_invoice->id;
+	//         }
 
-//         // 🔹 5. Vérifier s’il existe déjà un paiement
-//         $existing_payment = $this->db->get_where('payments', [
-//             'school_id'  => $data['school_id'],
-//             'student_id' => $data['student_id']
-//         ])->row();
+	//         // 🔹 5. Vérifier s’il existe déjà un paiement
+	//         $existing_payment = $this->db->get_where('payments', [
+	//             'school_id'  => $data['school_id'],
+	//             'student_id' => $data['student_id']
+	//         ])->row();
 
-//         if (!$existing_payment) {
-//             // 🔹 6. Créer l'entrée de paiement dans la table "payments"
-//             $payment_data = [
-//                 'student_id'     => $data['student_id'],
-//                 'school_id'      => $data['school_id'],
-//                 'amount'         => $data['price'],
-//                 'currency'       => $data['currency'],
-//                 'payment_type'   => 'community_join',
-//                 'payment_status' => 'pending',
-//                 'invoice_id'     => $invoice_id,
-//                 'created_at'     => date('Y-m-d H:i:s')
-//             ];
-//             $this->db->insert('payments', $payment_data);
-//         }
-// 		// die($data['price']);
-//         // 🔹 7. Redirection vers la page de paiement ou la facture
-       
-// 		redirect(site_url('Student/invoice/' . $invoice_id), 'refresh');
-//     }
-// }
+	//         if (!$existing_payment) {
+	//             // 🔹 6. Créer l'entrée de paiement dans la table "payments"
+	//             $payment_data = [
+	//                 'student_id'     => $data['student_id'],
+	//                 'school_id'      => $data['school_id'],
+	//                 'amount'         => $data['price'],
+	//                 'currency'       => $data['currency'],
+	//                 'payment_type'   => 'community_join',
+	//                 'payment_status' => 'pending',
+	//                 'invoice_id'     => $invoice_id,
+	//                 'created_at'     => date('Y-m-d H:i:s')
+	//             ];
+	//             $this->db->insert('payments', $payment_data);
+	//         }
+	// 		// die($data['price']);
+	//         // 🔹 7. Redirection vers la page de paiement ou la facture
+
+	// 		redirect(site_url('Student/invoice/' . $invoice_id), 'refresh');
+	//     }
+	// }
 
 
-
+	
 
 
 	// ACTIVE SCHOOL ID FOR FRONTEND
@@ -656,8 +656,10 @@ function community_details($school_id = '')
 	public function get_user_communities()
 	{
 		$user_id = $this->session->userdata('user_id');
+		$current_role = $this->session->userdata('role'); // Rôle actif
+		$current_school_id = $this->session->userdata('active_school_id');
 
-		$this->db->select('us.school_id, COALESCE(s.name) as community_name, us.role');
+		$this->db->select('us.school_id, COALESCE(s.name, "Communauté supprimée") as community_name, us.role');
 		$this->db->from('user_schools us');
 		$this->db->join('schools s', 's.id = us.school_id', 'left');
 		$this->db->where('us.user_id', $user_id);
@@ -665,9 +667,20 @@ function community_details($school_id = '')
 
 		$communities = $query->result_array();
 
+		// Ajouter un flag "active" pour le frontend
+		foreach ($communities as &$community) {
+			$community['is_active'] = (
+				$community['school_id'] == $current_school_id &&
+				strtolower($community['role']) === strtolower($current_role)
+			);
+		}
+		unset($community);
+
 		echo json_encode([
 			'status' => 'success',
-			'data' => $communities
+			'data' => $communities,
+			'active_school_id' => $current_school_id,
+			'active_role' => $current_role
 		]);
 	}
 
@@ -964,6 +977,176 @@ function community_details($school_id = '')
 		echo json_encode([
 			'exists' => $exists,
 			'message' => $exists ? get_phrase('this_community_name_already_exists.') : get_phrase('name_available')
+		]);
+	}
+
+	public function get_user_roles()
+	{
+		$user_id = $this->session->userdata('user_id');
+		if (!$user_id) {
+			echo json_encode(['status' => 'error']);
+			return;
+		}
+
+		$this->db->select('us.role, COUNT(*) as count');
+		$this->db->from('user_schools us');
+		$this->db->where('us.user_id', $user_id);
+		$this->db->group_by('us.role');
+		$roles = $this->db->get()->result_array();
+
+		$result = [];
+		foreach ($roles as $r) {
+			$role_key = strtolower($r['role']);
+			$label = $role_key === 'teacher' ? get_phrase('Mentor') : ucfirst($role_key);
+			if ($role_key === 'student') $label = get_phrase('member');
+
+			$this->db->select('s.id as school_id, s.name as community_name');
+			$this->db->from('user_schools us');
+			$this->db->join('schools s', 's.id = us.school_id');
+			$this->db->where('us.user_id', $user_id);
+			$this->db->where('us.role', $r['role']);
+			$communities = $this->db->get()->result_array();
+
+			$result[] = [
+				'role' => $role_key,
+				'label' => $label,
+				'count' => (int)$r['count'],
+				'communities' => $communities
+			];
+		}
+
+		$current_role = strtolower($this->session->userdata('role') ?? 'student');
+
+		echo json_encode([
+			'status' => 'success',
+			'roles' => $result,
+			'current_role' => $current_role
+		]);
+	}
+
+	public function get_communities_by_role()
+	{
+		$user_id = $this->session->userdata('user_id');
+		$role = $this->input->post('role');
+
+		if (!$user_id || !$role) {
+			echo json_encode(['status' => 'error']);
+			return;
+		}
+
+		$this->db->select('s.id as school_id, s.name as community_name, us.role');
+		$this->db->from('user_schools us');
+		$this->db->join('schools s', 's.id = us.school_id');
+		$this->db->where('us.user_id', $user_id);
+		$this->db->where('us.role', ucfirst($role));
+		$communities = $this->db->get()->result_array();
+
+		foreach ($communities as &$c) {
+			$c['role_label'] = $c['role'] === 'teacher' ? get_phrase('Mentor') : ucfirst($c['role']);
+			if ($c['role'] === 'student') $c['role_label'] = get_phrase('member');
+		}
+
+		echo json_encode([
+			'status' => 'success',
+			'communities' => $communities
+		]);
+	}
+
+	public function switch_community_role_front()
+	{
+		header('Content-Type: application/json');
+
+		$user_id = $this->session->userdata('user_id');
+		$school_id = $this->input->post('school_id');
+		$role = $this->input->post('role');
+
+		if (!$user_id) {
+			echo json_encode(['status' => 'error', 'message' => 'session_expired']);
+			return;
+		}
+
+		if (!$school_id || !$role) {
+			echo json_encode(['status' => 'error', 'message' => 'missing_data']);
+			return;
+		}
+
+		$exists = $this->db->get_where('user_schools', [
+			'user_id' => $user_id,
+			'school_id' => $school_id,
+			'role' => $role
+		])->num_rows();
+
+		if (!$exists) {
+			echo json_encode(['status' => 'error', 'message' => 'Access_denied']);
+			return;
+		}
+
+		// Mise à jour DB
+		$this->db->where('id', $user_id);
+		$this->db->update('users', [
+			'role' => $role,
+			'school_id' => $school_id
+		]);
+
+		// Mise à jour session
+		$this->session->set_userdata([
+			'active_school_id' => $school_id,
+			'role' => $role,
+			'user_type' => $role,
+			'school_id' => $school_id,
+			$role . '_login' => true,
+			'student_login' => ($role === 'student') ? true : false,
+			'admin_login' => ($role === 'admin') ? true : false,
+			'teacher_login' => ($role === 'teacher') ? true : false,
+		]);
+
+		// NOUVEAU : Redirection intelligente
+		$redirect_url = site_url($role . '/dashboard');
+
+		echo json_encode([
+			'status' => 'success',
+			'redirect_url' => $redirect_url
+		]);
+	}
+
+	public function switch_to_member_account_front()
+	{
+		header('Content-Type: application/json');
+
+		$user_id = $this->session->userdata('user_id');
+		$active_school_id = $this->session->userdata('active_school_id');
+		$return_url = $this->input->post('return_url'); // NOUVEAU
+
+		if (!$user_id || !$active_school_id) {
+			echo json_encode(['status' => 'error', 'message' => 'invalid_session']);
+			return;
+		}
+
+		$this->db->where('id', $user_id);
+		$this->db->update('users', [
+			'role' => 'student',
+			'school_id' => NULL
+		]);
+
+		$this->session->set_userdata([
+			'user_type' => 'student',
+			'role' => 'student',
+			'student_login' => true,
+			'active_school_id' => NULL,
+			'school_id' => NULL,
+			'admin_login' => false,
+			'teacher_login' => false,
+			'superadmin_login' => false,
+		]);
+
+		// NOUVEAU : Utilise return_url si valide
+		$redirect_url = !empty($return_url) && strpos($return_url, base_url()) === 0
+			? $return_url
+			: site_url('student/dashboard');
+
+		echo json_encode([
+			'status' => 'success',
+			'redirect_url' => $redirect_url
 		]);
 	}
 }

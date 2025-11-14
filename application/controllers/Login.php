@@ -101,14 +101,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'superadmin');
 				$this->session->set_userdata('role', $row->role);
 
-                $user_id = $row->id;
-                $role = $row->role;
-                $school = $this->db->get_where('user_schools', [
-                    'user_id' => $user_id,
-                    'role' => $role
-                ])->row();
-                $active_school_id = $school ? $school->school_id : $row->school_id;
-                $this->session->set_userdata('active_school_id', $active_school_id);
+				$user_id = $row->id;
+				$role = $row->role;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
+				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect(site_url('superadmin/dashboard'), 'refresh');
 			} elseif ($row->role == 'admin') {
@@ -119,14 +125,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'admin');
 				$this->session->set_userdata('role', $row->role);
 
-                $user_id = $row->id;
-                $role = $row->role;
-                $school = $this->db->get_where('user_schools', [
-                    'user_id' => $user_id,
-                    'role' => $role
-                ])->row();
-                $active_school_id = $school ? $school->school_id : $row->school_id;
-                $this->session->set_userdata('active_school_id', $active_school_id);
+				$user_id = $row->id;
+				$role = $row->role;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
+				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect(site_url('admin/dashboard'), 'refresh');
 			} elseif ($row->role == 'teacher') {
@@ -137,14 +149,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'teacher');
 				$this->session->set_userdata('role', $row->role);
 
-                $user_id = $row->id;
-                $role = $row->role;
-                $school = $this->db->get_where('user_schools', [
-                    'user_id' => $user_id,
-                    'role' => $role
-                ])->row();
-                $active_school_id = $school ? $school->school_id : $row->school_id;
-               $this->session->set_userdata('active_school_id', $active_school_id);
+				$user_id = $row->id;
+				$role = $row->role;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
+				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect(site_url('teacher/dashboard'), 'refresh');
 			} elseif ($row->role == 'student') {
@@ -159,14 +177,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'student');
 				$this->session->set_userdata('role', $row->role);
 
-              $user_id = $row->id;
-                $role = $row->role;
-               $school = $this->db->get_where('user_schools', [
-                    'user_id' => $user_id,
-                    'role' => $role
-                ])->row();
-              $active_school_id = $school ? $school->school_id : $row->school_id;
-              $this->session->set_userdata('active_school_id', $active_school_id);
+				$user_id = $row->id;
+				$role = $row->role;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
+				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				if ($this->session->userdata('student_just_registered')) {
 					$this->session->unset_userdata('student_just_registered');
@@ -234,15 +258,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('user_type', 'superadmin');
 				$this->session->set_userdata('role', $row->role);
 
-                $user_id = $row->id;
-                $role = $row->role;
-                $school = $this->db->get_where('user_schools', [
-                    'user_id' => $user_id,
-                    'role' => $role
-                ])->row();
-               $active_school_id = $school ? $school->school_id : $row->school_id;
-                $this->session->set_userdata('active_school_id', $active_school_id);
+				$user_id = $row->id;
+				$role = $row->role;
+				$active_school_id = $row->school_id;
 
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
+				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect('/superadmin/dashboard', 'refresh');
 			} elseif ($row->role == 'admin') {
@@ -255,12 +284,18 @@ class Login extends CI_Controller
 
 				$user_id = $row->id;
 				$role = $row->role;
-				$school = $this->db->get_where('user_schools', [
-					'user_id' => $user_id,
-					'role' => $role
-				])->row();
-				$active_school_id = $school ? $school->school_id : $row->school_id;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
 				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect('/admin/dashboard', 'refresh');
 			} elseif ($row->role == 'teacher') {
@@ -273,12 +308,18 @@ class Login extends CI_Controller
 
 				$user_id = $row->id;
 				$role = $row->role;
-				$school = $this->db->get_where('user_schools', [
-					'user_id' => $user_id,
-					'role' => $role
-				])->row();
-				$active_school_id = $school ? $school->school_id : $row->school_id;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
 				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				redirect('/teacher/dashboard', 'refresh');
 			} elseif ($row->role == 'student') {
@@ -297,12 +338,18 @@ class Login extends CI_Controller
 
 				$user_id = $row->id;
 				$role = $row->role;
-				$school = $this->db->get_where('user_schools', [
-					'user_id' => $user_id,
-					'role' => $role
-				])->row();
-				$active_school_id = $school ? $school->school_id : $row->school_id;
+				$active_school_id = $row->school_id;
+
+				if (!$active_school_id) {
+					$school = $this->db->get_where('user_schools', [
+						'user_id' => $user_id,
+						'role' => $role
+					])->row();
+					$active_school_id = $school ? $school->school_id : null;
+				}
+
 				$this->session->set_userdata('active_school_id', $active_school_id);
+				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
 				// Vérifie si l'utilisateur vient de s'inscrire
 				if ($this->input->post('just_registered')) {

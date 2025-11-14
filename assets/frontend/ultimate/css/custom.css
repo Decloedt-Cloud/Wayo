@@ -247,7 +247,7 @@ main [dir="rtl"] {
 
 @media (min-width: 1400px) {
   .container {
-    max-width: 1200px;
+    max-width: 1210px;
   }
 
   .feature-pane img {

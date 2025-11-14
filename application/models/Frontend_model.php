@@ -614,19 +614,38 @@ class Frontend_model extends CI_Model
   //GET ATIVE SCHOOL ID
   public function get_active_school_id()
   {
-    if (addon_status('multi-school')) {
-      if ($this->session->userdata('active_school_id') > 0) {
-        return $this->session->userdata('active_school_id');
-      } else {
-        $active_school_id = get_settings('school_id');
-        $this->session->set_userdata('active_school_id', $active_school_id);
-        return $this->session->userdata('active_school_id');
-      }
-    } else {
-      $active_school_id = get_settings('school_id');
-      $this->session->set_userdata('active_school_id', $active_school_id);
-      return $this->session->userdata('active_school_id');
+    $session_id = $this->session->userdata('active_school_id');
+    if ($session_id && $this->is_valid_school($session_id)) {
+      return $session_id;
     }
+
+    $user_id = $this->session->userdata('user_id');
+    if ($user_id) {
+      $user = $this->db->select('school_id')->get_where('users', ['id' => $user_id])->row();
+      if ($user && $user->school_id && $this->is_valid_school($user->school_id)) {
+        $this->session->set_userdata('active_school_id', $user->school_id);
+        return $user->school_id;
+      }
+    }
+
+    if (addon_status('multi-school')) {
+      $default = get_settings('school_id');
+      if ($this->is_valid_school($default)) {
+        $this->session->set_userdata('active_school_id', $default);
+        return $default;
+      }
+    }
+  }
+
+  // Vérifie que l'école existe et est active
+  private function is_valid_school($id)
+  {
+    if (!$id) return false;
+    return $this->db->where('id', $id)
+      ->where('status', 1)
+      ->where('Etat', 1)
+      ->get('schools')
+      ->num_rows() > 0;
   }
   // GET HEADER LOGO
   public function get_header_logo()
