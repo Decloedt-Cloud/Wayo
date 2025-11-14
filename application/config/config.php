@@ -578,7 +578,8 @@ $config['csrf_exclude_uris'] = array(
     'admin/check_teacher_email',
     'admin/teacher/create',
     'admission/check_duplication_ajax',
-    'home/get_communities_by_role'
+    'home/get_communities_by_role',
+    'home/check_community_name_exists'
 );
  
 /*
