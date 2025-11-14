@@ -282,52 +282,54 @@ const CalendarApp = {
     return `${y}-${m}-${d}`;
   },
 
-  loadSchools() {
-  $.ajax({
-    url: '<?php echo site_url('student/get_student_schools'); ?>',
-    type: 'GET',
-    data: { [csrfName]: csrfHash },
-    success: (response) => {
-      try {
-        const data = JSON.parse(response);
-        if (data.status === 'success') {
-          const schoolSelect = $('#schoolFilter');
-          schoolSelect.empty();
-          schoolSelect.append('<option value=""><?php echo get_phrase("All schools"); ?></option>');
-          data.schools.forEach(school => {
-            schoolSelect.append(`<option value="${school.id}">${this.escapeHtml(school.name)}</option>`);
-          });
-          // Auto-select first school if available
-          schoolSelect.val('');
-          this.selectedSchool = ''; // Garder this.selectedSchool vide
-          // Initialiser le calendrier
-          this.initCalendar();
-          // Charger les classes pour toutes les écoles si nécessaire
-          const today = new Date();
-          const start = new Date(today.getFullYear(), today.getMonth(), 1);
-          const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-          this.loadClassesWithEvents(start, end);
-          // Lancer le polling des réunions actives
-          this.pollActiveMeetings();
-          csrfHash = data.csrf.csrfHash;
-        } else {
-          this.showNotification('error', data.message);
-          // Initialize calendar to avoid breaking UI
-          this.initCalendar();
-        }
-      } catch (e) {
-        this.showNotification('error', 'Invalid server response');
-        // Initialize calendar to avoid breaking UI
-        this.initCalendar();
-      }
-    },
-    error: () => {
-      this.showNotification('error', 'Failed to load schools');
-      // Initialize calendar to avoid breaking UI
-      this.initCalendar();
-    }
-  });
-},
+ loadSchools() {
+        $.ajax({
+          url: '<?php echo site_url('student/get_student_schools'); ?>',
+          type: 'GET',
+          data: {
+            [csrfName]: csrfHash
+          },
+          success: (response) => {
+            try {
+              const data = JSON.parse(response);
+              if (data.status === 'success') {
+                const schoolSelect = $('#schoolFilter');
+                schoolSelect.empty();
+                schoolSelect.append('<option value=""><?php echo get_phrase("All schools"); ?></option>');
+                data.schools.forEach(school => {
+                  schoolSelect.append(`<option value="${school.id}">${this.escapeHtml(school.name)}</option>`);
+                });
+                // Auto-select first school if available
+                schoolSelect.val('');
+                this.selectedSchool = ''; // Garder this.selectedSchool vide
+                // Initialiser le calendrier
+                this.initCalendar();
+                // Charger les classes pour toutes les écoles si nécessaire
+                const today = new Date();
+                const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                this.loadClassesWithEvents(start, end);
+                // Lancer le polling des réunions actives
+                this.pollActiveMeetings();
+                csrfHash = data.csrf.csrfHash;
+              } else {
+                this.showNotification('error', data.message);
+                // Initialize calendar to avoid breaking UI
+                this.initCalendar();
+              }
+            } catch (e) {
+              this.showNotification('error', 'No community yet.');
+              // Initialize calendar to avoid breaking UI
+              this.initCalendar();
+            }
+          },
+          error: () => {
+            this.showNotification('error', 'Failed to load communities');
+            // Initialize calendar to avoid breaking UI
+            this.initCalendar();
+          }
+        });
+      },
 
   loadEvents(start, end, successCallback, failureCallback) {
     if (this.isLoading) return;
@@ -496,7 +498,7 @@ const CalendarApp = {
                 }
             } catch (e) {
                 console.error('Error parsing response:', e, response);
-                this.showNotification('error', 'Invalid server response');
+                this.showNotification('error', 'No community yet.');
                 failureCallback();
             }
         },

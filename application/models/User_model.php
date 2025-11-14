@@ -477,7 +477,7 @@ class User_model extends CI_Model
 			'school_id' => $school_id,
 			'role' => 'teacher'
 		]);
-
+		$this->db->where('id', $teacher_id)->update('users', ['school_id' => $school_id]);
 		return [
 			'status' => true,
 			'notification' => get_phrase("teacher_added_successfully")
