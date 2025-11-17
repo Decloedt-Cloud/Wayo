@@ -21,13 +21,14 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="school_name"> <?php echo get_phrase('school_name'); ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="school_name" name="school_name" class="form-control" value="<?php echo $school_data['name']; ?>" required>
+                             <small id="school-name-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
                     <div class="form-group row mb-3">
                         <label class="col-md-3 col-form-label" for="description"><?php echo get_phrase('description'); ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <textarea class="form-control" id="description" name="description" rows="5" required><?php echo $school_data['description']; ?></textarea>
-                            <small id="" class="form-text text-muted"><?php echo get_phrase('provide_admin_description'); ?></small>
+                            <small id="description-error" class="form-text text-muted"><?php echo get_phrase('provide_admin_description'); ?></small>
                         </div>
                     </div>
 
@@ -35,6 +36,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="phone"><?php echo get_phrase('phone'); ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $school_data['phone']; ?>" required>
+                             <small id="phone-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -69,6 +71,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="communityStreet"><?php echo get_phrase("Rue") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="communityStreet" name="communityStreet" class="form-control" value="<?php echo $school_data['Rue']; ?>" required>
+                            <small id="communityStreet-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -76,6 +79,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="communityNumber"><?php echo get_phrase("Numéro") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="communityNumber" name="communityNumber" class="form-control" value="<?php echo $school_data['Numero']; ?>" required>
+                            <small id="communityNumber-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -83,6 +87,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="communityCity"><?php echo get_phrase("Ville") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="communityCity" name="communityCity" class="form-control" value="<?php echo $school_data['Ville']; ?>" required>
+                            <small id="communityCity-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -90,6 +95,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="communityPostalCode"><?php echo get_phrase("code_postal") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="communityPostalCode" name="communityPostalCode" class="form-control" value="<?php echo $school_data['Codepostal']; ?>" required>
+                            <small id="communityPostalCode-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -115,6 +121,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <label class="col-md-3 col-form-label" for="vat_number"><?php echo get_phrase("Numero_de_TVA") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
                             <input type="text" id="vat_number" name="vat_number" value="<?php echo $settings_school['num_vat']; ?>" class="form-control" required>
+                            <small id="vat_number-error" class="text-danger" style="display:none;"></small>
                         </div>
                     </div>
 
@@ -324,6 +331,203 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
         </div> <!-- end card body-->
     </div> <!-- end card -->
 </div>
+
+
+<script>
+$(document).ready(function() {
+    const phoneInput = $('#phone');
+    const phoneError = $('#phone-error');
+    const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{9,10}$/;
+
+    const schoolNameInput = $('#school_name');
+    const schoolNameError = $('#school-name-error');
+
+    const descriptionInput = $('#description');
+    const descriptionError = $('#description-error');
+
+    const streetInput = $('#communityStreet');
+    const streetError = $('#communityStreet-error');
+
+    const numberInput = $('#communityNumber');
+    const numberError = $('#communityNumber-error');
+
+    const cityInput = $('#communityCity');
+    const cityError = $('#communityCity-error');
+
+    const postalCodeInput = $('#communityPostalCode');
+    const postalCodeError = $('#communityPostalCode-error');
+
+    const vatInput = $('#vat_number');
+    const vatError = $('#vat_number-error');
+
+    const selectStatus = $('#i_am'); // Particulier ou Entreprise
+
+    // Fonction pour activer/désactiver VAT
+    function toggleVat() {
+        const isParticulier = (selectStatus.val() === 'Particulier');
+        const rowVat = $('#row_vat_number');
+
+        rowVat.toggleClass('d-none', isParticulier);
+
+        if (isParticulier) {
+            vatInput.val('');
+            vatInput.prop('disabled', true);
+            vatInput.removeAttr('required');
+        } else {
+            vatInput.prop('disabled', false);
+        }
+    }
+
+    toggleVat();
+    selectStatus.on('change', toggleVat);
+
+    // Validation en temps réel
+    phoneInput.on('input', function() {
+        const value = $(this).val().trim();
+        if (!phoneRegex.test(value)) {
+            phoneError.text('<?php echo get_phrase('Numéro_invalide'); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            phoneError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    schoolNameInput.on('input', function() {
+        const value = $(this).val().trim();
+        if (value.length < 3) {
+            schoolNameError.text('<?php echo get_phrase('The_name_of_the_school_must_contain_at_least_3_characters'); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            schoolNameError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    descriptionInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (value.length < 10) {
+        descriptionError.text('<?php echo get_phrase('The_description_must_contain_at_least_10_characters'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        descriptionError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+streetInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (value.length < 3) {
+        streetError.text('<?php echo get_phrase('Invalid_street_(minimum_3_characters)'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        streetError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+numberInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (!/^[0-9]+$/.test(value)) {
+        numberError.text('<?php echo get_phrase('Invalid_number_(digits_only)'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        numberError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+cityInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (value.length < 2) {
+        cityError.text('<?php echo get_phrase('Invalid_city_(minimum_2_characters)'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        cityError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+postalCodeInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (!/^[0-9]{4,5}$/.test(value)) {
+        postalCodeError.text('<?php echo get_phrase('Invalid_postal_code_(4_or_5_digits)'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        postalCodeError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+vatInput.on('input', function() {
+    const value = $(this).val().trim();
+    if (!vatInput.prop('disabled') && value.length < 5) {
+        vatError.text('<?php echo get_phrase('Invalid_VAT_number_(minimum_5_characters)'); ?>').show();
+        $(this).addClass('is-invalid');
+    } else {
+        vatError.hide();
+        $(this).removeClass('is-invalid');
+    }
+});
+
+// Validation avant submit
+$('#schoolForm').submit(function(e) {
+    let isValid = true;
+
+    if (!phoneRegex.test(phoneInput.val().trim())) {
+        phoneError.text('Invalid_number').show();
+        phoneInput.addClass('is-invalid');
+        isValid = false;
+    } else phoneError.hide(), phoneInput.removeClass('is-invalid');
+
+    if (schoolNameInput.val().trim().length < 3) {
+        schoolNameError.text('<?php echo get_phrase('The_name_of_the_school_must_contain_at_least_3_characters'); ?>').show();
+        schoolNameInput.addClass('is-invalid');
+        isValid = false;
+    } else schoolNameError.hide(), schoolNameInput.removeClass('is-invalid');
+
+    if (descriptionInput.val().trim().length < 10) {
+        descriptionError.text('<?php echo get_phrase('The_description_must_contain_at_least_10_characters'); ?>').show();
+        descriptionInput.addClass('is-invalid');
+        isValid = false;
+    } else descriptionError.hide(), descriptionInput.removeClass('is-invalid');
+
+    if (streetInput.val().trim().length < 3) {
+        streetError.text('<?php echo get_phrase('Invalid_street_(minimum_3_characters)'); ?>').show();
+        streetInput.addClass('is-invalid');
+        isValid = false;
+    } else streetError.hide(), streetInput.removeClass('is-invalid');
+
+    if (!/^[0-9]+$/.test(numberInput.val().trim())) {
+        numberError.text('<?php echo get_phrase('Invalid_number_(digits_only)'); ?>').show();
+        numberInput.addClass('is-invalid');
+        isValid = false;
+    } else numberError.hide(), numberInput.removeClass('is-invalid');
+
+    if (cityInput.val().trim().length < 2) {
+        cityError.text('<?php echo get_phrase('Invalid_city_(minimum_2_characters)'); ?>').show();
+        cityInput.addClass('is-invalid');
+        isValid = false;
+    } else cityError.hide(), cityInput.removeClass('is-invalid');
+
+    if (!/^[0-9]{4,5}$/.test(postalCodeInput.val().trim())) {
+        postalCodeError.text('<?php echo get_phrase('Invalid_postal_code_(4_or_5_digits)'); ?>').show();
+        postalCodeInput.addClass('is-invalid');
+        isValid = false;
+    } else postalCodeError.hide(), postalCodeInput.removeClass('is-invalid');
+
+    if (!vatInput.prop('disabled') && vatInput.val().trim().length < 5) {
+        vatError.text('<?php echo get_phrase('Invalid_VAT_number_(minimum_5_characters)'); ?>').show();
+        vatInput.addClass('is-invalid');
+        isValid = false;
+    } else vatError.hide(), vatInput.removeClass('is-invalid');
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
 
 
 
@@ -588,68 +792,6 @@ $(document).ready(function() {
 </script>
 
 <script>
-$(document).ready(function() {
-    $('#schoolForm').submit(function(e) {
-        let isValid = true;
-
-        // Validate Rue
-        const street = $('#communityStreet');
-        if (!street.val().trim() || street.val().trim().length < 3) {
-            isValid = false;
-            street.addClass('is-invalid');
-            if (!street.next('.invalid-feedback').length) {
-                street.after('<div class="invalid-feedback">Rue invalide (3 caractères min).</div>');
-            }
-        } else {
-            street.removeClass('is-invalid');
-            street.next('.invalid-feedback').remove();
-        }
-
-        // Validate Numéro
-        const number = $('#communityNumber');
-        if (!/^[0-9]+$/.test(number.val().trim())) {
-            isValid = false;
-            number.addClass('is-invalid');
-            if (!number.next('.invalid-feedback').length) {
-                number.after('<div class="invalid-feedback">Numéro invalide (uniquement des chiffres).</div>');
-            }
-        } else {
-            number.removeClass('is-invalid');
-            number.next('.invalid-feedback').remove();
-        }
-
-        // Validate Ville
-        const city = $('#communityCity');
-        if (!city.val().trim() || city.val().trim().length < 2) {
-            isValid = false;
-            city.addClass('is-invalid');
-            if (!city.next('.invalid-feedback').length) {
-                city.after('<div class="invalid-feedback">Ville invalide (2 caractères min).</div>');
-            }
-        } else {
-            city.removeClass('is-invalid');
-            city.next('.invalid-feedback').remove();
-        }
-
-        // Validate Code postal
-        const postalCode = $('#communityPostalCode');
-        if (!/^[0-9]{4,5}$/.test(postalCode.val().trim())) {
-            isValid = false;
-            postalCode.addClass('is-invalid');
-            if (!postalCode.next('.invalid-feedback').length) {
-                postalCode.after('<div class="invalid-feedback">Code postal invalide (4 à 5 chiffres).</div>');
-            }
-        } else {
-            postalCode.removeClass('is-invalid');
-            postalCode.next('.invalid-feedback').remove();
-        }
-
-        if (!isValid) {
-            e.preventDefault();
-        }
-    });
-});
-
 document.addEventListener('DOMContentLoaded', function () {
   const selectStatus = document.getElementById('i_am');
   const rowVat = document.getElementById('row_vat_number');
