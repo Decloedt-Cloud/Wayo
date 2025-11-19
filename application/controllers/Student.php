@@ -1413,7 +1413,7 @@ class Student extends CI_Controller {
             if($type == "community"){
 
            
-            return    $this->user_model->join_school($details['school_id'],$data);
+             $this->user_model->join_school($details['school_id'],$data);
             }else{
 
                 $this->crud_model->payment_success($data);
