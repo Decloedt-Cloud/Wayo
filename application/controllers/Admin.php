@@ -2919,7 +2919,7 @@ class Admin extends CI_Controller
 			redirect(site_url('admin/online_admission'), 'refresh');
 		}
 
-		$this->db->select('user_id');
+		$this->db->select('*');
 		$this->db->where('status', 0);
 		$this->db->where('school_id', $this->session->userdata('school_id'));
 		$query = $this->db->get('students');
@@ -2934,7 +2934,7 @@ class Admin extends CI_Controller
 
 			$this->db->where_in('id', $user_ids);
             $users = $this->db->get('users');
-			$page_data['applications'] = $users;
+			$page_data['applications'] = $query;
 		} else {
 			$page_data['applications'] = null;
 		}

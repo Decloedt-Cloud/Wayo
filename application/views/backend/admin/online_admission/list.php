@@ -21,22 +21,22 @@
       ?>
       <tr>
         <td>
-          <img width="50" src="<?php echo $this->user_model->get_user_image($application['id']); ?>">
+          <img width="50" src="<?php echo $this->user_model->get_user_image($user['id']); ?>">
         </td>
-        <td><?php echo $application['name'] ; ?></td>
+        <td><?php echo $user['name'] ; ?></td>
              <td class="modern-td">
             <span class="desktop-description"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
-              title="<?php echo htmlspecialchars($application['email']); ?>">
-              <?php echo strlen($application['email']) > 30 ? substr($application['email'], 0, 30) . '...' : $application['email']; ?>
+              title="<?php echo htmlspecialchars($user['email']); ?>">
+              <?php echo strlen($user['email']) > 30 ? substr($user['email'], 0, 30) . '...' : $user['email']; ?>
             </span>
 
             <span class="d-inline d-md-none ms-2">
-              <?php echo strlen($application['email']) > 13 ? substr($application['email'], 0, 13) . '...' : $application['email']; ?>
+              <?php echo strlen($user['email']) > 13 ? substr($user['email'], 0, 13) . '...' : $user['email']; ?>
             </span>
             <button type="button" class="btn btn-sm mobile-description-btn"
-              data-description="<?php echo htmlspecialchars($application['email']); ?>"
+              data-description="<?php echo htmlspecialchars($user['email']); ?>"
               onclick="showDescriptionPopup(this)">
               <i class="mdi mdi-eye-outline"></i>
             </button>
