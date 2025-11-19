@@ -2933,7 +2933,8 @@ class Admin extends CI_Controller
 		if (!empty($user_ids)) {
 
 			$this->db->where_in('id', $user_ids);
-			$page_data['applications'] = $this->db->get('users');
+            $users = $this->db->get('users');
+			$page_data['applications'] = $users;
 		} else {
 			$page_data['applications'] = null;
 		}

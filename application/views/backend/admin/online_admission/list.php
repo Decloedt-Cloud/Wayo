@@ -23,20 +23,20 @@
         <td>
           <img width="50" src="<?php echo $this->user_model->get_user_image($application['id']); ?>">
         </td>
-        <td><?php echo $user['name'] ; ?></td>
+        <td><?php echo $application['name'] ; ?></td>
              <td class="modern-td">
             <span class="desktop-description"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
-              title="<?php echo htmlspecialchars($user['email']); ?>">
-              <?php echo strlen($user['email']) > 30 ? substr($user['email'], 0, 30) . '...' : $user['email']; ?>
+              title="<?php echo htmlspecialchars($application['email']); ?>">
+              <?php echo strlen($application['email']) > 30 ? substr($application['email'], 0, 30) . '...' : $application['email']; ?>
             </span>
 
             <span class="d-inline d-md-none ms-2">
-              <?php echo strlen($user['email']) > 13 ? substr($user['email'], 0, 13) . '...' : $user['email']; ?>
+              <?php echo strlen($application['email']) > 13 ? substr($application['email'], 0, 13) . '...' : $application['email']; ?>
             </span>
             <button type="button" class="btn btn-sm mobile-description-btn"
-              data-description="<?php echo htmlspecialchars($user['email']); ?>"
+              data-description="<?php echo htmlspecialchars($application['email']); ?>"
               onclick="showDescriptionPopup(this)">
               <i class="mdi mdi-eye-outline"></i>
             </button>
@@ -50,7 +50,7 @@
               <!-- item-->
               <a href="javascript:;" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$application['id'])?>', '<?php echo get_phrase('approved'); ?>');" class="dropdown-item"><?php echo get_phrase('approved'); ?></a>
               <!-- item -->
-              <a href="javascript:;" class="dropdown-item" onclick="confirmModalRedirect('<?php echo site_url('superadmin/online_admission/delete/'.$user['id']); ?>')"><?php echo get_phrase('delete'); ?></a>
+              <a href="javascript:;" class="dropdown-item" onclick="confirmModalRedirect('<?php echo site_url('superadmin/online_admission/delete/'.$application['id']); ?>')"><?php echo get_phrase('delete'); ?></a>
             </div>
           </div>
         </td>
