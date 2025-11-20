@@ -19,9 +19,10 @@
 /* === Login dropdown compact, ancré au bouton === */
 #loginInline[hidden]{ display:none !important; }
 
+
 .login-inline{
   position: fixed;                 /* on la positionne par JS */
-  z-index: 60;
+   z-index: 1060; /* > Bootstrap offcanvas (1050) */
   pointer-events: none;            /* clics ignorés hors de la carte */
   animation: dropdownFade .14s ease both;
 }
@@ -122,6 +123,12 @@
 }
 
     </style>
+
+      <!-- Header -->
+  <header class="">
+    <div class="" id="openLoginBtnM"></div>
+  </header>
+
 
  <section id="loginInline" class="login-inline" hidden>
     <div class="container">
@@ -339,8 +346,6 @@ if (!prefersReduced) {
 
 /* ===== Connexion inline (affiche sous la navbar) ===== */
 document.addEventListener("DOMContentLoaded", function () {
-
-  // === Sélection des éléments principaux ===
   const box        = document.getElementById('loginInline');
   const btnOpen    = document.getElementById('openLoginBtn');      // bouton navbar desktop
   const btnOpenM   = document.getElementById('openLoginBtnM');     // bouton mobile offcanvas
@@ -350,128 +355,512 @@ document.addEventListener("DOMContentLoaded", function () {
   const formForgot = document.getElementById('forget-form');
   const goSignup   = document.getElementById('goSignup');
   const goLogin    = document.getElementById('goLogin');
-  const forgotLink = document.querySelector('.login-link');       // lien "Mot de passe oublié ?"
-  const backToLogin = document.getElementById('backToLogin');
-  const loginTitle  = document.getElementById('loginTitle');
+  const forgotLink = document.querySelector('.login-link');
+  const backToLogin= document.getElementById('backToLogin');
+  const loginTitle = document.getElementById('loginTitle');
 
-  // --- Fonction pour afficher / cacher le bloc login-inline
-  function toggleLogin(show, btn) {
-    const isHidden = box.hasAttribute('hidden');
-    const willShow = (show !== undefined) ? show : isHidden;
+  const isIOS = /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  let keyboardOpen = false;
+  let outsideClickHandler = null;
 
-    // fermer le drawer mobile si ouvert (Bootstrap offcanvas)
-    const offcanvasEl = document.getElementById('navbarOffcanvas');
-    if (offcanvasEl) {
-      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
-      offcanvas.hide();
-    }
+  // Util: positionne la carte sous le bouton ou sous la navbar si choix mobile stable
+  function positionLoginDropdown(btn, forceUnderNavbar=false) {
+    if (!box) return;
+    const card = box.querySelector('.login-card');
+    if (!card) return;
 
-    // attendre que l'offcanvas se ferme avant d'afficher le popup
-    setTimeout(() => {
-      box.toggleAttribute('hidden', !willShow);
-
-      if (willShow) {
-        // positionner le dropdown sous le bouton actif
-        positionLoginDropdown(btn);
-
-        // focus sur le 1er champ visible
-        const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
-        activeForm.querySelector('input')?.focus();
-
-        // scroll vers le bloc
-        box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 150); // 150ms correspond à l’animation de fermeture Bootstrap
-  }
-
-  // === Positionne le login-inline sous le bouton
-  function positionLoginDropdown(btn) {
-    const card = box?.querySelector('.login-card');
-    if (!box || !card || !btn) return;
-
-    const w = Math.min(340, window.innerWidth * 0.94); // largeur finale
+    const w = Math.min(340, window.innerWidth * 0.94);
     card.style.width = w + 'px';
 
-    const r = btn.getBoundingClientRect();
     const gap = 8;
-    let left = r.right - w;
-    let top  = r.bottom + gap;
+    let left, top;
 
-    // garde-fous bords d'écran
-    left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
-
-    // centrer si très petit écran
-    if (window.innerWidth < 480) {
+    if (forceUnderNavbar || window.innerWidth < 480) {
+      // option B: fixer sous la navbar (stable sur iOS)
+      const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 58;
       left = Math.max(8, (window.innerWidth - w) / 2);
-      top  = Math.max(parseInt(getComputedStyle(document.documentElement)
-                .getPropertyValue('--header-h')) + gap, top);
+      top  = headerH + gap;
+    } else {
+      if (!btn) {
+        // fallback: centrer
+        left = Math.max(8, (window.innerWidth - w) / 2);
+        top  = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + gap;
+      } else {
+        const r = btn.getBoundingClientRect();
+        left = r.right - w;
+        top  = r.bottom + gap;
+        left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+      }
     }
 
     box.style.left = left + 'px';
     box.style.top  = top + 'px';
   }
 
-  // === Événements pour ouvrir / fermer
-  btnOpen?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpen); });
-  btnOpenM?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpenM); });
-  btnClose?.addEventListener('click', () => toggleLogin(false));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !box.hasAttribute('hidden')) toggleLogin(false);
-  });
+  // Ouvre / ferme le dropdown
+  function toggleLogin(show, btn) {
+    if (!box) return;
+    const willShow = (show !== undefined) ? show : box.hasAttribute('hidden');
 
-  // === Switch Login -> Signup
-  goSignup?.addEventListener('click', (e) => {
-    e.preventDefault();
-    formLogin.hidden = true;
-    formForgot.hidden = true;
-    formSignup.hidden = false;
-    loginTitle.textContent = "<?php echo get_phrase('Create_an_account') ?>";
-    formSignup.querySelector('input')?.focus();
-  });
+    // si offcanvas ouvert, on attend sa fermeture proprement
+    const offcanvasEl = document.getElementById('navbarOffcanvas');
+    const finishShow = () => {
+      if (!willShow) {
+        box.setAttribute('hidden','');
+        removeOutsideClickListener();
+        return;
+      }
+      box.removeAttribute('hidden');
 
-  // === Switch Signup -> Login
-  goLogin?.addEventListener('click', (e) => {
-    e.preventDefault();
-    formSignup.hidden = true;
-    formForgot.hidden = true;
-    formLogin.hidden = false;
-    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
-    formLogin.querySelector('input')?.focus();
-  });
+      // position selon device ; sur iOS/viewport small, on force sous navbar (Option B)
+      const forceUnderNavbar = isIOS || window.innerWidth < 480;
+      positionLoginDropdown(btn, forceUnderNavbar);
 
-  // === Switch Login -> Forgot Password
-  forgotLink?.addEventListener('click', (e) => {
-    e.preventDefault();
-    formLogin.hidden = true;
-    formSignup.hidden = true;
-    formForgot.hidden = false;
-    loginTitle.textContent = "<?php echo get_phrase('Forgot_password') ?>";
-    formForgot.querySelector('input')?.focus();
-  });
+      // focus sur 1er input visible
+      const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
+      activeForm.querySelector('input')?.focus();
 
-  // === Switch Forgot -> Login
-  backToLogin?.addEventListener('click', (e) => {
-    e.preventDefault();
-    formForgot.hidden = true;
-    formSignup.hidden = true;
-    formLogin.hidden = false;
-    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
-    formLogin.querySelector('input')?.focus();
-  });
+      // n'utilise pas scrollIntoView sur iOS (bug), l'utiliser uniquement hors iOS si nécessaire
+      if (!isIOS) {
+        // try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e){ /* ignore */ }
+      }
 
-  // --- Repositionner lors du scroll / resize si visible
+      // ajouter listener pour fermer quand on clique en dehors
+      addOutsideClickListener();
+    };
+
+    if (offcanvasEl) {
+      // si offcanvas présent et visible, attendre l'événement hidden.bs.offcanvas
+      const offInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+      if (offInstance) {
+        // si on veut l'ouvrir après fermeture de offcanvas
+        if (willShow) {
+          if (offInstance && willShow) {
+
+            let done = false;
+
+            const tryFinish = () => {
+              if (done) return;
+              done = true;
+              finishShow();
+            };
+
+            // 1) On écoute l'événement Bootstrap (si jamais il marche)
+            offcanvasEl.addEventListener('hidden.bs.offcanvas', tryFinish, { once: true });
+
+            // 2) Fallback forcé — au cas où Bootstrap n’envoie rien
+            setTimeout(tryFinish, 350);
+
+            // 3) On ferme l’offcanvas
+            offInstance.hide();
+
+            return;
+          }
+        } else {
+          // simplement fermer
+          finishShow();
+          return;
+        }
+      }
+    }
+
+    // si pas d'offcanvas, on peut afficher immédiatement
+    finishShow();
+  }
+
+  // fermeture via clic en dehors
+  function addOutsideClickListener() {
+    removeOutsideClickListener();
+    outsideClickHandler = function(e) {
+      if (!box) return;
+      const card = box.querySelector('.login-card');
+      if (!card) return;
+      if (!card.contains(e.target) && !e.target.closest('#openLoginBtn') && !e.target.closest('#openLoginBtnM')) {
+        toggleLogin(false);
+      }
+    };
+    // utiliser capture pour être sûr de capter evenements avant d'autres handlers
+    document.addEventListener('pointerdown', outsideClickHandler, { capture: true });
+  }
+  function removeOutsideClickListener() {
+    if (outsideClickHandler) {
+      document.removeEventListener('pointerdown', outsideClickHandler, { capture: true });
+      outsideClickHandler = null;
+    }
+  }
+
+  // gestion clavier (iOS déclenche resize) -> on ignore repositionnement pendant édition
+  window.addEventListener('focusin', () => { keyboardOpen = true; });
+  window.addEventListener('focusout', () => { keyboardOpen = false; });
+
+  // repositionner lors du scroll/resize si visible (mais éviter pendant clavier)
   ['scroll','resize'].forEach(evt => {
     window.addEventListener(evt, () => {
-      if (!box?.hasAttribute('hidden')) {
-        // utiliser btnOpen ou btnOpenM selon la largeur
+      if (box?.hasAttribute && !box.hasAttribute('hidden') && !keyboardOpen) {
         const btn = window.innerWidth < 480 ? btnOpenM : btnOpen;
-        positionLoginDropdown(btn);
+        const forceUnderNavbar = isIOS || window.innerWidth < 480;
+        positionLoginDropdown(btn, forceUnderNavbar);
       }
     }, { passive: true });
   });
 
-  // --- Empêcher la soumission réelle pour demo
+  // === événements d'ouverture/fermeture ===
+  btnOpen?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpen); });
+  btnOpenM?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpenM); });
+  btnClose?.addEventListener('click', () => toggleLogin(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box && !box.hasAttribute('hidden')) toggleLogin(false);
+  });
+
+  // Switch forms
+  goSignup?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true; formForgot.hidden = true; formSignup.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Create_an_account') ?>";
+    formSignup.querySelector('input')?.focus();
+  });
+  goLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formSignup.hidden = true; formForgot.hidden = true; formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+  forgotLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true; formSignup.hidden = true; formForgot.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Forgot_password') ?>";
+    formForgot.querySelector('input')?.focus();
+  });
+  backToLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formForgot.hidden = true; formSignup.hidden = true; formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+
+  // empêcher soumission réelle pour demo (si tu veux laisser réel, supprime cette ligne)
   [formLogin, formSignup].forEach(f => f?.addEventListener('submit', (e) => e.preventDefault()));
+
+});
+</script>
+
+
+
+
+
+<script type="text/javascript">
+  var checkEmailExistsUrl = '<?php echo site_url('login/check_email_exists'); ?>';
+  var csrfTokenName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+  var loginValidateUrl = '<?php echo site_url('login/validate_credentials'); ?>';
+  var csrfTokenName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+  var inputs = document.querySelectorAll('.information');
+  var passwordInputs = document.querySelectorAll('.password');
+  var selects = document.getElementsByTagName('select');
+  window.emailAlreadyInUse = '<?php echo get_phrase("email_already_in_use"); ?>';
+  window.passwordsDoNotMatch = '<?php echo get_phrase("passwords_do_not_match"); ?>';
+  window.baseUrl = '<?php echo base_url(); ?>';
+    if (!window.baseUrl.endsWith('/')) {
+        window.baseUrl += '/';
+    }
+
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('input', function () {
+      if (this.value != "")
+        this.classList.remove("invalid");
+    });
+  }
+
+  for (var i = 0; i < passwordInputs.length; i++) {
+    passwordInputs[i].addEventListener('input', function () {
+      if (this.value != "" && checkPassword()) {
+        this.classList.remove("invalid");
+      }
+    });
+  }
+
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].addEventListener('change', function () {
+      if (this.value != "") {
+        this.classList.remove("invalid");
+      } else {
+        this.classList.add("invalid");
+      }
+    });
+  }
+
+  function check_email(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  document.getElementById("loginSubmit").addEventListener("click", function (event) {
+    if (!loginSubmit()) {
+      event.preventDefault();
+    }
+  });
+
+  function loginSubmit() {
+    var email = document.getElementById("loginEmail").value;
+    var password = document.getElementById("loginPassword").value;
+
+    emailExists(email).then((status) => {
+      if (status) {
+        error_notify('<?php echo get_phrase("E-mail_address_not_in_use") ?>');
+      } else {
+        validateCredentials(email, password).then((status) => {
+          if (status) {
+            document.getElementById("login-form").submit();
+          } else {
+            error_notify('<?php echo get_phrase("credentials_incorrect") ?>');
+          }
+        });
+      }
+    });
+  }
+
+  function validateCredentials(email, password) {
+    return new Promise((resolve, reject) => {
+      var emailInput = document.getElementById("loginEmail");
+      var passwordInput = document.getElementById("loginPassword");
+      var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+      var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+
+      $.ajax({
+        type: "POST",
+        url: "<?php echo site_url('login/validate_credentials'); ?>",
+        data: {email: email, password: password, [csrfName]: csrfHash},
+        dataType: 'json',
+        success: function(response){
+          if (response.status == true) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+          var newCsrfName = response.csrf.csrfName;
+          var newCsrfHash = response.csrf.csrfHash;
+          $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+        },
+        error: function(error) {
+          console.error("Error:", error);
+          resolve(false);
+        }
+      });
+    });
+  }
+</script>
+
+ <script>
+  /* Drawer (pour mobile) : rien à faire, c’est CSS avec #drawerToggle */
+
+/* Parallax doux des orbes + reveal */
+const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!prefersReduced) {
+  const orbs = document.querySelectorAll(".bg-orbs .orb");
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  window.addEventListener("scroll", ()=>{
+    const t = Math.min(1, window.scrollY/1200);
+    orbs.forEach((o,i)=>{
+      const dx = lerp(0, (i%2? 22 : -22), t);
+      const dy = lerp(0, (i%2? -18 : 26), t);
+      o.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+  }, {passive:true});
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
+  },{threshold:.14});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+}
+
+/* Tabs des fonctionnalités (CSS radios) – pas de JS requis */
+
+/* ===== Connexion inline (affiche sous la navbar) ===== */
+document.addEventListener("DOMContentLoaded", function () {
+  const box        = document.getElementById('loginInline');
+  const btnOpen    = document.getElementById('openLoginBtn');      // bouton navbar desktop
+  const btnOpenM   = document.getElementById('openLoginBtnM');     // bouton mobile offcanvas
+  const btnClose   = document.getElementById('loginClose');        // bouton X
+  const formLogin  = document.getElementById('login-form');
+  const formSignup = document.getElementById('signupForm');
+  const formForgot = document.getElementById('forget-form');
+  const goSignup   = document.getElementById('goSignup');
+  const goLogin    = document.getElementById('goLogin');
+  const forgotLink = document.querySelector('.login-link');
+  const backToLogin= document.getElementById('backToLogin');
+  const loginTitle = document.getElementById('loginTitle');
+
+  const isIOS = /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  let keyboardOpen = false;
+  let outsideClickHandler = null;
+
+  // Util: positionne la carte sous le bouton ou sous la navbar si choix mobile stable
+  function positionLoginDropdown(btn, forceUnderNavbar=false) {
+    if (!box) return;
+    const card = box.querySelector('.login-card');
+    if (!card) return;
+
+    const w = Math.min(340, window.innerWidth * 0.94);
+    card.style.width = w + 'px';
+
+    const gap = 8;
+    let left, top;
+
+    if (forceUnderNavbar || window.innerWidth < 480) {
+      // option B: fixer sous la navbar (stable sur iOS)
+      const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 58;
+      left = Math.max(8, (window.innerWidth - w) / 2);
+      top  = headerH + gap;
+    } else {
+      if (!btn) {
+        // fallback: centrer
+        left = Math.max(8, (window.innerWidth - w) / 2);
+        top  = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + gap;
+      } else {
+        const r = btn.getBoundingClientRect();
+        left = r.right - w;
+        top  = r.bottom + gap;
+        left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+      }
+    }
+
+    box.style.left = left + 'px';
+    box.style.top  = top + 'px';
+  }
+
+  // Ouvre / ferme le dropdown
+  function toggleLogin(show, btn) {
+    if (!box) return;
+    const willShow = (show !== undefined) ? show : box.hasAttribute('hidden');
+
+    // si offcanvas ouvert, on attend sa fermeture proprement
+    const offcanvasEl = document.getElementById('navbarOffcanvas');
+    const finishShow = () => {
+      if (!willShow) {
+        box.setAttribute('hidden','');
+        removeOutsideClickListener();
+        return;
+      }
+      box.removeAttribute('hidden');
+
+      // position selon device ; sur iOS/viewport small, on force sous navbar (Option B)
+      const forceUnderNavbar = isIOS || window.innerWidth < 480;
+      positionLoginDropdown(btn, forceUnderNavbar);
+
+      // focus sur 1er input visible
+      const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
+      activeForm.querySelector('input')?.focus();
+
+      // n'utilise pas scrollIntoView sur iOS (bug), l'utiliser uniquement hors iOS si nécessaire
+      if (!isIOS) {
+        // try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e){ /* ignore */ }
+      }
+
+      // ajouter listener pour fermer quand on clique en dehors
+      addOutsideClickListener();
+    };
+
+    if (offcanvasEl) {
+      // si offcanvas présent et visible, attendre l'événement hidden.bs.offcanvas
+      const offInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+     if (offInstance) {
+  // Si on clique depuis le bouton mobile => NE PAS fermer l’offcanvas
+  const isMobileButton = (btn === btnOpenM);
+
+  if (willShow && !isMobileButton) {
+    // Cas desktop → fermer offcanvas avant d'afficher le login
+    offcanvasEl.addEventListener('hidden.bs.offcanvas', function handler() {
+      offcanvasEl.removeEventListener('hidden.bs.offcanvas', handler);
+      finishShow();
+    }, { once: true });
+
+    offInstance.hide();
+    return;
+  }
+
+  // Cas mobile => afficher directement dans l’offcanvas
+  if (willShow && isMobileButton) {
+    finishShow();
+    return;
+  }
+}
+    }
+
+    // si pas d'offcanvas, on peut afficher immédiatement
+    finishShow();
+  }
+
+  // fermeture via clic en dehors
+  function addOutsideClickListener() {
+    removeOutsideClickListener();
+    outsideClickHandler = function(e) {
+      if (!box) return;
+      const card = box.querySelector('.login-card');
+      if (!card) return;
+      if (!card.contains(e.target) && !e.target.closest('#openLoginBtn') && !e.target.closest('#openLoginBtnM')) {
+        toggleLogin(false);
+      }
+    };
+    // utiliser capture pour être sûr de capter evenements avant d'autres handlers
+    document.addEventListener('pointerdown', outsideClickHandler, { capture: true });
+  }
+  function removeOutsideClickListener() {
+    if (outsideClickHandler) {
+      document.removeEventListener('pointerdown', outsideClickHandler, { capture: true });
+      outsideClickHandler = null;
+    }
+  }
+
+  // gestion clavier (iOS déclenche resize) -> on ignore repositionnement pendant édition
+  window.addEventListener('focusin', () => { keyboardOpen = true; });
+  window.addEventListener('focusout', () => { keyboardOpen = false; });
+
+  // repositionner lors du scroll/resize si visible (mais éviter pendant clavier)
+  ['scroll','resize'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (box?.hasAttribute && !box.hasAttribute('hidden') && !keyboardOpen) {
+        const btn = window.innerWidth < 480 ? btnOpenM : btnOpen;
+        const forceUnderNavbar = isIOS || window.innerWidth < 480;
+        positionLoginDropdown(btn, forceUnderNavbar);
+      }
+    }, { passive: true });
+  });
+
+  // === événements d'ouverture/fermeture ===
+  btnOpen?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpen); });
+  btnOpenM?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpenM); });
+  btnClose?.addEventListener('click', () => toggleLogin(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box && !box.hasAttribute('hidden')) toggleLogin(false);
+  });
+
+  // Switch forms
+  goSignup?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true; formForgot.hidden = true; formSignup.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Create_an_account') ?>";
+    formSignup.querySelector('input')?.focus();
+  });
+  goLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formSignup.hidden = true; formForgot.hidden = true; formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+  forgotLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formLogin.hidden = true; formSignup.hidden = true; formForgot.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Forgot_password') ?>";
+    formForgot.querySelector('input')?.focus();
+  });
+  backToLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    formForgot.hidden = true; formSignup.hidden = true; formLogin.hidden = false;
+    loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
+    formLogin.querySelector('input')?.focus();
+  });
+
+  // empêcher soumission réelle pour demo (si tu veux laisser réel, supprime cette ligne)
+  [formLogin, formSignup].forEach(f => f?.addEventListener('submit', (e) => e.preventDefault()));
+
 });
 </script>
 

@@ -43,6 +43,7 @@
         padding: .8rem 1.2rem;
     }
 
+
     /* ====== Step 2 layout ====== */
     .panel--community .grid {
         display: grid;
@@ -216,16 +217,16 @@
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
                         <!-- <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass" type="password" placeholder="********" required minlength="8" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
-                            data-msg="<?php echo get_phrase("Please enter a password") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        <input id="profilePass" type="password" placeholder="********" required minlength="8" pattern=".{8,}" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
+                            data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="profilePass"></div>
                     </label>
 
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
                         <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
-                            name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password") ?>" data-error-class="u-has-error"
+                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" pattern=".{8,}" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
+                            name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>" data-error-class="u-has-error"
                             data-success-class="u-has-success">
                         <div class="error" data-for="profilePass2"></div>
                     </label>
@@ -876,46 +877,53 @@
             return b < 1024 * 1024 ? (b / 1024).toFixed(1) + ' Ko' : (b / (1024 * 1024)).toFixed(1) + ' Mo';
         }
 
-        async function validateImage(file, type) {
-            const c = CONFIG[type];
-            if (!file) return {
-                valid: false,
-                msg: '<?php echo get_phrase("No_file_selected"); ?>'
-            };
+async function validateImage(file, type) {
+    if (!file) return { valid: true }; // optionnel, aucun blocage
 
-            if (file.size > c.maxMB * 1024 * 1024)
-                return {
-                    valid: false,
-                    msg: '<?php echo get_phrase("Too_heavy_Max"); ?> ' + c.maxMB + ' <?php echo get_phrase("MB"); ?> (' + formatBytes(file.size) + ')'
-                };
+    const c = CONFIG[type];
 
-            return new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => {
-                    const ratio = img.width / img.height;
-                    const diff = Math.abs(ratio - c.ratio) / c.ratio;
-                    if (diff > c.tolerance)
-                        return resolve({
-                            valid: false,
-                            msg: '<?php echo get_phrase("Required_format"); ?>: ' + (type === 'logo' ? '1:1' : '16:9') + '<br><?php echo get_phrase("Current"); ?>: ' + img.width + '×' + img.height
-                        });
-                    if (img.width < c.minWidth)
-                        return resolve({
-                            valid: false,
-                            msg: '<?php echo get_phrase("Min"); ?> ' + c.minWidth + 'px <?php echo get_phrase("width"); ?>'
-                        });
-                    resolve({
-                        valid: true
-                    });
-                };
-                img.onerror = () => resolve({
-                    valid: false,
-                    msg: '<?php echo get_phrase("Corrupted_image"); ?>'
-                });
-                img.src = URL.createObjectURL(file);
-            });
-        }
+    // Taille fichier
+    if (file.size > c.maxMB * 1024 * 1024) {
+        return {
+            valid: false,
+            msg: type === 'logo'
+                ? 'Logo trop lourd, max 1 Mo'
+                : 'Cover trop lourde, max 2 Mo'
+        };
+    }
 
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            const width = img.width;
+            const height = img.height;
+            const ratio = width / height;
+
+            if (type === 'logo') {
+                if (Math.abs(ratio - 1) > c.tolerance) {
+                    return resolve({ valid: false, msg: 'Le logo doit être carré (1:1)' });
+                }
+                if (width > 512 || height > 512) {
+                    return resolve({ valid: false, msg: 'Le logo ne doit pas dépasser 512×512 px' });
+                }
+            }
+
+            if (type === 'cover') {
+                if (width > 1600 || height > 900) {
+                    return resolve({ valid: false, msg: 'La cover ne doit pas dépasser 1600×900 px' });
+                }
+                const diff = Math.abs(ratio - (16 / 9));
+                if (diff > 0.12) { // tolérance ratio ±12%
+                    return resolve({ valid: false, msg: 'La cover doit être environ 16:9' });
+                }
+            }
+
+            resolve({ valid: true });
+        };
+        img.onerror = () => resolve({ valid: false, msg: 'Image corrompue' });
+        img.src = URL.createObjectURL(file);
+    });
+}
         function showImageError(previewId, msg) {
             $(`#${previewId}`).innerHTML = `<div class="text-danger small p-3 text-center bg-light border rounded"> ${msg}</div>`;
         }
@@ -966,7 +974,7 @@
             const hasDup = $$('[data-duplicate="true"]').length > 0;
             const invalidInPane = pane.querySelectorAll('.is-invalid').length > 0;
 
-            let imagesOk = true;
+           let imagesOk = true;
             if (pane.dataset.step === '2') {
                 const logoInput = $('#communityLogo');
                 const coverInput = $('#communityCover');
@@ -974,11 +982,9 @@
                 const logoFile = logoInput?.files[0];
                 const coverFile = coverInput?.files[0];
 
-                // Si fichier uploadé → doit être valide
-                if (logoFile && !logoInput.hasAttribute('data-valid')) imagesOk = false;
-                if (coverFile && !coverInput.hasAttribute('data-valid')) imagesOk = false;
-
-                // Si pas de fichier → OK (optionnel)
+                // On bloque uniquement si un fichier est uploadé ET invalide
+                if (logoFile && logoInput.getAttribute('data-valid') !== 'true') imagesOk = false;
+                if (coverFile && coverInput.getAttribute('data-valid') !== 'true') imagesOk = false;
             }
 
             // 4. Prix (étape 3) - SEULEMENT si non-Particulier
@@ -1006,17 +1012,18 @@
                 const result = file ? await validateImage(file, type) : {
                     valid: false
                 };
-                input.setAttribute('data-valid', result.valid);
-                if (result.valid) {
+               if (result.valid) {
+                    input.setAttribute('data-valid', 'true');
                     const reader = new FileReader();
                     reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:8px; ${type === 'cover' ? 'height:80px; object-fit:cover;' : ''}">`;
                     reader.readAsDataURL(file);
                 } else {
+                    input.removeAttribute('data-valid');
                     showImageError(`${type}Preview`, result.msg);
                     input.value = '';
                 }
                 updateContinueButton();
-            });
+                            });
         });
 
         // --- Doublons ---
@@ -1117,7 +1124,33 @@
                 }
             }
 
-            if (!valid) toastr.warning('Veuillez corriger les erreurs');
+            // Étape 2 : validation image (logo & cover)
+            if (pane.dataset.step === '2') {
+                const logoInput = $('#communityLogo');
+                const coverInput = $('#communityCover');
+                const logoFile = logoInput?.files[0];
+                const coverFile = coverInput?.files[0];
+
+                if (logoFile) {
+                    const logoValid = logoInput.getAttribute('data-valid') === 'true';
+                    if (!logoValid) {
+                        valid = false;
+                        showImageError('logoPreview', '<?php echo get_phrase("Invalid_logo_size_or_ratio"); ?>');
+                        toastr.error('<?php echo get_phrase("Please_upload_a_valid_logo_before_continuing"); ?>');
+                    }
+                }
+
+                if (coverFile) {
+                    const coverValid = coverInput.getAttribute('data-valid') === 'true';
+                    if (!coverValid) {
+                        valid = false;
+                        showImageError('coverPreview', '<?php echo get_phrase("Invalid_cover_size_or_ratio"); ?>');
+                        toastr.error('<?php echo get_phrase("Please_upload_a_valid_cover_before_continuing"); ?>');
+                    }
+                }
+            }
+
+            if (!valid) toastr.warning('<?php echo get_phrase("Please_correct_the_errors"); ?>');
             return valid;
         }
 
