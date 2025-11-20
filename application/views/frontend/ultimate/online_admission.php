@@ -217,16 +217,16 @@
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
                         <!-- <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
-                            data-msg="<?php echo get_phrase("Please enter a password") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        <input id="profilePass" type="password" placeholder="********" required minlength="8" pattern=".{8,}" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
+                            data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="profilePass"></div>
                     </label>
 
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
                         <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
-                            name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password") ?>" data-error-class="u-has-error"
+                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" pattern=".{8,}" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
+                            name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>" data-error-class="u-has-error"
                             data-success-class="u-has-success">
                         <div class="error" data-for="profilePass2"></div>
                     </label>
@@ -728,7 +728,7 @@
                     setInvalid(phone);
                     ok = false;
                 } else clearInvalid(phone);
-                if ((pass.value || '').length < 6) {
+                if ((pass.value || '').length < 8) {
                     setInvalid(pass);
                     ok = false;
                 } else clearInvalid(pass);
@@ -1109,7 +1109,7 @@ async function validateImage(file, type) {
             if (pane.dataset.step === '1') {
                 const p1 = $('#profilePass'),
                     p2 = $('#profilePass2');
-                if (p1.value !== p2.value || p1.value.length < 6) {
+                if (p1.value !== p2.value || p1.value.length < 8) {
                     p2.classList.add('is-invalid');
                     valid = false;
                 }

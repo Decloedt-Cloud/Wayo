@@ -2932,9 +2932,6 @@
     "maximum_members": "Número máximo de miembros",
     "not_specified": "No especificado",
     "waiting_list": "Lista de espera",
-    "member": "Miembro",
-    "no_community_found": "No se encontró ninguna comunidad",
-    "under_construction": "en construcción",
     "miembro_de_admisión_en_línea": "Miembro de admisión en línea",
     "use_a_valid_email_address_(e.g.,_example@domain.com).": "Utiliza una dirección de correo electrónico válida (por ejemplo, ejemplo@dominio.com).",
     "enter_your_date_of_birth_(no_future_dates).": "Introduce tu fecha de nacimiento (no se permiten fechas futuras).",
@@ -3018,5 +3015,8 @@
     "the_name_of_the_class_must_contain_at_least_3_characters": "The name of the class must contain at least 3 characters",
     "invalid_price_(must_be_a_positive_number)": "Precio no válido (debe ser un número positivo)",
     "please_correct_the_errors_before_submitting": "Por favor, corrija los errores antes de enviar",
-    "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío"
+    "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío",
+    "please_enter_a_password_with_at_least_8_characters": "Por favor, introduzca una contraseña con al menos 8 caracteres",
+    "please_repeat_your_password_(min._8_characters)": "Por favor, repita su contraseña (mín. 8 caracteres)"
+
 }

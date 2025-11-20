@@ -2982,5 +2982,8 @@
     "invalid_vat_number_(minimum_5_characters)": "رقم ضريبة القيمة المضافة غير صالح (5 أحرف على الأقل)",
     "the_name_of_the_class_must_contain_at_least_3_characters": "يجب أن يحتوي اسم الصف على 3 أحرف على الأقل",
     "invalid_price_(must_be_a_positive_number)": "السعر غير صالح (يجب أن يكون رقمًا موجبًا)",
-    "please_correct_the_errors_before_submitting": "يرجى تصحيح الأخطاء قبل الإرسال"
+    "please_correct_the_errors_before_submitting": "يرجى تصحيح الأخطاء قبل الإرسال",
+    "please_enter_a_password_with_at_least_8_characters": "الرجاء إدخال كلمة مرور تحتوي على 8 أحرف على الأقل",
+    "please_repeat_your_password_(min._8_characters)": "الرجاء إعادة إدخال كلمة المرور (حد أدنى 8 أحرف)"
+
 }

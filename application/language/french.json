@@ -3048,6 +3048,9 @@
     "invalid_vat_number_(minimum_5_characters)": "Numéro de TVA invalide (minimum 5 caractères)",
     "the_name_of_the_class_must_contain_at_least_3_characters": "The name of the class must contain at least 3 characters",
     "invalid_price_(must_be_a_positive_number)": "Invalid price (must be a positive number)",
-    "please_correct_the_errors_before_submitting": "Please correct the errors before submitting"
+    "please_correct_the_errors_before_submitting": "Please correct the errors before submitting",
+    "please_enter_a_password_with_at_least_8_characters": "Veuillez saisir un mot de passe contenant au moins 8 caractères",
+    "please_repeat_your_password_(min._8_characters)": "Veuillez répéter votre mot de passe (min. 8 caractères)"
+
 
 }
