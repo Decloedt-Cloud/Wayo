@@ -2967,5 +2967,7 @@
     "class_payment": "Class payment",
     "access_required": "Access required",
     "under_construction": "Under construction",
-    "veuillez_télécharger_une_licence_commerciale.": "Please download a commercial license."
+    "veuillez_télécharger_une_licence_commerciale.": "Please download a commercial license.",
+    "this_email_already_exists_as_teacher_in_this_school": "This email already exists as teacher in this school",
+    "no_classes_assigned_yet": "No classes assigned yet"
 }
