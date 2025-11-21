@@ -3,13 +3,46 @@
         initSummerNote(['#description']);
         initSummerNote(['#outcomes_desc']);
     });*/
+    function filterCourse() {
+    var class_id  = $('#class_id_course').val() || 'all';
+    var user_id   = $('#user_id').val() || 'all';
+    var status    = $('#course_status').val() || 'all';
+    var school_id = $('#school_id').val() || 'all';
 
-    function filterCourse(){
+    // THIS IS THE MOST IMPORTANT LINE
+    var url = '<?php echo site_url('addons/courses'); ?>?class_id=' + class_id +
+              '&user_id=' + user_id +
+              '&status=' + status +
+              '&school_id=' + school_id +
+              '&only_list=true';
+
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(response) {
+            $('.academy_content').html(response);
+
+            // Re-init DataTable
+            if ($.fn.DataTable.isDataTable('#basic-datatable')) {
+                $('#basic-datatable').DataTable().destroy();
+            }
+            $('#basic-datatable').DataTable({
+                pageLength: 25,
+                responsive: true
+            });
+        }
+    });
+}
+
+    /* function filterCourse(){
         var url         = '<?php echo site_url('addons/courses'); ?>';
         var class_id    = $('#class_id_course').val();
         var user_id     = $('#user_id').val();
         var status      = $('#course_status').val();
         var school_id  = $('#school_id').val();
+        alert('filter course !!!');
+        
         $.ajax({
             url: url+"?class_id="+class_id+"&user_id="+user_id+"&status="+status+"&school_id="+school_id+"&only_list=true",
             success : function(response) {
@@ -18,7 +51,7 @@
                 $('select.select2:not(.normal)').each(function () { $(this).select2(); });
             }
         });
-    }
+    }   */
 
     function filterCourseFullPage(){
         var url         = '<?php echo site_url('addons/courses'); ?>';
