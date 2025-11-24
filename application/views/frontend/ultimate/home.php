@@ -180,7 +180,7 @@
                           <span class="price-period"><?php echo get_phrase("per month, no commitment"); ?></span>
                       </div>
                   </div>
-                  <a href="<?php echo base_url('home/communities'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community"); ?></a>
+                  <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community"); ?></a>
                   <p class="plan-guarantee">✔<?php echo get_phrase("Enjoy 14 days of free trial before paying."); ?></p>
               </div>
               <div class="plan-features-split">
@@ -211,7 +211,7 @@
     </div>
   </section>
   <!-- Why choose Wayo Academy -->
-  <section class="features">
+  <!-- <section class="features">
     <div class="container">
       <h2 class="social-media-main-text" dir="rtl">
         <?php echo get_phrase("Why choose") . "&lrm;"; ?>
@@ -240,9 +240,9 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Flagship Courses -->
-  <section class="courses">
+  <!-- <section class="courses">
     <div class="container">
       <h2><?php echo get_phrase("Flagship Courses") ?></h2>
       <div class="courses-carousel">
@@ -278,9 +278,9 @@
         <button class="carousel-btn next" aria-label="Next"><i class='fas fa-chevron-right'></i></button>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Success Stories -->
-  <section class="success-stories">
+  <!-- <section class="success-stories">
     <div class="container">
       <h2><?php echo get_phrase("Success Stories") ?></h2>
       <div class="stories-carousel">
@@ -334,9 +334,9 @@
         <a href="#" class="btn btn-outline"><?php echo get_phrase("View More Stories") ?></a>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- What You Gain -->
-  <section class="benefits" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+  <!-- <section class="benefits" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container">
       <h2><?php echo get_phrase("What You Gain") ?></h2>
       <div class="benefits-grid">
@@ -362,7 +362,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Mobile section -->
     <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="app-frame">

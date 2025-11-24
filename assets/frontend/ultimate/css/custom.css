@@ -782,7 +782,10 @@ main [dir="rtl"] {
   margin-bottom: 0.75rem;
   color: #000;
 }
-
+.feature-item img{
+  display: block;
+  margin: 0 auto 1rem auto;
+}
 .feature-item p {
   font-size: 0.95rem;
   color: #333333;
@@ -1126,7 +1129,10 @@ main [dir="rtl"] {
   margin-bottom: 1rem;
   color: #000;
 }
-
+.benefit-box img{
+  display: block;
+  margin: 0 auto 1rem auto;
+}
 .benefit-box ul {
   text-align: left;
   list-style: none;
@@ -1177,7 +1183,7 @@ main [dir="rtl"] {
 .stores{display:flex; gap:18px; justify-content:center; flex-wrap:wrap}
 
 @media (max-width: 768px) {
-    .app-inner {
+    .app-coming-soon .app-inner {
         grid-template-columns: 1fr;
     }
 } 
@@ -1296,8 +1302,8 @@ main [dir="rtl"] {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 } 
 
-/*------------------  
-*/
+/*------------------  */
+/*Meet Mentors */
 
 .meet-mentors {
   background: #f4f4f4;
@@ -1306,9 +1312,10 @@ main [dir="rtl"] {
 
 .meet-mentors h2 {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
   margin-bottom: 0.5rem;
-  color: #000;
+  font-weight: 700;
+  color: #000000;
 }
 
 .meet-mentors .subtitle {
@@ -1337,43 +1344,52 @@ main [dir="rtl"] {
   transform: translateY(-6px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
-
 .mentor-card img {
-  width: 120px;
-  height: 120px;
+  display: block;
+  margin: 0 auto 1rem auto;
+  width: 128px;
+  height: 128px;
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 1rem;
   border: 4px solid #fc7b30;
 }
 
+
 .mentor-card h3 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
   color: #000;
+  font-weight: 700;
 }
 
 .mentor-card .specialty {
   font-size: 0.9rem;
-  color: #333333;
+  color: #6b7280;
   margin-bottom: 1rem;
 }
 
 .mentor-card .btn-mentors {
   padding: 0.6rem 1.2rem;
   background: transparent;
-  border: 2px solid #fc7b30;
-  color: #fc7b30;
-  border-radius: 6px;
+  border: 1.5px solid #fc7b30;
+  color: #000;
+  border-radius:14px;
   font-weight: 600;
   transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 .mentor-card .btn-mentors:hover {
-  background: #fc7b30;
-  color: #fff;
-  transform: translateY(-2px);
+    background : linear-gradient(135deg, var(--orange), var(--orange-2));
+    border: none;
+    color: #fff;
+    transform: translateY(-2px);
 }
-
+@media (max-width: 768px) {
+    .meet-mentors .mentors-grid  {
+        margin-inline: 1em;
+    }
+} 
+/**/
 .video-container {
   position: relative;
   width: 100%;
@@ -1490,7 +1506,7 @@ a{text-decoration:none; color:inherit}
 }
 
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:.6rem; padding:.75rem 1.15rem; border-radius:14px; font-weight:900; cursor:pointer; border:0; transition:transform .18s, filter .18s, box-shadow .18s}
-.btn.accent{background:linear-gradient(135deg,var(--orange),var(--orange-2)); color:#fff; box-shadow:0 14px 28px rgba(244,122,31,.22)}
+.btn.accent{background: var(--linear-gradient-style-Wayo); color:#fff; box-shadow:0 14px 28px rgba(244,122,31,.22)}
 .btn.outline{background:#fff; border:1.5px solid #ffd7b7; color:var(--orange)}
 .btn:hover{transform:translateY(-1px)}
 

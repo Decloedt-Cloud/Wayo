@@ -3051,5 +3051,9 @@
     "invalid_price_(must_be_a_positive_number)": "Invalid price (must be a positive number)",
     "please_correct_the_errors_before_submitting": "Please correct the errors before submitting",
     "please_enter_a_password_with_at_least_8_characters": "Veuillez saisir un mot de passe contenant au moins 8 caractères",
-    "please_repeat_your_password_(min._8_characters)": "Veuillez répéter votre mot de passe (min. 8 caractères)"
+    "please_repeat_your_password_(min._8_characters)": "Veuillez répéter votre mot de passe (min. 8 caractères)",
+    "cgu": "Cgu",
+    "subscribe": "S’abonner",
+    "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Tous droits réservés.",
+    "developed_by_the_wayo_team": "Développé par l’équipe Wayo"
 }

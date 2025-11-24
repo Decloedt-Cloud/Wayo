@@ -30,6 +30,7 @@ Navigation Styling
   --logo-h-desktop: 88px;
   --logo-h-tablet: 60px;
   --logo-h-mobile: 52px;
+  --linear-gradient-style-Wayo : linear-gradient(135deg, var(--orange), var(--orange-2));
 }
 
 header,

@@ -2978,7 +2978,6 @@
     "engagement_tools": "Herramientas de interacción",
     "access_to_the_social_hub,_chat,_calendar,_and_events.": "Acceso al Social Hub, chat, calendario y eventos.",
     "coming_soon_": "Próximamente ",
-
     "invalid_logo_size_or_ratio": "Tamaño o proporción del logo inválidos",
     "please_upload_a_valid_logo_before_continuing": "Por favor, suba un logo válido antes de continuar",
     "invalid_cover_size_or_ratio": "Tamaño o proporción de la portada inválidos",
@@ -3017,6 +3016,9 @@
     "please_correct_the_errors_before_submitting": "Por favor, corrija los errores antes de enviar",
     "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío",
     "please_enter_a_password_with_at_least_8_characters": "Por favor, introduzca una contraseña con al menos 8 caracteres",
-    "please_repeat_your_password_(min._8_characters)": "Por favor, repita su contraseña (mín. 8 caracteres)"
-
+    "please_repeat_your_password_(min._8_characters)": "Por favor, repita su contraseña (mín. 8 caracteres)",
+    "cgu": "Términos y Condiciones de Uso",
+    "subscribe": "Suscribirse",
+    "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Todos los derechos reservados.",
+    "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo"
 }
