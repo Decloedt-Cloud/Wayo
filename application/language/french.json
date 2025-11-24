@@ -2992,6 +2992,7 @@
     "under_construction": "en construction",
     "type_de_fichier_invalide": "Type de fichier invalide",
     "la_taille_du_fichier_dépasse_10_mo": "La taille du fichier dépasse 10 mo",
+    "no_classes_assigned_yet": "Aucune classe assignée pour le moment",
     "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "Wayo Academy réunit tout ce qu'il faut pour créer, vendre et animer vos formations sans stress.",
     "a_single_platform._zero_hassle": "Une seule plateforme. Zéro prise de tête",
     "too_many_separate_tools,_loss_of_time_and_errors.": "Trop d'outils séparés, perte de temps et erreurs.",
@@ -3055,5 +3056,4 @@
     "subscribe": "S’abonner",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Tous droits réservés.",
     "developed_by_the_wayo_team": "Développé par l’équipe Wayo"
-
 }
