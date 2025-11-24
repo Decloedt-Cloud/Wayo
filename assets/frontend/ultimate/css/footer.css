@@ -6,7 +6,7 @@ Footer Styling
 
 .footer {
   color: #ffffff;
-  padding: 50px 0;
+  /*padding: 50px 0;*/
 }
 
 .footer-email {
@@ -47,19 +47,19 @@ Footer Styling
 }
 
 .site-footer {
-  background: #333333;
+  background:#fff;
   color: #fff;
   padding: 25px 0;
 }
 
 .footer-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 1.5rem;
-  margin-bottom: 1.5rem;
+  display:flex; 
+  flex-wrap:wrap;
+   align-items:center; 
+   justify-content:space-between; 
+   border-bottom:1px solid var(--line); 
+   padding-bottom:12px; 
+   margin-bottom:12px
 }
 
 .footer-logo img {
@@ -74,7 +74,8 @@ Footer Styling
 
 .footer-nav a {
   font-weight: 500;
-  color: #fff;
+  color: #000000;
+  font-weight:800;
   font-size: 0.9rem;
   transition: color 0.2s ease;
   text-decoration: none;
@@ -117,11 +118,57 @@ Footer Styling
   margin-bottom: 1rem;
 }
 
-.footer-contact p{
+.footer-contact ul li{
   line-height: 1.5;
   font-size: 0.9rem;
-  color: #FC7B30;
+  color: #000000;
+  list-style-type: none;
+} 
+
+.footer-contact  p {
+    padding-block: 1em;
+    color: #000000;
+    font-size: 16px;
+    margin-block: 20px;
 }
+.footer-contact .infoContact{
+  display: flex;
+  flex-direction: column;
+  color: #000000;
+}
+.infoContact a {
+    text-decoration: none;
+    color: #000000;
+}
+.footer-links .infolinks{
+  display: flex;
+  flex-direction: column;
+  color: #000000;
+}
+ .footer-links p {
+    padding-block: 1em;
+    color: #000000;
+    font-size: 16px;
+    margin-block: 20px;
+} 
+.footer-newsletter p{
+    padding-block: 1em;
+    color: #000000;
+    font-size: 16px;
+    margin-block: 20px;
+}
+
+.btn:hover{
+    transform: translateY(-1px);
+}
+.btn.accent{
+  background: var(--linear-gradient-style-Wayo); 
+  color:#fff; 
+  box-shadow:0 14px 28px rgba(244,122,31,.22);
+  font-weight: 700;
+}
+
+
 
 .footer-contact a:hover {
   color: #FC7B30;
@@ -129,14 +176,10 @@ Footer Styling
 }
 
 
-.footer-links p {
-  display: flex;
-  flex-direction: column;
-  color: #FC7B30;
-  line-height: 1.5;
-  font-size: 0.9rem;
-}
 
+.footer-links ul li::marker {
+    color: #ff6600;
+}
 .site-footer[dir="rtl"] {
   direction: rtl;
 }
@@ -166,7 +209,7 @@ Footer Styling
 }
 
 .footer-links a {
-  color: #fff;
+  color: #000000;
   font-size: 0.9rem;
   transition: color 0.2s ease;
   text-decoration: none;
@@ -174,12 +217,6 @@ Footer Styling
 
 .footer-links a:hover {
   color: #FC7B30;
-}
-
-.footer-newsletter strong {
-  margin-bottom: 0.5rem;
-  color: #FC7B30;
-  font-size: 1rem;
 }
 
 .newsletter-form {
@@ -190,9 +227,9 @@ Footer Styling
 .newsletter-form input[type="email"] {
   flex: 1;
   padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 4px;
   font-size: 0.9rem;
+  border: 1px solid #afafaf;
+  border-radius: 14px;
 }
 
 .newsletter-form button.btn-subscribe{
@@ -219,7 +256,7 @@ Footer Styling
 
 .footer-credits p {
   margin: 0.3rem 0;
-  color: #fff;
+  color:var(--muted);
 }
 
 
@@ -252,4 +289,58 @@ Footer Styling
   background: linear-gradient(135deg, rgba(245, 124, 31, 1), rgba(251, 176, 64, 1));
   transform: scale(1.1);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px){
+  .footer-top{
+        flex-direction: column;
+  }
+  .footer-social {
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 1180px) and (min-width: 480px) {
+    .footer-contact {
+    width: 27%;
+    }
+    .footer-links{
+    width: 27%;
+    }
+    .footer-newsletter {
+    width: 27%;
+    }
+    .newsletter-form {
+    flex-direction: column;
+      }
+}
+@media (max-width: 480px) {
+      nav.footer-nav ul {
+        padding-left: 0;
+    }
+      .newsletter-form {
+        flex-direction: row;
+    }
+    .footer-contact {
+    width: 100%;
+    }
+    .footer-contact p{
+      padding-block: 0;
+      margin-block: 0;
+    }
+    .footer-links{
+    width: 100%;
+    }
+    .footer-links p{
+      padding-block: 0;
+      margin-block: 0;
+    }
+    .footer-newsletter {
+    width: 100%;
+    }
+    .footer-newsletter p{
+      padding-block: 0;
+      margin-block: 0;
+    }
+
 }

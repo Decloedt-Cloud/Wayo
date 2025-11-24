@@ -3227,6 +3227,9 @@
     "invalid_price_(must_be_a_positive_number)": "Ungültiger Preis (muss eine positive Zahl sein)",
     "please_correct_the_errors_before_submitting": "Bitte korrigieren Sie die Fehler, bevor Sie das Formular absenden",
     "please_enter_a_password_with_at_least_8_characters": "Voer een wachtwoord in met minstens 8 tekens",
-    "please_repeat_your_password_(min._8_characters)": "Herhaal uw wachtwoord (minimaal 8 tekens)"
-
+    "please_repeat_your_password_(min._8_characters)": "Herhaal uw wachtwoord (minimaal 8 tekens)",
+    "cgu": "Cgu",
+    "subscribe": "Abonneren",
+    "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Alle rechten voorbehouden.",
+    "developed_by_the_wayo_team": "Ontwikkeld door het Wayo-team"
 }
