@@ -3227,6 +3227,8 @@
     "invalid_price_(must_be_a_positive_number)": "Ungültiger Preis (muss eine positive Zahl sein)",
     "please_correct_the_errors_before_submitting": "Bitte korrigieren Sie die Fehler, bevor Sie das Formular absenden",
     "please_enter_a_password_with_at_least_8_characters": "Voer een wachtwoord in met minstens 8 tekens",
-    "please_repeat_your_password_(min._8_characters)": "Herhaal uw wachtwoord (minimaal 8 tekens)"
+    "please_repeat_your_password_(min._8_characters)": "Herhaal uw wachtwoord (minimaal 8 tekens)",
+    "you_cannot_monetize_a_private_community": "U kunt geen privécommunity monetiseren"
+
 
 }
