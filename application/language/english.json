@@ -3056,5 +3056,9 @@
     "the_end_date_cannot_be_before_the_start_date": "The end date cannot be before the start date",
     "please_enter_a_password_with_at_least_8_characters": "Please enter a password with at least 8 characters",
     "please_repeat_your_password_(min._8_characters)": "Please repeat your password (min. 8 characters)",
-    "you_cannot_monetize_a_private_community": "You cannot monetize a private community"
+    "you_cannot_monetize_a_private_community": "You cannot monetize a private community",
+    "cgu": "Cgu",
+    "subscribe": "Subscribe",
+    "©_2025_wayo_academy._all_rights_reserved.": "© 2025 wayo academy. all rights reserved.",
+    "developed_by_the_wayo_team": "Developed by the wayo team"
 }
