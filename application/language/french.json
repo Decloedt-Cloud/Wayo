@@ -3056,5 +3056,18 @@
     "cgu": "Cgu",
     "subscribe": "S’abonner",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Tous droits réservés.",
-    "developed_by_the_wayo_team": "Développé par l’équipe Wayo"
+    "developed_by_the_wayo_team": "Développé par l’équipe Wayo",
+    "numero": "Numéro",
+    "codepostal": "Code postal",
+    "sub_total": "Sous-total",
+    "grand_total": "Total général",
+    "invoice_details": "Détails de la facture",
+    "product_or_service": "Produit ou service",
+    "price_excl_vat": "Prix hors TVA",
+    "vat_total": "Total TVA",
+    "notes": "Notes",
+    "payment_done_via_gateway": "Paiement effectué via la passerelle",
+    "no_additional_payment_required": "Aucun paiement supplémentaire requis",
+    "thank_you_for_your_trust": "Merci pour votre confiance",
+    "see_details": "Voir les détails"
 }

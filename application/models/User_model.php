@@ -1613,6 +1613,11 @@ class User_model extends CI_Model
 			$enrol_data['email'] = $user_details['email'];
 			$enrol_data['role'] = $user_details['role'];
 			$enrol_data['address'] = $user_details['address'];
+			$enrol_data['Rue'] = $user_details['Rue'];
+			$enrol_data['Numero'] = $user_details['Numero'];
+			$enrol_data['Ville'] = $user_details['Ville'];
+			$enrol_data['Codepostal'] = $user_details['Codepostal'];
+			$enrol_data['num_vat'] = $user_details['num_vat'];
 			$enrol_data['phone'] = $user_details['phone'];
 			$enrol_data['birthday'] = $user_details['birthday'];
 			$enrol_data['gender'] = $user_details['gender'];

@@ -3232,5 +3232,18 @@
     "cgu": "Cgu",
     "subscribe": "Abonneren",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Alle rechten voorbehouden.",
-    "developed_by_the_wayo_team": "Ontwikkeld door het Wayo-team"
+    "developed_by_the_wayo_team": "Ontwikkeld door het Wayo-team",
+    "numero": "Nummer",
+    "codepostal": "Postcode",
+    "sub_total": "Subtotaal",
+    "grand_total": "Eindtotaal",
+    "invoice_details": "Factuurdetails",
+    "product_or_service": "Product of dienst",
+    "price_excl_vat": "Prijs excl. btw",
+    "vat_total": "Totaal btw",
+    "notes": "Notities",
+    "payment_done_via_gateway": "Betaling uitgevoerd via de gateway",
+    "no_additional_payment_required": "Geen extra betaling vereist",
+    "thank_you_for_your_trust": "Dank u voor uw vertrouwen",
+    "see_details": "Bekijk details"
 }

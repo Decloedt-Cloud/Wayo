@@ -2989,5 +2989,18 @@
     "cgu": "الشروط والأحكام",
     "subscribe": "اشترك",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 وايو أكاديمي. جميع الحقوق محفوظة.",
-    "developed_by_the_wayo_team": "تم التطوير بواسطة فريق وايو"
+    "developed_by_the_wayo_team": "تم التطوير بواسطة فريق وايو",
+    "numero": "الرقم",
+    "codepostal": "الرمز البريدي",
+    "sub_total": "المجموع الفرعي",
+    "grand_total": "المجموع الكلي",
+    "invoice_details": "تفاصيل الفاتورة",
+    "product_or_service": "المنتج أو الخدمة",
+    "price_excl_vat": "السعر بدون ضريبة",
+    "vat_total": "إجمالي الضريبة",
+    "notes": "ملاحظات",
+    "payment_done_via_gateway": "تم الدفع عبر البوابة",
+    "no_additional_payment_required": "لا حاجة لأي دفعة إضافية",
+    "thank_you_for_your_trust": "شكراً على ثقتكم",
+    "see_details": "عرض التفاصيل"
 }
