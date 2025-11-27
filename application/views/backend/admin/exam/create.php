@@ -1,23 +1,19 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
 <form method="POST" class="d-block" action="<?php echo route('exam/create'); ?>" id="examCreateForm">
-
-
-
-
     <div class="form-row">
         <div class="form-group mb-1">
             <label for="exam_name"><?php echo get_phrase('exam_name'); ?><span class="required"> * </span></label>
-            <input type="text" class="form-control" id="exam_name" name="exam_name" placeholder="name" required>
-            <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_exam_name'); ?></small>
+            <input type="text" class="form-control" id="exam_name" name="exam_name" placeholder="name" >
+            <small id="name_help" class="form-text "></small>
         </div>
         <div class="form-group mb-1">
             <label for="starting_date"><?php echo get_phrase('date'); ?><span class="required"> * </span></label>
             <input type="datetime-local" class="form-control" id="starting_date" name="starting_date" value="<?php echo date('Y-m-d\TH:i'); ?>" required>
-            <small id="date_help" class="form-text text-muted"><?php echo get_phrase('provide_date_and_time'); ?></small>
+            <small id="date_help" class="form-text "></small>
         </div>
         <div class="form-group mb-1">
             <label for="modal_class_id"><?php echo get_phrase('class'); ?><span class="required"> * </span></label>
-            <select class="form-control" id="modal_class_id" name="class_id" required>
+            <select class="form-control" id="modal_class_id" name="class_id" >
                 <option value=""><?php echo get_phrase('select_class'); ?></option>
                 <?php 
                 $school_id = school_id();
@@ -36,7 +32,7 @@
                 }
                 ?>
             </select>
-            <small id="class_help" class="form-text text-muted"><?php echo get_phrase('select_a_class'); ?></small>
+            <small id="class_help" class="form-text "></small>
         </div>
 
         <div class="form-group col-md-12">
@@ -62,6 +58,10 @@
 
 <script>
 $(document).ready(function() {
+
+    /* ============================
+       TOASTR CONFIG
+    ============================ */
     toastr.options = {
         closeButton: true,
         progressBar: true,
@@ -71,70 +71,145 @@ $(document).ready(function() {
         hideMethod: 'fadeOut',
     };
 
+    /* ============================
+       CSRF TOKEN
+    ============================ */
     function getCsrfToken() {
         var csrfName = $('input[name="<?php echo addslashes($this->security->get_csrf_token_name()); ?>"]').attr('name');
         var csrfHash = $('input[name="<?php echo addslashes($this->security->get_csrf_token_name()); ?>"]').val();
-        return { csrfName: csrfName, csrfHash: csrfHash };
+        return { csrfName, csrfHash };
     }
 
-    // Form submission handler for .ajaxForm
+    /* ============================
+       REAL-TIME VALIDATION
+    ============================ */
+
+    const nameInput = $('#exam_name');
+    const nameHelp = $('#name_help');
+
+    const dateInput = $('#starting_date');
+    const dateHelp = $('#date_help');
+
+    const classInput = $('#modal_class_id');
+    const classHelp = $('#class_help');
+
+    const nameRegex = /^[a-zA-Z0-9 ]+$/;
+
+    function showError(el, msg) {
+        el.addClass('text-danger').text(msg).show();
+    }
+
+    function hideError(el) {
+        el.hide();
+    }
+
+    nameInput.on('input', function () {
+        const value = $(this).val().trim();
+        if (value.length < 3 || !nameRegex.test(value)) {
+            showError(nameHelp, '<?php echo addslashes(get_phrase('Invalid_name_(minimum_3_characters)')); ?>');
+            nameInput.addClass('is-invalid');
+        } else {
+            hideError(nameHelp);
+            nameInput.removeClass('is-invalid');
+        }
+    });
+
+    classInput.on('change', function () {
+        if ($(this).val() === '') {
+            showError(classHelp, '<?php echo addslashes(get_phrase('Please_select_a_class')); ?>');
+            classInput.addClass('is-invalid');
+        } else {
+            hideError(classHelp);
+            classInput.removeClass('is-invalid');
+        }
+    });
+
+    /* ============================
+       GENERIC AJAX FORMS
+    ============================ */
     $(".ajaxForm").validate({});
     $(".ajaxForm").submit(function(e) {
         e.preventDefault();
+
         var form = $(this);
-        var submitButton = $(this).find('button[type="submit"]');
+        var submitButton = form.find('button[type="submit"]');
         var adding_text = "<?php echo addslashes(get_phrase('creating')); ?>...";
         submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>' + adding_text);
+
         var csrf = getCsrfToken();
         const formData = new FormData(this);
 
         $.ajax({
-            url: $(this).attr('action'),
+            url: form.attr('action'),
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             dataType: 'json',
             success: function(response) {
+                submitButton.prop('disabled', false).text(adding_text);
+
                 if (response.status) {
                     success_notify(response.notification);
                     $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-                    setTimeout(function() {
-                        location.reload();
-                    }, 3500);
+                    setTimeout(() => location.reload(), 3500);
                 } else {
                     error_notify('<?php echo addslashes(get_phrase('action_not_allowed')); ?>');
                 }
             },
             error: function() {
+                submitButton.prop('disabled', false).text(adding_text);
                 error_notify('<?php echo addslashes(get_phrase('an_error_occurred_during_submission')); ?>');
             }
         });
     });
 
-   
-
+    /* ============================
+       EXAM CREATE FORM
+    ============================ */
 
     let isSubmitting = false;
 
-    // Handler for exam creation form
     $('#examCreateForm').off('submit').on('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (isSubmitting) {
-            return;
+        if (isSubmitting) return;
+
+        /* ---- VALIDATION ---- */
+        let isValid = true;
+        const nameValue = nameInput.val().trim();
+
+        if (nameValue.length < 3 || !nameRegex.test(nameValue)) {
+            showError(nameHelp, '<?php echo addslashes(get_phrase('Invalid_name_(minimum_3_characters)')); ?>');
+            nameInput.addClass('is-invalid');
+            isValid = false;
         }
 
+        if (dateInput.val().trim() === '') {
+            showError(dateHelp, '<?php echo addslashes(get_phrase('Please_provide_date_and_time)')); ?>');
+            dateInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (classInput.val() === '') {
+            showError(classHelp, '<?php echo addslashes(get_phrase('Please_select_a_class)')); ?>');
+            classInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        /* ---- SUBMIT ---- */
         isSubmitting = true;
+
         const $submitBtn = $(this).find('button[type="submit"]');
         $submitBtn.prop('disabled', true).text('<?php echo addslashes(get_phrase('creating')); ?>...');
 
         const formData = {
-            exam_name: $('#exam_name').val(),
-            starting_date: $('#starting_date').val(),
-            class_id: $('#modal_class_id').val(),
-          
+            exam_name: nameValue,
+            starting_date: dateInput.val(),
+            class_id: classInput.val(),
             '<?php echo addslashes($this->security->get_csrf_token_name()); ?>': '<?php echo addslashes($this->security->get_csrf_hash()); ?>'
         };
 
@@ -143,33 +218,28 @@ $(document).ready(function() {
             type: 'POST',
             data: formData,
             dataType: 'json',
+
             success: function(response) {
                 isSubmitting = false;
                 $submitBtn.prop('disabled', false).text('<?php echo addslashes(get_phrase('create_exam')); ?>');
 
-                try {
-                    if (response.status === true) {
-                        showNotification('success', response.message || '<?php echo addslashes(get_phrase('exam_created_successfully')); ?>');
-                        $('#right-modal').modal('hide');
-                        $('#examCreateForm')[0].reset();
-                        
+                if (response.status === true) {
+                    showNotification('success', response.message || '<?php echo addslashes(get_phrase('exam_created_successfully')); ?>');
 
-                        if (typeof window.updateExamTableAndCalendar === 'function') {
-                            window.updateExamTableAndCalendar();
-                        } else {
-                            console.error('updateExamTableAndCalendar not found');
-                            showNotification('error', '<?php echo addslashes(get_phrase('update_function_not_found')); ?>');
-                        }
+                    $('#right-modal').modal('hide');
+                    $('#examCreateForm')[0].reset();
+
+                    if (typeof window.updateExamTableAndCalendar === 'function') {
+                        window.updateExamTableAndCalendar();
                     } else {
-                        showNotification('error', response.message || '<?php echo addslashes(get_phrase('failed_to_create_exam')); ?>');
+                        showNotification('error', '<?php echo addslashes(get_phrase('update_function_not_found')); ?>');
                     }
-                } catch (e) {
-                    console.error('Erreur de traitement de la réponse:', e, response);
-                    showNotification('error', '<?php echo addslashes(get_phrase('invalid_server_response')); ?>');
+                } else {
+                    showNotification('error', response.message || '<?php echo addslashes(get_phrase('failed_to_create_exam')); ?>');
                 }
             },
+
             error: function(xhr, status, error) {
-                console.error('Exam create AJAX error:', status, error, xhr.responseText);
                 isSubmitting = false;
                 $submitBtn.prop('disabled', false).text('<?php echo addslashes(get_phrase('create_exam')); ?>');
                 showNotification('error', '<?php echo addslashes(get_phrase('failed_to_create_exam')); ?>: ' + xhr.status + ' ' + error);
@@ -177,26 +247,21 @@ $(document).ready(function() {
         });
     });
 
-    // Modal open handler
-    $('#right-modal').on('shown.bs.modal.create', function() {
-        if ($('#examCreateForm').length === 0) {
-            return;
-        }
+    /* ============================
+       MODAL HANDLERS
+    ============================ */
 
+    $('#right-modal').on('shown.bs.modal.create', function() {
+        if ($('#examCreateForm').length === 0) return;
     });
 
-    // Modal close handler
     $('#right-modal').on('hidden.bs.modal.create', function() {
-        if ($('#examCreateForm').length === 0) {
-            return;
-        }
         const $form = $('#examCreateForm');
         if ($form.length > 0) {
             $form[0].reset();
-            $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase(' питать')); ?></option>');
-            $form.find('button[type="submit"]').blur();
+            $('#modal_section_id').html('<option value=""><?php echo addslashes(get_phrase('select')); ?></option>');
         }
-        $('body').focus();
     });
+
 });
 </script>

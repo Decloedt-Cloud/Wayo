@@ -9,19 +9,19 @@
   <div class="form-row">
     <div class="form-group mb-1">
       <label for="title"><?php echo get_phrase('event_title'); ?><span class="required"> * </span></label>
-      <input type="text" class="form-control" id="title" name = "title" required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_title_name'); ?></small>
+      <input type="text" class="form-control" id="title" name = "title">
+      <small id="name_help" class="form-text "><?php echo get_phrase('provide_title_name'); ?></small>
     </div>
     <div class="form-group mb-1">
       <label for="starting_date"><?php echo get_phrase('event_starting_date'); ?><span class="required"> * </span></label>
-      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="starting_date" name = "starting_date"  required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_starting_date'); ?></small>
+      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="starting_date" name = "starting_date" >
+      <small id="name_help" class="form-text"><?php echo get_phrase('provide_starting_date'); ?></small>
     </div>
 
     <div class="form-group mb-1">
       <label for="starting_date"><?php echo get_phrase('event_ending_date'); ?><span class="required"> * </span></label>
-      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="ending_date" name = "ending_date" required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_ending_date'); ?></small>
+      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="ending_date" name = "ending_date" >
+      <small id="name_help" class="form-text"><?php echo get_phrase('provide_ending_date'); ?></small>
     </div>
 
     <div class="form-group  col-md-12">
@@ -31,6 +31,171 @@
 </form>
 
 <script>
+$(document).ready(function() {
+
+    /* ============================
+       TOASTR CONFIG
+    ============================ */
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        timeOut: 5000,
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut',
+    };
+
+    /* ============================
+       CSRF TOKEN
+    ============================ */
+    function getCsrfToken() {
+        var csrfName = $('input[name="<?=$this->security->get_csrf_token_name();?>"]').attr('name');
+        var csrfHash = $('input[name="<?=$this->security->get_csrf_token_name();?>"]').val();
+        return { csrfName, csrfHash };
+    }
+
+    /* ============================
+       ELEMENTS & HELP TEXT
+    ============================ */
+    const titleInput = $('#title');
+    const startDateInput = $('#starting_date');
+    const endDateInput = $('#ending_date');
+
+    const titleHelp = $('#name_help'); // tu peux créer des help séparés si tu veux
+    const startDateHelp = $('#starting_date').next('small');
+    const endDateHelp = $('#ending_date').next('small');
+
+    const titleRegex = /^[a-zA-Z0-9 ]{3,100}$/; // Minimum 3 caractères, lettres, chiffres, espace
+
+    function showError(el, msg) {
+        el.addClass('text-danger').text(msg).show();
+    }
+
+    function hideError(el) {
+        el.hide();
+    }
+
+    /* ============================
+       REAL-TIME VALIDATION
+    ============================ */
+    titleInput.on('input', function() {
+        const value = $(this).val().trim();
+        if (!titleRegex.test(value)) {
+            showError(titleHelp, '<?php echo get_phrase('Invalid_title_(minimum_3_characters,_letters_and_numbers_allowed)'); ?>');
+            titleInput.addClass('is-invalid');
+        } else {
+            hideError(titleHelp);
+            titleInput.removeClass('is-invalid');
+        }
+    });
+
+    startDateInput.on('change', function() {
+        if (!$(this).val()) {
+            showError(startDateHelp, '<?php echo get_phrase('Please_provide_a_start_date'); ?>');
+            startDateInput.addClass('is-invalid');
+        } else {
+            hideError(startDateHelp);
+            startDateInput.removeClass('is-invalid');
+        }
+    });
+
+    endDateInput.on('change', function() {
+        if (!$(this).val()) {
+            showError(endDateHelp, '<?php echo get_phrase('Please_provide_an_end_date'); ?>');
+            endDateInput.addClass('is-invalid');
+        } else if (endDateInput.val() < startDateInput.val()) {
+            showError(endDateHelp, '<?php echo get_phrase('The_end_date_must_be_after_the_start_date'); ?>');
+            endDateInput.addClass('is-invalid');
+        } else {
+            hideError(endDateHelp);
+            endDateInput.removeClass('is-invalid');
+        }
+    });
+
+    /* ============================
+       FORM SUBMISSION AJAX
+    ============================ */
+    let isSubmitting = false;
+
+    $('.ajaxForm').on('submit', function(e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+
+        let isValid = true;
+
+        const titleVal = titleInput.val().trim();
+        const startVal = startDateInput.val();
+        const endVal = endDateInput.val();
+
+        // Validation avant soumission
+        if (!titleRegex.test(titleVal)) {
+            showError(titleHelp, '<?php echo get_phrase('Invalid_title_(minimum_3_characters,_letters_and_numbers_allowed)'); ?>');
+            titleInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!startVal) {
+            showError(startDateHelp, '<?php echo get_phrase('Please provide a start date'); ?>');
+            startDateInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!endVal) {
+            showError(endDateHelp, '<?php echo get_phrase('Please_provide_an_end_date'); ?>');
+            endDateInput.addClass('is-invalid');
+            isValid = false;
+        } else if (endVal < startVal) {
+            showError(endDateHelp, '<?php echo get_phrase('The_end_date_mus_be_after_the_start_date'); ?>');
+            endDateInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Soumission AJAX
+        isSubmitting = true;
+        const $submitBtn = $(this).find('button[type="submit"]');
+        $submitBtn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase('Registration'); ?> ...');
+
+        const csrf = getCsrfToken();
+
+        const formData = {
+            title: titleVal,
+            starting_date: startVal,
+            ending_date: endVal,
+            school_id: $('#school_id').val()
+        };
+        formData[csrf.csrfName] = csrf.csrfHash;
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                isSubmitting = false;
+                $submitBtn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo get_phrase('Save'); ?>');
+
+                if (response.status) {
+                    toastr.success(response.message || '<?php echo get_phrase('Event_created_successfully.'); ?>');
+                    $('.ajaxForm')[0].reset();
+                } else {
+                    toastr.error(response.message || '<?php echo get_phrase('Failed_to_create_the_event.'); ?>');
+                }
+            },
+            error: function(xhr, status, error) {
+                isSubmitting = false;
+                $submitBtn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo get_phrase('Save'); ?>');
+                toastr.error('Une erreur est survenue : ' + xhr.status + ' ' + error);
+            }
+        });
+    });
+
+});
+</script>
+
+
+<!-- <script>
 $(document).ready(function() {
 
 $(".ajaxForm").validate({}); // Jquery form validation initialization
@@ -85,5 +250,4 @@ $(".ajaxForm").validate({}); // Jquery form validation initialization
     });
   });
 });
-</script>
-
+</script> -->
