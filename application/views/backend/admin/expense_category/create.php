@@ -6,7 +6,8 @@
   
   <div class="form-group mb-2">
     <label for="name"><?php echo get_phrase('expense_category_name'); ?><span class="required"> * </span></label>
-    <input type="text" class="form-control" id="name" name = "name" required>
+    <input type="text" class="form-control" id="name" name = "name">
+    <small id="name_help" class="text-danger d-none"></small>
   </div>
 
   <div class="form-group">
@@ -15,6 +16,112 @@
 </form>
 
 <script>
+$(document).ready(function () {
+
+    /* ============================
+       CSRF TOKEN
+    ============================ */
+    function getCsrfToken() {
+        var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+        var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+        return { csrfName: csrfName, csrfHash: csrfHash };
+    }
+
+    /* ============================
+       FIELD ELEMENTS
+    ============================ */
+    const nameInput = $('#name');
+    const nameHelp  = $('#name_help');
+
+    const nameRegex = /^[a-zA-Z0-9 ]{3,}$/; // minimum 3 caractères, lettres et chiffres
+
+    function showError(el, msg) {
+        el.text(msg).removeClass('d-none').show();
+    }
+
+    function hideError(el) {
+        el.text('').addClass('d-none').hide();
+    }
+
+    /* ============================
+       VALIDATION EN TEMPS RÉEL
+    ============================ */
+    nameInput.on('input', function () {
+        const val = $(this).val().trim();
+        if (!nameRegex.test(val)) {
+            showError(nameHelp, "<?= addslashes(get_phrase('invalid_name_(minimum_3_characters)')); ?>");
+            nameInput.addClass('is-invalid');
+        } else {
+            hideError(nameHelp);
+            nameInput.removeClass('is-invalid');
+        }
+    });
+
+    /* ============================
+       AJAX SUBMIT
+    ============================ */
+    let isSubmitting = false;
+
+    $(".ajaxForm").on("submit", function(e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+
+        let isValid = true;
+        const nameVal = nameInput.val().trim();
+
+        if (!nameRegex.test(nameVal)) {
+            showError(nameHelp, "<?= addslashes(get_phrase('invalid_name_(minimum_3_characters)')); ?>");
+            nameInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        isSubmitting = true;
+
+        const submitButton = $(this).find('button[type="submit"]');
+        submitButton.prop('disabled', true)
+            .html('<i class="mdi mdi-loading mdi-spin"></i> <?= addslashes(get_phrase('saving')); ?>...');
+
+        const formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+
+            success: function(response) {
+                isSubmitting = false;
+                submitButton.prop('disabled', false)
+                    .html('<i class="mdi mdi-content-save"></i> <?= addslashes(get_phrase('save_expense_category')); ?>');
+
+                if (response.status) {
+                    success_notify(response.notification);
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    setTimeout(() => location.reload(), 3000);
+                } else {
+                    error_notify("<?= addslashes(get_phrase('action_not_allowed')); ?>");
+                }
+            },
+
+            error: function() {
+                isSubmitting = false;
+                submitButton.prop('disabled', false)
+                    .html('<i class="mdi mdi-content-save"></i> <?= addslashes(get_phrase('save_expense_category')); ?>');
+                error_notify("<?= addslashes(get_phrase('an_error_occurred_during_submission')); ?>");
+            }
+        });
+
+    });
+
+});
+</script>
+
+
+<!-- <script>
    $(document).ready(function() {
     $(".ajaxForm").validate({}); // Jquery form validation initialization
     $(".ajaxForm").submit(function(e) {
@@ -68,4 +175,4 @@
       });
     });
 });
-</script>
+</script> -->

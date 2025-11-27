@@ -38,7 +38,7 @@
 /* Custom styles for the form */
 .form-wrapper {
   overflow: hidden;
-  background-color: #f5f5dc !important; /* Soft Beige Background */
+  /* background-color: #f5f5dc !important;  */
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
   border-radius: 0.75rem;
 }
@@ -84,13 +84,13 @@
 .form-select {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
-  background-color: #f5f5dc !important; /* Soft Beige Background */
+  /* background-color: #f5f5dc !important;  */
 }
 .form-control:focus,
 .form-select:focus {
   box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
   border-color: #4361ee;
-  background-color: #f5f5dc !important; /* Soft Beige Background */
+  /* background-color: #f5f5dc !important;  */
 }
 .form-select {
   font-size: 0.95rem; /* Adjust to your desired smaller size for the button text */
@@ -160,11 +160,11 @@
 /* Thumbnail Upload Area */
 .thumbnail-upload {
   transition: all 0.2s ease;
-  background-color: #f5f5dc !important; /* Soft Beige Background */
+  /* background-color: #f5f5dc !important; */
   border: 1px dashed #ced4da;
 }
 .thumbnail-upload:hover {
-  background-color: #f5f5dc !important; /* Soft Beige Background */
+  /* background-color: #f5f5dc !important; */
 }
 /* Tab Content Area */
 .tab-content {
