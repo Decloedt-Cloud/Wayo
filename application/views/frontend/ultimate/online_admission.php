@@ -111,14 +111,6 @@
         margin-bottom: 14px;
     }
 
-    /* #priceFieldWrapper { display: none; } */
-    #communityprice.bg-light {
-        background-color: #f8f9fa;
-        cursor: not-allowed;
-        color: #777;
-    }
-
-    /* #priceFieldWrapper { display: none; } */
     #communityprice.bg-light {
         background-color: #f8f9fa;
         cursor: not-allowed;
@@ -156,12 +148,12 @@
                 <li class="step-create-commaunaute" data-stepnav="4"><span class="num">4</span><span class="lbl"><?php echo get_phrase("subscription") ?></span></li>
                 <li class="step-create-commaunaute" data-stepnav="5"><span class="num">5</span><span class="lbl"><?php echo get_phrase("Summary") ?></span></li>
             </ol>
-            <!-- <form  id="communityForm"  action="<?php echo site_url('admission/online_admission/submit/school'); ?>" method="post" id="schoolform"
-      class="js-validate studentform realtime-form container" enctype="multipart/form-data"  novalidate> -->
+
             <form action="<?php echo site_url('admission/online_admission/submit/school'); ?>" method="post" id="schoolform"
-                class="js-validate studentform realtime-form container" enctype="multipart/form-data" novalidate>
+                  class="js-validate studentform realtime-form container" enctype="multipart/form-data" novalidate>
                 <!-- Champ caché pour le jeton CSRF -->
                 <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
+
                 <!-- STEP 1 : PROFIL -->
                 <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1">
                     <div class="panel-head">
@@ -172,21 +164,19 @@
                     <div class="grid-2 mt-4">
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Name") ?> <span class="req">*</span></span>
-                            <!-- <input id="profileName" type="text" placeholder="Votre nom" required aria-required="true" autocomplete="name"> -->
                             <input id="profileName" type="text" placeholder="<?php echo get_phrase('full_name'); ?>"
-                                class="form-control shadow-none rounded-end text-capitalize" name="name" required
-                                data-msg="<?php echo get_phrase("Please enter your full name") ?>" data-error-class="u-has-error"
-                                data-success-class="u-has-success" aria-required="true" autocomplete="name">
+                                   class="form-control shadow-none rounded-end text-capitalize" name="name" required
+                                   data-msg="<?php echo get_phrase("Please enter your full name") ?>" data-error-class="u-has-error"
+                                   data-success-class="u-has-success" aria-required="true" autocomplete="name">
                             <div class="error" data-for="profileName"></div>
                         </label>
 
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Email") ?> <span class="req">*</span></span>
-                            <!-- <input id="profileEmail" type="email" placeholder="exemple@email.com" required aria-required="true" autocomplete="email"> -->
                             <input id="profileEmail" type="email" placeholder="<?php echo get_phrase('email'); ?>"
-                                class="form-control rounded-end shadow-none" name="email" required aria-required="true" autocomplete="email"
-                                data-msg="<?php echo get_phrase("Please enter a valid email address") ?>" data-error-class="u-has-error"
-                                data-success-class="u-has-success">
+                                   class="form-control rounded-end shadow-none" name="email" required aria-required="true" autocomplete="email"
+                                   data-msg="<?php echo get_phrase("Please enter a valid email address") ?>" data-error-class="u-has-error"
+                                   data-success-class="u-has-success">
                             <div class="error" data-for="profileEmail"></div>
                         </label>
                     </div>
@@ -194,15 +184,17 @@
                     <div class="grid-2">
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Phone") ?> <span class="req">*</span></span>
-                            <!-- <input id="profilePhone" type="tel" placeholder="+212 600 00 00 00" required aria-required="true" autocomplete="tel"> -->
                             <input id="profilePhone" type="tel" pattern="\+?\d{1,3}\s?(\d{1,4}\s?){4}" placeholder="+212 600 00 00 00"
-                                class="form-control rounded-end shadow-none" name="phone" data-msg="<?php echo get_phrase("Please enter a valid phone number") ?>"
-                                data-error-class="u-has-error" data-success-class="u-has-success" required aria-required="true" autocomplete="tel">
+                                   class="form-control rounded-end shadow-none" name="phone"
+                                   data-msg="<?php echo get_phrase("Please enter a valid phone number") ?>"
+                                   data-error-class="u-has-error" data-success-class="u-has-success"
+                                   required aria-required="true" autocomplete="tel">
                             <div class="error" data-for="profilePhone"></div>
                         </label>
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
-                            <select id="communityLang" name="communityLang" required aria-required="true" data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
+                            <select id="communityLang" name="communityLang" required aria-required="true"
+                                    data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
                                 <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
                                 <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
                                 <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
@@ -215,18 +207,21 @@
 
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
-                        <!-- <input id="profilePass" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass" type="password" placeholder="********" required minlength="8" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none" name="password" required
-                            data-msg="<?php echo get_phrase("Please enter a password") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
+                        <input id="profilePass" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
+                               aria-required="true" autocomplete="new-password"
+                               class="form-control rounded-end shadow-none" name="password"
+                               data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>"
+                               data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="profilePass"></div>
                     </label>
 
                     <label class="field">
                         <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
-                        <!-- <input id="profilePass2" type="password" placeholder="********" required minlength="6" aria-required="true" autocomplete="new-password"> -->
-                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
-                            name="repeat-password" required data-msg="<?php echo get_phrase("Please repeat your password") ?>" data-error-class="u-has-error"
-                            data-success-class="u-has-success">
+                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
+                               aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
+                               name="repeat-password"
+                               data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>"
+                               data-error-class="u-has-error" data-success-class="u-has-success">
                         <div class="error" data-for="profilePass2"></div>
                     </label>
 
@@ -243,7 +238,7 @@
                         <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
                     </div>
                     <div class="grid mt-4">
-                        <!-- ====== Colonne gauche ====== -->
+                        <!-- Colonne gauche -->
                         <div class="stack">
 
                             <!-- Identité -->
@@ -252,8 +247,8 @@
 
                                 <label class="field">
                                     <span class="field-label"><?php echo get_phrase("I_am") ?> <span class="req">*</span></span>
-                                    <select id="i_am" name="i_am" class="form-control shadow-none" required
-                                        data-msg="<?php echo get_phrase("Please select your status") ?>">
+                                    <select id="i_am_id" name="i_am" class="form-control shadow-none" required
+                                            data-msg="<?php echo get_phrase("Please select your status") ?>">
                                         <option value=""><?php echo get_phrase('select_a_status'); ?></option>
                                         <option value="Entreprise"><?php echo get_phrase("Entreprise") ?></option>
                                         <option value="Freelancer"><?php echo get_phrase("Freelancer") ?></option>
@@ -267,7 +262,7 @@
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("Tax_residence") ?> <span class="req">*</span></span>
                                         <select id="Tax_residence" name="Tax_residence" class="form-control shadow-none" required
-                                            data-msg="<?php echo get_phrase("Please select your tax residence") ?>">
+                                                data-msg="<?php echo get_phrase("Please select your tax residence") ?>">
                                             <option value=""><?php echo get_phrase('select_a_Tax_residence'); ?></option>
                                             <option value="MA"><?php echo get_phrase("Morocco") ?></option>
                                             <option value="UAE"><?php echo get_phrase("United_Arab_Emirates") ?></option>
@@ -278,7 +273,7 @@
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("Category") ?> <span class="req">*</span></span>
                                         <select id="communityCat" name="category" class="form-control shadow-none" required
-                                            data-msg="<?php echo get_phrase("please_select_a_category"); ?>">
+                                                data-msg="<?php echo get_phrase("please_select_a_category"); ?>">
                                             <option value=""><?php echo get_phrase('select_a_category'); ?></option>
                                             <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
                                             <?php foreach ($categories as $categorie): ?>
@@ -297,9 +292,10 @@
                                 <label class="field">
                                     <span class="field-label"><?php echo get_phrase("Community_name") ?> <span class="req">*</span></span>
                                     <input id="communityName" type="text" maxlength="80"
-                                        placeholder="<?php echo get_phrase("Ex._Digital_Marketing") ?>"
-                                        class="form-control shadow-none rounded-end text-capitalize" name="school_name" required
-                                        data-msg="<?php echo get_phrase("Please enter your first name") ?>">
+                                           placeholder="<?php echo get_phrase("Ex._Digital_Marketing") ?>"
+                                           class="form-control shadow-none rounded-end text-capitalize"
+                                           name="school_name" required
+                                           data-msg="<?php echo get_phrase("Please enter your first name") ?>">
                                     <small class="help"><?php echo get_phrase("Max._80_characters") ?></small>
                                     <div class="error" data-for="communityName"></div>
                                 </label>
@@ -312,31 +308,30 @@
                                         </span>
                                     </span>
                                     <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description"
-                                        placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
-                                        data-msg="<?php echo get_phrase("Please enter a description") ?>"></textarea>
+                                              placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
+                                              data-msg="<?php echo get_phrase("Please enter a description") ?>"></textarea>
                                     <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
                                     <div class="error" data-for="communityDesc"></div>
                                 </label>
                             </fieldset>
 
-
-
                             <!-- Visibilité -->
                             <label class="switch emph">
                                 <input type="hidden" name="visibility" value="0">
-                                <input id="isPrivate" name="visibility" type="checkbox" value="1" />
+                                <input id="isPrivate_id" name="visibility" type="checkbox" value="1" />
                                 <span class="switch-emph">
                                     <i class="fa-solid fa-lock"></i>
                                     <strong><?php echo get_phrase("Private_community") ?></strong>
                                     <em><?php echo get_phrase("(access_upon_approval)") ?></em>
-                                    <span class="info field-label" data-tooltip="<?php echo get_phrase("(A_private_community_means_that_access_is_not_open._Interested_people_will_need_to_send_a_request_for_access._The_administrator_can_accept_or_reject_it.)") ?>">
+                                    <span class="info field-label"
+                                          data-tooltip="<?php echo get_phrase("(A_private_community_means_that_access_is_not_open._Interested_people_will_need_to_send_a_request_for_access._The_administrator_can_accept_or_reject_it.)") ?>">
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
                             </label>
                         </div>
 
-                        <!-- ====== Colonne droite ====== -->
+                        <!-- Colonne droite -->
                         <div class="stack">
                             <fieldset>
                                 <legend><?php echo get_phrase("Media"); ?></legend>
@@ -344,7 +339,8 @@
                                 <!-- Logo -->
                                 <span class="field-label">
                                     <?php echo get_phrase("Logo (1:1)") ?>
-                                    <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_512×512_px_(1:1)_•_PNG/JPG_•_transparent_background_recommended_•_&lt;_1_Mo") ?>">
+                                    <span class="info"
+                                          data-tooltip="<?php echo get_phrase("Optimal_size:_512×512_px_(1:1)_•_PNG/JPG_•_transparent_background_recommended_•_&lt;_1_Mo") ?>">
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
@@ -361,7 +357,8 @@
                                 <!-- Cover -->
                                 <span class="field-label">
                                     <?php echo get_phrase("Cover_(16:9)") ?>
-                                    <span class="info" data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?>">
+                                    <span class="info"
+                                          data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?>">
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
@@ -384,16 +381,16 @@
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("Rue") ?> <span class="req">*</span></span>
                                         <input id="communityStreet" type="text" placeholder="<?php echo get_phrase("Rue") ?>"
-                                            class="form-control shadow-none" name="street" required
-                                            data-msg="<?php echo get_phrase("Veuillez entrer la rue") ?>">
+                                               class="form-control shadow-none" name="street" required
+                                               data-msg="<?php echo get_phrase("Veuillez entrer la rue") ?>">
                                         <div class="error" data-for="communityStreet"></div>
                                     </label>
 
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("Numéro") ?> <span class="req">*</span></span>
                                         <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>"
-                                            class="form-control shadow-none" name="number" required
-                                            data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>">
+                                               class="form-control shadow-none" name="number" required
+                                               data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>">
                                         <div class="error" data-for="communityNumber"></div>
                                     </label>
                                 </div>
@@ -402,23 +399,22 @@
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("Ville") ?> <span class="req">*</span></span>
                                         <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>"
-                                            class="form-control shadow-none" name="city" required
-                                            data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>">
+                                               class="form-control shadow-none" name="city" required
+                                               data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>">
                                         <div class="error" data-for="communityCity"></div>
                                     </label>
 
                                     <label class="field">
                                         <span class="field-label"><?php echo get_phrase("code_postal") ?> <span class="req">*</span></span>
                                         <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>"
-                                            class="form-control shadow-none" name="postal_code" required
-                                            data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>">
+                                               class="form-control shadow-none" name="postal_code" required
+                                               data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>">
                                         <div class="error" data-for="communityPostalCode"></div>
                                     </label>
                                 </div>
                             </fieldset>
                         </div>
                     </div>
-
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
@@ -433,99 +429,59 @@
                     </div>
 
                     <div class="grid-3 price-grid">
-                        <!-- Price (visible uniquement pour Particulier) -->
                         <div class="grid-2" id="priceFieldWrapper">
                             <label class="field">
                                 <span class="field-label"><?php echo get_phrase("price") ?> <span class="req">*</span></span>
                                 <input id="communityprice" type="text"
-                                    placeholder="<?php echo get_phrase("price") ?>"
-                                    class="form-control shadow-none"
-                                    name="price"
-                                    required
-                                    data-msg="<?php echo get_phrase("Please enter the price") ?>"
-                                    data-error-class="u-has-error"
-                                    data-success-class="u-has-success">
+                                       placeholder="<?php echo get_phrase("price") ?>"
+                                       class="form-control shadow-none"
+                                       name="price"
+                                       required
+                                       data-msg="<?php echo get_phrase("Please enter the price") ?>"
+                                       data-error-class="u-has-error"
+                                       data-success-class="u-has-success">
                                 <div class="error" data-for="communityprice"></div>
-                                <!-- NEW: hint + hidden currency -->
-                                <!-- <small id="currencyHint" class="help">Currency: MAD</small> -->
                                 <input type="hidden" name="currency" id="currencyCode" value="MAD">
                             </label>
                         </div>
-                        <!-- Notice: Particulier cannot set a price -->
-                        <div id="particulierNotice" class="alert alert-warning" style="display:none; margin-bottom:12px;">
+
+                        <div id="particulierNotice_id" class="alert alert-warning" style="display:none; margin-bottom:12px;">
                             <?php echo get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0"); ?>
                         </div>
-
-
-
                     </div>
-
-                    <!-- <label class="field">
-            <span class="field-label">Prix d’adhésion (€) <span class="req">*</span></span>
-            <select id="price" required>
-              <option value="0" selected>Gratuit</option>
-            </select>
-            <div class="error" data-for="price"></div>
-          </label> -->
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
                         <button type="button" class="btn btn-primary next" disabled><?php echo get_phrase("Continue") ?></button>
                     </div>
                 </section>
-                <!-- STEP 4 : PRIX -->
-                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step3">
+
+                <!-- STEP 4 : SUBSCRIPTION -->
+                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step4">
                     <div class="panel-head">
                         <h2 id="title-step4"><?php echo get_phrase("subscription") ?></h2>
                     </div>
 
                     <div class="grid-2 price-grid">
-                        <!-- <label class="radio-tile">
-              <input  type="radio" name="communityPriceType" value="free" >
-              <div class="tile" data-price-tile="free">
-                <i class="fa-solid fa-gift"></i>
-                <strong><?php // echo get_phrase("Free") 
-                        ?></strong>
-                <span><?php // echo get_phrase("Free_access") 
-                        ?></span>
-              </div>
-            </label> -->
-
                         <label class="radio-tile">
                             <input type="radio" name="communityPriceType" value="oneoff" checked>
                             <div class="tile" data-coming="true">
                                 <i class="fa-solid fa-hand-holding-dollar"></i>
-                                <strong><?php echo get_phrase("price_to_pay_790") ?> <small id="currencyHint" class="help">MAD</small></strong>
+                                <strong>
+                                    <?php echo get_phrase("price_to_pay_790") ?>
+                                    <small id="currencyHint" class="help">MAD</small>
+                                </strong>
                                 <span><?php echo get_phrase("You are entitled to a 14-day free trial") ?></span>
                             </div>
                         </label>
-
-
-                        <!-- <label class="radio-tile">
-              <input type="radio" name="communityPriceType" value="subscription" disabled>
-              <div class="tile tile-disabled" data-coming="true">
-                <i class="fa-solid fa-arrows-rotate"></i>
-                <strong><?php //echo get_phrase("Subscription") 
-                        ?></strong>
-                <span><?php // echo get_phrase("Coming_soon") 
-                        ?></span>
-              </div>
-            </label> -->
                     </div>
-
-                    <!-- <label class="field">
-            <span class="field-label">Prix d’adhésion (€) <span class="req">*</span></span>
-            <select id="price" required>
-              <option value="0" selected>Gratuit</option>
-            </select>
-            <div class="error" data-for="price"></div>
-          </label> -->
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
                         <button type="button" class="btn btn-primary next" disabled><?php echo get_phrase("Continue") ?></button>
                     </div>
                 </section>
+
                 <!-- STEP 5 : RÉSUMÉ -->
                 <section class="card panel step-pane" data-step="5" aria-labelledby="title-step5">
                     <div class="panel-head">
@@ -538,9 +494,8 @@
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
-                        <!-- <button type="submit" class="btn btn-success">Publier</button> -->
                         <button type="submit" id="submitBtnSchool"
-                            class="btn btn btn-success text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
+                                class="btn btn btn-success text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
                         <button type="reset" id="resetBtn" style="display: none;"></button>
                     </div>
                 </section>
@@ -551,7 +506,7 @@
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
-<!-- uploader -->
+<!-- Aperçu simple via jQuery (tu peux le garder si tu veux un preview rapide) -->
 <script>
     $(document).ready(function() {
         function setupUploader(inputId, previewId) {
@@ -583,570 +538,609 @@
     });
 </script>
 
+<!-- Script principal unifié & optimisé -->
 <script>
-    (function() {
-        // =================== Helpers ===================
-        const $ = (s, ctx) => (ctx || document).querySelector(s);
-        const $$ = (s, ctx) => Array.from((ctx || document).querySelectorAll(s));
+    
+document.addEventListener('DOMContentLoaded', function() {
+    // ========================
+    // Helpers
+    // ========================
+    const $  = (s, ctx = document) => ctx.querySelector(s);
+    const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
 
-        // =================== App ===================
-        const navToggle = $('.nav-toggle'),
-            mainNav = $('.main-nav');
-        if (navToggle && mainNav) {
-            navToggle.addEventListener('click', () => {
-                const open = mainNav.classList.toggle('nav-open');
-                navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            });
-        }
-
-        // Stepper
-        const steps = $$('.step-create-commaunaute');
-        const panes = $$('.step-pane');
-        let current = 0;
-
-        function goTo(i) {
-            if (i < 0 || i >= panes.length) return;
-            const prevScroll = window.scrollY;
-            panes.forEach(p => p.classList.remove('is-visible'));
-            steps.forEach((s, idx) => {
-                s.classList.toggle('is-active', idx === i);
-                s.classList.toggle('is-complete', idx < i);
-            });
-            panes[i].classList.add('is-visible');
-            current = i;
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            window.scrollTo({
-                top: prevScroll,
-                behavior: 'auto'
-            });
-            updateSummary();
-        }
-
-        // === Step 3: Particulier => prix interdit
-        const iAmSelect = $('#i_am');
-        const priceWrapper = $('#priceFieldWrapper');
-        const priceInput = $('#communityprice');
-        const particulierNotice = $('#particulierNotice');
-
-        function toggleStep3PriceField() {
-            const isParticulier = (iAmSelect?.value === 'Particulier');
-            if (isParticulier) {
-                particulierNotice.style.display = 'block';
-                priceWrapper.style.display = 'block';
-                priceInput.value = 0;
-                priceInput.setAttribute('disabled', 'true');
-                priceInput.classList.add('bg-light');
-            } else {
-                particulierNotice.style.display = 'none';
-                priceWrapper.style.display = 'block';
-                priceInput.removeAttribute('disabled');
-                priceInput.classList.remove('bg-light');
-                if (priceInput.value === '0') priceInput.value = '';
-            }
-        }
-        iAmSelect?.addEventListener('change', toggleStep3PriceField);
-        toggleStep3PriceField();
-
-        // ===== Devise selon Tax_residence
-        const taxResSelect = $('#Tax_residence');
-        const currencyHint = $('#currencyHint');
-        const currencyCodeEl = $('#currencyCode');
-
-        function updateCurrencyUI() {
-            const sel = taxResSelect?.value || '';
-            const code = sel === 'MA' ? 'MAD' : sel === 'UAE' ? 'AED' : 'EUR';
-            if (currencyHint) currencyHint.textContent = code;
-            if (currencyCodeEl) currencyCodeEl.value = code;
-            if (priceInput && !priceInput.disabled) {
-                priceInput.placeholder = `<?php echo get_phrase("price"); ?> (${code})`;
-            }
-        }
-        taxResSelect?.addEventListener('change', updateCurrencyUI);
-        updateCurrencyUI();
-
-        // Next/Prev
-        $$('.next').forEach(btn => btn.addEventListener('click', () => {
-            if (!validateStep(current)) return;
-            if (current < panes.length - 1) goTo(current + 1);
-        }));
-        $$('.prev').forEach(btn => btn.addEventListener('click', () => {
-            if (current > 0) goTo(current - 1);
-        }));
-
-        steps.forEach((s, idx) => {
-            s.style.cursor = 'pointer';
-            s.addEventListener('click', () => idx <= current && goTo(idx));
-        });
-
-        // =================== Validation ===================
-        function setInvalid(el, msg) {
-            if (!el) return;
-            el.classList.add('is-invalid');
-            const err = $(`.error[data-for="${el.id}"]`);
-            if (err) err.textContent = msg || el.dataset.msg || '';
-        }
-
-        function clearInvalid(el) {
-            if (!el) return;
-            el.classList.remove('is-invalid');
-            const err = $(`.error[data-for="${el.id}"]`);
-            if (err) err.textContent = '';
-        }
-
-        function validateStep(stepIndex) {
-            let ok = true;
-            const pane = panes[stepIndex];
-            if (!pane) return true;
-
-            // Vérification doublons
-            if ($$('[data-duplicate="true"]').length > 0) {
-                toastr.warning('<?= get_phrase("please_correct_duplicate_fields"); ?>');
-                return false;
-            }
-
-            // Step 1
-            if (pane.dataset.step === "1") {
-                const name = $('#profileName');
-                const email = $('#profileEmail');
-                const phone = $('#profilePhone');
-                const pass = $('#profilePass');
-                const pass2 = $('#profilePass2');
-
-                if (!name.value.trim() || name.value.trim().length < 2) {
-                    setInvalid(name);
-                    ok = false;
-                } else clearInvalid(name);
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
-                    setInvalid(email);
-                    ok = false;
-                } else clearInvalid(email);
-                if ((phone.value || '').replace(/\D/g, '').length < 8) {
-                    setInvalid(phone);
-                    ok = false;
-                } else clearInvalid(phone);
-                if ((pass.value || '').length < 8) {
-                    setInvalid(pass);
-                    ok = false;
-                } else clearInvalid(pass);
-                if (pass.value !== pass2.value) {
-                    setInvalid(pass2);
-                    ok = false;
-                } else clearInvalid(pass2);
-            }
-
-            // Step 2
-            if (pane.dataset.step === "2") {
-                const fields = ['#communityName', '#communityDesc', '#communityCat', '#Tax_residence', '#communityLang', '#communityStreet', '#communityNumber', '#communityCity', '#communityPostalCode', '#i_am'];
-                fields.forEach(sel => {
-                    const el = $(sel);
-                    if (el && !el.value.trim()) {
-                        setInvalid(el);
-                        ok = false;
-                    } else clearInvalid(el);
-                });
-                const desc = $('#communityDesc');
-                if (desc.value.trim().length < 40) {
-                    setInvalid(desc);
-                    ok = false;
-                }
-                const number = $('#communityNumber');
-                if (!/^\d+$/.test(number.value.trim())) {
-                    setInvalid(number);
-                    ok = false;
-                }
-                const postal = $('#communityPostalCode');
-                if (!/^\d{4,5}$/.test(postal.value.trim())) {
-                    setInvalid(postal);
-                    ok = false;
-                }
-            }
-
-            // Step 3 - Prix
-            if (pane.dataset.step === "3") {
-                const i_am = $('#i_am')?.value || '';
-                if (i_am !== 'Particulier' && priceInput && !priceInput.disabled) {
-                    const val = (priceInput.value || '').trim();
-                    if (val === '' || isNaN(val) || Number(val) < 0) {
-                        setInvalid(priceInput, '<?php echo get_phrase("Please enter a valid price"); ?>');
-                        ok = false;
-                    } else {
-                        clearInvalid(priceInput);
-                    }
-                }
-            }
-
-            return ok;
-        }
-
-        // =================== Résumé ===================
-        window.updateSummary = function() {
-            const summaryDiv = $('.summary');
-            if (!summaryDiv) return;
-
-            const profileName = $('#profileName')?.value || '—';
-            const profileEmail = $('#profileEmail')?.value || '—';
-            const phone = $('#profilePhone')?.value || '—';
-            const lang = $('#communityLang')?.value || '—';
-            const i_am = $('#i_am')?.value || '—';
-            const communityName = $('#communityName')?.value || '—';
-            const desc = $('#communityDesc')?.value || '—';
-            const cat = $('#communityCat')?.value || '—';
-            const street = $('#communityStreet')?.value || '—';
-            const number = $('#communityNumber')?.value || '—';
-            const city = $('#communityCity')?.value || '—';
-            const postal = $('#communityPostalCode')?.value || '—';
-            const tax = $('#Tax_residence')?.value || '—';
-            const currency = $('#currencyCode')?.value || 'MAD';
-            const priceVal = $('#communityprice')?.value || '';
-            const isPrivate = $('#isPrivate')?.checked ? '<?php echo get_phrase("Private"); ?>' : '<?php echo get_phrase("Public"); ?>';
-
-            const vat = tax === 'MA' ? '20%' : tax === 'UAE' ? '5%' : '—';
-
-            const logoHtml = $('#logoPreview img') ? `<img src="${$('#logoPreview img').src}" style="max-width:80px; border-radius:10px;">` : '—';
-            const coverHtml = $('#coverPreview img') ? `<img src="${$('#coverPreview img').src}" style="max-width:120px; border-radius:10px;">` : '—';
-
-            const finalPrice = (i_am === 'Particulier') ? `0 ${currency}` : (priceVal ? `${priceVal} ${currency}` : '—');
-
-            summaryDiv.innerHTML = `
-                <h3><?php echo get_phrase("Profile"); ?></h3>
-                <p><?php echo get_phrase("Name"); ?>: ${profileName}<br>
-                   <?php echo get_phrase("Email"); ?>: ${profileEmail}<br>
-                   <?php echo get_phrase("Phone"); ?>: ${phone}<br>
-                   <?php echo get_phrase("Primary_language"); ?>: ${lang}</p>
-
-                <h3><?php echo get_phrase("Community"); ?></h3>
-                <p><?php echo get_phrase("I_am"); ?>: ${i_am}<br>
-                   <?php echo get_phrase("Community_name"); ?>: ${communityName}<br>
-                   <?php echo get_phrase("Description"); ?>: ${desc}<br>
-                   <?php echo get_phrase("Category"); ?>: ${cat}<br>
-                   <?php echo get_phrase("Address"); ?>: ${street}, ${number}, ${city}, ${postal}<br>
-                   <?php echo get_phrase("Country applicable for VAT"); ?>: ${tax}</p>
-
-                <h3><?php echo get_phrase("Media"); ?></h3>
-                <p><?php echo get_phrase("Logo"); ?>: ${logoHtml}<br>
-                   <?php echo get_phrase("Cover"); ?>: ${coverHtml}</p>
-
-                <h3><?php echo get_phrase("Price"); ?></h3>
-                <p><?php echo get_phrase("price"); ?>: ${finalPrice}<br>
-                   <?php echo get_phrase("VAT rate applied"); ?>: ${vat}</p>
-
-                <h3><?php echo get_phrase("Visibility"); ?></h3>
-                <p><?php echo get_phrase("Community"); ?>: ${isPrivate}</p>
-            `;
-        };
-
-        // Initialisation
-        goTo(0);
-
-    })(); // Fin correcte du IIFE
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const CONFIG = {
-            logo: {
-                maxMB: 1,
-                ratio: 1,
-                minWidth: 512,
-                tolerance: 0.03
-            },
-            cover: {
-                maxMB: 2,
-                ratio: 16 / 9,
-                minWidth: 1600,
-                tolerance: 0.03
-            }
-        };
-
+    if (window.toastr) {
         toastr.options = {
             closeButton: true,
             progressBar: true,
             positionClass: 'toast-top-right',
             timeOut: 5000
         };
+    }
 
-        const $ = s => document.querySelector(s);
-        const $$ = s => document.querySelectorAll(s);
+    const form            = $('#schoolform');
+    const panes           = $$('.step-pane');
+    const steps           = $$('.step-create-commaunaute');
+    const iAmSelect       = $('#i_am_id');
+    const taxResSelect    = $('#Tax_residence');
+    const priceWrapper    = $('#priceFieldWrapper');
+    const priceInput      = $('#communityprice');
+    const monetizationNotice = $('#particulierNotice_id');
+    const currencyHint    = $('#currencyHint');
+    const currencyCodeEl  = $('#currencyCode');
+    const logoInput       = $('#communityLogo');
+    const coverInput      = $('#communityCover');
+    const logoPreview     = $('#logoPreview');
+    const coverPreview    = $('#coverPreview');
+    const privateToggle   = $('#isPrivate_id');
+    const noticeMessages  = {
+        particulier: <?php echo json_encode(get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0")); ?>,
+        private: <?php echo json_encode(get_phrase("You_cannot_monetize_a_private_community")); ?>
+    };
 
-        function formatBytes(b) {
-            return b < 1024 * 1024 ? (b / 1024).toFixed(1) + ' Ko' : (b / (1024 * 1024)).toFixed(1) + ' Mo';
+    let currentStep = 0;
+    let lastEmail   = '';
+    let lastSchool  = '';
+
+    // ========================
+    // Config images
+    // ========================
+    const CONFIG = {
+        logo: {
+            maxMB: 1,
+            ratio: 1,
+            maxWidth: 512,
+            maxHeight: 512,
+            tolerance: 0.03
+        },
+        cover: {
+            maxMB: 2,
+            ratio: 16 / 9,
+            maxWidth: 1600,
+            maxHeight: 900,
+            tolerance: 0.12
         }
+    };
 
-        async function validateImage(file, type) {
-            const c = CONFIG[type];
-            if (!file) return {
+    async function validateImage(file, type) {
+        if (!file) return { valid: true };
+
+        const c = CONFIG[type];
+
+        if (file.size > c.maxMB * 1024 * 1024) {
+            return {
                 valid: false,
-                msg: '<?php echo get_phrase("No_file_selected"); ?>'
+                msg: type === 'logo'
+                    ? 'Logo trop lourd, max 1 Mo'
+                    : 'Cover trop lourde, max 2 Mo'
             };
-
-            if (file.size > c.maxMB * 1024 * 1024)
-                return {
-                    valid: false,
-                    msg: '<?php echo get_phrase("Too_heavy_Max"); ?> ' + c.maxMB + ' <?php echo get_phrase("MB"); ?> (' + formatBytes(file.size) + ')'
-                };
-
-            return new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => {
-                    const ratio = img.width / img.height;
-                    const diff = Math.abs(ratio - c.ratio) / c.ratio;
-                    if (diff > c.tolerance)
-                        return resolve({
-                            valid: false,
-                            msg: '<?php echo get_phrase("Required_format"); ?>: ' + (type === 'logo' ? '1:1' : '16:9') + '<br><?php echo get_phrase("Current"); ?>: ' + img.width + '×' + img.height
-                        });
-                    if (img.width < c.minWidth)
-                        return resolve({
-                            valid: false,
-                            msg: '<?php echo get_phrase("Min"); ?> ' + c.minWidth + 'px <?php echo get_phrase("width"); ?>'
-                        });
-                    resolve({
-                        valid: true
-                    });
-                };
-                img.onerror = () => resolve({
-                    valid: false,
-                    msg: '<?php echo get_phrase("Corrupted_image"); ?>'
-                });
-                img.src = URL.createObjectURL(file);
-            });
         }
 
-        function showImageError(previewId, msg) {
-            $(`#${previewId}`).innerHTML = `<div class="text-danger small p-3 text-center bg-light border rounded"> ${msg}</div>`;
-        }
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => {
+                const width  = img.width;
+                const height = img.height;
+                const ratio  = width / height;
 
-        let lastEmail = '',
-            lastSchool = '';
-
-        function checkDuplication(type, value, input) {
-            if (!value.trim() || (type === 'email' && value === lastEmail) || (type === 'school_name' && value === lastSchool)) return;
-
-            if (type === 'email') lastEmail = value;
-            if (type === 'school_name') lastSchool = value;
-
-            const formData = new FormData();
-            formData.append('type', type);
-            formData.append('value', value);
-            formData.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
-
-            fetch('<?= site_url('admission/check_duplication_ajax'); ?>', {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData
-                })
-                .then(r => r.json())
-                .then(data => {
-                    const errorEl = $(`.error[data-for="${input.id}"]`);
-                    if (!data.available) {
-                        errorEl.textContent = data.message;
-                        errorEl.style.display = 'block';
-                        input.classList.add('is-invalid');
-                        input.setAttribute('data-duplicate', 'true');
-                    } else {
-                        errorEl.style.display = 'none';
-                        input.classList.remove('is-invalid');
-                        input.removeAttribute('data-duplicate');
+                if (type === 'logo') {
+                    if (Math.abs(ratio - c.ratio) > c.tolerance) {
+                        return resolve({ valid: false, msg: 'Le logo doit être carré (1:1)' });
                     }
-                    updateContinueButton();
-                });
-        }
-
-        window.updateContinueButton = function() {
-            const pane = $('.step-pane.is-visible');
-            const nextBtn = pane?.querySelector('.next');
-            if (!nextBtn) return;
-
-            const hasDup = $$('[data-duplicate="true"]').length > 0;
-            const invalidInPane = pane.querySelectorAll('.is-invalid').length > 0;
-
-            let imagesOk = true;
-            if (pane.dataset.step === '2') {
-                const logoInput = $('#communityLogo');
-                const coverInput = $('#communityCover');
-
-                const logoFile = logoInput?.files[0];
-                const coverFile = coverInput?.files[0];
-
-                // Si fichier uploadé → doit être valide
-                if (logoFile && !logoInput.hasAttribute('data-valid')) imagesOk = false;
-                if (coverFile && !coverInput.hasAttribute('data-valid')) imagesOk = false;
-
-                // Si pas de fichier → OK (optionnel)
-            }
-
-            // 4. Prix (étape 3) - SEULEMENT si non-Particulier
-            let priceOk = true;
-            if (pane.dataset.step === '3') {
-                const iAm = $('#i_am')?.value;
-                const priceInput = $('#communityprice');
-                if (iAm !== 'Particulier' && priceInput && !priceInput.disabled) {
-                    const val = (priceInput.value || '').trim();
-                    priceOk = val !== '' && !isNaN(val) && Number(val) >= 0;
-                    priceInput.classList.toggle('is-invalid', !priceOk);
+                    if (width > c.maxWidth || height > c.maxHeight) {
+                        return resolve({ valid: false, msg: 'Le logo ne doit pas dépasser 512×512 px' });
+                    }
                 }
-            }
 
-            const disabled = hasDup || invalidInPane || !imagesOk || !priceOk;
-            nextBtn.disabled = disabled;
-            nextBtn.classList.toggle('opacity-50', disabled);
-        };
-
-        ['logo', 'cover'].forEach(type => {
-            const input = $(`#community${type.charAt(0).toUpperCase() + type.slice(1)}`);
-            const preview = $(`#${type}Preview`);
-            input?.addEventListener('change', async () => {
-                const file = input.files[0];
-                const result = file ? await validateImage(file, type) : {
-                    valid: false
-                };
-                input.setAttribute('data-valid', result.valid);
-                if (result.valid) {
-                    const reader = new FileReader();
-                    reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:8px; ${type === 'cover' ? 'height:80px; object-fit:cover;' : ''}">`;
-                    reader.readAsDataURL(file);
-                } else {
-                    showImageError(`${type}Preview`, result.msg);
-                    input.value = '';
+                if (type === 'cover') {
+                    if (width > c.maxWidth || height > c.maxHeight) {
+                        return resolve({ valid: false, msg: 'La cover ne doit pas dépasser 1600×900 px' });
+                    }
+                    if (Math.abs(ratio - c.ratio) > c.tolerance) {
+                        return resolve({ valid: false, msg: 'La cover doit être environ 16:9' });
+                    }
                 }
-                updateContinueButton();
-            });
+
+                resolve({ valid: true });
+            };
+            img.onerror = () => resolve({ valid: false, msg: 'Image corrompue' });
+            img.src = URL.createObjectURL(file);
         });
+    }
 
-        // --- Doublons ---
-        $('#profileEmail')?.addEventListener('blur', () => checkDuplication('email', $('#profileEmail').value, $('#profileEmail')));
-        $('#communityName')?.addEventListener('blur', () => checkDuplication('school_name', $('#communityName').value, $('#communityName')));
+    function showImageError(previewIdOrEl, msg) {
+        let el = previewIdOrEl;
+        if (typeof previewIdOrEl === 'string') {
+            el = document.getElementById(previewIdOrEl);
+        }
+        if (!el) return;
+        el.innerHTML = `<div class="text-danger small p-3 text-center bg-light border rounded">${msg}</div>`;
+    }
 
-        // --- Prix ---
-        $('#i_am')?.addEventListener('change', () => {
-            const isPart = $('#i_am').value === 'Particulier';
-            const priceWrapper = $('#priceFieldWrapper');
-            const priceInput = $('#communityprice');
-            const notice = $('#particulierNotice');
+    // ========================
+    // Duplication email / nom communauté
+    // ========================
+    function checkDuplication(type, value, input) {
+        if (!value.trim()) return;
+        if (type === 'email'       && value === lastEmail)  return;
+        if (type === 'school_name' && value === lastSchool) return;
 
-            if (isPart) {
-                priceWrapper.style.display = 'block';
-                priceInput.value = '0';
-                priceInput.disabled = true;
-                priceInput.classList.add('bg-light');
-                notice.style.display = 'block';
+        if (type === 'email')       lastEmail  = value;
+        if (type === 'school_name') lastSchool = value;
+
+        const formData = new FormData();
+        formData.append('type',  type);
+        formData.append('value', value);
+        formData.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
+
+        fetch('<?= site_url('admission/check_duplication_ajax'); ?>', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            const errorEl = $(`.error[data-for="${input.id}"]`);
+            if (!data.available) {
+                if (errorEl) {
+                    errorEl.textContent = data.message;
+                    errorEl.style.display = 'block';
+                }
+                input.classList.add('is-invalid');
+                input.setAttribute('data-duplicate', 'true');
             } else {
-                priceWrapper.style.display = 'block';
-                priceInput.disabled = false;
-                priceInput.classList.remove('bg-light');
-                notice.style.display = 'none';
-                if (priceInput.value === '0') priceInput.value = '';
+                if (errorEl) errorEl.style.display = 'none';
+                input.classList.remove('is-invalid');
+                input.removeAttribute('data-duplicate');
             }
             updateContinueButton();
         });
+    }
 
-        $('#communityprice')?.addEventListener('input', updateContinueButton);
+    $('#profileEmail')?.addEventListener('blur', () => {
+        checkDuplication('email', $('#profileEmail').value, $('#profileEmail'));
+    });
+    $('#communityName')?.addEventListener('blur', () => {
+        checkDuplication('school_name', $('#communityName').value, $('#communityName'));
+    });
 
-        // --- Tax residence → currency ---
-        $('#Tax_residence')?.addEventListener('change', () => {
-            const code = $('#Tax_residence').value === 'MA' ? 'MAD' : 'AED';
-            $('#currencyHint').textContent = code;
-            $('#currencyCode').value = code;
-            if ($('#communityprice') && !$('#communityprice').disabled) {
-                $('#communityprice').placeholder = `Prix (${code})`;
+    // ========================
+    // Prix / Particulier
+    // ========================
+    function applyPriceRules() {
+        if (!priceWrapper || !priceInput) return;
+        const isParticulier      = iAmSelect?.value === 'Particulier';
+        const isPrivateCommunity = privateToggle?.checked;
+        const shouldDisablePrice = isParticulier || isPrivateCommunity;
+        priceWrapper.style.display = 'block';
+
+        if (shouldDisablePrice) {
+            priceInput.value = '0';
+            priceInput.disabled = true;
+            priceInput.classList.add('bg-light');
+            clearInvalid(priceInput);
+            if (monetizationNotice) {
+                let text = '';
+                if (isParticulier) {
+                    text = noticeMessages.particulier;
+                } else if (isPrivateCommunity) {
+                    text = noticeMessages.private;
+                }
+                monetizationNotice.style.display = text ? 'block' : 'none';
+                monetizationNotice.textContent   = text;
             }
-        });
+        } else {
+            priceInput.disabled = false;
+            priceInput.classList.remove('bg-light');
+            if (monetizationNotice) {
+                monetizationNotice.style.display = 'none';
+                monetizationNotice.textContent = '';
+            }
+            if (priceInput.value === '0') priceInput.value = '';
+        }
+    }
 
-        // --- Validation manuelle des champs ---
-        $$('input[required], select[required], textarea[required]').forEach(el => {
-            el.addEventListener('blur', () => {
-                const isEmpty = !el.value.trim();
-                el.classList.toggle('is-invalid', isEmpty);
+    iAmSelect?.addEventListener('change', () => {
+        applyPriceRules();
+        updateContinueButton();
+    });
+
+    privateToggle?.addEventListener('change', () => {
+        applyPriceRules();
+        updateContinueButton();
+        updateSummary();
+    });
+
+    // ========================
+    // Currency (Tax residence)
+    // ========================
+    function updateCurrencyUI() {
+        if (!taxResSelect) return;
+        const sel  = taxResSelect.value || '';
+        const code = sel === 'MA' ? 'MAD' : sel === 'UAE' ? 'AED' : 'EUR';
+
+        if (currencyHint)   currencyHint.textContent = code;
+        if (currencyCodeEl) currencyCodeEl.value     = code;
+
+        if (priceInput && !priceInput.disabled) {
+            priceInput.placeholder = `<?php echo get_phrase("price"); ?> (${code})`;
+        }
+    }
+
+    taxResSelect?.addEventListener('change', () => {
+        updateCurrencyUI();
+        updateContinueButton();
+    });
+
+    priceInput?.addEventListener('input', updateContinueButton);
+
+    // ========================
+    // Validation de base des champs required
+    // ========================
+    function setInvalid(el, msg) {
+        if (!el) return;
+        el.classList.add('is-invalid');
+        const err = $(`.error[data-for="${el.id}"]`);
+        if (err) {
+            err.textContent = msg || el.dataset.msg || '';
+            err.style.display = 'block';
+        }
+    }
+
+    function clearInvalid(el) {
+        if (!el) return;
+        el.classList.remove('is-invalid');
+        const err = $(`.error[data-for="${el.id}"]`);
+        if (err) {
+            err.textContent = '';
+            err.style.display = 'none';
+        }
+    }
+
+    $$('input[required], select[required], textarea[required]').forEach(el => {
+        el.addEventListener('blur', () => {
+            const isEmpty = !el.value.trim();
+            if (isEmpty) {
+                setInvalid(el);
+            } else {
+                clearInvalid(el);
+            }
+            updateContinueButton();
+        });
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.addEventListener('input', () => {
+                if (el.classList.contains('is-invalid') && el.value.trim()) {
+                    clearInvalid(el);
+                }
                 updateContinueButton();
             });
-        });
-
-        // --- Stepper ---
-        let current = 0;
-        const panes = $$('.step-pane');
-        const steps = $$('.step-create-commaunaute');
-
-        function goTo(i) {
-            if (i < 0 || i >= panes.length) return;
-            if (i > current && !validateCurrentStep()) return;
-
-            panes.forEach(p => p.classList.remove('is-visible'));
-            steps.forEach((s, idx) => {
-                s.classList.toggle('is-active', idx === i);
-                s.classList.toggle('is-complete', idx < i);
-            });
-            panes[i].classList.add('is-visible');
-            current = i;
-            updateContinueButton();
         }
-
-        function validateCurrentStep() {
-            const pane = panes[current];
-            let valid = true;
-
-            // Champs requis
-            pane.querySelectorAll('[required]').forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    valid = false;
-                }
-            });
-
-            // Étape 1 : mot de passe
-            if (pane.dataset.step === '1') {
-                const p1 = $('#profilePass'),
-                    p2 = $('#profilePass2');
-                if (p1.value !== p2.value || p1.value.length < 8) {
-                    p2.classList.add('is-invalid');
-                    valid = false;
-                }
-            }
-
-            // Étape 2 : description min 40
-            if (pane.dataset.step === '2') {
-                const desc = $('#communityDesc');
-                if (desc.value.trim().length < 40) {
-                    desc.classList.add('is-invalid');
-                    valid = false;
-                }
-            }
-
-            if (!valid) toastr.warning('Veuillez corriger les erreurs');
-            return valid;
-        }
-
-        $$('.next').forEach(btn => btn.addEventListener('click', () => goTo(current + 1)));
-        $$('.prev').forEach(btn => btn.addEventListener('click', () => goTo(current - 1)));
-        steps.forEach((s, i) => s.addEventListener('click', () => i <= current && goTo(i)));
-
-        // --- Submit ---
-        $('#schoolform').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!validateCurrentStep()) return;
-
-            const formData = new FormData(this);
-            fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.csrf) $(`input[name="${data.csrf.csrfName}"]`).value = data.csrf.csrfHash;
-                    data.status ? (
-                        toastr.success(data.message),
-                        $('#resetBtn').click(),
-                        setTimeout(() => location.href = '<?= site_url('/home/communities'); ?>', 2000)
-                    ) : toastr.error(data.message);
-                });
-        });
-
-        // Init
-        goTo(0);
     });
+
+    // ========================
+    // Validation step par step
+    // ========================
+    function validateStep(index) {
+        const pane = panes[index];
+        if (!pane) return true;
+
+        let ok = true;
+
+        // Blocage si doublons
+        if ($$('[data-duplicate="true"]').length > 0) {
+            toastr?.warning('<?= get_phrase("please_correct_duplicate_fields"); ?>');
+            return false;
+        }
+
+        // Required
+        pane.querySelectorAll('[required]').forEach(field => {
+            if (!field.value.trim()) {
+                setInvalid(field);
+                ok = false;
+            }
+        });
+
+        const stepId = pane.dataset.step;
+
+        // Step 1
+        if (stepId === '1') {
+            const name  = $('#profileName');
+            const email = $('#profileEmail');
+            const phone = $('#profilePhone');
+            const pass  = $('#profilePass');
+            const pass2 = $('#profilePass2');
+
+            if (!name.value.trim() || name.value.trim().length < 2) {
+                setInvalid(name); ok = false;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                setInvalid(email); ok = false;
+            }
+
+            if ((phone.value || '').replace(/\D/g, '').length < 8) {
+                setInvalid(phone); ok = false;
+            }
+
+            if ((pass.value || '').length < 8) {
+                setInvalid(pass); ok = false;
+            }
+
+            if (pass.value !== pass2.value) {
+                setInvalid(pass2); ok = false;
+            }
+        }
+
+        // Step 2
+        if (stepId === '2') {
+            const desc   = $('#communityDesc');
+            const number = $('#communityNumber');
+            const postal = $('#communityPostalCode');
+
+            if (desc.value.trim().length < 40) {
+                setInvalid(desc); ok = false;
+            }
+
+            if (!/^\d+$/.test(number.value.trim())) {
+                setInvalid(number); ok = false;
+            }
+
+            if (!/^\d{4,5}$/.test(postal.value.trim())) {
+                setInvalid(postal); ok = false;
+            }
+
+            // Images
+            const logoFile  = logoInput?.files[0];
+            const coverFile = coverInput?.files[0];
+
+            if (logoFile && logoInput.dataset.valid !== 'true') {
+                ok = false;
+                showImageError(logoPreview, '<?php echo get_phrase("Invalid_logo_size_or_ratio"); ?>');
+                toastr?.error('<?php echo get_phrase("Please_upload_a_valid_logo_before_continuing"); ?>');
+            }
+
+            if (coverFile && coverInput.dataset.valid !== 'true') {
+                ok = false;
+                showImageError(coverPreview, '<?php echo get_phrase("Invalid_cover_size_or_ratio"); ?>');
+                toastr?.error('<?php echo get_phrase("Please_upload_a_valid_cover_before_continuing"); ?>');
+            }
+        }
+
+        // Step 3 : prix
+        if (stepId === '3') {
+            console.log(iAmSelect.value);
+            const iAm = iAmSelect?.value || '';
+            if (iAm !== 'Particulier' && priceInput && !priceInput.disabled) {
+                const val = (priceInput.value || '').trim();
+                if (val === '' || isNaN(val) || Number(val) < 0) {
+                    setInvalid(priceInput, '<?= get_phrase("Please enter a valid price"); ?>');
+                    ok = false;
+                } else {
+                    clearInvalid(priceInput);
+                }
+            }
+        }
+
+        if (!ok) {
+            toastr?.warning('<?= get_phrase("Please_correct_the_errors"); ?>');
+        }
+
+        return ok;
+    }
+
+    // ========================
+    // Continue button
+    // ========================
+    function updateContinueButton() {
+        const pane   = $('.step-pane.is-visible');
+        if (!pane) return;
+        const nextBtn = pane.querySelector('.next');
+        if (!nextBtn) return;
+
+        const hasDup        = $$('[data-duplicate="true"]').length > 0;
+        const invalidInPane = pane.querySelectorAll('.is-invalid').length > 0;
+
+        let imagesOk = true;
+        if (pane.dataset.step === '2') {
+            const logoFile  = logoInput?.files[0];
+            const coverFile = coverInput?.files[0];
+
+            if (logoFile  && logoInput.dataset.valid  !== 'true') imagesOk = false;
+            if (coverFile && coverInput.dataset.valid !== 'true') imagesOk = false;
+        }
+
+        let priceOk = true;
+        if (pane.dataset.step === '3') {
+            const iAm = iAmSelect?.value || '';
+            if (iAm !== 'Particulier' && priceInput && !priceInput.disabled) {
+                const val = (priceInput.value || '').trim();
+                priceOk = val !== '' && !isNaN(val) && Number(val) >= 0;
+                priceInput.classList.toggle('is-invalid', !priceOk);
+            }
+        }
+
+        const disabled = hasDup || invalidInPane || !imagesOk || !priceOk;
+        nextBtn.disabled = disabled;
+        nextBtn.classList.toggle('opacity-50', disabled);
+    }
+
+    window.updateContinueButton = updateContinueButton;
+
+    // ========================
+    // Gestion upload images avec validation
+    // ========================
+    ['logo', 'cover'].forEach(type => {
+        const input   = type === 'logo' ? logoInput : coverInput;
+        const preview = type === 'logo' ? logoPreview : coverPreview;
+        if (!input || !preview) return;
+
+        input.addEventListener('change', async () => {
+            const file   = input.files[0];
+            const result = file ? await validateImage(file, type) : { valid: true };
+
+            if (result.valid) {
+                input.dataset.valid = 'true';
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}"
+                             style="max-width:100%; border-radius:8px; ${type === 'cover' ? 'height:80px; object-fit:cover;' : ''}">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                input.removeAttribute('data-valid');
+                input.value = '';
+                showImageError(preview, result.msg);
+            }
+            updateContinueButton();
+        });
+    });
+
+    // ========================
+    // Stepper
+    // ========================
+    function goTo(index) {
+        if (index < 0 || index >= panes.length) return;
+
+        if (index > currentStep && !validateStep(currentStep)) return;
+
+        panes.forEach(p => p.classList.remove('is-visible'));
+        steps.forEach((s, idx) => {
+            s.classList.toggle('is-active',   idx === index);
+            s.classList.toggle('is-complete', idx < index);
+        });
+
+        panes[index].classList.add('is-visible');
+        currentStep = index;
+
+        updateContinueButton();
+        updateSummary();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    $$('.next').forEach(btn => btn.addEventListener('click', () => {
+        if (validateStep(currentStep)) goTo(currentStep + 1);
+    }));
+
+    $$('.prev').forEach(btn => btn.addEventListener('click', () => {
+        if (currentStep > 0) goTo(currentStep - 1);
+    }));
+
+    steps.forEach((s, idx) => {
+        s.style.cursor = 'pointer';
+        s.addEventListener('click', () => {
+            if (idx <= currentStep) goTo(idx);
+        });
+    });
+
+    // ========================
+    // Résumé
+    // ========================
+    function updateSummary() {
+        const summaryDiv = $('.summary');
+        if (!summaryDiv) return;
+
+        const profileName   = $('#profileName')?.value || '—';
+        const profileEmail  = $('#profileEmail')?.value || '—';
+        const phone         = $('#profilePhone')?.value || '—';
+        const lang          = $('#communityLang')?.value || '—';
+        const i_am          = $('#i_am_id')?.value || '—';
+        const communityName = $('#communityName')?.value || '—';
+        const desc          = $('#communityDesc')?.value || '—';
+        const cat           = $('#communityCat')?.value || '—';
+        const street        = $('#communityStreet')?.value || '—';
+        const number        = $('#communityNumber')?.value || '—';
+        const city          = $('#communityCity')?.value || '—';
+        const postal        = $('#communityPostalCode')?.value || '—';
+        const tax           = $('#Tax_residence')?.value || '—';
+        const currency      = $('#currencyCode')?.value || 'MAD';
+        const priceVal      = $('#communityprice')?.value || '';
+        const isPrivate     = privateToggle?.checked
+            ? '<?php echo get_phrase("Private"); ?>'
+            : '<?php echo get_phrase("Public"); ?>';
+
+        const vat = tax === 'MA' ? '20%' : tax === 'UAE' ? '5%' : '—';
+
+        const logoImg  = $('#logoPreview img');
+        const coverImg = $('#coverPreview img');
+        const logoHtml  = logoImg  ? `<img src="${logoImg.src}"  style="max-width:80px; border-radius:10px;">` : '—';
+        const coverHtml = coverImg ? `<img src="${coverImg.src}" style="max-width:120px; border-radius:10px;">` : '—';
+
+        const finalPrice = (i_am === 'Particulier' || privateToggle?.checked)
+            ? `0 ${currency}`
+            : (priceVal ? `${priceVal} ${currency}` : '—');
+
+        summaryDiv.innerHTML = `
+            <h3><?php echo get_phrase("Profile"); ?></h3>
+            <p><?php echo get_phrase("Name"); ?>: ${profileName}<br>
+               <?php echo get_phrase("Email"); ?>: ${profileEmail}<br>
+               <?php echo get_phrase("Phone"); ?>: ${phone}<br>
+               <?php echo get_phrase("Primary_language"); ?>: ${lang}</p>
+
+            <h3><?php echo get_phrase("Community"); ?></h3>
+            <p><?php echo get_phrase("I_am"); ?>: ${i_am}<br>
+               <?php echo get_phrase("Community_name"); ?>: ${communityName}<br>
+               <?php echo get_phrase("Description"); ?>: ${desc}<br>
+               <?php echo get_phrase("Category"); ?>: ${cat}<br>
+               <?php echo get_phrase("Address"); ?>: ${street}, ${number}, ${city}, ${postal}<br>
+               <?php echo get_phrase("Country applicable for VAT"); ?>: ${tax}</p>
+
+            <h3><?php echo get_phrase("Media"); ?></h3>
+            <p><?php echo get_phrase("Logo"); ?>: ${logoHtml}<br>
+               <?php echo get_phrase("Cover"); ?>: ${coverHtml}</p>
+
+            <h3><?php echo get_phrase("Price"); ?></h3>
+            <p><?php echo get_phrase("price"); ?>: ${finalPrice}<br>
+               <?php echo get_phrase("VAT rate applied"); ?>: ${vat}</p>
+
+            <h3><?php echo get_phrase("Visibility"); ?></h3>
+            <p><?php echo get_phrase("Community"); ?>: ${isPrivate}</p>
+        `;
+    }
+
+    window.updateSummary = updateSummary;
+
+    // ========================
+    // Submit AJAX
+    // ========================
+    form?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!validateStep(currentStep)) return;
+
+        const formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.csrf) {
+                const csrfInput = document.querySelector(`input[name="${data.csrf.csrfName}"]`);
+                if (csrfInput) csrfInput.value = data.csrf.csrfHash;
+            }
+
+            if (data.status) {
+                toastr?.success(data.message);
+                $('#resetBtn')?.click();
+                setTimeout(() => {
+                    location.href = '<?= site_url('/home/communities'); ?>';
+                }, 2000);
+            } else {
+                toastr?.error(data.message || 'Error');
+            }
+        })
+        .catch(() => {
+            toastr?.error('An error occurred.');
+        });
+    });
+
+    // ========================
+    // Init
+    // ========================
+    applyPriceRules();
+    updateCurrencyUI();
+    goTo(0);
+});
 </script>

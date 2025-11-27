@@ -121,7 +121,7 @@ img{max-width:100%;}
 .obi-modal__close{position:absolute;top:8px;right:10px;width:36px;height:36px;border-radius:10px;border:none;background:#fff;color:#111;font-size:24px;line-height:1;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.2)}
 
 /* ========== Footer (existant) ========== */
-.site-footer{background:var(--g-dark);color:#fff;padding:1.5rem 0;font-size:.9rem}
+.site-footer{color:#fff;padding:1.5rem 0;font-size:.9rem}
 .footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:1.3rem;margin-bottom:1.2rem}
 .footer-logo img{max-width:130px}
 .footer-nav ul{display:flex;gap:1.4rem}
@@ -133,6 +133,7 @@ img{max-width:100%;}
 .footer-links h4{color:var(--orange);margin:.3rem 0}
 .footer-links a:hover{color:var(--orange)}
 .footer-credits{text-align:center;font-size:.78rem;color:rgba(255,255,255,.7)}
+.btn.accent{background: var(--linear-gradient-style-Wayo); color:#fff; box-shadow:0 14px 28px rgba(244,122,31,.22)}
 
 .tutorial-body{
   background-color: #f6f7fb !important;

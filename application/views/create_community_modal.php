@@ -97,21 +97,7 @@
                 <div class="form-group-community">
                     <label for="code_postal"><?php echo get_phrase("code_postal") ?> <span class="required-star">*</span></label>
                     <input type="text" id="code_postal" name="postal_code" class="form-input-community" placeholder="<?php echo get_phrase("code_postal") ?>" required>
-                </div>
-
-                <div class="form-group-community" id="priceFieldWrapper">
-                    <label for="community-price"><?php echo get_phrase("community_price") ?></label>
-                    <div class="input-with-prefix-saas">
-                        <span id="currencySymbol" style="color: #9CA3AF;">—</span>
-                        <input type="text" id="community-price" name="price" class="form-input-community" placeholder="299.00" inputmode="decimal">
-                    </div>
-                    <small class="form-text"><?php echo get_phrase("leave_blank_for_a_free community.") ?></small>
-                </div>
-
-                <div id="particulierNotice" class="alert alert-warning" style="display:none; margin-top:10px; padding:10px; font-size:0.85rem; border-radius:6px;">
-                    <?php echo get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0"); ?>
-                </div>
-
+                </div>             
                 <label class="switch emph">
                     <input type="hidden" name="visibility" value="0">
                     <input id="isPrivate" name="visibility" type="checkbox" value="1" />
@@ -124,6 +110,24 @@
                         </span>
                     </span>
                 </label>
+
+                <div class="form-group-community" id="priceFieldWrapper">
+                    <label for="community-price"><?php echo get_phrase("community_price") ?></label>
+                    <div class="input-with-prefix-saas">
+                        <span id="currencySymbol" style="color: #9CA3AF;">—</span>
+                        <input type="text" id="community-price" name="price" class="form-input-community" placeholder="299.00" inputmode="decimal">
+                    </div>
+                    <small class="form-text"><?php echo get_phrase("leave_blank_for_a_free community.") ?></small>
+                </div>
+
+                <div id="monetizationNotice"
+                     class="alert alert-warning"
+                     data-particulier-message="<?php echo get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0"); ?>"
+                     data-private-message="<?php echo get_phrase("You_cannot_monetize_a_private_community"); ?>"
+                     style="display:none; margin-top:10px; padding:10px; font-size:0.85rem; border-radius:6px;">
+                </div>
+
+
 
                 <label><?php echo get_phrase("media") ?></label>
                 <div class="media-upload-grid">

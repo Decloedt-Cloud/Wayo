@@ -2447,6 +2447,36 @@ class Admin extends CI_Controller
     }
   }
 
+    /**
+     * Download a single invoice as PDF
+     */
+    public function invoice_pdf($invoice_id = "")
+    {
+      if ($this->session->userdata('admin_login') != 1) {
+        redirect(site_url('login'), 'refresh');
+      }
+
+      if (empty($invoice_id)) {
+        show_error('Invalid invoice id');
+      }
+
+      $page_data['invoice_id'] = $invoice_id;
+
+      // Rendre la facture en HTML
+      ob_start();
+      $this->load->view('backend/admin/invoice/invoice_pdf', $page_data);
+      $html = ob_get_clean();
+
+      try {
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $mpdf->WriteHTML($html);
+        $fileName = 'Invoice-' . sprintf('%08d', $invoice_id) . '.pdf';
+        $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+      } catch (\Mpdf\MpdfException $e) {
+        echo $e->getMessage();
+      }
+    }
+
 	/*FUNCTION FOR DOWNLOADING A FILE*/
 	function download_file($path, $name)
 	{

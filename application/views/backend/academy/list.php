@@ -1,5 +1,6 @@
 <?php $check_data = $this->db->get('sessions');
 // if($check_data->num_rows() > 0): 
+
 ?>
 
 <div class="col-sm-12 col-md-6 text-center">
@@ -39,10 +40,45 @@
                                 <label for="class_id"><?php echo get_phrase('classes'); ?></label>
                                 <select class="form-control" name="class_id" id="class_id_course">
                                     <option value="<?php echo 'all'; ?>" <?php if ($selected_class_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
-                                    <?php foreach ($classes->result_array() as $class): ?>
-                                        <option value="<?php echo $class['id']; ?>" <?php if ($selected_class_id == $class['id']) echo 'selected'; ?>><?php echo $class['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                    <?php
+                                        // If current user is a TEACHER/MENTOR → show only HIS classes
+                                        if ($this->session->userdata('teacher_login') == 1) { 
+
+                                            $teacher_id = $this->session->userdata('user_id');
+
+                                            $this->db->distinct();
+                                            $this->db->select('classes.id, classes.name');
+                                            $this->db->from('classes');
+                                            $this->db->join('course_classes', 'course_classes.class_id = classes.id', 'inner');
+                                            $this->db->join('course_teachers', 'course_teachers.course_id = course_classes.course_id', 'inner');
+                                            $this->db->where('course_teachers.user_id', $teacher_id);
+                                            $this->db->where('classes.school_id', school_id());
+                                            $this->db->order_by('classes.name', 'ASC');
+
+                                            $teacher_classes = $this->db->get()->result_array();
+
+                                            // If no classes found → show a friendly message (prevents empty loop)
+                                            if (empty($teacher_classes)): ?>
+                                                <option value="" disabled><?= get_phrase('no_classes_assigned_yet'); ?></option>
+                                            <?php else: ?>
+                                                <?php foreach ($teacher_classes as $class): ?>
+                                                    <option value="<?= $class['id']; ?>" 
+                                                        <?= ($selected_class_id == $class['id']) ? 'selected' : ''; ?>>
+                                                        <?= htmlspecialchars($class['name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+
+                                        <?php } else {
+                                            // Admin or Superadmin → show ALL classes (your original code)
+                                            foreach ($classes->result_array() as $class): ?>
+                                                <option value="<?php echo $class['id']; ?>" <?php if ($selected_class_id == $class['id']) echo 'selected'; ?>><?php echo $class['name']; ?></option>
+                                            <?php endforeach; ?>
+                                        <?php } ?>
+
+                                    
+                                </select> 
+                                    
                             </div>
                         </div>
 

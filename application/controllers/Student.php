@@ -1257,6 +1257,36 @@ class Student extends CI_Controller {
 		}
 	}
 
+	/**
+	 * Download a single invoice as PDF (Student)
+	 */
+	public function invoice_pdf($invoice_id = "")
+	{
+		if ($this->session->userdata('student_login') != 1) {
+			redirect(site_url('login'), 'refresh');
+		}
+
+		if (empty($invoice_id)) {
+			show_error('Invalid invoice id');
+		}
+
+		$page_data['invoice_id'] = $invoice_id;
+
+		// Render HTML of the student invoice for PDF
+		ob_start();
+		$this->load->view('backend/student/invoice/invoice_pdf', $page_data);
+		$html = ob_get_clean();
+
+		try {
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+			$mpdf->WriteHTML($html);
+			$fileName = 'Invoice-' . sprintf('%08d', $invoice_id) . '.pdf';
+			$mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+		} catch (\Mpdf\MpdfException $e) {
+			echo $e->getMessage();
+		}
+	}
+
 	// PAYPAL CHECKOUT
 	public function paypal_checkout() {
 		$invoice_id = htmlspecialchars($this->input->post('invoice_id'));

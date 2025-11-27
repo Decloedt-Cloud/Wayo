@@ -131,7 +131,10 @@ class Settings_model extends CI_Model
   {
     return $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
   }
-
+  public function get_settings_school_data($school_id)
+  {
+    return $this->db->get_where('settings_school', array('school_id' => $school_id))->row_array();
+  }
   public function update_current_school_settings()
   {
     $schoolId = school_id();
@@ -250,16 +253,56 @@ class Settings_model extends CI_Model
     // Synchronisation avec HumHub
     if (!empty($school->humhub_space_id)) {
         $existing = $this->humhub_sso->getSpace($school->humhub_space_id);
-
-        if ($existing) {
+        if ($existing && isset($existing['guid'])) {
+            $guid = $existing['guid'];
+            $humhubUploadsPath = config_item('humhub_image'); // ex : /uploads/profile_image/
+    
+            // ✅ 1. Mise à jour du Space (nom, description)
             $spaceUpdate = [
-                'name'             => $data['name'],
-                'description'      => $data['description'],
-                'defaultStreamSort'=> $existing['defaultStreamSort'], 
+                'name' => $data['name'],
+                'description' => '',
+                'defaultStreamSort' => $existing['defaultStreamSort'],
             ];
-
-            log_message('debug', 'Données envoyées à HumHub updateSpace: ' . json_encode($spaceUpdate));
             $this->humhub_sso->updateSpace($school->humhub_space_id, $spaceUpdate);
+    
+            // ✅ 2. Copie du logo (photo principale)
+            $sourceLogo = FCPATH . 'uploads/schools/' . $schoolId . '.jpg';
+            if (file_exists($sourceLogo)) {
+                $destLogoOrg = $humhubUploadsPath . $guid . '_org.jpg';
+                $destLogo = $humhubUploadsPath . $guid . '.jpg';
+    
+                if (copy($sourceLogo, $destLogoOrg) && copy($sourceLogo, $destLogo)) {
+                    log_message('debug', "✅ Logo copié vers HumHub (GUID: {$guid})");
+                } else {
+                    log_message('error', "❌ Erreur lors de la copie du logo vers HumHub (GUID: {$guid})");
+                }
+            } else {
+                log_message('debug', "⚠️ Aucun logo trouvé pour l’école {$schoolId}");
+            }
+    
+            // ✅ 3. Copie de la couverture (bannière)
+            $sourceCover = FCPATH . 'uploads/communityCover/' . $schoolId . '.jpg';
+            $humhubBannerPath = $humhubUploadsPath . 'banner/';// ex : /uploads/profile_image/banner/
+            if (file_exists($sourceCover)) {
+                $destCoverOrg = $humhubBannerPath . $guid . '_org.jpg';
+                $destCover = $humhubBannerPath . $guid . '.jpg';
+    
+                if (copy($sourceCover, $destCoverOrg) && copy($sourceCover, $destCover)) {
+                    log_message('debug', "✅ Bannière copiée vers HumHub (GUID: {$guid})");
+                } else {
+                    log_message('error', "❌ Erreur lors de la copie de la bannière vers HumHub (GUID: {$guid})");
+                }
+            } else {
+                log_message('debug', "⚠️ Aucune bannière trouvée pour l’école {$schoolId}");
+            }
+    
+            // ✅ 4. Mise à jour des colonnes personnalisées dans table space
+            $dbHumhub = $this->load->database('humhub', TRUE);
+            $dbHumhub->where('id', $school->humhub_space_id);
+            $dbHumhub->update('space', [
+                'community_name' => $data['name'],
+                'community_id' => $schoolId
+            ]);
         } else {
             log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$school->humhub_space_id}");
         }
@@ -722,6 +765,16 @@ class Settings_model extends CI_Model
       return base_url('uploads/system/logo/favicon.png');
     } else {
       return base_url('uploads/system/logo/favicon.svg');
+    }
+  }
+
+  public function get_logo_school($school_id)
+  {
+    if (file_exists('uploads/schools/' . $school_id . '.jpg')) {
+      // die('uploads/schools/' . $school_id . '.jpg');
+      return base_url('uploads/schools/' . $school_id . '.jpg');
+    } else {
+      return base_url('uploads/schools/placeholder.jpg');
     }
   }
 }

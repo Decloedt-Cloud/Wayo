@@ -36,9 +36,8 @@
                   </button>
                 </div>
               </div>
-      </div>
-      </form>
-
+          </div>
+        </form>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div>
@@ -88,8 +87,8 @@
                   </button>
                 </div>
               </div>
-      </div>
-      </form>
+            </div>
+        </form>
 
       </div> <!-- end card body-->
     </div> <!-- end card -->
@@ -138,8 +137,8 @@
                 <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateSystemCurrencyInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_system_currency'); ?></button>
               </div>
             </div>
-      </div>
-      </form>
+            </div>
+        </form>
 
       </div> <!-- end card body-->
     </div> <!-- end card -->
