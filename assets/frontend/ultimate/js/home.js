@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
         // Charger les données des devises depuis le fichier JSON
-        async function loadCurrencyData() {
+        /* async function loadCurrencyData() {
             try {
                 const response = await fetch('assets/frontend/ultimate/js/currencies.json');
                 const data = await response.json();
@@ -440,9 +440,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 'EUR'; // Devise par défaut en cas d'erreur
             }
         }
-
+ */
         // Récupérer les taux de change avec Currency-API
-        async function getExchangeRates() {
+        /* async function getExchangeRates() {
             try {
                 const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.min.json');
                 const data = await response.json();
@@ -459,24 +459,82 @@ document.addEventListener("DOMContentLoaded", function () {
                     bdt: 120, hkd: 8.5, twd: 33 
                 }; // Taux de secours
             }
-        }
+        } */
 
         // Mettre à jour les prix affichés
-        async function updatePrices() {
-            const currencyData = await loadCurrencyData();
-            const selectedCurrency = await getCurrencyFromIP(currencyData);
-            const rates = await getExchangeRates();
-            const priceCells = document.querySelectorAll('.price-row td[data-price]');
+            /* async function updatePrices() {
+                const currencyData = await loadCurrencyData();
+                const selectedCurrency = await getCurrencyFromIP(currencyData);
+                const rates = await getExchangeRates();
+                const priceCells = document.querySelectorAll('.price-row td[data-price]');
 
-            priceCells.forEach(cell => {
-                const basePrice = parseFloat(cell.getAttribute('data-price'));
-                const convertedPrice = (basePrice * rates[selectedCurrency.toLowerCase()]).toFixed(2);
-                cell.textContent = `${currencyData.currencySymbols[selectedCurrency]} ${convertedPrice}/${window.translations.month}`;
-                if (basePrice === 0) {
-                    cell.textContent = `${currencyData.currencySymbols[selectedCurrency]}0`;
-                }
-            });
-        }
+                priceCells.forEach(cell => {
+                    const basePrice = parseFloat(cell.getAttribute('data-price'));
+                    const convertedPrice = (basePrice * rates[selectedCurrency.toLowerCase()]).toFixed(2);
+                    cell.textContent = `${currencyData.currencySymbols[selectedCurrency]} ${convertedPrice}/${window.translations.month}`;
+                    if (basePrice === 0) {
+                        cell.textContent = `${currencyData.currencySymbols[selectedCurrency]}0`;
+                    }
+                });
+            } */
 
+           // Mettre à jour les prix affichés
+
+           async function updatePrices() {
+              try {
+                  // Get user's country
+                  
+                  const response = await fetch('https://api.country.is/');
+                  const data = await response.json();
+                  const country = data.country;   
+                  
+                  // Base price in MAD (Moroccan Dirham)
+                  const basePriceMAD = 804.48;
+                  
+                  // Get live exchange rate MAD to AED
+                  const exchangeRate = await getExchangeRate('MAD', 'AED');
+                  
+                  // Calculate prices
+                  const prices = {
+                      'MA': { 
+                          value: basePriceMAD.toFixed(2).replace('.', ','), 
+                          currency: 'DH' 
+                      },
+                      'AE': { 
+                          value: (basePriceMAD * exchangeRate).toFixed(2), 
+                          currency: 'AED' 
+                      }
+                  };
+                  
+                  // Get the price based on country
+                  const priceData = prices[country] || prices['MA'];
+                  
+                  // Update all price elements
+                  const priceElements = document.querySelectorAll('.plan-price-split');
+                  
+                  priceElements.forEach(element => {
+                      const priceValue = element.querySelector('.price-value');
+                      const priceCurrency = element.querySelector('.price-currency');
+                      
+                      if (priceValue) priceValue.textContent = parseInt(priceData.value);
+                      if (priceCurrency) priceCurrency.textContent = priceData.currency;
+                  });
+                  
+              } catch (error) {
+                  console.error('Error updating prices:', error);
+              }
+          }
+          // Récupérer les taux de change avec Currency-API
+          async function getExchangeRate(from, to) {
+              try {
+                  // Using free exchangerate-api.com
+                  const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
+                  const data = await response.json();
+                  return data.rates[to] || 0.4; // Fallback rate if API fails
+              } catch (error) {
+                  console.error('Error fetching exchange rate:', error);
+                  return 0.4; // Fallback: 1 MAD ≈ 0.4 AED
+              }
+          }
         // Initialiser les prix au chargement de la page
         document.addEventListener('DOMContentLoaded', updatePrices);

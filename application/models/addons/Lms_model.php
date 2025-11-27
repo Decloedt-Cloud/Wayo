@@ -18,7 +18,8 @@ class Lms_model extends CI_Model
         return $this->db->get_where('course', array('id' => $course_id))->row_array();
     }
 
-    public function filter_course_for_backend($class_id = "", $user_id = "", $status = "", $school_id = "")
+    
+   public function filter_course_for_backend($class_id = "", $user_id = "", $status = "", $school_id = "")
     {
         $superadmin_login = $this->session->userdata('superadmin_login');
         $admin_login = $this->session->userdata('admin_login');
@@ -26,18 +27,56 @@ class Lms_model extends CI_Model
         $student_login = $this->session->userdata('student_login');
 
         if ($superadmin_login == 1 || $admin_login == 1):
-            return $this->filter_course_for_admin($class_id, $user_id, $status);
+            return $this->filter_course_for_admin($class_id, $user_id, $status, $school_id);
         endif;
 
         if ($teacher_login == 1):
-            return $this->filter_course_for_teacher($class_id, $user_id, $status);
+            return $this->filter_course_for_teacher($class_id, $user_id, $status, $school_id);
         endif;
 
         if ($student_login == 1):
             return $this->filter_course_for_student($class_id, $user_id, $status, $school_id);
         endif;
     }
-    public function filter_course_for_admin($class_id, $user_id, $status)
+    
+    public function filter_course_for_admin($class_id = "all", $user_id = "all", $status = "all", $school_id = "all")
+    {
+        $this->db->select('
+            course.*,
+            GROUP_CONCAT(DISTINCT t.name SEPARATOR ", ") AS teacher_names
+        ');
+        $this->db->from('course');
+        $this->db->where('course.school_id', school_id());
+
+        // Join with course_classes to filter by class
+        if ($class_id != "all" && !empty($class_id)) {
+            $this->db->join('course_classes', 'course_classes.course_id = course.id', 'inner');
+            $this->db->where('course_classes.class_id', $class_id);
+        }
+
+        // Join with course_teachers + users to get teacher names
+        $this->db->join('course_teachers', 'course_teachers.course_id = course.id', 'left');
+        $this->db->join('users t', 't.id = course_teachers.user_id', 'left');
+
+        // Filter by teacher (if selected)
+        if ($user_id != "all" && !empty($user_id)) {
+            $this->db->where('course_teachers.user_id', $user_id);
+        }
+
+        // Filter by status
+        if ($status != "all" && !empty($status)) {
+            $this->db->where('course.status', $status);
+        }
+
+        // Avoid duplicate courses + group teacher names
+        $this->db->group_by('course.id');
+        $this->db->order_by('course.id', 'DESC');
+
+        return $this->db->get()->result_array();
+    }
+
+    
+    /* public function filter_course_for_admin($class_id, $user_id, $status)
     {
         $this->db->where('school_id', school_id());
 
@@ -53,21 +92,60 @@ class Lms_model extends CI_Model
             $this->db->where('status', $status);
         }
         return $this->db->get('course')->result_array();
-    }
-    public function filter_course_for_teacher($class_id, $user_id, $status)
+    }  */
+   
+
+    /* public function filter_course_for_teacher($class_id, $user_id, $status)
     {
         $this->db->where('school_id', school_id());
         $this->db->where('user_id', $this->session->userdata('user_id'));
 
         if ($class_id != "all") {
             $this->db->where('class_id', $class_id);
-        }
+            
+        } 
+       
 
         if ($status != "all") {
             $this->db->where('status', $status);
         }
         return $this->db->get('course')->result_array();
+    } */
+   public function filter_course_for_teacher($class_id = "all", $user_id = "all", $status = "all", $school_id = "all")
+    {
+        $teacher_id = $this->session->userdata('user_id');
+
+        $this->db->select('
+            course.*,
+            GROUP_CONCAT(DISTINCT t.name SEPARATOR ", ") AS teacher_names
+        ');
+        $this->db->from('course');
+        $this->db->where('course.school_id', school_id());
+
+        // Teacher can only see HIS/HER own courses (via course_teachers table)
+        $this->db->join('course_teachers ct', 'ct.course_id = course.id', 'inner');
+        $this->db->where('ct.user_id', $teacher_id);
+
+        // Join users table to get teacher names (for display)
+        $this->db->join('users t', 't.id = ct.user_id', 'left');
+
+        // Filter by class using course_classes junction table
+        if ($class_id != "all" && !empty($class_id)) {
+            $this->db->join('course_classes cc', 'cc.course_id = course.id', 'inner');
+            $this->db->where('cc.class_id', $class_id);
+        }
+
+        // Filter by status
+        if ($status != "all" && !empty($status)) {
+            $this->db->where('course.status', $status);
+        }
+
+        $this->db->group_by('course.id');
+        $this->db->order_by('course.id', 'DESC');
+
+        return $this->db->get()->result_array();
     }
+
     public function filter_course_for_student($class_id, $user_id, $status, $school_id)
     {
         // $class_id = $this->get_class_id_by_user($this->session->userdata('user_id'));

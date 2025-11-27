@@ -111,100 +111,107 @@
       </div>
     </div>
   </section>
+  <!-- Comparaison Avant et Après Wayo ----->
+   <section class="position-relative bg-light py-5 min-vh-100 comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+    <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7" style="z-index: 1;">
+      <h2 class="text-center mb-4 mt-5"><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
+      <p class="text-center text-dark mb-5 fs-6"><?php echo get_phrase("Wayo Academy brings together everything needed to create, sell, and run your training courses without stress.") ?></p>
+      <div class="row g-4 ">
+            <!-- Sans Wayo Column -->
+            <div class="col-lg-6 col-md-12">
+                <div class="comparison-card sans-wayo h-100 shadow rounded-4 p-4 p-md-5">
+                    <div class="text-center">
+                        <span class="badge-header badge-sans"><?php echo get_phrase("Without Wayo"); ?></span>
+                    </div>
+
+                    <div class="image-placeholder mb-4 d-flex justify-content-center align-items-center rounded-3">
+                        <img src="uploads/images/decloedt/home/without-wayo.png" alt="Without Wayo" loading="lazy" />
+                    </div>
+
+                    <ul class="feature-list">
+                        <li><?php echo get_phrase('Too many separate tools, loss of time and errors.'); ?></li>
+                        <li><?php echo get_phrase('Scattered data, no clear visibility.'); ?></li>
+                        <li><?php echo get_phrase('Manual processes, zero automation.'); ?></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Avec Wayo Column -->
+            <div class="col-lg-6 col-md-12">
+                <div class="comparison-card avec-wayo h-100 shadow rounded-4 p-4 p-md-5">
+                    <div class="text-center">
+                        <span class="badge-header badge-avec"><?php echo get_phrase("With Wayo"); ?></span>
+                    </div>
+
+                    <div class="image-placeholder">
+                        <img src="uploads/images/decloedt/home/with-wayo.png" alt="With Wayo" loading="lazy" />
+                    </div>
+
+                    <ul class="feature-list">
+                        <li><?php echo get_phrase('Single dashboard for courses and payments.'); ?></li>
+                        <li><?php echo get_phrase('Centralized data and clear reporting.'); ?></li>
+                        <li><?php echo get_phrase('Automation of tracking and communication.'); ?></li>
+                    </ul>
+                </div>
+            </div>
+      </div>
+      <!-- <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+        
+      </div> -->
+    </div>
+  </section>
+  <!-------->
   <!-- Choose your plan -->
   <section class="py-3 position-relative pricing" style="padding-bottom:75px !important">
     <div class="container position-relative" style="z-index: 1;">
-      <h2 class="text-center mb-5 mt-5" style="font-size: 45px; font-weight: bold;"><?php echo get_phrase("Choose your plan") ?></h2>
+      <h2 class="text-center mb-5 mt-5" style=" "><?php echo get_phrase("A unique offer for maximum impact") ?></h2>
+      <p class="subtitle"><?php echo get_phrase("Everything you need to build, manage, and monetize your community from A to Z.") ?></p>
       <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-        <table class="pricing-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th><?php echo get_phrase("Free") ?></th>
-              <th><?php echo get_phrase("More") ?></th>
-              <th><?php echo get_phrase("Premium") ?></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="feature"><?php echo get_phrase("members") ?></td>
-              <td data-plan="free">10</td>
-              <td data-plan="plus">75</td>
-              <td data-plan="premium"><?php echo get_phrase("unlimited") ?></td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Daily Attendance") ?></td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Calendar & Events") ?></td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Social Hub") ?></td>
-              <td>✖</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Chat") ?></td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Courses") ?>*</td>
-              <td data-plan="free">1</td>
-              <td data-plan="plus">5</td>
-              <td data-plan="premium"><?php echo get_phrase("unlimited") ?></td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Live Classes") ?></td>
-              <td>✖</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Exams") ?></td>
-              <td>✖</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Assessments & Progress Tracking") ?></td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Additional mentors") ?></td>
-              <td data-plan="free">0</td>
-              <td data-plan="plus">2</td>
-              <td data-plan="premium"><?php echo get_phrase("unlimited") ?></td>
-            </tr>
-            <tr>
-              <td class="feature"><?php echo get_phrase("Automated accounting") ?></td>
-              <td>✖</td>
-              <td>✔</td>
-              <td>✔</td>
-            </tr>
-            <tr class="price-row">
-              <td class="feature"><?php echo get_phrase("Price") ?></td>
-              <td><?php echo get_phrase("free") ?></td>
-              <td data-price="69" data-currency="EUR"><?php echo get_phrase("month") ?></td>
-              <td data-price="79" data-currency="EUR"><?php echo get_phrase("month") ?></td>
-            </tr>
-          </tbody>
-        </table>
+        
+        <div class="split-plan-container ">
+              <div class="plan-details-split">
+                  <span class="plan-kicker"><?php echo get_phrase("Mentor Plan"); ?></span>
+                  <h3><?php echo get_phrase("The Complete Offer"); ?></h3>
+                  <p class="plan-description"><?php echo get_phrase("Access our entire platform without any limits. A unique solution to let you focus on what truly matters: sharing your knowledge."); ?></p>
+                  <div class="plan-price-split">
+                      <span class="price-value"></span>
+                      <div class="price-details">
+                          <span class="price-currency"></span>
+                          <span class="price-period"><?php echo get_phrase("per month, no commitment"); ?></span>
+                      </div>
+                  </div>
+                  <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community"); ?></a>
+                  <p class="plan-guarantee">✔<?php echo get_phrase("Enjoy 14 days of free trial before paying."); ?></p>
+              </div>
+              <div class="plan-features-split">
+                  <h4><?php echo get_phrase("Included in your plan:"); ?></h4>
+                  <ul>
+                      <li>
+                          <div class="feature-icon money"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 6h18v12H3z" opacity=".15"/><path fill="currentColor" d="M2 5h20v14H2zM5 9a3 3 0 0 0-3-3v12a3 3 0 0 0 3-3h14a3 3 0 0 0 3 3V6a3 3 0 0 0-3 3zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg></div>
+                          <div class="feature-text"><h5><?php echo get_phrase("Full monetization"); ?></h5><p><?php echo get_phrase("Sell your courses, subscriptions, and live sessions without restriction."); ?></p></div>
+                      </li>
+                      <li>
+                          <div class="feature-icon users"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2"/><path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z"/></svg></div>
+                          <div class="feature-text"><h5><?php echo get_phrase("Unlimited community"); ?></h5><p><?php echo get_phrase("Welcome as many members as you want."); ?></p></div>
+
+                      </li>
+                      <li>
+                          <div class="feature-icon course"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4 6h16v12H4z" opacity=".2"/><path fill="currentColor" d="M3 5h18v14H3zM6 9h8v2H6zm0 4h12v2H6z"/></svg></div>
+                          <div class="feature-text"><h5><?php echo get_phrase("Unlimited educational content"); ?></h5><p><?php echo get_phrase("Create an infinite number of courses, modules, and quizzes."); ?></p></div>
+
+                      </li>
+                       <li>
+                          <div class="feature-icon social"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z" opacity=".4"/><path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z"/></svg></div>
+                          <div class="feature-text"><h5><?php echo get_phrase("Engagement tools"); ?></h5><p><?php echo get_phrase("Access to the Social Hub, chat, calendar, and events."); ?></p></div>
+                      </li>
+                  </ul>
+              </div>
+          </div>
       </div>
     </div>
   </section>
   <!-- Why choose Wayo Academy -->
-  <section class="features">
+  <!-- <section class="features">
     <div class="container">
       <h2 class="social-media-main-text" dir="rtl">
         <?php echo get_phrase("Why choose") . "&lrm;"; ?>
@@ -233,9 +240,9 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Flagship Courses -->
-  <section class="courses">
+  <!-- <section class="courses">
     <div class="container">
       <h2><?php echo get_phrase("Flagship Courses") ?></h2>
       <div class="courses-carousel">
@@ -271,9 +278,9 @@
         <button class="carousel-btn next" aria-label="Next"><i class='fas fa-chevron-right'></i></button>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Success Stories -->
-  <section class="success-stories">
+  <!-- <section class="success-stories">
     <div class="container">
       <h2><?php echo get_phrase("Success Stories") ?></h2>
       <div class="stories-carousel">
@@ -327,9 +334,9 @@
         <a href="#" class="btn btn-outline"><?php echo get_phrase("View More Stories") ?></a>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- What You Gain -->
-  <section class="benefits" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+  <!-- <section class="benefits" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container">
       <h2><?php echo get_phrase("What You Gain") ?></h2>
       <div class="benefits-grid">
@@ -355,32 +362,23 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Mobile section -->
-  <section class="bg-white">
-    <div class="app-coming-soon">
-      <div class="app-container">
-        <svg class="decor-circle" viewBox="0 0 400 400">
-          <circle cx="200" cy="200" r="200" fill="rgba(255,255,255,0.15)" />
-        </svg>
-        <div class="app-image">
-          <img src="uploads/images/decloedt/home/bg_download.webp" alt="Wayo Academy App Mockup" loading="lazy" />
-        </div>
-        <div class="app-content" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-          <p class="app-subtitle"><?php echo get_phrase("Easier, faster and more accessible mentoring") ?></p>
-          <h2 class="app-title"><?php echo get_phrase("Coming Soon !") ?></h2>
-          <div class="app-buttons">
-            <a href="#" class="app-btn">
-              <img src="uploads/images/decloedt/logo/app-storec-img.webp" alt="Download on the App Store" loading="lazy" />
-            </a>
-            <a href="#" class="app-btn">
-              <img src="uploads/images/decloedt/logo/play-store-img.webp" alt="Get it on Google Play" loading="lazy" />
-            </a>
+    <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+      <div class="app-frame">
+        <div class="app-inner">
+          <div class="app-media"><img src="https://i.postimg.cc/Z5nbcDC6/app.png" alt="Wayo app mockup"/></div>
+          <div class="app-copy">
+            <p class="app-kicker"><?php echo get_phrase("EASIER, FASTER AND MORE ACCESSIBLE MENTORING"); ?></p>
+            <h2 class="app-title"><?php echo get_phrase("Coming soon "); ?>!</h2>
+            <div class="stores">
+              <a href="#" class="store"><img src="https://i.postimg.cc/QFpGF7SJ/app-store-badge.png" alt="App Store"/></a>
+              <a href="#" class="store"><img src="https://i.postimg.cc/CBxWrQ0c/google-play-badge.png" alt="Google Play"/></a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   <!-- Meet Our Mentors -->
   <section class="meet-mentors">
     <div class="container">

@@ -1,7 +1,28 @@
 <?php
-  $invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
-  $student_details = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
- ?>
+  $invoice_details   = $this->crud_model->get_invoice_by_id($invoice_id);
+  $student_details   = $this->user_model->get_student_details_by_id('student', $invoice_details['student_id']);
+  $school            = $this->db->get_where('schools', array('id' => $invoice_details['school_id']))->row_array();
+  // --------- TVA / VAT CALCULATION ---------
+  // On récupère les réglages fiscaux de la communauté / école
+  $settings_school = $this->settings_model->get_settings_school_data($invoice_details['school_id']);
+
+  $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
+  $tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+  $vat_rate = 0; // en pourcentage
+  if ($vat_applicable) {
+      if ($tax_residence === 'MA') {
+          // 1 - Communauté au Maroc  => 20% de TVA
+          $vat_rate = 20;
+      } elseif ($tax_residence === 'UAE') {
+          // 2 - Communauté aux EAU => 5% de TVA
+          $vat_rate = 5;
+      }
+  }
+
+  $sub_total   = (float)$invoice_details['total_amount'];
+  $vat_amount  = $sub_total * ($vat_rate / 100);
+  $grand_total = $sub_total + $vat_amount;
+?>
 
 <!--title-->
 <div class="row">
@@ -22,7 +43,7 @@
         <!-- Invoice Logo-->
         <div class="clearfix">
           <div class="float-start mb-3">
-            <img src="<?php echo $this->settings_model->get_logo_dark(); ?>" alt="" height="40">
+            <img src="<?php echo $this->settings_model->get_logo_school($invoice_details['school_id']); ?>" alt="" height="40">
           </div>
         </div>
 
@@ -31,6 +52,14 @@
           <div class="col-sm-6">
             <div class="float-start mt-3">
               <p><b><?php echo get_phrase('hello'); ?>, <?php echo $student_details['name']; ?></b></p>
+
+              <p><b><?php echo get_phrase('school'); ?></b> : <?php echo $school['name']; ?></p>
+              <?php echo get_phrase('Rue') .' : ' . $student_details['Rue']; ?><br>
+              <?php echo get_phrase('Numero') .' : ' . $student_details['Numero']; ?><br>
+              <?php echo get_phrase('Ville') .' : ' . $student_details['Ville']; ?><br>
+              <?php echo get_phrase('Codepostal') .' : ' . $student_details['Codepostal']; ?> 
+
+
               <p class="text-muted font-13"><?php echo get_phrase('please_find_below_the_invoice'); ?>.</p>
             </div>
 
@@ -52,11 +81,14 @@
 
         <div class="row mt-4">
           <div class="col-sm-4">
-            <h6><?php echo get_phrase('billing_details'); ?></h6>
+            <h6><?php echo get_phrase('billing_details').' '.get_phrase('membre'); ?></h6>
             <address>
               <?php echo $student_details['name']; ?><br>
-              <?php echo $student_details['address'] == "" ? '('.get_phrase('address_not_found').')' : $student_details['address']; ?><br>
-              <abbr title="Phone">P:</abbr> <?php echo $student_details['phone'] == "" ? '('.get_phrase('phone_number_not_found').')' : $student_details['phone']; ?><br>
+              <?php echo get_phrase('Rue') .' : ' . $student_details['Rue']; ?><br>
+              <?php echo get_phrase('Numero') .' : ' . $student_details['Numero']; ?><br>
+              <?php echo get_phrase('Ville') .' : ' . $student_details['Ville']; ?><br>
+              <?php echo get_phrase('Codepostal') .' : ' . $student_details['Codepostal']; ?><br>
+              <abbr title="Phone"><?php echo get_phrase('Phone') .' : '; ?></abbr> <?php echo $student_details['phone'] == "" ? '('.get_phrase('phone_number_not_found').')' : $student_details['phone']; ?><br>
             </address>
           </div> <!-- end col-->
         </div>
@@ -67,25 +99,25 @@
             <div class="table-responsive">
               <table class="table mt-4">
                 <thead>
-                  <tr><th>#</th>
-                    <th><?php echo get_phrase('invoice_title'); ?></th>
-                    <th><?php echo get_phrase('total_amount'); ?></th>
-                    <th><?php echo get_phrase('paid_amount'); ?></th>
-                    <th class="text-end"><?php echo get_phrase('due_amount'); ?></th>
-                  </tr></thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>
-                        <b><?php echo get_phrase('student_fee'); ?></b> <br/>
-                        <?php echo get_phrase('created_at').' : '.date('D, d-M-Y', $invoice_details['created_at']); ?>
-                      </td>
-                      <td><?php echo currency($invoice_details['total_amount']); ?></td>
-                      <td><?php echo currency($invoice_details['paid_amount']); ?></td>
-                      <td class="text-end"><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></td>
-                    </tr>
-                  </tbody>
-                </table>
+                  <tr>
+                    <th><?php echo get_phrase('product_or_service'); ?></th>
+                    <th><?php echo get_phrase('price_excl_vat'); ?></th>
+                    <th><?php echo get_phrase('vat'); ?></th>
+                    <th><?php echo get_phrase('total_amount'); ?> TTC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <b><?php echo $invoice_details['title']; ?></b> <br/>
+                      <?php echo get_phrase('created_at').' : '.date('D, d-M-Y', $invoice_details['created_at']); ?>
+                    </td>
+                    <td><?php echo currency($sub_total); ?></td>
+                    <td><?php echo $vat_rate > 0 ? $vat_rate.'%' : '-'; ?></td>
+                    <td><?php echo currency($grand_total); ?></td>
+                  </tr>
+                </tbody>
+              </table>
               </div> <!-- end table-responsive-->
             </div> <!-- end col -->
           </div>
@@ -102,9 +134,24 @@
             </div> <!-- end col -->
             <div class="col-sm-6">
               <div class="float-end mt-3 mt-sm-0">
-                <p><b><?php echo get_phrase('total_amount'); ?> :&nbsp;</b> <span class="float-end"><?php echo currency($invoice_details['total_amount']); ?></span></p>
-                <p><b><?php echo get_phrase('due_amount'); ?> : </b> <span class="float-end"><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></span></p>
-                <h3><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></h3>
+                <p><b><?php echo get_phrase('sub_total'); ?> :&nbsp;</b>
+                  <span class="float-end"><?php echo currency($sub_total); ?></span>
+                </p>
+                <p>
+                  <b><?php echo get_phrase('vat'); ?>
+                    <?php echo $vat_rate > 0 ? '(' . $vat_rate . '%)' : ''; ?> :
+                  </b>
+                  <span class="float-end">
+                    <?php echo $vat_rate > 0 ? currency($vat_amount) : currency(0); ?>
+                  </span>
+                </p>
+                <p><b><?php echo get_phrase('grand_total'); ?> : </b>
+                  <span class="float-end"><?php echo currency($grand_total); ?></span>
+                </p>
+                <p><b><?php echo get_phrase('due_amount'); ?> : </b>
+                  <span class="float-end"><?php echo currency($grand_total - $invoice_details['paid_amount']); ?></span>
+                </p>
+                <h3><?php echo currency($grand_total - $invoice_details['paid_amount']); ?></h3>
               </div>
               <div class="clearfix"></div>
             </div> <!-- end col -->
@@ -114,6 +161,9 @@
           <div class="d-print-none mt-4">
             <div class="text-end">
               <a href="javascript:window.print()" class="btn btn-primary"><i class="mdi mdi-printer"></i> <?php echo get_phrase('print'); ?></a>
+              <a href="<?php echo site_url('student/invoice_pdf/'.$invoice_details['id']); ?>" class="btn btn-success ms-1">
+                <i class="mdi mdi-file-pdf"></i> <?php echo get_phrase('download'); ?> PDF
+              </a>
             </div>
           </div>
           <!-- end buttons -->
