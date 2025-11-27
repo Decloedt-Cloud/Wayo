@@ -3060,5 +3060,18 @@
     "cgu": "Cgu",
     "subscribe": "Subscribe",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 wayo academy. all rights reserved.",
-    "developed_by_the_wayo_team": "Developed by the wayo team"
+    "developed_by_the_wayo_team": "Developed by the wayo team",
+    "numero": "Numero",
+    "codepostal": "Codepostal",
+    "sub_total": "Sub total",
+    "grand_total": "Grand total",
+    "invoice_details": "Invoice details",
+    "product_or_service": "Product or service",
+    "price_excl_vat": "Price excl vat",
+    "vat_total": "Vat total",
+    "notes": "Notes",
+    "payment_done_via_gateway": "Payment done via gateway",
+    "no_additional_payment_required": "No additional payment required",
+    "thank_you_for_your_trust": "Thank you for your trust",
+    "see_details": "See details"
 }

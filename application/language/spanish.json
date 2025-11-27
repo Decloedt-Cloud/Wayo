@@ -3021,5 +3021,18 @@
     "cgu": "Términos y Condiciones de Uso",
     "subscribe": "Suscribirse",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Todos los derechos reservados.",
-    "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo"
+    "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo",
+    "numero": "Número",
+    "codepostal": "Código postal",
+    "sub_total": "Subtotal",
+    "grand_total": "Total general",
+    "invoice_details": "Detalles de la factura",
+    "product_or_service": "Producto o servicio",
+    "price_excl_vat": "Precio sin IVA",
+    "vat_total": "Total IVA",
+    "notes": "Notas",
+    "payment_done_via_gateway": "Pago realizado a través de la pasarela",
+    "no_additional_payment_required": "No se requiere ningún pago adicional",
+    "thank_you_for_your_trust": "Gracias por su confianza",
+    "see_details": "Ver detalles"
 }
