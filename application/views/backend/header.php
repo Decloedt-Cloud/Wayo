@@ -68,7 +68,7 @@ if ($active_school_id) {
                 <a class="nav-link dropdown-toggle nav-user  user-dropdown arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
                     aria-expanded="false">
                     <span class="account-user-avatar">
-                        <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle">
+                        <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle user-style">
                     </span>
                     <span>
                         <span class="account-user-name"><?php echo $user_name; ?></span>
