@@ -134,6 +134,13 @@ if ($active_school_id) {
                 <img src="<?php echo $this->settings_model->get_logo_light('small'); ?>" alt="" height="40">
             </span>
         </a>
+            <a id="hamburger" class="button-menu-mobile disable-btn">
+                <div class="lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </a>
 
 
         <div class="app-search d-flex align-items-center flex-wrap gap-3 pt-1 mt-2">
@@ -220,13 +227,7 @@ if ($active_school_id) {
     </ul>
 
 
-    <a id="hamburger" class="button-menu-mobile disable-btn">
-        <div class="lines">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </a>
+
 </div>
 </div>
 <!-- end Topbar -->

@@ -492,17 +492,20 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
   }
   .language-selector-mobile{
     position: relative !important;
-    right: 80px !important;
+    right: 130px !important;
+   
   }
   .button-menu-mobile{
+    margin-right: 10px !important;
     position: relative;
     bottom: 18px;
+    top: 18px;
   }
 }
 @media (max-width: 390px) {
   .language-selector-mobile{
     position: relative !important;
-    right: 120px !important;
+    right: 150px !important;
   }
 }
 @media (max-width: 375px) {
@@ -510,28 +513,37 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
         width: 35px!important;
     }
     .language-selector-mobile{
-      position: relative !important;
-      right: 120px !important;
+      position: relative !important; 
+      right: 170px !important; 
     }
 }
 @media (max-width: 344px) {
     .language-selector-mobile{
       position: relative !important;
-      right: 140px !important;
+      right: 190px !important;
     }
 }
 @media (max-width: 320px) {
   .button-menu-mobile{
     position: relative;
-    left: 200px;
+    /* left: 200px; */
     bottom:38px;
   }
+  .language-selector-mobile{
+      position: relative !important;
+      right:0px !important;
+    }
   .user-style{
     position: relative;
     bottom: 16px;
   }
   .account-user-avatar{
     position: relative !important;
+  }
+  .app-search{
+    position: relative !important;
+    bottom:35px !important;
+    left:40px !important;
   }
 }
 
