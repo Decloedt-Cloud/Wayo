@@ -274,7 +274,7 @@
       </div>
       <div class="modal-footer d-flex justify-content-between">
         <span class="fw-bold text-brand" id="classPrice">—</span>
-        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo "eeeeeee" . get_phrase("Sign up") ?></button>
+        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
       </div>
     </div>
   </div>
