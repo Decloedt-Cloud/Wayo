@@ -2940,8 +2940,8 @@ class Admin extends CI_Controller
 		}
 		if ($param1 == 'delete') {
 
-			$this->db->where('id', $user_id);
-			$this->db->delete('users');
+			// $this->db->where('id', $user_id);
+			// $this->db->delete('users');
 
 			$this->db->where('user_id', $user_id);
 			$this->db->delete('students');
