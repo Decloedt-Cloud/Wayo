@@ -3094,7 +3094,6 @@
     "please_correct_the_errors": "Please correct the errors",
     "please_enter_a_valid_name": "Please enter a valid name",
     "please_enter_a_valid_date_(yyyy-mm-dd)": "Please enter a valid date (yyyy-mm-dd)",
-    "please_select_gender": "Please select gender",
     "please_enter_a_valid_address": "Please enter a valid address",
     "please_enter_a_valid_full_name.": "Please enter a valid full name.",
     "please_enter_a_valid_email_address.": "Please enter a valid email address.",
@@ -3112,7 +3111,6 @@
     "please_enter_a_valid_street": "Please enter a valid street",
     "please_enter_a_valid_number": "Please enter a valid number",
     "please_enter_a_valid_city": "Please enter a valid city",
-    "please_enter_a_valid_postal_code": "Please enter a valid postal code",
     "invalid_vat_number": "Invalid vat number",
     "please_fix_the_errors_before_submitting": "Please fix the errors before submitting",
     "voir_le_document": "Voir le document",
@@ -3125,9 +3123,6 @@
     "invalid_postal_code_(4_or_5_digits)": "Invalid postal code (4 or 5 digits)",
     "invalid_vat_number_(minimum_5_characters)": "Invalid vat number (minimum 5 characters)",
     "class_created_successfully": "Class created successfully",
-    "the_name_of_the_class_must_contain_at_least_3_characters": "The name of the class must contain at least 3 characters",
-    "please_correct_the_errors_before_submitting": "Please correct the errors before submitting",
-    "invalid_price_(must_be_a_positive_number)": "Invalid price (must be a positive number)",
     "the_start_date_cannot_be_in_the_past": "The start date cannot be in the past",
     "the_end_date_cannot_be_before_the_start_date": "The end date cannot be before the start date",
     "please_enter_a_password_with_at_least_8_characters": "Please enter a password with at least 8 characters",
@@ -3149,5 +3144,8 @@
     "payment_done_via_gateway": "Payment done via gateway",
     "no_additional_payment_required": "No additional payment required",
     "thank_you_for_your_trust": "Thank you for your trust",
-    "see_details": "See details"
+    "see_details": "See details",
+    "private_community_-_join_request_only": "Private community - join request only",
+    "free_class_(set_price_to_0)": "Free class (set price to 0)",
+    "invalid_price_(must_be_a_non_negative_number)": "Invalid price (must be a non negative number)"
 }

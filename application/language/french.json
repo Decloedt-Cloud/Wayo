@@ -3130,5 +3130,9 @@
     "payment_done_via_gateway": "Paiement effectué via la passerelle",
     "no_additional_payment_required": "Aucun paiement supplémentaire requis",
     "thank_you_for_your_trust": "Merci pour votre confiance",
-    "see_details": "Voir les détails"
+    "see_details": "Voir les détails",
+    "private_community_-_join_request_only": "Communauté privée - seulement par demande",
+    "free_class_(set_price_to_0)": "Classe gratuite (définir le prix à 0)",
+    "invalid_price_(must_be_a_non_negative_number)": "Prix invalide (doit être un nombre non négatif)"
+
 }

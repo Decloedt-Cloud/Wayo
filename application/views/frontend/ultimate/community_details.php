@@ -64,7 +64,15 @@
                 <li class="list-inline-item me-3"><i class="fa-solid fa-lock-open text-wayo me-1"></i><?php echo get_phrase("Public") ?></li>
               <?php } ?>
               <li class="list-inline-item me-3"><i class="fa-solid fa-bullhorn text-wayo me-1"></i><?php echo $school['category'] ?></li>
-              <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i><?php echo $school['price'] . " " . $settings_data['system_currency'] ?></li>
+              <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i>
+                <?php
+                if ((float)$school['price'] > 0) {
+                  echo $school['price'] . " " . $settings_data['system_currency'];
+                } else {
+                  echo get_phrase("Free");
+                }
+                ?>
+              </li>
               <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php echo $school["course_students_count"] ?> <?php echo get_phrase("Members") ?></li>
               <!-- <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php if (!empty($school_creator)): ?>
                   <p><?php echo htmlspecialchars($school_creator['name']); ?></p>
@@ -143,27 +151,27 @@
                             <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled><?php echo htmlspecialchars(get_phrase("waiting_list")); ?></button>
 
                             <?php else:
-                            // Afficher le formulaire seulement si le maximum n'est pas atteint
-                            $status = $this->user_model->check_student_status($school_id);
-                            if ($status == -1) {
-                            ?>
-
-                              <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
-                                <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-                                <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
-                                <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
-                                <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
-                              <?php
-                            } else {
+                              // Afficher le formulaire seulement si le maximum n'est pas atteint
+                              $status = $this->user_model->check_student_status($school_id);
+                              if ($status == -1) {
                               ?>
-                                <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
-                                <form action="<?php echo site_url('student/online_admission/assigned'); ?>" method="post">
+
+                                <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
                                   <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-                                  <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
                                   <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
-                                  <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
-                                  <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                                  <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
                                   <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
+                                <?php
+                              } else {
+                                ?>
+                                  <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
+                                  <form action="<?php echo site_url('student/online_admission/assigned'); ?>" method="post">
+                                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                                    <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
+                                    <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
+                                    <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
+                                    <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                                    <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
                                 <?php
                               }
                                 ?>
@@ -202,12 +210,27 @@
             <ul class="list-unstyled small text-muted mb-3">
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Members:") ?></span><span class="text-dark"><?php echo $school["course_students_count"] ?></span></li>
               <li class="d-flex justify-content-between"><span><?php echo get_phrase("Classes :") ?></span><span class="text-dark"><?php echo $school['classes_count'] ?> </span></li>
-              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span><span class="text-wayo fw-bold"><?php echo $school['price'] . " " . $settings_data['system_currency']  ?></span></li>
+              <li class="d-flex justify-content-between"><span><?php echo get_phrase("Prix :") ?></span>
+                <span class="text-wayo fw-bold">
+                  <?php
+                  if ((float)$school['price'] > 0) {
+                    echo $school['price'] . " " . $settings_data['system_currency'];
+                  } else {
+                    
+                    echo get_phrase("Free");
+                  }
+                  ?>
+                </span>
+              </li>
             </ul>
+            <?php if ((int)$school['access'] > 0): ?>
+              <div class="alert alert-warning small"><?php echo htmlspecialchars(get_phrase("Private community - join request only")); ?></div>
+            <?php endif; ?>
             <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
             <div class="community-app-button">
               <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
             </div>
+
             <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
               <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />

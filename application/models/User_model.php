@@ -2324,20 +2324,24 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 				$this->db->where_in('role', array('admin', 'superadmin'));
 				$user_email_admin = $this->db->get('users')->row('email');
 
-				$this->db->where('id', $data_invoice['invoice_id']);
-				$invoice_details = $this->db->get('invoices')->row_array();
-				
-				$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
-				if ($due_amount == $data_invoice['amount_paid']) {
-					$updater = array(
-						'status' => 'paid',
-						'payment_method' => $data_invoice['payment_method'],
-						'paid_amount' => $data_invoice['amount_paid'] + $invoice_details['paid_amount'],
-						'updated_at'  => strtotime(date('d-M-Y'))
-					);
-					// print_r($updater);die;
+				if (!empty($data_invoice) && !empty($data_invoice['invoice_id'])) {
 					$this->db->where('id', $data_invoice['invoice_id']);
-					$this->db->update('invoices', $updater);
+					$invoice_details = $this->db->get('invoices')->row_array();
+
+					if (!empty($invoice_details)) {
+						$paid_amount = isset($data_invoice['amount_paid']) ? $data_invoice['amount_paid'] : 0;
+						$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
+						if ($due_amount == $paid_amount) {
+							$updater = array(
+								'status' => 'paid',
+								'payment_method' => isset($data_invoice['payment_method']) ? $data_invoice['payment_method'] : $invoice_details['payment_method'],
+								'paid_amount' => $paid_amount + $invoice_details['paid_amount'],
+								'updated_at'  => strtotime(date('d-M-Y'))
+							);
+							$this->db->where('id', $data_invoice['invoice_id']);
+							$this->db->update('invoices', $updater);
+						}
+					}
 				}
 
 				$this->email_model->join_student_email($user_email, $user_name, $data['code'], $row->name, $school_id);

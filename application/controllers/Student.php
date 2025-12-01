@@ -945,16 +945,34 @@ class Student extends CI_Controller {
         $data['session']    = active_session();
 
         // 🔹 2. Vérifier si l'école existe
-        $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
-        if (!$school_name) {
+        $school = $this->db->get_where('schools', ['id' => $data['school_id']])->row();
+        if (!$school) {
             show_error('École non trouvée.');
             return;
+        }
+        $school_name = $school->name;
+        $is_private_school = (int)$school->access > 0;
+
+        if ($is_private_school) {
+            // Les communautés privées ne passent pas par la page de paiement
+            $this->user_model->join_school($data['school_id'], [
+                'invoice_id'     => null,
+                'amount_paid'    => 0,
+                'payment_method' => 'private_access'
+            ]);
+
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                redirect($_SERVER['HTTP_REFERER'], 'refresh');
+            } else {
+                redirect(site_url('home'), 'refresh');
+            }
         }
 
         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
         $existing_invoice = $this->db->get_where('invoices', [
             'school_id'  => $data['school_id'],
-            'student_id' => $data['student_id']
+            'student_id' => $data['student_id'],
+            'payment_type' => 'school_join'
         ])->row();
 
         if (!$existing_invoice) {

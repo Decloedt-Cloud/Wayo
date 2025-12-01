@@ -3298,5 +3298,9 @@
     "payment_done_via_gateway": "Betaling uitgevoerd via de gateway",
     "no_additional_payment_required": "Geen extra betaling vereist",
     "thank_you_for_your_trust": "Dank u voor uw vertrouwen",
-    "see_details": "Bekijk details"
+    "see_details": "Bekijk details",
+    "private_community_-_join_request_only": "Privécommunity - alleen op verzoek toetreden",
+    "free_class_(set_price_to_0)": "Gratis les (prijs op 0 zetten)",
+    "invalid_price_(must_be_a_non_negative_number)": "Ongeldige prijs (moet een niet-negatief getal zijn)"
+
 }
