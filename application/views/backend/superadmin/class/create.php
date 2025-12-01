@@ -39,13 +39,23 @@
          $type = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('type'); 
          
          ?>
-        
+
         <div class="form-inline">
-            <input type="text" <?php if ($type == 'Particulier'): ?> readonly value="0" <?php endif; ?> class="form-control col-md-10" id="price" name="price" >
+            <input type="text" <?php if ($type == 'Particulier'): ?> readonly value="0" <?php endif; ?> class="form-control col-md-10" id="price" name="price">
             <input type="text" class="form-control currency-input col-md-2" value="<?php echo $currencies; ?>" disabled>
-            <input type="hidden"  id = "currency" name="currency" value="<?php echo $currencies; ?>" >
+            <input type="hidden" id="currency" name="currency" value="<?php echo $currencies; ?>">
         </div>
-        
+
+        <!-- Option simple pour rendre la classe gratuite -->
+        <div class="mt-1">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="1">
+                <label class="form-check-label" for="is_free">
+                    <?php echo get_phrase('Free_class_(set_price_to_0)'); ?>
+                </label>
+            </div>
+        </div>
+
         <small id="price_help" class="form-text text-muted"><?php echo get_phrase('provide_class_price'); ?></small>
     </div>
 
@@ -192,18 +202,42 @@ $(document).ready(function() {
      * VALIDATION EN TEMPS RÉEL — PRIX TTC
      * ============================= */
     const priceInput = $('#price');
+    const isFreeCheckbox = $('#is_free');
     const priceError = $('<small id="price-error" class="text-danger d-block mt-1" style="display:none;"></small>');
     priceInput.closest('.form-inline').after(priceError);
 
+    // Quand on tape un prix manuellement
     priceInput.on('input', function() {
+        // Si "classe gratuite" est cochée, on ne valide pas le prix (forcé à 0)
+        if (isFreeCheckbox.is(':checked')) {
+            priceError.hide();
+            $(this).removeClass('is-invalid');
+            return;
+        }
+
         const value = $(this).val().trim();
 
         if (value === '' || isNaN(value) || parseFloat(value) < 0) {
-            priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_positive_number)'); ?>').show();
+            priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_non_negative_number)'); ?>').show();
             $(this).addClass('is-invalid');
         } else {
             priceError.hide();
             $(this).removeClass('is-invalid');
+        }
+    });
+
+    // Gestion du comportement "Classe gratuite"
+    isFreeCheckbox.on('change', function() {
+        if ($(this).is(':checked')) {
+            priceInput.val('0').prop('readonly', true).removeClass('is-invalid');
+            priceError.hide();
+        } else {
+            // On réactive le champ pour permettre de saisir un prix
+            <?php if ($type == 'Particulier'): ?>
+            priceInput.val('0').prop('readonly', true);
+            <?php else: ?>
+            priceInput.prop('readonly', false);
+            <?php endif; ?>
         }
     });
 
@@ -227,14 +261,22 @@ $(document).ready(function() {
         }
 
         // Vérification du prix
-        const priceValue = priceInput.val().trim();
-        if (priceValue === '' || isNaN(priceValue) || parseFloat(priceValue) < 0) {
-            priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_positive_number)'); ?>').show();
-            priceInput.addClass('is-invalid');
-            isValid = false;
-        } else {
+        let priceValue = priceInput.val().trim();
+
+        if (isFreeCheckbox.is(':checked')) {
+            // On force le prix à 0 si "classe gratuite" est coché
+            priceInput.val('0');
             priceError.hide();
             priceInput.removeClass('is-invalid');
+        } else {
+            if (priceValue === '' || isNaN(priceValue) || parseFloat(priceValue) < 0) {
+                priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_non_negative_number)'); ?>').show();
+                priceInput.addClass('is-invalid');
+                isValid = false;
+            } else {
+                priceError.hide();
+                priceInput.removeClass('is-invalid');
+            }
         }
 
         // ✅ Si erreurs → on bloque complètement la requête AJAX

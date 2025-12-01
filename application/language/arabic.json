@@ -3050,5 +3050,9 @@
     "payment_done_via_gateway": "تم الدفع عبر البوابة",
     "no_additional_payment_required": "لا حاجة لأي دفعة إضافية",
     "thank_you_for_your_trust": "شكراً على ثقتكم",
-    "see_details": "عرض التفاصيل"
+    "see_details": "عرض التفاصيل",
+    "private_community_-_join_request_only": "مجتمع خاص - الانضمام عبر طلب فقط",
+    "free_class_(set_price_to_0)": "درس مجاني (اضبط السعر على 0)",
+    "invalid_price_(must_be_a_non_negative_number)": "سعر غير صالح (يجب أن يكون رقمًا غير سالب)"
+
 }
