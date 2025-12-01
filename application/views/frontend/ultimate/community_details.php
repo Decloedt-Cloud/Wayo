@@ -283,7 +283,16 @@
 
 
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const joinBtn = document.getElementById("login-join-button");
 
+    joinBtn?.addEventListener("click", function() {
+        // Scroll vers le haut de la page avec animation
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});
+</script>
 <script>
   /* ===== Utilitaires prix ===== */
   const formatPrice = (p) => (Number(p || 0) > 0 ? `${Number(p)} €` : 'Gratuit');
