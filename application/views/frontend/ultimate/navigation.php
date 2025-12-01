@@ -857,7 +857,7 @@ $system_name = get_frontend_settings('website_title');
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
                 </a>
                 <!-- Mobile Toggle -->
-                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
+                <button class="navbar-toggler ms-auto" id="nav-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
                 </button>
                 <?php if ($this->session->userdata('user_id')) { ?>
@@ -1280,6 +1280,19 @@ $system_name = get_frontend_settings('website_title');
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const joinBtn = document.getElementById("openLoginBtnM");
+            const navToggler = document.getElementById("nav-toggler");
+
+            function scrollToTop() {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+
+            joinBtn?.addEventListener("click", scrollToTop);
+            navToggler?.addEventListener("click", scrollToTop);
+        });
+</script>
     <!-- ========== END HEADER ========== -->
     <script>
         window.checkCommunityNameUrl = '<?php echo site_url("home/check_community_name_exists"); ?>';
