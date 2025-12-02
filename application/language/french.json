@@ -3108,9 +3108,6 @@
     "invalid_city_(minimum_2_characters)": "Ville invalide (minimum 2 caractères)",
     "invalid_postal_code_(4_or_5_digits)": "Code postal invalide (4 ou 5 chiffres)",
     "invalid_vat_number_(minimum_5_characters)": "Numéro de TVA invalide (minimum 5 caractères)",
-    "the_name_of_the_class_must_contain_at_least_3_characters": "The name of the class must contain at least 3 characters",
-    "invalid_price_(must_be_a_positive_number)": "Invalid price (must be a positive number)",
-    "please_correct_the_errors_before_submitting": "Please correct the errors before submitting",
     "please_enter_a_password_with_at_least_8_characters": "Veuillez saisir un mot de passe contenant au moins 8 caractères",
     "please_repeat_your_password_(min._8_characters)": "Veuillez répéter votre mot de passe (min. 8 caractères)",
     "you_cannot_monetize_a_private_community": "Vous ne pouvez pas monétiser une communauté privée",
@@ -3118,6 +3115,14 @@
     "subscribe": "S’abonner",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Tous droits réservés.",
     "developed_by_the_wayo_team": "Développé par l’équipe Wayo",
+    "complete_your_payment": "Finaliser votre paiement",
+    "order_summary": "Résumé de la commande",
+    "name_on_card": "Nom sur la carte",
+    "you_will_be_redirected_to_paypal_to_complete_your_purchase.": "Vous serez redirigé vers PayPal pour finaliser votre achat.",
+    "member_name": "Nom du membre",
+    "0_communities_found_for_search": "0 communautés trouvées pour cette recherche.",
+    "no_payment_methods_are_configured._please_contact_support.": "Aucune méthode de paiement n’est configurée. Veuillez contacter le support.",
+    "100%_secure_payment": "Paiement 100% sécurisé",
     "numero": "Numéro",
     "codepostal": "Code postal",
     "sub_total": "Sous-total",
@@ -3137,5 +3142,4 @@
     "your_trial_has_ended": "Votre essai a expiré",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Pour continuer à utiliser votre communauté, vous devez activer votre abonnement.",
     "go_to_payment_page": "Aller à la page de paiement"
-
 }

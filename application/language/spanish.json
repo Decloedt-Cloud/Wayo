@@ -3058,7 +3058,6 @@
     "invalid_city_(minimum_2_characters)": "Ciudad inválida (mínimo 2 caracteres)",
     "invalid_postal_code_(4_or_5_digits)": "Código postal inválido (4 o 5 dígitos)",
     "invalid_vat_number_(minimum_5_characters)": "Número de IVA inválido (mínimo 5 caracteres)",
-    "acción_no_permitida": "Acción no permitida",
     "the_file_is_too_large!_maximum": "¡El archivo es demasiado grande! máximo",
     "allowed": "Permitido",
     "the_logo_is_too_large!_maximum": "¡El logo es demasiado grande! máximo",
@@ -3068,7 +3067,6 @@
     "the_name_of_the_class_must_contain_at_least_3_characters": "The name of the class must contain at least 3 characters",
     "invalid_price_(must_be_a_positive_number)": "Precio no válido (debe ser un número positivo)",
     "please_correct_the_errors_before_submitting": "Por favor, corrija los errores antes de enviar",
-    "ocurrió_un_error_durante_el_envío": "Ocurrió un error durante el envío",
     "please_enter_a_password_with_at_least_8_characters": "Por favor, introduzca una contraseña con al menos 8 caracteres",
     "please_repeat_your_password_(min._8_characters)": "Por favor, repita su contraseña (mín. 8 caracteres)",
     "you_cannot_monetize_a_private_community": "No puede monetizar una comunidad privada",
@@ -3076,6 +3074,13 @@
     "subscribe": "Suscribirse",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Todos los derechos reservados.",
     "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo",
+    "complete_your_payment": "Complete su pago",
+    "name_on_card": "Nombre en la tarjeta",
+    "member_name": "Nombre del miembro",
+    "you_will_be_redirected_to_paypal_to_complete_your_purchase.": "Será redirigido a PayPal para completar su compra.",
+    "100%_secure_payment": "Pago 100% seguro",
+    "order_summary": "Resumen del pedido",
+   "no_payment_methods_are_configured._please_contact_support.": "No hay métodos de pago configurados. Por favor, contacte con soporte.",
     "numero": "Número",
     "codepostal": "Código postal",
     "sub_total": "Subtotal",
@@ -3095,5 +3100,4 @@
     "your_trial_has_ended": "Tu prueba ha expirado",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Para continuar usando tu comunidad, necesitas activar tu suscripción.",
     "go_to_payment_page": "Ir a la página de pago"
-
 }

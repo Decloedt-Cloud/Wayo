@@ -82,7 +82,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
       <div class="footer-links">
         <p><strong><?php echo get_phrase('Useful Links'); ?></strong></p>
           <div class="infolinks">
-              <a href="#"><?php echo get_phrase('FAQ'); ?></a>
+              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('FAQ'); ?></a>
               <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('CGU'); ?></a>
               <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
               <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
