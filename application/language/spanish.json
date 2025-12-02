@@ -3020,5 +3020,12 @@
     "cgu": "Términos y Condiciones de Uso",
     "subscribe": "Suscribirse",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Todos los derechos reservados.",
-    "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo"
+    "developed_by_the_wayo_team": "Desarrollado por el equipo de Wayo",
+    "complete_your_payment": "Complete su pago",
+    "name_on_card": "Nombre en la tarjeta",
+    "member_name": "Nombre del miembro",
+    "you_will_be_redirected_to_paypal_to_complete_your_purchase.": "Será redirigido a PayPal para completar su compra.",
+    "100%_secure_payment": "Pago 100% seguro",
+    "order_summary": "Resumen del pedido",
+   "no_payment_methods_are_configured._please_contact_support.": "No hay métodos de pago configurados. Por favor, contacte con soporte."
 }

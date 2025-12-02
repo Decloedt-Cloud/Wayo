@@ -1,7 +1,8 @@
+
+
 var currency = "";
 function get_stripe_currency(currencyCode) {
   currency = currencyCode;
-  console.log(currencyCode);
 }
 
 var stripe = Stripe(stripe_key);
@@ -12,11 +13,12 @@ var card = elements.create("card", {
     style: {
         base: {
             iconColor: "#8898AA",
-            color: "white",
+            color: "black",
             lineHeight: "36px",
             fontWeight: 300,
             fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
             fontSize: "19px",
+           
 
             "::placeholder": {
                 color: "#8898AA"
@@ -36,9 +38,10 @@ var card = elements.create("card", {
 card.currency = currency
 card.mount("#card-element");
 var inputs = document.querySelectorAll("input.field");
+
 Array.prototype.forEach.call(inputs, function(input) {
     input.addEventListener("focus", function() {
-        input.classList.add("is-focused");
+        console.log('focus');        input.classList.add("is-focused");
     });
     input.addEventListener("blur", function() {
         input.classList.remove("is-focused");

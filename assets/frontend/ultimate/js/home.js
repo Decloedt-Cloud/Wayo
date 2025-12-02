@@ -483,13 +483,13 @@ document.addEventListener("DOMContentLoaded", function () {
            async function updatePrices() {
               try {
                   // Get user's country
-                  
+
                   const response = await fetch('https://api.country.is/');
                   const data = await response.json();
-                  const country = data.country;   
+                  const country = data.country; 
                   
                   // Base price in MAD (Moroccan Dirham)
-                  const basePriceMAD = 804.48;
+                  const basePriceMAD = 790;
                   
                   // Get live exchange rate MAD to AED
                   const exchangeRate = await getExchangeRate('MAD', 'AED');

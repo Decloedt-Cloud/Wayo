@@ -5,291 +5,308 @@
 	    <title><?php echo get_phrase($page_title); ?> | <?php echo $this->db->get_where('schools', array('id' => school_id()))->row('name'); ?></title>
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+		
 	    <meta content="Creativeitem" name="author" />
 	    <!-- App favicon -->
 		<link rel="shortcut icon" href="<?php echo $this->settings_model->get_favicon(); ?>">
 
 		<?php include 'includes_top.php';?>
 
-
-		<style>
-			body{
-				padding-top: 50px;
-				padding-bottom: 50px;
-			}
-
-			.payment-header-text{
-				font-size: 23px;
-
-			}
-
-			.close-btn-light{
-				padding-left: 10px;
-				padding-right: 10px;
-				height: 35px;
-				line-height: 35px;
-				text-align: center;
-				font-size: 25px;
-				background-color: #F1EAE9;
-				color: #a45e72;
-				border-radius: 5px;
-			}
-			.close-btn-light:hover{
-				padding-left: 10px;
-				padding-right: 10px;
-				height: 35px;
-				line-height: 35px;
-				text-align: center;
-				font-size: 25px;
-				background-color: #a45e72;
-				color: #FFFFFF;
-				border-radius: 5px;
-			}
-
-			.payment-header{
-				font-size: 18px;
-			}
-
-			.item{
-				width: 100%;
-				height: 50px;
-				display: block;
-			}
-
-			.count-item{
-				padding-left: 13px;
-				padding-right: 13px;
-				padding-top: 5px;
-				padding-bottom: 5px;
-
-				margin-bottom: 100%;
-				margin-right: 18px;
-				margin-top: 8px;
-
-				color: #00B491;
-				background-color: #DEF6F3;
-				border-radius: 5px;
-				float: left;
-			}
-			.item-title{
-				font-weight: bold;
-				font-size: 13.5px;
-				display: block;
-				margin-top: 6px;
-			}
-			.item-price{
-				float: right;
-				color: #00B491;
-			}
-			.by-owner{
-				font-size: 11px;
-				color: #76767E;
-				display:block;
-				margin-top: -3px;
-			}
-
-			.total{
-				border-radius: 8px 0px 0px 8px;
-				background-color: #DBF3F0;
-				padding: 10px;
-				padding-left: 30px;
-				padding-right: 30px;
-				font-size: 18px;
-			}
-			.total-price{
-				border-radius: 0px 8px 8px 0px;
-				background-color: #CCD4DD;
-				padding: 10px;
-				padding-left: 25px;
-				padding-right: 25px;
-				font-size: 18px;
-			}
-			.indicated-price{
-				padding-bottom: 20px;
-				margin-bottom: 0px;
-			}
-
-			.payment-button{
-				background-color: #1DBDA0;
-				border-radius: 8px;
-				padding: 10px;
-				padding-left: 30px;
-				padding-right: 30px;
-				color: #fff;
-				border: none;
-				font-size: 18px;
-			}
-
-			.payment-gateway{
-				border: 2px solid #D3DCDD;
-				border-radius: 5px;
-				padding-top: 15px;
-				padding-bottom: 15px;
-				margin-bottom: 15px;
-				cursor: pointer;
-			}
-			.payment-gateway:hover{
-				border: 2px solid #00D04F;
-				border-radius: 5px;
-				padding-top: 15px;
-				padding-bottom: 15px;
-				margin-bottom: 15px;
-				cursor: pointer;
-			}
-
-			.payment-gateway-icon{
-				width: 80%;
-				float: right;
-			}
-			.tick-icon{
-				margin: 0px;
-				padding: 0px;
-				width: 15%;
-				float: left;
-				display: none;
-			}
-			.paypal-form, .stripe-form{
-				display: none;
-			}
-
-			@media only screen and (max-width: 600px) {
-			  .paypal, .stripe{
-			    margin-left: 5px;
-			    width: 70%;
-			  }
-			}
-
-		</style>
+		<link href="<?php echo base_url('assets/payment/css/stripe.css');?>"
+        rel="stylesheet">
+		
 	</head>
 	<body>
-
-	<?php
-	    $paypal_activity = json_decode(get_payment_settings('paypal_settings',$invoice_details['school_id']));
-	    $stripe_activity = json_decode(get_payment_settings('stripe_settings',$invoice_details['school_id']));
 		
-	?>
+		
 
-	<div class="container">
-		<div class="row justify-content-center mb-5">
-			<div class="col-md-8">
-				<div class="row">
-					<div class="col-md-12">
-						<span class="payment-header-text float-start"><b><?php echo get_phrase('make_payment'); ?></b></span>
-						<a href="<?php echo route('invoice'); ?>" class="close-btn-light float-end"><i class="fa fa-times"></i></a>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="row justify-content-center">
-			<div class="col-md-8">
-				<div class="row">
-					<div class="col-md-3">
-						<p class="pb-2 payment-header"><?php echo get_phrase('payment'); ?> <?php echo get_phrase('gateway'); ?></p>
-
-						<?php if ($paypal_activity[0]->paypal_active == 'yes'): ?>
-							<div class="row payment-gateway paypal" onclick="selectedPaymentGateway('paypal')">
-								<div class="col-12">
-									<img class="tick-icon paypal-icon" src="<?php echo base_url('assets/payment/tick.png'); ?>">
-									<img class="payment-gateway-icon" src="<?php echo base_url('assets/payment/paypal.png'); ?>">
-								</div>
+		<div class="checkout-container container p-0" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+			<div class="row g-0">
+				<!-- LEFT SIDE -->
+				<section class="payment-section col-12 col-md-7 p-4">
+					<h2 class="mb-4"><?php echo get_phrase('Complete your payment'); ?></h2>
+					
+					<!-- Payment method buttons - Modified -->
+					<div class="row g-3 mb-4">
+						<?php if ($stripe_enabled && $paypal_enabled): ?>
+							<!-- Both enabled - show 50/50 -->
+							<div class="col-6">
+								<button class="method-btn active" data-method="card">
+									<img src="<?php echo base_url('assets\backend\images\payments\stripe.png'); ?>" alt="Stripe">
+								</button>
 							</div>
-						<?php endif; if ($stripe_activity[0]->stripe_active == 'yes'): ?>
-							<div class="row payment-gateway stripe" onclick="selectedPaymentGateway('stripe')">
-								<div class="col-12">
-									<img class="tick-icon stripe-icon" src="<?php echo base_url('assets/payment/tick.png'); ?>">
-									<img class="payment-gateway-icon" src="<?php echo base_url('assets/payment/stripe.png'); ?>">
+							<div class="col-6">
+								<button class="method-btn" data-method="paypal">
+									<img src="<?php echo base_url('assets\backend\images\payments\Paypal1.png'); ?>" alt="PayPal">
+								</button>
+							</div>
+						<?php elseif ($stripe_enabled): ?>
+							<!-- Only Stripe enabled -->
+							<div class="col-12">
+								<button class="method-btn active" data-method="card">
+									<img src="<?php echo base_url('assets\backend\images\payments\stripe.png'); ?>" alt="Stripe">
+								</button>
+							</div>
+						<?php elseif ($paypal_enabled): ?>
+							<!-- Only PayPal enabled -->
+							<div class="col-12">
+								<button class="method-btn active" data-method="paypal">
+									<img src="<?php echo base_url('assets\backend\images\payments\Paypal1.png'); ?>" alt="PayPal">
+								</button>
+							</div>
+						<?php else: ?>
+							<!-- No payment methods configured -->
+							<div class="col-12">
+								<div class="alert alert-danger">
+									<?php echo get_phrase('No payment methods are configured. Please contact support.'); ?>
 								</div>
 							</div>
 						<?php endif; ?>
-						<?php if(addon_status('payumoney') == 1): ?>
-			            	<?php include 'payumoney_payment_gateway.php'; ?>
-			        	<?php endif; ?>
-			        	<?php if(addon_status('paystack') == 1): ?>
-			            	<?php include 'paystack_payment_gateway.php'; ?>
-			        	<?php endif; ?>
 					</div>
 
-					<div class="col-md-1"></div>
+					<!-- STRIPE FORM - Modified -->
+					<?php if ($stripe_enabled): ?>
+					<form id="card-form" class="payment-form <?php echo ($stripe_enabled && !$paypal_enabled) || ($stripe_enabled && $paypal_enabled) ? 'active' : ''; ?>" method="post"
+						action="<?php echo route('payment_success/stripe/' . $invoice_id.'/'.$amount_to_pay);?>">
 
-					<div class="col-md-8">
-						<div class="w-100">
-							<p class="pb-2 payment-header"><?php echo get_phrase('invoice_list'); ?></p>
-	                        <p class="item float-start">
-								<span class="count-item"><?php echo get_phrase('1'); ?></span>
-								<span class="item-title"><?php echo $invoice_details['title']; ?>
-									<span class="item-price">
-										<?php
-											$total_amount_in_this_invoice = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
-										?>
-										<?php echo currency_payment($total_amount_in_this_invoice,$invoice_details['school_id']); ?>
-									</span>
-								</span>
-								<span class="by-owner">
-									<!-- owner name -->
-								</span>
-							</p>
-						</div>
-						<div class="w-100 float-start mt-4 indicated-price">
-							<div class="float-end total-price"><?php echo currency_payment($total_amount_in_this_invoice,$invoice_details['school_id']); ?></div>
-							<div class="float-end total">
-								<?php if($invoice_details['paid_amount'] > 0): ?>
-									<?php echo get_phrase('due'); ?>
-								<?php else: ?>
-									<?php echo get_phrase('total'); ?>
-								<?php endif; ?>
-							</div>
-						</div>
-						<div class="w-100 float-start">
-							<form action="<?php echo route('paypal_checkout'); ?>" method="post" class="paypal-form form">
-								    <!-- Champ caché pour le jeton CSRF -->
-     							<input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-								<hr class="border mb-4">
-								<input type="hidden" name="invoice_id" value="<?php echo $invoice_details['id']; ?>">
-								<input type="hidden" name="type" value="<?php echo $type; ?>">
-								<button type="submit" class="payment-button float-end"><?php echo get_phrase('pay_by_paypal'); ?></button>
-				            </form>
-				            <form action="<?php echo route('stripe_checkout'); ?>" method="post" class="stripe-form form">
-								    <!-- Champ caché pour le jeton CSRF -->
-    							 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-				            	<hr class="border mb-4">
-								<input type="hidden" name="invoice_id" value="<?php echo $invoice_details['id']; ?>">
-								<input type="hidden" name="type" value="<?php echo $type; ?>">
-								<button type="submit" class="payment-button float-end"><?php echo get_phrase('pay_by_stripe'); ?></button>
-				            </form>
-				            <?php if(addon_status('payumoney') == 1): ?>
-				            	<?php include 'payumoney_payment_gateway_form.php'; ?>
-				        	<?php endif; ?>
-				            <?php if(addon_status('paystack') == 1): ?>
-				            	<?php include 'paystack_payment_gateway_form.php'; ?>
-				        	<?php endif; ?>
-						</div>
+												<input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+												
+												<input type="hidden" name="type" value="<?php echo $type;?>" />
+
+												<div class="form-group">
+													<label for="email"><?php echo get_phrase('Email address'); ?></label>
+													<div class="info-box"><?php echo $user_details['email']; ?></div>
+												</div>
+
+												<div class="form-group">
+													<label for="card-holder"><?php echo get_phrase('Name on card'); ?></label>
+													<div class="info-box"><?php echo $user_details['name']; ?></div>
+												</div>
+
+												<label>
+													<div id="card-element" class="field"></div>
+													<span><span style="color: #111827; font-weight : 600;"><?php echo get_phrase('credit_/_debit_card');?></span></span>
+												</label>
+												
+												<button type="submit">
+													<?php echo get_phrase('Pay');?> <?php echo number_format($amount_to_pay, 2) .' '.$stripe_currency;  ?></strong>
+												</button>
+												
+												<div class="outcome">
+													<div class="error" role="alert"></div>
+													<div class="success">
+														Success! Your Stripe token is <span class="token"></span>
+													</div>
+												</div>
+												
+												<div class="package-details mt-3">
+													<strong><?php echo get_phrase('Member_name');?> | <?php echo $user_details['name'];?></strong>
+												</div>
+												<input type="hidden" name="stripeToken" value="">
+					</form>
+					<?php endif; ?>
+
+					<!-- PAYPAL FORM - Modified -->
+					<?php if ($paypal_enabled): ?>
+					<div id="paypal-form" class="payment-form <?php echo (!$stripe_enabled && $paypal_enabled) ? 'active' : ''; ?>">
+						<p class="p-3 text-muted border rounded bg-light">
+							<?php echo get_phrase('You will be redirected to PayPal to complete your purchase.'); ?>			
+						</p>
+						
+						<div id="paypal-button-container" class="mt-3"  style="text-align: center; max-width: 400px; margin: 0 auto;"></div>
 					</div>
-				</div>
+					<?php endif; ?>
+
+					<div class="security-badge">
+						<i class="fa fa-lock"></i><?php echo get_phrase('100% secure payment')?> 
+					</div>
+				</section>
+
+				<!-- RIGHT SIDE -->
+				<section class="summary-section col-12 col-md-5 p-4">
+					<h2 class="mb-4"><?php echo get_phrase('Order Summary'); ?></h2>
+
+					<div class="d-flex justify-content-between mb-3">
+						<span>
+							<?php 
+								if ($type == "classe") {
+									// class payment → show class name
+									echo htmlspecialchars($class_name);
+								} else {
+									// community payment → show community name
+									echo htmlspecialchars($community_name);
+								}
+							?>
+							- marks (x1)
+						</span>
+						
+						
+						<strong><?php echo number_format($amount_to_pay, 2) .' '.$stripe_currency; ?></strong>
+					</div>
+
+					<div class="summary-divider my-4"></div>
+
+					<div class="d-flex justify-content-between summary-total">
+						<span>Total</span>
+						<strong class="text-orange"><?php echo number_format($amount_to_pay, 2) .' '. $stripe_currency; ?></strong>
+					</div>
+				</section>
 			</div>
 		</div>
-	</div>
 
-	<script type="text/javascript">
-		function selectedPaymentGateway(gateway){
-			if(gateway == 'paypal'){
-				$(".payment-gateway").css("border","2px solid #D3DCDD");
-				$('.tick-icon').hide();
-				$('.form').hide();
-
-				$(".paypal").css("border","2px solid #00D04F");
-				$('.paypal-icon').show();
-				$('.paypal-form').show();
-			}else if(gateway == 'stripe'){
-				$(".payment-gateway").css("border","2px solid #D3DCDD");
-				$('.tick-icon').hide();
-				$('.form').hide();
-
-				$(".stripe").css("border","2px solid #00D04F");
-				$('.stripe-icon').show();
-				$('.stripe-form').show();
+			<!-- CRITICAL: Load Stripe.js first -->
+		<script src="https://js.stripe.com/v3/"></script>
+		
+		<!-- CRITICAL: Define variables BEFORE loading stripe.js -->
+		<script type="text/javascript">
+			<?php 
+				// Debug: Let's see what we have
+				//error_log('Public Key: ' . (isset($stripe_public_key) ? $stripe_public_key : 'NOT SET'));
+				//error_log('Stripe Currency: ' . (isset($stripe_currency) ? $stripe_currency : 'NOT SET'));
+			?>
+			
+			var stripe_key = '<?php echo isset($stripe_public_key) ? $stripe_public_key : ""; ?>';
+			var stripe_currency = '<?php echo isset($stripe_currency) ? $stripe_currency : "MAD"; ?>';
+			
+			
+			
+			// Stop if no key
+			if (!stripe_key || stripe_key.length === 0) {
+				//alert('ERREUR: Clé Stripe manquante. Vérifiez votre configuration de paiement.');
+				//console.error('CRITICAL: Stripe public key is empty or not set');
 			}
-		}
-	</script>
+		</script>
+		
+		<!-- Load your custom stripe.js -->
+		<script src="<?php echo base_url('assets/payment/js/stripe.js');?>"></script>
+
+		<!-- Payment method switcher -->
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const methodButtons = document.querySelectorAll('.method-btn');
+				const paymentForms = document.querySelectorAll('.payment-form');
+				
+				methodButtons.forEach(button => {
+					button.addEventListener('click', () => {
+						methodButtons.forEach(btn => btn.classList.remove('active'));
+						button.classList.add('active');
+						
+						const method = button.dataset.method;
+						paymentForms.forEach(form => {
+							form.classList.toggle('active', form.id === `${method}-form`);
+						});
+					});
+				});
+			});
+		</script>
+
+		<!-- PayPal SDK -->
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+<!-- PayPal Button Configuration -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const paypalForm = document.getElementById('paypal-form');
+         
+        // Check if PayPal configuration exists
+        <?php 
+        if (empty($paypal_client_id_sandbox) && empty($paypal_client_id_production)) {
+            echo "console.error('CRITICAL: No PayPal Client IDs configured');";
+            echo "return;";
+        }
+        ?>
+        
+        if (paypalForm) {
+            try {
+                paypal.Button.render({
+                    env: '<?php echo $paypal_mode; ?>', // 'sandbox' or 'production'
+                    
+                    style: {
+                        label: 'paypal',
+                        size: 'large',
+                        shape: 'rect',
+                        color: 'white',
+                        tagline: false
+                    },
+                    
+                    client: {
+                        sandbox: '<?php echo $paypal_client_id_sandbox; ?>',
+                        production: '<?php echo $paypal_client_id_production; ?>'
+                    },
+                    
+                    commit: true,
+                    
+                    payment: function(data, actions) {
+                        console.log('Creating payment...');
+                        return actions.payment.create({
+                            payment: {
+                                transactions: [
+                                    {
+                                        amount: { 
+                                            total: '<?php echo $amount_to_pay; ?>', 
+                                            currency: '<?php echo $paypal_currency; ?>' 
+                                        }
+                                    }
+                                ]
+                            }
+                        });
+                    },
+                    
+                    onAuthorize: function(data, actions) {
+                        console.log("Payment authorized:", data);
+                        return actions.payment.execute().then(function(payment) {
+                            console.log("Payment executed successfully:", payment);
+                            
+                            // Make AJAX call to save payment info
+                            $.ajax({
+                                url: '<?php echo route('payment_success/paypal/' . $invoice_id . '/' . $amount_to_pay . '/0/' . $type); ?>',
+                                method: 'POST',
+                                data: {
+                                    '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>',
+                                    paymentID: data.paymentID,
+                                    payerID: data.payerID
+                                }
+                            }).done(function(result) {
+                                console.log("AJAX success response:", result);
+                                window.location = '<?php echo route('invoice'); ?>';
+                            }).fail(function(xhr, status, error) {
+                                console.error("AJAX error:", status, error);
+                                console.error("Response:", xhr.responseText);
+                                alert('Erreur lors de l\'enregistrement du paiement. Veuillez contacter le support.');
+                            });
+                        }).catch(function(error) {
+                            console.error("Payment execution error:", error);
+                            alert('Erreur lors de l\'exécution du paiement.');
+                        });
+                    },
+                    
+                    onCancel: function(data) {
+                        
+                        alert('Paiement annulé');
+                    },
+                    
+                    onError: function(err) {
+                        console.error('=== PAYPAL ERROR ===');
+                        console.error('Error object:', err);
+                        console.error('Error message:', err.message || 'Unknown error');
+                        console.error('Error stack:', err.stack || 'No stack trace');
+                        console.error('===================');
+                        alert('Erreur PayPal: ' + (err.message || 'Erreur inconnue. Vérifiez la console.')); 
+                    }
+                    
+                }, '#paypal-button-container');
+                
+
+                
+            } catch (error) {
+                console.error('Error rendering PayPal button:', error);
+                alert('Impossible de charger le bouton PayPal: ' + error.message);
+            }
+        } else {
+            console.error('PayPal form element not found');
+        }
+    });
+</script>
+
 	</body>
 </html>

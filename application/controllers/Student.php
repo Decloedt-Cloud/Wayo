@@ -902,6 +902,7 @@ class Student extends CI_Controller {
 			$classe_name = $this->db->get_where('classes', array('id' => $data['class_id']))->row('name');
 			$data_invoice['title'] = $name." - ".$classe_name ;
 			$data_invoice['total_amount'] = $data['price'];
+            $data_invoice['currency'] = $data['currency']; // ADD THIS LINE
 			$data_invoice['class_id'] = $data['class_id'] ;
 			$data_invoice['student_id'] = $data['student_id'];
 			$data_invoice['status'] = "unpaid";
@@ -998,7 +999,10 @@ class Student extends CI_Controller {
         }
 		// die($data['price']);
         // 🔹 7. Redirection vers la page de paiement ou la facture
-       
+
+       // ✅ ADD THIS: Store school_id in session for payment page
+        $this->session->set_userdata('payment_school_id', $data['school_id']);
+
 		redirect(site_url('Student/payment/community/' . $invoice_id), 'refresh');
     }
 }
@@ -1378,6 +1382,11 @@ class Student extends CI_Controller {
 		$data['amount_paid'] = $amount_paid;
         // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
         $details = $this->crud_model->get_invoice_by_id($invoice_id);
+
+         // If amount not in URL, get from POST
+        if (empty($amount_paid)) {
+            $amount_paid = $this->input->post('amount_paid');
+        }
      
 		if ($payment_method == 'stripe') {
            $type    = htmlspecialchars($this->input->post('type'));
@@ -1478,10 +1487,121 @@ class Student extends CI_Controller {
 
 	public function payment($param1 = "",$invoice_id = ""){
   
-		$page_data['page_title']  = 'payment_gateway';
-		$page_data['type']  = $param1 ;
-		$page_data['invoice_details'] = $this->crud_model->get_invoice_by_id($invoice_id);
-		$this->load->view('backend/payment_gateway/index', $page_data);
+		    $page_data['page_title'] = 'payment_gateway';
+            $page_data['type'] = $param1;
+            
+            // Get invoice details by ID
+            $page_data['invoice_details'] = $this->crud_model->get_invoice_by_id($invoice_id);
+
+            // Pass invoice ID to view
+            $page_data['invoice_id'] = $invoice_id;
+
+            // ========== CHECK INVOICE STATUS ==========
+            // If invoice is paid, redirect or show a different view
+            if ($page_data['invoice_details']['status'] == 'paid') {
+                // Option 1: Redirect to a different page (e.g., invoice view page)
+                redirect('/Student/invoice');
+            }
+            
+            // Load student details based on invoice
+            $student_id = $page_data['invoice_details']['student_id'];
+            $page_data['user_details'] = $this->db->get_where('users', ['id' => $student_id])->row_array();
+
+            // Get school ID from session and fetch school details
+            $school_id = $this->session->userdata('payment_school_id'); 
+            $page_data['school'] = $this->db->get_where('schools', ['id' => $school_id])->row(); // Pass to view
+    
+            
+            // Fetch invoice from database (alternative method)
+            $invoice = $this->db->get_where('invoices', ['id' => $this->uri->segment(4)])->row();
+            
+            // Set the total amount to pay and currency
+            $page_data['amount_to_pay'] = $page_data['invoice_details']['total_amount'];
+            $page_data['currency'] = $page_data['invoice_details']['currency'];
+
+            
+             if ($param1 == "classe") {
+                // Load class name
+                $class_id = $page_data['invoice_details']['class_id'];
+                $class = $this->db->get_where('classes', ['id' => $class_id])->row();
+                $page_data['class_name'] = $class ? $class->name : "";
+            } else {
+                // Load community name (from school table)
+                $school_id = $page_data['invoice_details']['school_id'];
+                $community = $this->db->get_where('schools', ['id' => $school_id])->row();
+                $page_data['community_name'] = $community ? $community->name : "";
+            }
+            // ========== PAYMENT GATEWAY SETTINGS ==========
+    
+            
+            // Get payment settings from database
+            $school_id = $page_data['invoice_details']['school_id'];
+            
+            // Query Stripe settings
+
+            $stripe_row = $this->db->get_where('payment_settings', [
+                'school_id' => $school_id,
+                'key' => 'stripe_settings'
+            ])->row();
+
+            $paypal_row = $this->db->get_where('payment_settings', [
+                'school_id' => $school_id,
+                'key' => 'paypal_settings'
+            ])->row();
+
+
+            // Handle JSON decoding - check if already decoded or needs decoding
+            if ($stripe_row && is_string($stripe_row->value)) {
+                $stripe = json_decode(trim($stripe_row->value));
+            } elseif ($stripe_row && is_object($stripe_row->value)) {
+                $stripe = $stripe_row->value;
+            } else {
+                $stripe = []; // Default empty array
+            }
+
+            if ($paypal_row && is_string($paypal_row->value)) {
+                    $paypal = json_decode(trim($paypal_row->value));
+            } elseif ($paypal_row && is_object($paypal_row->value)) {
+                    $paypal = $paypal_row->value;
+            } else {
+                    $paypal = []; // Default empty array
+            }
+
+            // Convert to array if needed for consistent access
+            $stripe = is_object($stripe) ? [$stripe] : (array)$stripe;
+            $paypal = is_object($paypal) ? [$paypal] : (array)$paypal;
+
+ 
+            
+            // ========== STRIPE SETTINGS ==========
+           $stripe_test_mode = $stripe[0]->stripe_mode ?? 'on';
+            
+            if ($stripe_test_mode == 'on') {
+                $page_data['stripe_public_key'] = $stripe[0]->stripe_test_public_key ?? '';
+                $page_data['stripe_private_key'] = $stripe[0]->stripe_test_secret_key ?? '';
+            } else {
+                $page_data['stripe_public_key'] = $stripe[0]->stripe_live_public_key ?? '';
+                $page_data['stripe_private_key'] = $stripe[0]->stripe_live_secret_key ?? '';
+            }
+            
+            $page_data['stripe_currency'] = $stripe[0]->stripe_currency ?? 'USD';
+            $page_data['stripe_enabled'] = !empty($page_data['stripe_private_key']) && !empty($page_data['stripe_public_key']);
+            
+            // ========== PAYPAL SETTINGS ==========
+            $page_data['paypal_mode'] = isset($paypal[0]->paypal_mode) ? $paypal[0]->paypal_mode : 'sandbox';
+            $page_data['paypal_client_id_sandbox'] = isset($paypal[0]->paypal_client_id_sandbox) ? $paypal[0]->paypal_client_id_sandbox : '';
+            $page_data['paypal_client_id_production'] = isset($paypal[0]->paypal_client_id_production) ? $paypal[0]->paypal_client_id_production : '';
+            $page_data['paypal_currency'] = isset($paypal[0]->paypal_currency) ? $paypal[0]->paypal_currency : 'USD';
+            
+            // Determine PayPal enabled status
+            if ($page_data['paypal_mode'] == 'sandbox') {
+                $page_data['paypal_enabled'] = !empty($page_data['paypal_client_id_sandbox']);
+            } else {
+                $page_data['paypal_enabled'] = !empty($page_data['paypal_client_id_production']);
+            }
+
+            // Load payment gateway view
+            $this->load->view('backend/payment_gateway/index', $page_data);
 	}
 
 	// Récupérer les classes par école pour l'étudiant connecté

@@ -3055,5 +3055,13 @@
     "cgu": "Cgu",
     "subscribe": "S’abonner",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Tous droits réservés.",
-    "developed_by_the_wayo_team": "Développé par l’équipe Wayo"
+    "developed_by_the_wayo_team": "Développé par l’équipe Wayo",
+    "complete_your_payment": "Finaliser votre paiement",
+    "order_summary": "Résumé de la commande",
+    "name_on_card": "Nom sur la carte",
+    "you_will_be_redirected_to_paypal_to_complete_your_purchase.": "Vous serez redirigé vers PayPal pour finaliser votre achat.",
+    "member_name": "Nom du membre",
+    "0_communities_found_for_search": "0 communautés trouvées pour cette recherche.",
+    "no_payment_methods_are_configured._please_contact_support.": "Aucune méthode de paiement n’est configurée. Veuillez contacter le support.",
+    "100%_secure_payment": "Paiement 100% sécurisé"
 }

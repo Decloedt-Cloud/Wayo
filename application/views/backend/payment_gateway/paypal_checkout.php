@@ -4,7 +4,7 @@
     <title>Paypal | <?php echo get_settings('system_name');?></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="<?php echo base_url('assets/payment/css/stripe.css');?>"
+    <link href="<?php echo base_url('assets/payment/css/paypal.css');?>"
           rel="stylesheet">
   <link name="favicon" type="image/x-icon" href="<?php echo base_url();?>uploads/system/logo/favicon.png" rel="shortcut icon" />
 </head>

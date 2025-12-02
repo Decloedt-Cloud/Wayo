@@ -3231,5 +3231,13 @@
     "cgu": "Cgu",
     "subscribe": "Abonneren",
     "©_2025_wayo_academy._all_rights_reserved.": "© 2025 Wayo Academy. Alle rechten voorbehouden.",
-    "developed_by_the_wayo_team": "Ontwikkeld door het Wayo-team"
+    "developed_by_the_wayo_team": "Ontwikkeld door het Wayo-team",
+    "complete_your_payment": "Voltooi uw betaling",
+    "no_payment_methods_are_configured._please_contact_support.": "Er zijn geen betaalmethoden geconfigureerd. Neem contact op met de ondersteuning.",
+    "100%_secure_payment": "100% veilige betaling",
+    "order_summary": "Besteloverzicht",
+    "name_on_card": "Naam op de kaart",
+    "member_name": "Lidnaam",
+    "you_will_be_redirected_to_paypal_to_complete_your_purchase.": "U wordt omgeleid naar PayPal om uw aankoop te voltooien."
+
 }
