@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<?php include APPPATH . 'views/backend/shared/trial_expired_modal.php'; ?>
 <?php if (!$school_approved): ?>
   <div class="alert alert-warning-community text-center" role="alert">
     <i class="fas fa-exclamation-triangle"></i>
@@ -6,6 +7,7 @@
     <?= get_phrase('you_have_limited_access_until_approved'); ?>
   </div>
 <?php endif; ?>
+
 <div class="col-xl-12">
   <div class="header-card">
     <div class="card-body">

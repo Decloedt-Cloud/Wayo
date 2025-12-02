@@ -336,21 +336,44 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
 
 
 <?php
-$school_approved = true;
-$allowed_in_menu = false;
+$school_approved  = true;
+$allowed_in_menu  = false;
+$trial_expired    = false;
 
 if ($this->session->userdata('user_type') == 'admin') {
     $school_id = $this->session->userdata('school_id');
-    $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
-    $school_approved = ($school && $school['status'] == 1);
+    $school    = $this->db->get_where('schools', ['id' => $school_id])->row_array();
 
-    // Si non approuvé → on autorise seulement dashboard et logout dans le menu
+    $school_approved = ($school && (int)$school['status'] === 1);
+
+    // Calcul de l’état de la période d’essai
+    if ($school) {
+        $now       = time();
+        $is_trial  = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
+        $is_paid   = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;
+        $trial_end = isset($school['trial_end']) ? (int)$school['trial_end'] : 0;
+
+        if ($is_trial === 1 && $is_paid === 0 && $trial_end > 0 && $now > $trial_end) {
+            $trial_expired = true;
+        }
+    }
+
+    // Si non approuvé OU essai expiré → on autorise seulement dashboard et logout dans le menu
     $current_method = $this->router->method;
-    $allowed_in_menu = in_array($current_method, ['dashboard', 'logout', 'language']);
+    $allowed_methods_base = ['dashboard', 'logout', 'language'];
+    $allowed_methods_trial = array_merge($allowed_methods_base, ['subscription', 'payment']);
+
+    if (!$school_approved) {
+        $allowed_in_menu = in_array($current_method, $allowed_methods_base);
+    } elseif ($trial_expired) {
+        $allowed_in_menu = in_array($current_method, $allowed_methods_trial);
+    } else {
+        $allowed_in_menu = true;
+    }
 }
 ?>
 <aside class="sidebar" id="sidebar"
-    <?php if (!$school_approved): ?>
+    <?php if (!$school_approved || $trial_expired): ?>
     style="opacity: 0.5; pointer-events: none; user-select: none;"
     onclick="event.preventDefault(); return false;"
     <?php endif; ?>>

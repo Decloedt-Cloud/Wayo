@@ -3301,6 +3301,8 @@
     "see_details": "Bekijk details",
     "private_community_-_join_request_only": "Privécommunity - alleen op verzoek toetreden",
     "free_class_(set_price_to_0)": "Gratis les (prijs op 0 zetten)",
-    "invalid_price_(must_be_a_non_negative_number)": "Ongeldige prijs (moet een niet-negatief getal zijn)"
-
+    "invalid_price_(must_be_a_non_negative_number)": "Ongeldige prijs (moet een niet-negatief getal zijn)",
+    "your_trial_has_ended": "Je proefperiode is verlopen",
+    "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Om je community te blijven gebruiken, moet je je abonnement activeren.",
+    "go_to_payment_page": "Ga naar de betalingspagina"
 }

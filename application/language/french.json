@@ -3133,6 +3133,9 @@
     "see_details": "Voir les détails",
     "private_community_-_join_request_only": "Communauté privée - seulement par demande",
     "free_class_(set_price_to_0)": "Classe gratuite (définir le prix à 0)",
-    "invalid_price_(must_be_a_non_negative_number)": "Prix invalide (doit être un nombre non négatif)"
+    "invalid_price_(must_be_a_non_negative_number)": "Prix invalide (doit être un nombre non négatif)",
+    "your_trial_has_ended": "Votre essai a expiré",
+    "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Pour continuer à utiliser votre communauté, vous devez activer votre abonnement.",
+    "go_to_payment_page": "Aller à la page de paiement"
 
 }
