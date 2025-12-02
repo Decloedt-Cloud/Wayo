@@ -853,17 +853,26 @@ function community_details($school_id = '')
 		$access = $this->input->post('visibility') ? 1 : 0;
 		$price = $this->input->post('i_am') === 'Particulier' ? 0 : ($this->input->post('price') ?: 0);
 
+		// Gestion de la période d'essai : 14 jours gratuits pour l’admin de la communauté
+		$now        = time();
+		$trial_days = 14;
+
 		$school_data = [
-			'name' => htmlspecialchars($school_name),
-			'Rue' => htmlspecialchars($this->input->post('street')),
-			'Numero' => htmlspecialchars($this->input->post('number')),
-			'Ville' => htmlspecialchars($this->input->post('city')),
-			'Codepostal' => htmlspecialchars($this->input->post('postal_code')),
-			'status' => 0,
+			'name'        => htmlspecialchars($school_name),
+			'Rue'         => htmlspecialchars($this->input->post('street')),
+			'Numero'      => htmlspecialchars($this->input->post('number')),
+			'Ville'       => htmlspecialchars($this->input->post('city')),
+			'Codepostal'  => htmlspecialchars($this->input->post('postal_code')),
+			'status'      => 0,
 			'description' => htmlspecialchars($this->input->post('school_description')),
-			'access' => $access,
-			'category' => htmlspecialchars($this->input->post('category')),
-			'price' => $price
+			'access'      => $access,
+			'category'    => htmlspecialchars($this->input->post('category')),
+			'price'       => $price,
+			// Champs liés à l’abonnement / période d’essai
+			'trial_start' => $now,
+			'trial_end'   => $now + (60 * 60 * 24 * $trial_days),
+			'is_trial'    => 1,
+			'is_paid'     => 0,
 		];
 
 		$this->db->insert('schools', $school_data);
