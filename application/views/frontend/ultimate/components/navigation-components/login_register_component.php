@@ -121,16 +121,14 @@
   .role-text h3{ font-size:1rem; }
   .role-text p{ font-size:.9rem; }
 }
-
-    </style>
+</style>
 
       <!-- Header -->
   <header class="">
     <div class="" id="openLoginBtnM"></div>
   </header>
 
-
- <section id="loginInline" class="login-inline" hidden>
+<section id="loginInline" class="login-inline" hidden>
     <div class="container">
       <div class="login-card" role="dialog" aria-labelledby="loginTitle">
         <div class="login-head">
@@ -215,9 +213,22 @@
         </form>
       </div>
     </div>
-  </section>
+</section>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const joinBtn = document.getElementById("openLoginBtnM");
+    const navToggler = document.getElementById("nav-toggler");
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    joinBtn?.addEventListener("click", scrollToTop);
+    navToggler?.addEventListener("click", scrollToTop);
+});
+</script>
 
 <script type="text/javascript">
   var checkEmailExistsUrl = '<?php echo site_url('login/check_email_exists'); ?>';
@@ -347,9 +358,9 @@ if (!prefersReduced) {
 /* ===== Connexion inline (affiche sous la navbar) ===== */
 document.addEventListener("DOMContentLoaded", function () {
   const box        = document.getElementById('loginInline');
-  const btnOpen    = document.getElementById('openLoginBtn');      // bouton navbar desktop
-  const btnOpenM   = document.getElementById('openLoginBtnM');     // bouton mobile offcanvas
-  const btnClose   = document.getElementById('loginClose');        // bouton X
+  const btnOpen    = document.getElementById('openLoginBtn');      
+  const btnOpenM   = document.getElementById('openLoginBtnM');     
+  const btnClose   = document.getElementById('loginClose');        
   const formLogin  = document.getElementById('login-form');
   const formSignup = document.getElementById('signupForm');
   const formForgot = document.getElementById('forget-form');
@@ -360,128 +371,83 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginTitle = document.getElementById('loginTitle');
 
   const isIOS = /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
-  let keyboardOpen = false;
   let outsideClickHandler = null;
 
-  // Util: positionne la carte sous le bouton ou sous la navbar si choix mobile stable
-  function positionLoginDropdown(btn, forceUnderNavbar=false) {
+  /* ==========================================
+        POSITION POPUP LOGIN (desktop seulement)
+  =========================================== */
+  function positionLoginDropdown(btn) {
     if (!box) return;
     const card = box.querySelector('.login-card');
     if (!card) return;
 
+    // NE PAS POSITIONNER SUR MOBILE / iOS
+    if (isIOS || window.innerWidth < 400) {
+      // CSS s'occupe de la position
+      return;
+    }
+
+    // Desktop : calculer position
     const w = Math.min(340, window.innerWidth * 0.94);
     card.style.width = w + 'px';
-
     const gap = 8;
     let left, top;
 
-    if (forceUnderNavbar || window.innerWidth < 480) {
-      // option B: fixer sous la navbar (stable sur iOS)
-      const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 58;
+    if (!btn) {
       left = Math.max(8, (window.innerWidth - w) / 2);
-      top  = headerH + gap;
+      top  = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + gap;
     } else {
-      if (!btn) {
-        // fallback: centrer
-        left = Math.max(8, (window.innerWidth - w) / 2);
-        top  = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + gap;
-      } else {
-        const r = btn.getBoundingClientRect();
-        left = r.right - w;
-        top  = r.bottom + gap;
-        left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
-      }
+      const r = btn.getBoundingClientRect();
+      left = r.right - w;
+      top  = r.bottom + gap;
+      left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
     }
 
     box.style.left = left + 'px';
     box.style.top  = top + 'px';
   }
 
-  // Ouvre / ferme le dropdown
+  /* ==========================================
+        OUVRIR / FERMER POPUP LOGIN
+  =========================================== */
   function toggleLogin(show, btn) {
-    if (!box) return;
     const willShow = (show !== undefined) ? show : box.hasAttribute('hidden');
 
-    // si offcanvas ouvert, on attend sa fermeture proprement
-    const offcanvasEl = document.getElementById('navbarOffcanvas');
-    const finishShow = () => {
-      if (!willShow) {
-        box.setAttribute('hidden','');
-        removeOutsideClickListener();
-        return;
-      }
-      box.removeAttribute('hidden');
-
-      // position selon device ; sur iOS/viewport small, on force sous navbar (Option B)
-      const forceUnderNavbar = isIOS || window.innerWidth < 480;
-      positionLoginDropdown(btn, forceUnderNavbar);
-
-      // focus sur 1er input visible
-      const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
-      activeForm.querySelector('input')?.focus();
-
-      // n'utilise pas scrollIntoView sur iOS (bug), l'utiliser uniquement hors iOS si nécessaire
-      if (!isIOS) {
-        // try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e){ /* ignore */ }
-      }
-
-      // ajouter listener pour fermer quand on clique en dehors
-      addOutsideClickListener();
-    };
-
-    if (offcanvasEl) {
-      // si offcanvas présent et visible, attendre l'événement hidden.bs.offcanvas
-      const offInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
-      if (offInstance) {
-        // si on veut l'ouvrir après fermeture de offcanvas
-        if (willShow) {
-          if (offInstance && willShow) {
-
-            let done = false;
-
-            const tryFinish = () => {
-              if (done) return;
-              done = true;
-              finishShow();
-            };
-
-            // 1) On écoute l'événement Bootstrap (si jamais il marche)
-            offcanvasEl.addEventListener('hidden.bs.offcanvas', tryFinish, { once: true });
-
-            // 2) Fallback forcé — au cas où Bootstrap n’envoie rien
-            setTimeout(tryFinish, 350);
-
-            // 3) On ferme l’offcanvas
-            offInstance.hide();
-
-            return;
-          }
-        } else {
-          // simplement fermer
-          finishShow();
-          return;
-        }
-      }
+    if (!willShow) {
+      box.setAttribute('hidden','');
+      removeOutsideClickListener();
+      return;
     }
 
-    // si pas d'offcanvas, on peut afficher immédiatement
-    finishShow();
+    box.removeAttribute('hidden');
+
+    // Desktop seulement : position dynamique
+    positionLoginDropdown(btn);
+
+    // Focus sur premier input visible
+    const activeForm = !formLogin.hidden ? formLogin : !formSignup.hidden ? formSignup : formForgot;
+    activeForm.querySelector('input')?.focus();
+
+    addOutsideClickListener();
   }
 
-  // fermeture via clic en dehors
+  /* ==========================================
+          CLIC EN DEHORS POUR FERMER
+  =========================================== */
   function addOutsideClickListener() {
     removeOutsideClickListener();
     outsideClickHandler = function(e) {
-      if (!box) return;
       const card = box.querySelector('.login-card');
-      if (!card) return;
-      if (!card.contains(e.target) && !e.target.closest('#openLoginBtn') && !e.target.closest('#openLoginBtnM')) {
+      if (!card.contains(e.target) 
+        && !e.target.closest('#openLoginBtn') 
+        && !e.target.closest('#openLoginBtnM')
+      ) {
         toggleLogin(false);
       }
     };
-    // utiliser capture pour être sûr de capter evenements avant d'autres handlers
     document.addEventListener('pointerdown', outsideClickHandler, { capture: true });
   }
+
   function removeOutsideClickListener() {
     if (outsideClickHandler) {
       document.removeEventListener('pointerdown', outsideClickHandler, { capture: true });
@@ -489,48 +455,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // gestion clavier (iOS déclenche resize) -> on ignore repositionnement pendant édition
-  window.addEventListener('focusin', () => { keyboardOpen = true; });
-  window.addEventListener('focusout', () => { keyboardOpen = false; });
-
-  // repositionner lors du scroll/resize si visible (mais éviter pendant clavier)
-  ['scroll','resize'].forEach(evt => {
-    window.addEventListener(evt, () => {
-      if (box?.hasAttribute && !box.hasAttribute('hidden') && !keyboardOpen) {
-        const btn = window.innerWidth < 480 ? btnOpenM : btnOpen;
-        const forceUnderNavbar = isIOS || window.innerWidth < 480;
-        positionLoginDropdown(btn, forceUnderNavbar);
-      }
-    }, { passive: true });
-  });
-
-  // === événements d'ouverture/fermeture ===
+  /* ==========================================
+              BOUTONS OPEN / CLOSE
+  =========================================== */
   btnOpen?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpen); });
   btnOpenM?.addEventListener('click', (e) => { e.preventDefault(); toggleLogin(true, btnOpenM); });
   btnClose?.addEventListener('click', () => toggleLogin(false));
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && box && !box.hasAttribute('hidden')) toggleLogin(false);
+    if (e.key === 'Escape' && !box.hasAttribute('hidden')) toggleLogin(false);
   });
 
-  // Switch forms
+  /* ==========================================
+                    SWITCH FORM
+  =========================================== */
   goSignup?.addEventListener('click', (e) => {
     e.preventDefault();
     formLogin.hidden = true; formForgot.hidden = true; formSignup.hidden = false;
     loginTitle.textContent = "<?php echo get_phrase('Create_an_account') ?>";
     formSignup.querySelector('input')?.focus();
   });
+
   goLogin?.addEventListener('click', (e) => {
     e.preventDefault();
     formSignup.hidden = true; formForgot.hidden = true; formLogin.hidden = false;
     loginTitle.textContent = "<?php echo get_phrase('Log_in') ?>";
     formLogin.querySelector('input')?.focus();
   });
+
   forgotLink?.addEventListener('click', (e) => {
     e.preventDefault();
     formLogin.hidden = true; formSignup.hidden = true; formForgot.hidden = false;
     loginTitle.textContent = "<?php echo get_phrase('Forgot_password') ?>";
     formForgot.querySelector('input')?.focus();
   });
+
   backToLogin?.addEventListener('click', (e) => {
     e.preventDefault();
     formForgot.hidden = true; formSignup.hidden = true; formLogin.hidden = false;
@@ -538,8 +497,20 @@ document.addEventListener("DOMContentLoaded", function () {
     formLogin.querySelector('input')?.focus();
   });
 
-  // empêcher soumission réelle pour demo (si tu veux laisser réel, supprime cette ligne)
+  // Empêcher soumission (demo)
   [formLogin, formSignup].forEach(f => f?.addEventListener('submit', (e) => e.preventDefault()));
+
+  /* ==========================================
+        REPOSITIONNEMENT AU RESIZE / SCROLL (desktop seulement)
+  =========================================== */
+  ['scroll','resize'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (box?.hasAttribute && !box.hasAttribute('hidden') && window.innerWidth >= 480 && !isIOS) {
+        const btn = window.innerWidth < 480 ? btnOpenM : btnOpen;
+        positionLoginDropdown(btn);
+      }
+    }, { passive: true });
+  });
 
 });
 </script>

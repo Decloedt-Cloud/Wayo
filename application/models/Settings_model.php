@@ -131,7 +131,10 @@ class Settings_model extends CI_Model
   {
     return $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
   }
-
+  public function get_settings_school_data($school_id)
+  {
+    return $this->db->get_where('settings_school', array('school_id' => $school_id))->row_array();
+  }
   public function update_current_school_settings()
   {
     $schoolId = school_id();
@@ -762,6 +765,16 @@ class Settings_model extends CI_Model
       return base_url('uploads/system/logo/favicon.png');
     } else {
       return base_url('uploads/system/logo/favicon.svg');
+    }
+  }
+
+  public function get_logo_school($school_id)
+  {
+    if (file_exists('uploads/schools/' . $school_id . '.jpg')) {
+      // die('uploads/schools/' . $school_id . '.jpg');
+      return base_url('uploads/schools/' . $school_id . '.jpg');
+    } else {
+      return base_url('uploads/schools/placeholder.jpg');
     }
   }
 }

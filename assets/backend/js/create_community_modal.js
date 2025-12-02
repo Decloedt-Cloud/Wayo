@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const iAmSelect = document.getElementById('i_am');
     const taxSelect = document.getElementById('Tax_residence');
     const priceInput = document.getElementById('community-price');
-    const particulierNotice = document.getElementById('particulierNotice');
+    const monetizationNotice = document.getElementById('monetizationNotice');
     const currencySymbol = document.getElementById('currencySymbol');
+    const privateToggle = document.getElementById('isPrivate');
 
     taxSelect?.addEventListener('change', function () {
         updateCurrency();
@@ -57,16 +58,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // === PRIX BLOQUÉ SI PARTICULIER ===
     function togglePriceField() {
         const isParticulier = iAmSelect?.value === 'Particulier';
-        if (isParticulier) {
-            particulierNotice.style.display = 'block';
+        const isPrivateCommunity = privateToggle?.checked;
+        const shouldDisable = isParticulier || isPrivateCommunity;
+
+        if (shouldDisable) {
             priceInput.value = '0';
             priceInput.disabled = true;
             priceInput.classList.add('bg-light');
+
+            if (monetizationNotice) {
+                let message = '';
+                if (isParticulier) {
+                    message = monetizationNotice.dataset.particulierMessage || '';
+                } else if (isPrivateCommunity) {
+                    message = monetizationNotice.dataset.privateMessage || '';
+                }
+                monetizationNotice.textContent = message;
+                monetizationNotice.style.display = message ? 'block' : 'none';
+            }
         } else {
-            particulierNotice.style.display = 'none';
             priceInput.disabled = false;
             priceInput.classList.remove('bg-light');
             if (priceInput.value === '0') priceInput.value = '';
+
+            if (monetizationNotice) {
+                monetizationNotice.style.display = 'none';
+                monetizationNotice.textContent = '';
+            }
         }
     }
 
@@ -232,6 +250,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#modal-step-1 input, #modal-step-1 select, #modal-step-1 textarea').forEach(el => {
         el.addEventListener('input', updateContinueButton);
         el.addEventListener('change', updateContinueButton);
+    });
+
+    iAmSelect?.addEventListener('change', () => {
+        togglePriceField();
+        updateContinueButton();
+    });
+
+    privateToggle?.addEventListener('change', () => {
+        togglePriceField();
     });
 
     // === ÉCOUTEURS BOUTONS ===

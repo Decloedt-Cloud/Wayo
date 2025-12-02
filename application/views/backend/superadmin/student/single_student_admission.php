@@ -29,14 +29,14 @@
         <div class="form-group ">
             <label class="col-form-label" for="name"><?php echo get_phrase('Full_name'); ?><span class="required"> * </span></label>
             <div class="input-wrapper">
-                <input type="text" id="name" name="name" class="form-control" placeholder="<?php echo get_phrase("Full_name") ?>" required>
+                <input type="text" id="name" name="name" class="form-control" placeholder="<?php echo get_phrase("Full_name") ?>">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-form-label" for="email"><?php echo get_phrase('email'); ?><span class="required"> * </span></label>
             <div class="input-wrapper">
-                <input type="email" class="form-control" id="email" name="email" placeholder="<?php echo get_phrase("email") ?>" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="<?php echo get_phrase("email") ?>" >
             </div>
         </div>
 
@@ -44,7 +44,7 @@
 
         <div class="form-group ">
             <label class="col-form-label" for="class_id"><?php echo get_phrase('class'); ?><span class="required"> *</span></label>
-            <select name="class_id" id="class_id_add" class="form-control" required>
+            <select name="class_id" id="class_id_add" class="form-control" >
                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                 <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                 <?php foreach ($classes as $class) { ?>
@@ -54,7 +54,7 @@
         </div>
         <div class="form-group">
             <label class="col-form-label" for="gender"><?php echo get_phrase('gender'); ?><span class="required"> *</span></label>
-            <select name="gender" id="gender" class="form-control" required>
+            <select name="gender" id="gender" class="form-control" >
                 <option value=""><?php echo get_phrase('select_gender'); ?></option>
                 <option value="Male"><?php echo get_phrase('male'); ?></option>
                 <option value="Female"><?php echo get_phrase('female'); ?></option>
@@ -70,26 +70,26 @@
         </div>
         <div class="form-group ">
             <label class="col-form-label" for="phone"><?php echo get_phrase('phone'); ?><span class="required"> *</span></label>
-            <input type="text" id="phone" name="phone" class="form-control" placeholder="<?php echo get_phrase("phone") ?>" required>
+            <input type="text" id="phone" name="phone" class="form-control" placeholder="<?php echo get_phrase("phone") ?>" >
         </div>
         <div class="form-group ">
             <label class="col-form-label" for="Rue"><?php echo get_phrase('Rue'); ?><span class="required"> *</span></label>
-            <input type="text" class="form-control" id="Street" placeholder="<?php echo get_phrase('Rue'); ?>"  name="Street"  required>
+            <input type="text" class="form-control" id="Street" placeholder="<?php echo get_phrase('Rue'); ?>"  name="Street"  >
         </div>
         <div class="form-group ">
             <label class="col-form-label" for="phone"><?php echo get_phrase('Numéro'); ?><span class="required"> *</span></label>
-            <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" name="number" required
+            <input id="communityNumber" type="text" placeholder="<?php echo get_phrase("Numéro") ?>" class="form-control shadow-none" name="number" 
                           data-msg="<?php echo get_phrase("Veuillez entrer le numéro") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
         </div>
         <div class="form-group ">                 
                  
             <label class="col-form-label" for="Ville"><?php echo get_phrase("Ville") ?><span class="required"> *</span></label>
-             <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" required
+             <input id="communityCity" type="text" placeholder="<?php echo get_phrase("Ville") ?>" class="form-control shadow-none" name="city" 
                     data-msg="<?php echo get_phrase("Veuillez entrer la ville") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
         </div>
         <div class="form-group ">
             <label class="col-form-label" for="code_postal"><?php echo get_phrase('code_postal'); ?><span class="required"> *</span></label>
-            <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" required
+            <input id="communityPostalCode" type="text" placeholder="<?php echo get_phrase("code_postal") ?>" class="form-control shadow-none" name="postal_code" 
             data-msg="<?php echo get_phrase("Veuillez entrer le postal code") ?>" data-error-class="u-has-error" data-success-class="u-has-success">
         </div>
     </div>
@@ -108,7 +108,246 @@
 
 </form>
 
-<script type="text/javascript">
+<script>
+$(document).ready(function() {
+
+    /** =============================
+     * CRÉATION DES MESSAGES D'ERREUR <small>
+     * ============================= */
+    const nameInput = $('#name');
+    const nameError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    nameInput.after(nameError);
+
+    const emailInput = $('#email');
+    const emailError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    emailInput.after(emailError);
+
+    const phoneInput = $('#phone');
+    const phoneError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    phoneInput.after(phoneError);
+
+    const streetInput = $('#Street');
+    const streetError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    streetInput.after(streetError);
+
+    const numberInput = $('#communityNumber');
+    const numberError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    numberInput.after(numberError);
+
+    const cityInput = $('#communityCity');
+    const cityError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    cityInput.after(cityError);
+
+    const postalInput = $('#communityPostalCode');
+    const postalError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    postalInput.after(postalError);
+
+    const classInput = $('#class_id_add');
+    const classError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    classInput.after(classError);
+
+    const genderInput = $('#gender');
+    const genderError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    genderInput.after(genderError);
+
+    const birthdayInput = $('#birthday');
+    const birthdayError = $('<small class="text-danger d-block mt-1" style="display:none;"></small>');
+    birthdayInput.after(birthdayError);
+
+    /** =============================
+     * VALIDATION EN TEMPS RÉEL
+     * ============================= */
+    nameInput.on('input', function() {
+        const value = $(this).val().trim();
+        if (value.length < 3) {
+            nameError.text('<?php echo get_phrase("Full_name_must_contain_at_least_3_characters"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            nameError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    emailInput.on('input', function() {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regex.test($(this).val().trim())) {
+            emailError.text('<?php echo get_phrase("Please_enter_a_valid_email"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            emailError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    phoneInput.on('input', function() {
+        const regex = /^[0-9]{8,15}$/;
+        if (!regex.test($(this).val().trim())) {
+            phoneError.text('<?php echo get_phrase("Please_enter_a_valid_phone_number"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            phoneError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    streetInput.on('input', function() {
+        if ($(this).val().trim() === "") {
+            streetError.text('<?php echo get_phrase("Street_cannot_be_empty"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            streetError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    numberInput.on('input', function() {
+        if ($(this).val().trim() === "") {
+            numberError.text('<?php echo get_phrase("Number_cannot_be_empty"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            numberError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    cityInput.on('input', function() {
+        if ($(this).val().trim() === "") {
+            cityError.text('<?php echo get_phrase("City_cannot_be_empty"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            cityError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    postalInput.on('input', function() {
+        const regex = /^[0-9]{4,10}$/;
+        if (!regex.test($(this).val().trim())) {
+            postalError.text('<?php echo get_phrase("Please_enter_a_valid_postal_code"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            postalError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    classInput.on('change', function() {
+        if ($(this).val() === "") {
+            classError.text('<?php echo get_phrase("Please_select_a_class"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            classError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    genderInput.on('change', function() {
+        if ($(this).val() === "") {
+            genderError.text('<?php echo get_phrase("Please_select_gender"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            genderError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    birthdayInput.on('change', function() {
+        if ($(this).val().trim() === "") {
+            birthdayError.text('<?php echo get_phrase("Please_select_birthday"); ?>').show();
+            $(this).addClass('is-invalid');
+        } else {
+            birthdayError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    /** =============================
+     * PRÉVISUALISATION IMAGE
+     * ============================= */
+    $('.image-upload').each(function() {
+        const input = $(this);
+        const previewId = input.data('preview');
+        input.on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                const previewContainer = $('#' + previewId);
+                const previewImage = previewContainer.find('.preview-image');
+                reader.onload = function(e) {
+                    previewImage.attr('src', e.target.result);
+                    previewContainer.addClass('upload-highlight');
+                    setTimeout(function() {
+                        previewContainer.removeClass('upload-highlight');
+                    }, 1500);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    /** =============================
+     * SOUMISSION AJAX AVEC VALIDATION
+     * ============================= */
+    $('#student_admission_form').on('submit', function(e) {
+        e.preventDefault();
+        let isValid = true;
+
+        // Champs texte
+        if (!/^[a-zA-Z\s]{3,}$/.test(nameInput.val().trim())) { isValid=false; nameInput.addClass('is-invalid'); nameError.show(); } else { nameInput.removeClass('is-invalid'); nameError.hide(); }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.val().trim())) { isValid=false; emailInput.addClass('is-invalid'); emailError.show(); } else { emailInput.removeClass('is-invalid'); emailError.hide(); }
+        if (!/^[0-9]{8,15}$/.test(phoneInput.val().trim())) { isValid=false; phoneInput.addClass('is-invalid'); phoneError.show(); } else { phoneInput.removeClass('is-invalid'); phoneError.hide(); }
+        if (streetInput.val().trim()==="") { isValid=false; streetInput.addClass('is-invalid'); streetError.show(); } else { streetInput.removeClass('is-invalid'); streetError.hide(); }
+        if (numberInput.val().trim()==="") { isValid=false; numberInput.addClass('is-invalid'); numberError.show(); } else { numberInput.removeClass('is-invalid'); numberError.hide(); }
+        if (cityInput.val().trim()==="") { isValid=false; cityInput.addClass('is-invalid'); cityError.show(); } else { cityInput.removeClass('is-invalid'); cityError.hide(); }
+        if (!/^[0-9]{4,10}$/.test(postalInput.val().trim())) { isValid=false; postalInput.addClass('is-invalid'); postalError.show(); } else { postalInput.removeClass('is-invalid'); postalError.hide(); }
+
+        // Champs select / date
+        if (classInput.val() === "") { isValid=false; classInput.addClass('is-invalid'); classError.show(); } else { classInput.removeClass('is-invalid'); classError.hide(); }
+        if (genderInput.val() === "") { isValid=false; genderInput.addClass('is-invalid'); genderError.show(); } else { genderInput.removeClass('is-invalid'); genderError.hide(); }
+        if (birthdayInput.val().trim() === "") { isValid=false; birthdayInput.addClass('is-invalid'); birthdayError.show(); } else { birthdayInput.removeClass('is-invalid'); birthdayError.hide(); }
+
+        if (!isValid) {
+            error_notify('<?php echo get_phrase("Please_correct_the_errors_before_submitting"); ?>');
+            return false;
+        }
+
+        // Soumission AJAX
+        const form = $(this);
+        const submitButton = form.find('button[type="submit"]');
+        const adding_text = "<?php echo get_phrase('adding'); ?>...";
+        submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> ' + adding_text);
+
+        const formData = new FormData(this);
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                submitButton.prop('disabled', false).html('<?php echo get_phrase("add_students"); ?>');
+                if (response.status) {
+                    success_notify(response.notification);
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    setTimeout(() => location.reload(), 600);
+                } else {
+                    error_notify('<?= js_phrase(get_phrase("action_not_allowed")); ?>');
+                }
+            },
+            error: function() {
+                submitButton.prop('disabled', false).html('<?php echo get_phrase("add_students"); ?>');
+                error_notify('<?= js_phrase(get_phrase("an_error_occurred_during_submission")); ?>');
+            }
+        });
+    });
+
+});
+</script>
+
+
+<!-- <script type="text/javascript">
     $(document).ready(function() {
         $(".ajaxForm").validate();
 
@@ -245,4 +484,4 @@
         }
         return true;
     }
-</script>
+</script> -->

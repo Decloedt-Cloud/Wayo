@@ -64,6 +64,23 @@
                 >
             </div>
 
+            <!-- Option simple pour rendre la classe gratuite -->
+            <div class="mt-1">
+                <div class="form-check">
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="is_free" 
+                        name="is_free" 
+                        value="1"
+                        <?php if ((float)$class['price'] == 0): ?> checked <?php endif; ?>
+                    >
+                    <label class="form-check-label" for="is_free">
+                        <?php echo get_phrase('Free_class_(set_price_to_0)'); ?>
+                    </label>
+                </div>
+            </div>
+
             <!-- Message d'avertissement -->
             <small id="price-warning" class="text-danger" <?php if ($type != 'Particulier'): ?>   style="display:none;" <?php endif; ?>>
                 <?php echo get_phrase('as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0'); ?>
@@ -142,6 +159,31 @@ $(document).ready(function() {
             });
         });
   $(".ajaxForm").validate({}); // Jquery form validation initialization
+
+  // Gestion "classe gratuite" en édition
+  var $priceInput = $('#price');
+  var $isFreeCheckbox = $('#is_free');
+
+  if ($isFreeCheckbox.length) {
+      // État initial : si déjà gratuit, on bloque le champ à 0
+      if ($isFreeCheckbox.is(':checked')) {
+          $priceInput.val('0').prop('readonly', true);
+      }
+
+      // Quand on coche / décoche la case
+      $isFreeCheckbox.on('change', function () {
+          if ($(this).is(':checked')) {
+              $priceInput.val('0').prop('readonly', true);
+          } else {
+              // On réactive, en respectant le type "Particulier"
+              <?php if ($type == 'Particulier'): ?>
+              $priceInput.val('0').prop('readonly', true);
+              <?php else: ?>
+              $priceInput.prop('readonly', false);
+              <?php endif; ?>
+          }
+      });
+  }
 //   $(".ajaxForm").submit(function(e) {
 //       var form = $(this);
     //   ajaxSubmit(e, form, showAllClasses);
@@ -158,6 +200,11 @@ $(document).ready(function() {
  // Soumission du formulaire de logo
  $(".ajaxForm").submit(function(e) {
     e.preventDefault();
+
+    // Si "classe gratuite" est cochée, on force le prix à 0 avant envoi
+    if ($isFreeCheckbox.length && $isFreeCheckbox.is(':checked')) {
+        $priceInput.val('0');
+    }
 
            // Cible uniquement le bouton de ce formulaire
         var submitButton = $(this).find('button[type="submit"]');
@@ -200,17 +247,27 @@ $(document).ready(function() {
 });
 
 function checkPriceForParticulier(input) {
+alert('test');
     const userType = "<?php echo $type; ?>";
-    const price = parseFloat(input.value) || 0;
+    const isFreeCheckbox = document.getElementById('is_free');
     const warning = document.getElementById('price-warning');
+
+    // Si "classe gratuite" est cochée, on force 0 et on ignore le reste
+    if (isFreeCheckbox && isFreeCheckbox.checked) {
+        input.value = '0';
+        if (warning) warning.style.display = 'none';
+        return;
+    }
+
+    const price = parseFloat(input.value) || 0;
 
     // Autorise uniquement les chiffres et le point
     input.value = input.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
 
     if (userType === "Particulier" && price > 0) {
-        warning.style.display = 'block';
+        if (warning) warning.style.display = 'block';
     } else {
-        warning.style.display = 'none';
+        if (warning) warning.style.display = 'none';
     }
 }
 </script>

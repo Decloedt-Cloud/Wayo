@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<?php include APPPATH . 'views/backend/shared/trial_expired_modal.php'; ?>
 <?php if (!$school_approved): ?>
   <div class="alert alert-warning-community text-center" role="alert">
     <i class="fas fa-exclamation-triangle"></i>
@@ -6,6 +7,7 @@
     <?= get_phrase('you_have_limited_access_until_approved'); ?>
   </div>
 <?php endif; ?>
+
 <div class="col-xl-12">
   <div class="header-card">
     <div class="card-body">
@@ -27,7 +29,7 @@
       <div class="row">
         <div class="container">
           <div class="row justify-content-md-center">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
               <div class="card widget-flat" id="student">
                 <div class="card-body">
                   <div class="float-end">
@@ -48,7 +50,7 @@
             </div> <!-- end col-->
 
 
-            <div class="col-sm-4">
+            <div class="col-sm-6">
               <div class="card widget-flat" id="teacher">
                 <div class="card-body">
                   <div class="float-end">
@@ -63,28 +65,6 @@
                   </h3>
                   <p class="mb-0 text-muted">
                     <span class="text-nowrap"><?php echo get_phrase('total_number_of_teacher'); ?></span>
-                  </p>
-                </div> <!-- end card-body-->
-              </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-sm-4">
-              <div class="card widget-flat">
-                <div class="card-body">
-                  <div class="float-end">
-                    <i class="mdi mdi-account-multiple widget-icon"></i>
-                  </div>
-                  <h5 class="text-muted font-weight-normal mt-0" title="Number of Staff"><i class="fas fa-user-tie fa-lg" style="margin-right: 3px;"></i><?php echo get_phrase('staff'); ?></h5>
-                  <h3 class="mt-3 mb-3">
-                    <?php
-                    $accountants = $this->user_model->get_accountants()->num_rows();
-                    $librarians = $this->user_model->get_librarians()->num_rows();
-                    echo $accountants + $librarians;
-
-                    ?>
-                  </h3>
-                  <p class="mb-0 text-muted">
-                    <span class="text-nowrap"><?php echo get_phrase('total_number_of_staff'); ?></span>
                   </p>
                 </div> <!-- end card-body-->
               </div> <!-- end card-->

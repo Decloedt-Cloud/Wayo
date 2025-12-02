@@ -48,7 +48,7 @@
             <div class="dropdown text-center">
               <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
               <div class="dropdown-menu dropdown-menu-end">
-                <a href="<?php echo route('invoice/invoice/' . $invoice['id']); ?>" class="dropdown-item" target="_blank"><?php echo get_phrase('print_invoice'); ?></a>
+                <a href="<?php echo route('invoice/invoice/' . $invoice['id']); ?>" class="dropdown-item" target="_blank"><?php echo get_phrase('See details'); ?></a>
               </div>
             </div>
           <?php endif; ?>

@@ -55,22 +55,53 @@ class Admin extends CI_Controller
 		if ($this->session->userdata('admin_login') != 1) {
 			redirect(site_url('login'), 'refresh');
 		}
-        if ($this->session->userdata('user_type') == 'admin') {
-            $school_id = $this->session->userdata('school_id');
-            $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
 
-            $current_method = $this->router->method;
+		if ($this->session->userdata('user_type') == 'admin') {
+			$school_id = $this->session->userdata('school_id');
+			$school    = $this->db->get_where('schools', ['id' => $school_id])->row_array();
 
-            // Si l'école n'est PAS approuvée
-            if (!$school || $school['status'] != 1) {
-                // Autoriser uniquement : dashboard, logout, et waiting_approval (au cas où)
-                $allowed_methods = ['dashboard', 'logout', 'language'];
+			$current_method = $this->router->method;
 
-                if (!in_array($current_method, $allowed_methods)) {
-                    redirect(site_url('admin/dashboard')); // ← toujours vers dashboard
-                }
-            }
-        }
+			// Protection de base : communauté non approuvée
+			if (!$school || (int)$school['status'] !== 1) {
+				// Autoriser uniquement : dashboard, logout, et changement de langue
+				$allowed_methods = ['dashboard', 'logout', 'language'];
+
+				if (!in_array($current_method, $allowed_methods)) {
+					redirect(site_url('admin/dashboard'));
+				}
+			}
+
+			// ---- Gestion de la période d’essai de 14 jours pour l’admin de la communauté ----
+			// On considère qu’une communauté est en essai si is_trial = 1 et is_paid = 0
+			// et que la date actuelle est supérieure à trial_end.
+			$trial_expired = false;
+			if ($school) {
+				$now         = time();
+				$is_trial    = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
+				$is_paid     = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;
+				$trial_end   = isset($school['trial_end']) ? (int)$school['trial_end'] : 0;
+
+				if ($is_trial === 1 && $is_paid === 0 && $trial_end > 0 && $now > $trial_end) {
+					$trial_expired = true;
+				}
+			}
+
+			// Partage l’info avec les vues
+			$this->trial_expired = $trial_expired;
+			$this->school_data   = $school;
+
+			// Si l’essai est expiré et non payé, on limite les méthodes autorisées
+			if ($trial_expired) {
+				// Laisser accès uniquement au dashboard, au logout et à la page de paiement (si définie)
+				$allowed_methods_trial = ['dashboard', 'logout', 'language', 'subscription', 'payment'];
+
+				if (!in_array($current_method, $allowed_methods_trial)) {
+					// Rediriger vers le dashboard où un pop-up de paiement sera affiché
+					redirect(site_url('admin/dashboard'));
+				}
+			}
+		}
 	}
 	//dashboard
 	public function index()
@@ -2447,6 +2478,36 @@ class Admin extends CI_Controller
     }
   }
 
+    /**
+     * Download a single invoice as PDF
+     */
+    public function invoice_pdf($invoice_id = "")
+    {
+      if ($this->session->userdata('admin_login') != 1) {
+        redirect(site_url('login'), 'refresh');
+      }
+
+      if (empty($invoice_id)) {
+        show_error('Invalid invoice id');
+      }
+
+      $page_data['invoice_id'] = $invoice_id;
+
+      // Rendre la facture en HTML
+      ob_start();
+      $this->load->view('backend/admin/invoice/invoice_pdf', $page_data);
+      $html = ob_get_clean();
+
+      try {
+        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+        $mpdf->WriteHTML($html);
+        $fileName = 'Invoice-' . sprintf('%08d', $invoice_id) . '.pdf';
+        $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+      } catch (\Mpdf\MpdfException $e) {
+        echo $e->getMessage();
+      }
+    }
+
 	/*FUNCTION FOR DOWNLOADING A FILE*/
 	function download_file($path, $name)
 	{
@@ -2910,8 +2971,8 @@ class Admin extends CI_Controller
 		}
 		if ($param1 == 'delete') {
 
-			$this->db->where('id', $user_id);
-			$this->db->delete('users');
+			// $this->db->where('id', $user_id);
+			// $this->db->delete('users');
 
 			$this->db->where('user_id', $user_id);
 			$this->db->delete('students');
@@ -2919,7 +2980,7 @@ class Admin extends CI_Controller
 			redirect(site_url('admin/online_admission'), 'refresh');
 		}
 
-		$this->db->select('user_id');
+		$this->db->select('*');
 		$this->db->where('status', 0);
 		$this->db->where('school_id', $this->session->userdata('school_id'));
 		$query = $this->db->get('students');
@@ -2933,7 +2994,8 @@ class Admin extends CI_Controller
 		if (!empty($user_ids)) {
 
 			$this->db->where_in('id', $user_ids);
-			$page_data['applications'] = $this->db->get('users');
+            $users = $this->db->get('users');
+			$page_data['applications'] = $query;
 		} else {
 			$page_data['applications'] = null;
 		}

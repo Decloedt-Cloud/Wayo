@@ -7,17 +7,19 @@
   <div class="form-row">
     <div class="form-group mb-1">
       <label for="date"><?php echo get_phrase('date'); ?><span class="required"> * </span></label>
-      <input type="text" class="form-control date" id="date" data-bs-toggle="date-picker" data-single-date-picker="true" name = "date" value="" required>
+      <input type="text" class="form-control date" id="date" data-bs-toggle="date-picker" data-single-date-picker="true" name = "date" value="" >
+       <small id="date_help" class="text-danger d-none"></small>
     </div>
 
     <div class="form-group mb-1">
       <label for="amount"><?php echo get_phrase('amount').' ('.currency_code_and_symbol('code').')'; ?><span class="required"> * </span></label>
-      <input type="text" class="form-control" id="amount" name = "amount" required>
+      <input type="text" class="form-control" id="amount" name = "amount" >
+      <small id="amount_help" class="text-danger d-none"></small>
     </div>
 
     <div class="form-group mb-1">
       <label for="expense_category_id"><?php echo get_phrase('expense_category'); ?><span class="required"> * </span></label>
-      <select class="form-control"  name="expense_category_id" id = "expense_category_id_on_create" required>
+      <select class="form-control"  name="expense_category_id" id = "expense_category_id_on_create" >
         <option value=""><?php echo get_phrase('select_an_expense_category'); ?></option>
         <?php
         $expense_categories = $this->crud_model->get_expense_categories()->result_array();
@@ -25,6 +27,7 @@
         <option value="<?php echo $expense_category['id']; ?>"><?php echo $expense_category['name']; ?></option>
       <?php endforeach; ?>
     </select>
+     <small id="category_help" class="text-danger d-none" ></small>
   </div>
 
   <div class="form-group  col-md-12">
@@ -34,6 +37,159 @@
 </form>
 
 <script>
+$(document).ready(function () {
+
+    /* ============================
+       CSRF TOKEN
+    ============================ */
+    function getCsrfToken() {
+        var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+        var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+        return { csrfName: csrfName, csrfHash: csrfHash };
+    }
+
+    /* ============================
+       FIELD ELEMENTS
+    ============================ */
+    const dateInput     = $('#date');
+    const dateHelp      = $('#date_help');
+
+    const amountInput   = $('#amount');
+    const amountHelp    = $('#amount_help');
+
+    const categoryInput = $('#expense_category_id_on_create');
+    const categoryHelp  = $('#category_help');
+
+    const amountRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
+
+   function showError(el, msg) {
+    el.text(msg)
+      .removeClass('d-none')
+      .removeClass('invisible')
+      .show();   // force display:block
+}
+
+  function hideError(el) {
+      el.text('')
+        .addClass('d-none')
+        .hide();  
+  }
+
+    /* ============================
+       VALIDATION TEMPS RÉEL
+    ============================ */
+
+    dateInput.on('change', function () {
+        if ($(this).val().trim() === '') {
+            showError(dateHelp, "<?= addslashes(get_phrase('please_provide_date')); ?>");
+            dateInput.addClass('is-invalid');
+        } else {
+            hideError(dateHelp);
+            dateInput.removeClass('is-invalid');
+        }
+    });
+
+    amountInput.on('input', function () {
+        const val = $(this).val().trim();
+        if (!amountRegex.test(val)) {
+            showError(amountHelp, "<?= addslashes(get_phrase('invalid_amount')); ?>");
+            amountInput.addClass('is-invalid');
+        } else {
+            hideError(amountHelp);
+            amountInput.removeClass('is-invalid');
+        }
+    });
+
+    categoryInput.on('change', function () {
+        if ($(this).val() === '') {
+            showError(categoryHelp, "<?= addslashes(get_phrase('please_select_expense_category')); ?>");
+            categoryInput.addClass('is-invalid');
+        } else {
+            hideError(categoryHelp);
+            categoryInput.removeClass('is-invalid');
+        }
+    });
+
+    /* ============================
+       AJAX SUBMIT
+    ============================ */
+
+    let isSubmitting = false;
+
+    $(".ajaxForm").on("submit", function(e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+
+        let isValid = true;
+
+        if (dateInput.val().trim() === '') {
+            showError(dateHelp, "<?= addslashes(get_phrase('please_provide_date')); ?>");
+            dateInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        const amountVal = amountInput.val().trim();
+        if (!amountRegex.test(amountVal)) {
+            showError(amountHelp, "<?= addslashes(get_phrase('invalid_amount')); ?>");
+            amountInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (categoryInput.val() === '') {
+            showError(categoryHelp, "<?= addslashes(get_phrase('please_select_expense_category')); ?>");
+            categoryInput.addClass('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        isSubmitting = true;
+
+        var submitButton = $(this).find('button[type="submit"]');
+        submitButton.prop('disabled', true)
+            .html('<i class="mdi mdi-loading mdi-spin"></i> <?= addslashes(get_phrase('creating')); ?>...');
+
+        var csrf = getCsrfToken();
+        const formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+
+            success: function(response) {
+                isSubmitting = false;
+                submitButton.prop('disabled', false)
+                    .html('<i class="mdi mdi-plus"></i> <?= addslashes(get_phrase('create_expense')); ?>');
+
+                if (response.status) {
+                    success_notify(response.notification);
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    setTimeout(() => location.reload(), 3000);
+                } else {
+                    error_notify("<?= addslashes(get_phrase('action_not_allowed')); ?>");
+                }
+            },
+
+            error: function() {
+                isSubmitting = false;
+                submitButton.prop('disabled', false)
+                    .html('<i class="mdi mdi-plus"></i> <?= addslashes(get_phrase('create_expense')); ?>');
+                error_notify("<?= addslashes(get_phrase('an_error_occurred_during_submission')); ?>");
+            }
+        });
+    });
+
+});
+</script>
+
+
+
+
+<!-- <script>
 $(document).ready(function() {
   $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#expense_category_id_on_create']);
   $('#date').daterangepicker();
@@ -89,6 +245,6 @@ $(document).ready(function() {
       });
     });
 });
-</script>
+</script> -->
 
 

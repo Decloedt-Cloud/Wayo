@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 /*
 *  @author   : Creativeitem
 *  date      : November, 2019
@@ -946,16 +946,34 @@ class Student extends CI_Controller {
         $data['session']    = active_session();
 
         // 🔹 2. Vérifier si l'école existe
-        $school_name = $this->db->get_where('schools', ['id' => $data['school_id']])->row('name');
-        if (!$school_name) {
+        $school = $this->db->get_where('schools', ['id' => $data['school_id']])->row();
+        if (!$school) {
             show_error('École non trouvée.');
             return;
+        }
+        $school_name = $school->name;
+        $is_private_school = (int)$school->access > 0;
+
+        if ($is_private_school) {
+            // Les communautés privées ne passent pas par la page de paiement
+            $this->user_model->join_school($data['school_id'], [
+                'invoice_id'     => null,
+                'amount_paid'    => 0,
+                'payment_method' => 'private_access'
+            ]);
+
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                redirect($_SERVER['HTTP_REFERER'], 'refresh');
+            } else {
+                redirect(site_url('home'), 'refresh');
+            }
         }
 
         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
         $existing_invoice = $this->db->get_where('invoices', [
             'school_id'  => $data['school_id'],
-            'student_id' => $data['student_id']
+            'student_id' => $data['student_id'],
+            'payment_type' => 'school_join'
         ])->row();
 
         if (!$existing_invoice) {
@@ -1261,6 +1279,36 @@ class Student extends CI_Controller {
 		}
 	}
 
+	/**
+	 * Download a single invoice as PDF (Student)
+	 */
+	public function invoice_pdf($invoice_id = "")
+	{
+		if ($this->session->userdata('student_login') != 1) {
+			redirect(site_url('login'), 'refresh');
+		}
+
+		if (empty($invoice_id)) {
+			show_error('Invalid invoice id');
+		}
+
+		$page_data['invoice_id'] = $invoice_id;
+
+		// Render HTML of the student invoice for PDF
+		ob_start();
+		$this->load->view('backend/student/invoice/invoice_pdf', $page_data);
+		$html = ob_get_clean();
+
+		try {
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+			$mpdf->WriteHTML($html);
+			$fileName = 'Invoice-' . sprintf('%08d', $invoice_id) . '.pdf';
+			$mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+		} catch (\Mpdf\MpdfException $e) {
+			echo $e->getMessage();
+		}
+	}
+
 	// PAYPAL CHECKOUT
 	public function paypal_checkout() {
 		$invoice_id = htmlspecialchars($this->input->post('invoice_id'));
@@ -1422,7 +1470,7 @@ class Student extends CI_Controller {
             if($type == "community"){
 
            
-            return    $this->user_model->join_school($details['school_id'],$data);
+             $this->user_model->join_school($details['school_id'],$data);
             }else{
 
                 $this->crud_model->payment_success($data);

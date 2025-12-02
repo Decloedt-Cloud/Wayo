@@ -1,10 +1,5 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.css">
-<style>
-/* Style pour les champs invalides */
-.is-invalid {
-    border: 1px solid #ff5b5b !important; /* Bordure rouge */
-}
-</style>
+
 
 <div class="col-xl-12">
     <div class="header-card">
@@ -92,7 +87,6 @@
                                         <div class="form-text text-secondary small mt-2">
                                             <?php echo get_phrase('A compelling title helps attract more students'); ?>
                                         </div>
-                                        <div class="invalid-feedback"><?php echo get_phrase('This_field_is_required.'); ?></div>
                                     </div>
 
                                     <div class="mb-4">
@@ -144,56 +138,31 @@
                                 <div class="p-4 p-lg-5">
                                     <h4 class="mb-4 text-slate-800 fw-normal"><?php echo get_phrase('Academic information'); ?></h4>
 
-                                   <div class="mb-4">
-                                        <label class="form-label fw-medium" for="class_id_add_cours">
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium" for="class_id">
                                             <?php echo get_phrase('Class'); ?> <span class="text-danger">*</span>
                                         </label>
-
-                                        <select class="form-select form-select-lg border-0 bg-light" 
-                                                name="class_id[]" 
-                                                id="class_id_add_cours" 
-                                                multiple 
-                                                required>
+                                        <select class="form-select form-select-lg border-0 bg-light" name="class_id[]" id="class_id_add_cours" multiple required>
                                             <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                             <?php foreach ($classes->result_array() as $class): ?>
-                                                <option value="<?php echo $class['id']; ?>">
-                                                    <?php echo $class['name']; ?>
-                                                </option>
+                                                <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                                             <?php endforeach; ?>
                                         </select>
-
-                                        <!-- 🔥 Bloc obligatoire pour afficher l'erreur -->
-                                        <div class="invalid-feedback">
-                                            <?php echo get_phrase('Please_select_at_least_one_class'); ?>
-                                        </div>
                                     </div>
 
-                                    <?php if ($this->session->userdata('teacher_login') == 1): ?> 
+                                    <?php if ($this->session->userdata('teacher_login') == 1): ?>
                                         <input type="hidden" name="user_id" value="<?php echo $this->session->userdata('user_id'); ?>">
                                     <?php else: ?>
-
                                         <div class="mb-4">
                                             <label class="form-label fw-medium" for="user_id">
                                                 <?php echo get_phrase('Instructor'); ?> <span class="text-danger">*</span>
                                             </label>
-
-                                            <select class="form-select form-select-lg border-0 bg-light" 
-                                                    name="user_id[]" 
-                                                    id="user_id" 
-                                                    multiple 
-                                                    required>
+                                            <select class="form-select form-select-lg border-0 bg-light" name="user_id[]" id="user_id" multiple required>
                                                 <option value="" disabled><?php echo get_phrase('select_a_teacher'); ?></option>
                                                 <?php foreach ($all_teachers->result_array() as $teacher): ?>
-                                                    <option value="<?php echo $teacher['id']; ?>">
-                                                        <?php echo $teacher['name']; ?>
-                                                    </option>
+                                                    <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['name']; ?></option>
                                                 <?php endforeach; ?>
                                             </select>
-
-                                            <!-- 🔥 Le bloc obligatoire pour afficher l’erreur -->
-                                            <div class="invalid-feedback">
-                                                <?php echo get_phrase('Please_select_at_least_one_instructor'); ?>
-                                            </div>
                                         </div>
                                     <?php endif; ?>
 
@@ -319,7 +288,7 @@
                                             </span>
                                         </h3>
                                         <p class="text-secondary mb-4">
-                                            <?php echo get_phrase('Please_review_all_information_before_submitting._Your_course_will_be_available_after_approval.'); ?>
+                                            <?php echo get_phrase('Please review all information before submitting. Your course will be available after approval.'); ?>
                                         </p>
                                         <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap custom-navigation-buttons">
                                             <!-- Previous -->
@@ -337,7 +306,7 @@
                                                     <?php echo get_phrase('inactive'); ?>
                                                 </label>
                                                 <button type="button" class="btn btn-success px-5 py-2 fw-medium" onclick="checkRequiredFields()">
-                                                    <?php echo get_phrase('Submit_course'); ?>
+                                                    <?php echo get_phrase('Submit course'); ?>
                                                 </button>
                                             </div>
                                         </div>
@@ -360,67 +329,33 @@
 
 
 <script type="text/javascript">
-
-    /**
-     * Validate all required fields inside the current tab.
-     * Returns true if all fields are valid, false otherwise.
-     */
-    function validateCurrentTab() {
-        let isValid = true;
-
-        const currentPane = document.querySelector('.tab-pane.fade.show.active');
-
-        const requiredFields = currentPane.querySelectorAll('input[required], select[required], textarea[required]');
-
-        requiredFields.forEach(field => {
-            if (!field.value || field.value.trim() === '') {
-                field.classList.add('is-invalid');
-                isValid = false;
-
-                const feedback = field.parentElement.querySelector('.invalid-feedback');
-                if (feedback) feedback.style.display = 'block';
-            } else {
-                field.classList.remove('is-invalid');
-
-                const feedback = field.parentElement.querySelector('.invalid-feedback');
-                if (feedback) feedback.style.display = 'none';
-            }
-        });
-
-        return isValid;
-    }
-
-
     /**
      * Navigation to the next form tab.
      */
     function goToNext() {
-
-        // 🔥 VALIDATION DES CHAMPS REQUIRED
-        if (!validateCurrentTab()) {
-            toastr.error('<?php echo get_phrase("Please_fill_all_required_fields"); ?>');
-            return; // stop navigation
-        }
-
         const currentTab = document.querySelector('.nav-link.active');
         const nextTab = currentTab.parentElement.nextElementSibling?.querySelector('.nav-link');
 
         if (nextTab) {
+            // Get current and next tab panes
             const currentPane = document.querySelector('.tab-pane.fade.show.active');
             const nextPane = document.querySelector(nextTab.getAttribute('href'));
 
+            // Deactivate current tab and pane
             currentPane.classList.remove('show', 'active');
             currentTab.classList.remove('active');
 
+            // Activate next tab and pane
             nextPane.classList.add('fade', 'show', 'active');
             nextTab.classList.add('active');
 
+            // Update tab icons
             updateTabIcons();
 
+            // Scroll to the top of the form
             window.scrollTo(0, 0);
         }
     }
-
 
     /**
      * Navigation to the previous form tab.
@@ -430,24 +365,30 @@
         const prevTab = currentTab.parentElement.previousElementSibling?.querySelector('.nav-link');
 
         if (prevTab) {
+            // Get current and previous tab panes
             const currentPane = document.querySelector('.tab-pane.fade.show.active');
             const prevPane = document.querySelector(prevTab.getAttribute('href'));
 
+            // Deactivate current tab and pane
             currentPane.classList.remove('show', 'active');
             currentTab.classList.remove('active');
 
+            // Activate previous tab and pane
             prevPane.classList.add('fade', 'show', 'active');
             prevTab.classList.add('active');
 
+            // Update tab icons
             updateTabIcons();
 
+
+            // Scroll to the top of the form
             window.scrollTo(0, 0);
         }
     }
 
-
     /**
      * Updates the icons of the navigation tabs based on their active state.
+     * Active tabs get a primary color, while inactive ones are muted.
      */
     function updateTabIcons() {
         document.querySelectorAll('.course-steps-nav .nav-link').forEach(tab => {
@@ -462,21 +403,24 @@
         });
     }
 
-
+    /**
+     * Initializes form elements and plugins once the document is ready.
+     */
     $(document).ready(function() {
-        initRichTextEditors();
-        initThumbnailPreview();
-        initDefaultSelect2();
-        updateTabIcons();
-
+        initRichTextEditors(); // Initialize JoditEditor rich text editors
+        initThumbnailPreview(); // Setup thumbnail image preview functionality
+        initDefaultSelect2(); // Initialize Select2 for dropdowns if available
+        updateTabIcons(); // Set initial tab icons
+        // Set up event listener for tab changes
         $('.course-steps-nav .nav-link').on('click', function() {
             setTimeout(updateTabIcons, 50);
         });
+
+
     });
-    
 
     /**
-     * Initializes JoditEditor rich text editors.
+     * Initializes JoditEditor rich text editors for description and outcomes fields.
      */
     function initRichTextEditors() {
         const commonConfig = {
@@ -519,16 +463,17 @@
             buttons: 'bold,italic,underline,strikethrough,|,align,undo,redo,|,ul,ol,|,outdent,indent,|,font,fontsize,brush,paragraph,|,image,video,link,|,hr,eraser,|,source,fullsize,preview,print'
         };
 
-        new Jodit('#basic_description', $.extend({}, commonConfig, {
-            placeholder: '<?php echo get_phrase("Describe_what_students_will_learn_in_this_course"); ?>'
+        const basicDescriptionEditor = new Jodit('#basic_description', $.extend({}, commonConfig, {
+            placeholder: 'Describe what students will learn in this course'
         }));
 
-        new Jodit('#outcomes_desc', $.extend({}, commonConfig, {
-            placeholder: '<?php echo get_phrase("List_specific_skills_and_knowledge_students_will_gain"); ?>'
+        const outcomesDescEditor = new Jodit('#outcomes_desc', $.extend({}, commonConfig, {
+            placeholder: '<?php echo get_phrase("List specific skills and knowledge students will gain"); ?>'
         }));
     }
 
 
+    // Ajouter dans initThumbnailPreview
     function initThumbnailPreview() {
         $('#course_thumbnail').change(function() {
             if (this.files && this.files[0]) {
@@ -541,61 +486,69 @@
         });
     }
 
-
     /**
-     * Initializes Select2
+     * Initializes Select2 for all form-select elements if the Select2 plugin is available.
+     * Applies Bootstrap 5 theme and light styling.
      */
     function initDefaultSelect2() {
         if ($.fn.select2) {
             $('.form-select').select2({
                 width: '100%'
             }).on('select2:open', function() {
+                // Apply specific background color when dropdown opens
                 $('.select2-dropdown').css('background-color', '#f5f5dc');
                 $('.select2-search__field').css('background-color', '#f5f5dc');
                 $('.select2-results').css('background-color', '#f5f5dc');
             });
 
+            // Apply background color to the selection container
             $('.select2-selection').css('background-color', '#f5f5dc');
         }
     }
 
-
     /**
-     * Final validation on submit.
+     * Validates the required fields in the form before submission.
+     * If any required field is empty, it highlights the field, switches to the corresponding tab, and prevents submission.
+     * Displays a toastr error message for missing fields.
      */
     function checkRequiredFields() {
         let isValid = true;
         $('form.required-form').find('input, select, textarea').each(function() {
             if ($(this).prop('required') && !$(this).val()) {
                 isValid = false;
-                $(this).addClass('is-invalid');
+                $(this).addClass('is-invalid'); // Add Bootstrap's invalid class for styling
 
-                const tabId = $(this).closest('.tab-pane').attr('id');
-                $('.nav-link[href="#' + tabId + '"]').tab('show');
-                return false;
+                // If not valid and not already switched tab, switch to the tab containing the invalid field
+                if (!isValid) {
+                    const tabId = $(this).closest('.tab-pane').attr('id');
+                    $('.nav-link[href="#' + tabId + '"]').tab('show'); // Use Bootstrap tab API to show tab
+                    return false; // Exit the each loop early
+                }
             } else {
-                $(this).removeClass('is-invalid');
+                $(this).removeClass('is-invalid'); // Remove invalid class if field is valid
             }
         });
 
         if (isValid) {
-            $('form.required-form').submit();
+            $('form.required-form').submit(); // Submit the form if all fields are valid
         } else {
-            toastr.error('<?php echo get_phrase("Please_fill_all_required_fields"); ?>');
+            toastr.error('<?php echo get_phrase("Please fill all required fields"); ?>'); // Show error toastr
         }
     }
 
-
+    // 🔹 On injecte les traductions PHP dans le JS
     const activeText = "<?php echo get_phrase('active'); ?>";
     const inactiveText = "<?php echo get_phrase('inactive'); ?>";
 
     const courseSwitch = document.getElementById('courseActiveSwitch');
     const courseStatus = document.getElementById('course_status');
-    const switchLabel = document.querySelector('label.switch');
+    const switchLabel = document.querySelector('label.switch'); // ton label
 
+    // Valeur initiale
     switchLabel.textContent = inactiveText;
     courseStatus.value = 'inactive';
 
+    // Quand on change l’état du switch
     courseSwitch.addEventListener('change', function() {
         if (this.checked) {
             switchLabel.textContent = activeText;
@@ -609,12 +562,10 @@
             switchLabel.classList.remove('text-success');
         }
     });
-
     document.addEventListener('DOMContentLoaded', function() {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
-
 </script>
