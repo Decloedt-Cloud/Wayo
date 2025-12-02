@@ -1,3 +1,15 @@
+<style>
+@media (max-width: 480px) {
+    #community-menu {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+    }
+    /* Classe pour descendre la card quand le dropdown s’ouvre */
+}
+</style>
+
 <?php
 $user_id = $this->session->userdata('user_id');
 $active_school_id = $this->session->userdata('active_school_id');
@@ -230,6 +242,7 @@ if ($active_school_id) {
 
 </div>
 </div>
+
 <!-- end Topbar -->
 <script>
     window.checkCommunityNameUrl = '<?php echo site_url("home/check_community_name_exists"); ?>';
@@ -304,270 +317,229 @@ if ($active_school_id) {
     }
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // === HAMBURGER MENU ===
-        const hamburger = document.getElementById('hamburger');
-        const sidebar = document.querySelector('.sidebar-nav');
 
-        if (hamburger && sidebar) {
-            hamburger.addEventListener('click', function() {
-                this.classList.toggle('open');
-                sidebar.classList.toggle('show-sidebar');
-            });
-        }
+document.addEventListener('DOMContentLoaded', function() {
 
-        const trigger = document.getElementById('community-trigger');
-        const menu = document.getElementById('community-menu');
-        const listContainer = document.getElementById('community-list');
+    // === HAMBURGER MENU ===
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.querySelector('.sidebar-nav');
 
-        if (!trigger || !menu || !listContainer) return;
+    if (hamburger && sidebar) {
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('open');
+            sidebar.classList.toggle('show-sidebar');
+        });
+    }
 
-        let isOpen = false;
+    const trigger = document.getElementById('community-trigger');
+    const menu = document.getElementById('community-menu');
+    const listContainer = document.getElementById('community-list');
 
-        function updateMenuPosition() {
-            if (!isOpen || !menu.classList.contains('show')) return;
+    if (!trigger || !menu || !listContainer) return;
 
-            const rect = trigger.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    let isOpen = false;
 
-            menu.style.top = `${rect.bottom + scrollTop + 8}px`;
-            menu.style.left = `${rect.left + scrollLeft}px`;
-        }
-        // Charger les communautés
-        function loadCommunities() {
-            $.ajax({
-                url: '<?php echo site_url("home/get_user_communities"); ?>',
-                type: 'GET',
-                success: function(response) {
-                    let res = typeof response === 'string' ? JSON.parse(response) : response;
-                    if (res.status === 'success' && res.data.length > 0) {
-                        renderCommunities(res.data);
-                    } else {
-                        listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
-                    }
-                },
-                error: function() {
-                    listContainer.innerHTML = '<div class="p-3 text-center text-danger">Erreur de chargement</div>';
+    // === POSITIONNEMENT CROSS-PLATFORM (FIX iPhone) ===
+    function updateMenuPosition() {
+        if (!isOpen || !menu.classList.contains('show')) return;
+
+        const rect = trigger.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+        menu.style.position = 'absolute';
+        menu.style.top = `${rect.bottom + scrollTop + 8}px`;
+        menu.style.left = `${rect.left + scrollLeft}px`;
+        menu.style.zIndex = '99999';
+        menu.style.willChange = 'top, left';
+        menu.style.webkitTransform = 'translateZ(0)'; // FIX iOS
+    }
+
+    // Charger les communautés
+    function loadCommunities() {
+        $.ajax({
+            url: '<?php echo site_url("home/get_user_communities"); ?>',
+            type: 'GET',
+            success: function(response) {
+                let res = typeof response === 'string' ? JSON.parse(response) : response;
+                if (res.status === 'success' && res.data.length > 0) {
+                    renderCommunities(res.data);
+                } else {
+                    listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
                 }
-            });
-        }
-
-        // Rendu HTML
-        function renderCommunities(communities) {
-            const activeSchoolId = '<?php echo $active_school_id; ?>';
-            const activeRole = '<?php echo strtolower($active_role); ?>';
-
-            const validRoles = ['admin', 'teacher', 'superadmin'];
-            const filtered = communities.filter(c =>
-                validRoles.includes(c.role.toLowerCase())
-            );
-
-            if (filtered.length === 0) {
-                listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
-                return;
-            }
-
-            listContainer.innerHTML = filtered.map(c => {
-                const roleLower = c.role.toLowerCase();
-
-                let roleClass = 'teacher';
-                if (roleLower === 'admin') roleClass = 'admin';
-                else if (roleLower === 'superadmin') roleClass = 'superadmin';
-
-                let roleLabel = '';
-                if (roleLower === 'superadmin') roleLabel = 'Superadmin';
-                else if (roleLower === 'teacher') roleLabel = 'Mentor';
-                else if (roleLower === 'admin') roleLabel = 'Admin';
-                else roleLabel = c.role.charAt(0).toUpperCase() + c.role.slice(1).toLowerCase();
-
-                // Utilise le flag is_active du backend
-                const isSelected = c.is_active === true;
-
-                return `
-            <button class="menu-item community-item ${isSelected ? 'selected' : ''}" 
-                    data-school-id="${c.school_id}" 
-                    data-role="${c.role}">
-                <span>${c.community_name}</span>
-                <span class="role-badge ${roleClass}">${roleLabel}</span>
-            </button>
-        `;
-            }).join('');
-        }
-
-        // Ouvrir/fermer
-        trigger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            isOpen = !isOpen;
-
-            if (isOpen && listContainer.children.length === 0) {
-                loadCommunities();
-            }
-
-            // Position initiale
-            const rect = trigger.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-
-            menu.style.top = `${rect.bottom + scrollTop + 8}px`;
-            menu.style.left = `${rect.left + scrollLeft}px`;
-
-            menu.classList.toggle('show', isOpen);
-            trigger.parentElement.classList.toggle('open', isOpen);
-
-            // Si on ouvre → on écoute le scroll
-            if (isOpen) {
-                window.addEventListener('scroll', updateMenuPosition);
-            } else {
-                window.removeEventListener('scroll', updateMenuPosition);
+            },
+            error: function() {
+                listContainer.innerHTML = '<div class="p-3 text-center text-danger">Erreur de chargement</div>';
             }
         });
+    }
 
-        window.addEventListener('scroll', function() {
+    // Rendu HTML des communautés
+    function renderCommunities(communities) {
+        const validRoles = ['admin', 'teacher', 'superadmin'];
+        const filtered = communities.filter(c => validRoles.includes(c.role.toLowerCase()));
+
+        if (filtered.length === 0) {
+            listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
+            return;
+        }
+
+        listContainer.innerHTML = filtered.map(c => {
+            const roleLower = c.role.toLowerCase();
+
+            let roleClass = roleLower;
+            if (roleLower === 'teacher') roleClass = 'teacher';
+            if (roleLower === 'admin') roleClass = 'admin';
+            if (roleLower === 'superadmin') roleClass = 'superadmin';
+
+            let roleLabel = roleLower === 'teacher' ? 'Mentor' :
+                            roleLower === 'admin' ? 'Admin' :
+                            roleLower === 'superadmin' ? 'Superadmin' :
+                            c.role;
+
+            const isSelected = c.is_active === true;
+
+            return `
+                <button class="menu-item community-item ${isSelected ? 'selected' : ''}" 
+                        data-school-id="${c.school_id}" 
+                        data-role="${c.role}">
+                    <span>${c.community_name}</span>
+                    <span class="role-badge ${roleClass}">${roleLabel}</span>
+                </button>
+            `;
+        }).join('');
+    }
+
+    // Ouvrir / fermer le dropdown
+    trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        isOpen = !isOpen;
+
+        if (isOpen && listContainer.children.length === 0) {
+            loadCommunities();
+        }
+
+        menu.classList.toggle('show', isOpen);
+        trigger.parentElement.classList.toggle('open', isOpen);
+
+        updateMenuPosition();
+
+        if (isOpen) {
+            window.addEventListener('scroll', closeMenuOnScroll);
+        } else {
+            window.removeEventListener('scroll', closeMenuOnScroll);
+        }
+    });
+
+    function closeMenuOnScroll() {
+        if (!isOpen) return;
+        menu.classList.remove('show');
+        trigger.parentElement.classList.remove('open');
+        isOpen = false;
+        window.removeEventListener('scroll', closeMenuOnScroll);
+    }
+
+    // Switch to Member
+    document.getElementById('switch-member-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '<?php echo site_url("home/switch_to_member_account"); ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: getCsrfData(),
+            success: function(response) {
+                if (typeof response === 'string') {
+                    try { response = JSON.parse(response); } 
+                    catch (e) { alert('Réponse invalide du serveur'); return; }
+                }
+
+                if (response.csrf?.csrfHash) updateCsrfHash(response.csrf.csrfHash);
+
+                if (response.status === 'success') {
+                    document.getElementById('current-community-display').innerHTML =
+                        '<span class="current-role">Member</span>';
+
+                    CURRENT_USER_ROLE = 'student';
+                    window.dispatchEvent(new Event('roleSwitched'));
+                    updateSwitchToMemberButtonVisibility();
+                    window.location.replace(response.redirect_url);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, status, err) {
+                toastr.error('Error');
+            }
+        });
+    });
+
+    // Clic sur une communauté
+    listContainer.addEventListener('click', function(e) {
+        const item = e.target.closest('.community-item');
+        if (!item) return;
+
+        const schoolId = item.dataset.schoolId;
+        const role = item.dataset.role;
+
+        $.ajax({
+            url: '<?php echo site_url("home/switch_community_role"); ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: Object.assign({ school_id: schoolId, role: role }, getCsrfData()),
+            success: function(response) {
+                if (typeof response === 'string') {
+                    try { response = JSON.parse(response); } 
+                    catch (e) { alert('Erreur JSON'); return; }
+                }
+
+                if (response.csrf?.csrfHash) updateCsrfHash(response.csrf.csrfHash);
+
+                if (response.status === 'success') {
+                    window.location.replace(response.redirect_url);
+                } else {
+                    toastr.error(response.message || 'Accès refusé');
+                }
+            },
+            error: function() { toastr.error('Erreur serveur'); }
+        });
+
+        menu.classList.remove('show');
+        isOpen = false;
+    });
+
+    // Fermer si clic dehors
+    document.addEventListener('click', function(e) {
+        const switcher = document.getElementById('community-switcher');
+        if (!switcher.contains(e.target)) {
             if (isOpen) {
                 menu.classList.remove('show');
                 trigger.parentElement.classList.remove('open');
                 isOpen = false;
-                window.removeEventListener('scroll', updateMenuPosition);
-            }
-        });
-
-        document.getElementById('switch-member-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '<?php echo site_url("home/switch_to_member_account"); ?>',
-                type: 'POST',
-                dataType: 'json',
-                data: getCsrfData(), // ← Ajouté
-                success: function(response) {
-                    if (typeof response === 'string') {
-                        try {
-                            response = JSON.parse(response);
-                        } catch (e) {
-                            alert('Réponse invalide du serveur');
-                            return;
-                        }
-                    }
-
-                    // Mise à jour du token si renvoyé
-                    if (response.csrf?.csrfHash) {
-                        updateCsrfHash(response.csrf.csrfHash);
-                    }
-
-                    if (response.status === 'success') {
-                        document.getElementById('current-community-display').innerHTML =
-                            '<span class="current-role">Member</span>';
-
-                        CURRENT_USER_ROLE = 'student';
-
-                        window.dispatchEvent(new Event('roleSwitched'));
-                        updateSwitchToMemberButtonVisibility(); // Masque le bouton
-
-                        window.location.replace(response.redirect_url);
-                    } else {
-                        toastr.error(response.message);
-                    }
-                },
-                error: function(xhr, status, err) {
-                    console.error('AJAX Error:', status, err);
-                    toastr.error('Error');
-                }
-            });
-        });
-        // Clic sur une communauté
-        listContainer.addEventListener('click', function(e) {
-            const item = e.target.closest('.community-item');
-            if (!item) return;
-
-            const schoolId = item.dataset.schoolId;
-            const role = item.dataset.role;
-
-            $.ajax({
-                url: '<?php echo site_url("home/switch_community_role"); ?>',
-                type: 'POST',
-                dataType: 'json',
-                data: Object.assign({
-                    school_id: schoolId,
-                    role: role
-                }, getCsrfData()), // ← Ajouté
-                success: function(response) {
-                    if (typeof response === 'string') {
-                        try {
-                            response = JSON.parse(response);
-                        } catch (e) {
-                            alert('Erreur JSON');
-                            return;
-                        }
-                    }
-
-                    if (response.csrf?.csrfHash) {
-                        updateCsrfHash(response.csrf.csrfHash);
-                    }
-                    if (response.status === 'success') {
-                        const urlParts = response.redirect_url.split('/');
-                        const roleLower = urlParts[urlParts.length - 2].toLowerCase(); // plus fiable que index 4
-
-                        // Met à jour la variable globale
-                        CURRENT_USER_ROLE = roleLower;
-
-                        const display = document.getElementById('current-community-display');
-                        if (roleLower === 'student') {
-                            display.innerHTML = '<span class="current-role"><?php echo get_phrase("member"); ?></span>';
-                        } else {
-                            const name = item.querySelector('span').textContent.trim();
-                            const roleLabel = roleLower === 'teacher' ? 'Mentor' :
-                                roleLower.charAt(0).toUpperCase() + roleLower.slice(1);
-                            display.innerHTML = `${name} <span class="current-role">${roleLabel}</span>`;
-                        }
-
-                        updateSwitchToMemberButtonVisibility();
-
-                        window.location.replace(response.redirect_url);
-                    } else {
-                        toastr.error(response.message || 'Accès refusé');
-                    }
-                },
-                error: function() {
-                    toastr.error('Erreur serveur');
-                }
-            });
-
-            menu.classList.remove('show');
-            isOpen = false;
-        });
-
-        // Fermer si clic dehors
-        document.addEventListener('click', function(e) {
-            const switcher = document.getElementById('community-switcher');
-            if (!switcher.contains(e.target)) {
-                if (isOpen) {
-                    menu.classList.remove('show');
-                    trigger.parentElement.classList.remove('open');
-                    isOpen = false;
-                    window.removeEventListener('scroll', updateMenuPosition);
-                }
-            }
-        });
-        document.getElementById('open-create-modal-sidebar')?.addEventListener('click', e => {
-            e.preventDefault();
-            document.getElementById('createCommunityModal').classList.add('show');
-        });
-
-        function updateSwitchToMemberButtonVisibility() {
-            const switchBtn = document.getElementById('switch-member-btn');
-            if (!switchBtn) return;
-
-            const currentRole = CURRENT_USER_ROLE.toLowerCase(); // mis à jour après switch
-            const isMember = currentRole === 'student';
-
-            if (isMember) {
-                switchBtn.style.display = 'none';
-            } else {
-                switchBtn.style.display = 'flex'; // ou 'block', selon ton CSS
             }
         }
-        updateSwitchToMemberButtonVisibility();
     });
+
+    // Modal création communauté
+    document.getElementById('open-create-modal-sidebar')?.addEventListener('click', e => {
+        e.preventDefault();
+        document.getElementById('createCommunityModal').classList.add('show');
+    });
+
+    function updateSwitchToMemberButtonVisibility() {
+        const switchBtn = document.getElementById('switch-member-btn');
+        if (!switchBtn) return;
+
+        const currentRole = CURRENT_USER_ROLE.toLowerCase();
+        const isMember = currentRole === 'student';
+
+        switchBtn.style.display = isMember ? 'none' : 'flex';
+    }
+
+    updateSwitchToMemberButtonVisibility();
+
+});
+
+
 </script>

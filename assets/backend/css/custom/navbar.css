@@ -576,6 +576,12 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
         color: #4A4A4A;
         transition: all 0.2s ease;
     }
+    @media (max-width: 768px) {
+    .switcher-trigger {
+      font-size: 0.85em;
+    }
+
+}
 
     .switcher-trigger:hover {
         background-color: #f5f5f5;
