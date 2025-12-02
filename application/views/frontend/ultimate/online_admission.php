@@ -1017,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateContinueButton();
         updateSummary();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     $$('.next').forEach(btn => btn.addEventListener('click', () => {
