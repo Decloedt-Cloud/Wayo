@@ -14,7 +14,10 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow profile-card overflow-hidden">
                 <!-- Banner -->
-                <div class="profile-cover"></div>
+                <div class="profile-cover left-side-prf">
+                    
+                    
+                </div>
 
                 <div class="card-body text-center pt-5">
                     <div class="avatar-wrap">
@@ -30,7 +33,7 @@
                     </h5>
 
                     <div class="mb-3 small text-muted">
-                        <?php echo get_phrase('designation'); ?> :
+                        <?php echo get_phrase('Mentor'); ?> :
                         <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold ms-1">
                             <?php echo $teacher['designation']; ?>
                         </span>
@@ -71,9 +74,9 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow">
                 <div class="profile-cover bg-white border-0">
-                    <h6 class="mb-0 fw-bold text-primary">
+                    <h6 class="mb-0 fw-bold Banner-title">
                         <i class="bi bi-person-lines-fill me-2"></i> 
-                        <?php echo get_phrase('profile'); ?>
+                        <?php echo strtoupper(get_phrase('Profile')) ?>
                     </h6>
                 </div>
 
@@ -81,7 +84,7 @@
                     <div class="tab-content" id="myTabContent">
                         <!-- Profile -->
                         <div class="tab-pane fade show active" id="profile" role="tabpanel">
-                            <div class="row g-4">
+                            <div class="row g-2">
                                 <div class="col-12">
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('name'); ?></div>
@@ -190,11 +193,23 @@
 /* Profile: cover + avatar */
 .profile-card { position: relative; }
 .profile-cover {
-    height: 86px;
+    border-radius: 1em 1em 0 0;
+    height: 56px;
     background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 3em;
 }
+.profile-cover.left-side-prf {
+    height: 124px;
+}
+.Banner-title{
+        font-size: 14px;
+        color: #536de6;
+    }
 .avatar-wrap {
-    margin-top: -60px;
+    margin-top: -124px;
 }
 .avatar-img {
     border-radius: 50%;

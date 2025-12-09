@@ -9,14 +9,18 @@
      // Fetch currency
     $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency');
 ?>
-<div class="container py-4">
-    <div class="row g-4 align-items-start">
+<div class="container pb-4">
+    <div class="row g-4 align-items-stretch">
 
         <!-- class Profile -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow profile-card overflow-hidden">
+            <div class="card border-0 shadow profile-card overflow-hidden h-100">
                 <!-- Banner -->
-                <div class="profile-cover"></div>
+                <div class="profile-cover">
+                    <h6 class="mb-0 fw-bold Banner-title">
+                        <?php echo strtoupper(get_phrase('Class')); ?>
+                    </h6>
+                </div>
 
                 <div class="card-body text-center pt-5">
                     <div class="avatar-wrap">
@@ -105,12 +109,12 @@
 
         <!-- Details & Tabs -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow">
+            <div class="card border-0 shadow profile-card overflow-hidden h-100">
                 <div class="profile-cover bg-white border-0">
-                    <!-- <h6 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-person-lines-fill me-2"></i> 
-                        <?php echo get_phrase('profile'); ?>
-                    </h6> -->
+                    
+                    <h6 class="mb-0 fw-bold Banner-title">
+                        <?php echo strtoupper(get_phrase('Details')); ?>
+                    </h6>
                 </div>
 
                 <div class="card-body">
@@ -232,6 +236,10 @@
 <!-- Custom CSS (unchanged from original) -->
 <style>
 /* General */
+.Banner-title{
+        font-size: 14px;
+        color: #536de6;
+    }
 .card { border-radius: 16px; }
 .shadow { box-shadow: 0 10px 24px rgba(20, 20, 43, 0.06) !important; }
 
@@ -240,6 +248,9 @@
 .profile-cover {
     height: 86px;
     background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .avatar-wrap {
     margin-top: -60px;
@@ -264,6 +275,12 @@
 .chip-outline {
     background: transparent;
     border-color: #dfe6f3;
+}
+
+@media (min-width: 992px) {
+    .modal-lg {
+        max-width: 900px !important;
+    }
 }
 
 /* Mini stats in card footer */
