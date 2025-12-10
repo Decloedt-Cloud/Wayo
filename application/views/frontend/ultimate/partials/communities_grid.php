@@ -54,6 +54,7 @@
                     <?php 
                       $classes_count = $this->db->get_where('classes', [
                           'school_id' => $c['id'],
+                          'statut' => 'active'
                       ])->num_rows();
                       echo $classes_count;
                     ?>
