@@ -2,7 +2,6 @@
     <div id="cardsGrid" class="row g-4">
       <?php 
       $schools_array = [];
-
       if (!empty($schools)) {
           if (is_object($schools) && method_exists($schools, 'result_array')) {
               $schools_array = $schools->result_array();
@@ -10,7 +9,6 @@
               $schools_array = $schools;
           }
       }
-
       if (empty($schools_array)): ?>
           <div class="text-center py-5">
             <img src="../uploads/images/communities/Not-found.png" 
