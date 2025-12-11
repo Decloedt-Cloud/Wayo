@@ -88,8 +88,12 @@
 
             <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
+             <?php
+              $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
+              ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
+                
                 <?php foreach ($classes as $class): ?>
                   <div class="col">
                     <div class="card h-100 border rounded-4 class-card position-relative"
@@ -102,7 +106,7 @@
                       data-start="<?php echo isset($class['date_debut']) ? htmlspecialchars($class['date_debut']) : ''; ?>"
                       data-end="<?php echo isset($class['date_fin']) ? htmlspecialchars($class['date_fin']) : ''; ?>"
                       data-price="<?php echo isset($class['price']) ? $class['price'] : 0; ?>"
-                      data-currency="<?php echo isset($class['currency']) ? htmlspecialchars($class['currency']) : 'DH'; ?>"
+                      data-currency="<?php echo $currencies; ?>"
                       data-cycle="<?php echo isset($class['cycle']) ? htmlspecialchars($class['cycle']) : ''; ?>"
                       data-free="<?php echo htmlspecialchars($class['nombre_max_membre']); ?>">
 
@@ -111,8 +115,10 @@
                           <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
                           <span class="badge rounded-pill border text-brand fw-bold price-badge">
                             <?php
+                            $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
                             if (isset($class['price']) && $class['price'] > 0) {
-                              echo $class['price'] . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                              // echo $class['price'] . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                               echo $class['price'].' '.$currencies;
                               if (!empty($class['cycle'])) echo ' ' . $class['cycle'];
                             } else {
                               echo "Gratuit";
@@ -318,13 +324,10 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 <script>
   /* ===== Utilitaires prix ===== */
-  const formatPrice = (p) => (Number(p || 0) > 0 ? `${Number(p)} €` : 'Gratuit');
-
-  /* ===== Badges prix auto (selon data-price) ===== */
-  document.querySelectorAll('.class-card').forEach(card => {
-    const badge = card.querySelector('.price-badge');
-    if (badge) badge.textContent = formatPrice(card.dataset.price);
-  });
+document.querySelectorAll('.class-card').forEach(card => {
+  const badge = card.querySelector('.price-badge');
+  if (badge) badge.textContent = formatPrice(card.dataset.price);
+});
 
 
   /* ===== Scroll-to-top ===== */
