@@ -2977,7 +2977,6 @@
     "please_select_category": "يرجى اختيار الفئة",
     "please_upload_image": "يرجى تحميل صورة",
     "sorry_this_name_has_been_taken": "عذرًا، هذا الاسم مستخدم بالفعل",
-
     "a_single_platform._zero_hassle": "منصة واحدة. بدون عناء",
     "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "تجمع أكاديمية وayo كل ما تحتاجه لإنشاء وبيع وإدارة دوراتك التدريبية بدون توتر.",
     "without_wayo": "بدون WAYO ",
@@ -3063,5 +3062,6 @@
     "invalid_price_(must_be_a_non_negative_number)": "سعر غير صالح (يجب أن يكون رقمًا غير سالب)",
     "your_trial_has_ended": "تم انتهاء تجربتك",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "للمتابعة في استخدام مجتمعك، تحتاج إلى تنشيط اشتراكك.",
-    "go_to_payment_page": "الذهاب إلى صفحة الدفع"
+    "go_to_payment_page": "الذهاب إلى صفحة الدفع",
+    "mismatch_password": "كلمة المرور غير متطابقة"
 }
