@@ -2,6 +2,8 @@
 
 <?php $school_id = school_id(); ?>
 
+
+
 <form method="POST" class="p-3 d-block ajaxForm" action="<?php echo route('student/create_single_student/submit'); ?>" id="student_admission_form" enctype="multipart/form-data" novalidate>
     <!-- Champ caché pour le jeton CSRF -->
     <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
@@ -266,6 +268,11 @@ $(document).ready(function() {
         return valid;
     }
 
+    // Fonction de réinitialisation du formulaire
+ var refreshForm = function(form) {
+        form.trigger("reset");
+    };
+
     // ==================== AJAX SUBMIT ====================
     $(".ajaxForm").submit(function(e) {
         e.preventDefault();
@@ -293,6 +300,7 @@ $(document).ready(function() {
                 if(response.status) {
                     success_notify(response.message);
                     $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+
                     refreshForm(form);
 
                     setTimeout(() => {
