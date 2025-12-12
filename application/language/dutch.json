@@ -3218,7 +3218,6 @@
     "please_select_category": "Bitte wählen Sie eine Kategorie aus",
     "please_upload_image": "Bitte laden Sie ein Bild hoch",
     "sorry_this_name_has_been_taken": "Entschuldigung, dieser Name ist bereits vergeben",
-
     "a_single_platform._zero_hassle": "Eén platform. Geen gedoe.",
     "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "Wayo Academy brengt alles samen wat je nodig hebt om je trainingen te creëren, verkopen en beheren zonder stress.",
     "without_wayo": "Zonder Wayo",
@@ -3311,5 +3310,19 @@
     "invalid_price_(must_be_a_non_negative_number)": "Ongeldige prijs (moet een niet-negatief getal zijn)",
     "your_trial_has_ended": "Je proefperiode is verlopen",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Om je community te blijven gebruiken, moet je je abonnement activeren.",
-    "go_to_payment_page": "Ga naar de betalingspagina"
+    "go_to_payment_page": "Ga naar de betalingspagina",
+    "wayo_academy_connects_local_experts_and_learners_with_practical_learning_paths,_adapted_to_the_moroccan_market.": "Wayo verbindet lokale Experten und Lernende mit praxisorientierten Lernpfaden, die an den marokkanischen Markt angepasst sind.",
+    "on-community_value_courses": "Community-Kurse mit Mehrwert",
+    "a_community_or_join_acommunity_account.": "Erstelle eine Community oder tritt einer Community bei.",
+    "publish/choose_a_community": "Eine Community veröffentlichen/auswählen",
+    "chat_with_other_members": "Mit anderen Mitgliedern chatten",
+    "create_your_community": "Erstelle deine Community",
+    "explore_communities": "Communities entdecken",
+    "pay_online_or_cash": "Online oder bar bezahlen",
+    "learner_stats,_evaluations_quizes.": "Lernstatistiken, Bewertungen und Quizze.",
+    "secure_payments_instant_or_casl": "Sichere Zahlungen, sofort oder bar",
+    "join_us_and_creat_your_community_today.": "Tritt uns bei und erstelle noch heute deine Community.",
+    "easy_use": "Easy use",
+    "full_control": "Full control",
+    "for_more_infos": "For more infos"
 }
