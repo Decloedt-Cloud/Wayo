@@ -44,12 +44,6 @@ class Crud_model extends CI_Model
 		$this->db->from('classes');       // préciser la table
 		$this->db->where('school_id', $school_id);
 		$this->db->where('statut', "active");
-		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
-		$this->db->group_start();
-		$this->db->where('date_fin >=', date('Y-m-d'));
-		$this->db->or_where('date_fin', NULL);
-		$this->db->group_end();
-
 		return $this->db->count_all_results();
 	}
 
@@ -59,11 +53,6 @@ class Crud_model extends CI_Model
 		$this->db->from('classes');              // table classes
 		$this->db->where('school_id', $school_id);
 		$this->db->where('statut', "active");
-		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
-		$this->db->group_start();
-		$this->db->where('date_fin >=', date('Y-m-d'));
-		$this->db->or_where('date_fin', NULL);
-		$this->db->group_end();
 		$query = $this->db->get();
 		return $query->result_array();           // retourne toutes les classes sous forme de tableau
 	}
