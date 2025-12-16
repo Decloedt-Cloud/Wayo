@@ -3218,7 +3218,6 @@
     "please_select_category": "Bitte wählen Sie eine Kategorie aus",
     "please_upload_image": "Bitte laden Sie ein Bild hoch",
     "sorry_this_name_has_been_taken": "Entschuldigung, dieser Name ist bereits vergeben",
-
     "a_single_platform._zero_hassle": "Eén platform. Geen gedoe.",
     "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "Wayo Academy brengt alles samen wat je nodig hebt om je trainingen te creëren, verkopen en beheren zonder stress.",
     "without_wayo": "Zonder Wayo",
@@ -3311,5 +3310,7 @@
     "invalid_price_(must_be_a_non_negative_number)": "Ongeldige prijs (moet een niet-negatief getal zijn)",
     "your_trial_has_ended": "Je proefperiode is verlopen",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Om je community te blijven gebruiken, moet je je abonnement activeren.",
-    "go_to_payment_page": "Ga naar de betalingspagina"
+    "go_to_payment_page": "Ga naar de betalingspagina",
+    "join_classe": "Der Klasse beitreten",
+    "join_class": "Der Klasse beitreten"
 }
