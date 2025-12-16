@@ -9,14 +9,19 @@ if (empty($class)) {
 // Fetch currency
 $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency');
 ?>
-<div class="container py-4">
-    <div class="row g-4 align-items-start">
+
+<div class="container pb-4">
+    <div class="row g-4 align-items-stretch">
 
         <!-- class Profile -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow profile-card overflow-hidden">
+            <div class="card border-0 shadow profile-card overflow-hidden h-100">
                 <!-- Banner -->
-                <div class="profile-cover"></div>
+                <div class="profile-cover">
+                    <h6 class="mb-0 fw-bold Banner-title">
+                        <?php echo strtoupper(get_phrase('Class')); ?>
+                    </h6>
+                </div>
 
                 <div class="card-body text-center pt-5">
                     <div class="avatar-wrap">
@@ -37,7 +42,7 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                         </div>
                     </div>
 
-                    <h5 class="mt-3 mb-1 fw-semibold">
+                    <h5 class="mt-4 fw-semibold lh-sm">
                         <?php echo $class['name']; ?>
                     </h5>
 
@@ -105,19 +110,19 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
 
         <!-- Details & Tabs -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow">
+            <div class="card border-0 shadow profile-card overflow-hidden h-100">
                 <div class="profile-cover bg-white border-0">
-                    <!-- <h6 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-person-lines-fill me-2"></i> 
-                        <?php echo get_phrase('profile'); ?>
-                    </h6> -->
+                    
+                    <h6 class="mb-0 fw-bold Banner-title">
+                        <?php echo strtoupper(get_phrase('Details')); ?>
+                    </h6>
                 </div>
 
                 <div class="card-body">
                     <div class="tab-content" id="myTabContent">
                         <!-- Profile -->
                         <div class="tab-pane fade show active" id="profile" role="tabpanel">
-                            <div class="row g-4">
+                            <div class="row g-3">
                                 <div class="col-12">
                                     <div class="info-block">
                                         <div class="info-title"><?php echo get_phrase('class name'); ?></div>
@@ -129,11 +134,17 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
 
                                 <div class="col-md-12">
                                     <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('price'); ?></div>
-                                        <div class="info-value">
+                                    <div class="info-title"><?php echo get_phrase('price'); ?></div>
+
+                                    <div class="info-value">
+                                        <?php if ($class['price'] == 0): ?>
+                                            <?php echo get_phrase('FREE'); ?>
+                                        <?php else: ?>
                                             <?php echo $class['price'] . ' ' . $currencies; ?>
-                                        </div>
+                                        <?php endif; ?>
                                     </div>
+                                </div>
+
                                 </div>
 
                                 <!-- <div class="col-md-12">
@@ -233,6 +244,10 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
 <!-- Custom CSS (unchanged from original) -->
 <style>
     /* General */
+    .Banner-title{
+        font-size: 14px;
+        color: #536de6;
+    }
     .card {
         border-radius: 16px;
     }
@@ -243,13 +258,32 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
 
     /* Profile: cover + avatar */
     .profile-card {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        
+    }
+    .profile-card .card-body{
+        flex-grow: 0; /* Don't grow, stay compact */
+        padding-bottom: 0;
+    }
+    .profile-card .card-footer{
+         margin-top: auto; /* Push footer to bottom if needed, or remove this line */
     }
 
     .profile-cover {
         height: 86px;
         background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
+    @media (min-width: 992px) {
+    .modal-lg {
+        max-width: 900px !important;
+    }
+}
+
 
     .avatar-wrap {
         margin-top: -60px;
@@ -280,13 +314,17 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
 
     /* Mini stats in card footer */
     .mini-stat .label {
-        font-size: .7rem;
+        font-size: .8rem;
         text-transform: uppercase;
         letter-spacing: .04em;
+        line-height: 1.6;
+        margin-bottom: 0.25rem;
     }
 
     .mini-stat .value {
         font-weight: 600;
+        font-size: 1rem; /* 16px */
+        line-height: 1.8;
     }
 
     /* Soft pills */

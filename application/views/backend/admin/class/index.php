@@ -6,7 +6,7 @@
                 <h4 class="page-title d-inline-block">
             <i class="fas fa-chalkboard fa-fw"></i> <?php echo get_phrase('class'); ?>
         </h4>
-        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/class/create'); ?>', '<?php echo get_phrase('create_class'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_class'); ?></button>
+        <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/class/create'); ?>', '<?php echo htmlspecialchars(get_phrase('create_class'), ENT_QUOTES); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_class'); ?></button>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
@@ -39,4 +39,23 @@
             }
         });
     }
+    function showNotification(type, message) {
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        timeOut: 5000,
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut',
+    };
+    if (type === 'success') {
+        toastr.success(message);
+    } else if (type === 'error') {
+        toastr.error(message);
+    } else if (type === 'warning') {
+        toastr.warning(message);
+    }
+}
 </script>
+
+

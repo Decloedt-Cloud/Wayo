@@ -6066,7 +6066,7 @@ a.close.disabled {
       align-items: flex-start;
   -ms-flex-pack: justify;
       justify-content: space-between;
-  padding: 1rem 1rem;
+  padding: 1rem 1rem 0 1rem;
   border-bottom: 1px solid #e7eaf3;
   border-top-left-radius: 0.625rem;
   border-top-right-radius: 0.625rem;

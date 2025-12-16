@@ -5,7 +5,7 @@
 <form method="POST" class="d-block ajaxForm" action="<?php echo route('manage_class/create'); ?>">
     <!-- Champ caché pour le jeton CSRF -->
     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-    
+
     <div class="image-upload-section">
         <h5><?php echo get_phrase('class_image'); ?></h5>
         <div class="image-preview" id="student-image-preview">
@@ -24,13 +24,13 @@
         </div>
 
     </div>
-    
     <div class="form-group mb-1 col-md-12">
         <label for="name"><?php echo get_phrase('class_name'); ?><span class="required"> * </span></label>
         <input type="text" class="form-control" id="name" name="name">
     </div>
+
     
-    <div class="form-group mb-1 col-md-12">
+   <div class="form-group mb-1 col-md-12">
         <label for="price"><?php echo get_phrase('Price_including_VAT'); ?><span class="required"> * </span></label>
         <?php
 
@@ -50,7 +50,7 @@
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="1">
                 <label class="form-check-label" for="is_free">
-                    <?php echo get_phrase('Free_class_(set_price_to_0)'); ?>
+                    <?php echo htmlspecialchars(get_phrase('Free_class_(set_price_to_0)'), ENT_QUOTES, 'UTF-8'); ?>
                 </label>
             </div>
         </div>
@@ -70,7 +70,7 @@
     </div>
 
     <!-- Classe active/inactive -->
-    <div class="form-group mb-1 col-md-12">
+   <div class="form-group mb-1 col-md-12">
         <label for="status"><?php echo get_phrase('class_status'); ?></label>
         <select class="form-control" id="status_class" name="status">
             <option value=""><?php echo get_phrase('class_status'); ?></option>
@@ -83,18 +83,21 @@
     <div class="form-group mb-1 col-md-12">
         <label for="max_members"><?php echo get_phrase('maximum_number_of_members'); ?></label>
         <input type="number" class="form-control" id="max_members" name="max_members" min="1">
-    </div>
+    </div> 
 
 
     
-    <div class="form-group col-md-12">
+   <div class="form-group col-md-12">
         <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-plus"></i><?php echo get_phrase('create_class'); ?></button>
-    </div>
+    </div> 
+
+ 
+
 </div>
 </form>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
     /** =============================
      * VALIDATION EN TEMPS RÉEL — NOM DE LA CLASSE
@@ -106,7 +109,7 @@ $(document).ready(function() {
     classNameInput.on('input', function() {
         const value = $(this).val().trim();
         if (value.length < 3) {
-            classNameError.text('<?php echo get_phrase('The_name_of_the_class_must_contain_at_least_3_characters'); ?>').show();
+            classNameError.text('<?php echo htmlspecialchars(get_phrase('The_name_of_the_class_must_contain_at_least_3_characters'), ENT_QUOTES, 'UTF-8'); ?>').show();
             $(this).addClass('is-invalid');
         } else {
             classNameError.hide();
@@ -134,7 +137,7 @@ $(document).ready(function() {
         const value = $(this).val().trim();
 
         if (value === '' || isNaN(value) || parseFloat(value) < 0) {
-            priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_non_negative_number)'); ?>').show();
+            priceError.text('<?php echo htmlspecialchars(get_phrase('Invalid_price_(must_be_a_non_negative_number)'), ENT_QUOTES, 'UTF-8'); ?>').show();
             $(this).addClass('is-invalid');
         } else {
             priceError.hide();
@@ -168,7 +171,7 @@ $(document).ready(function() {
         // Vérification du nom
         const classValue = classNameInput.val().trim();
         if (classValue.length < 3) {
-            classNameError.text('<?php echo get_phrase('The_name_of_the_class_must_contain_at_least_3_characters'); ?>').show();
+            classNameError.text('<?php echo htmlspecialchars(get_phrase('The_name_of_the_class_must_contain_at_least_3_characters'), ENT_QUOTES, 'UTF-8'); ?>').show();
             classNameInput.addClass('is-invalid');
             isValid = false;
         } else {
@@ -186,7 +189,7 @@ $(document).ready(function() {
             priceInput.removeClass('is-invalid');
         } else {
             if (priceValue === '' || isNaN(priceValue) || parseFloat(priceValue) < 0) {
-                priceError.text('<?php echo get_phrase('Invalid_price_(must_be_a_non_negative_number)'); ?>').show();
+                priceError.text('<?php echo htmlspecialchars(get_phrase('Invalid_price_(must_be_a_non_negative_number)'), ENT_QUOTES, 'UTF-8'); ?>').show();
                 priceInput.addClass('is-invalid');
                 isValid = false;
             } else {
@@ -197,7 +200,7 @@ $(document).ready(function() {
 
         // ✅ Si erreurs → on bloque complètement la requête AJAX
         if (!isValid) {
-            error_notify('<?php echo get_phrase('Please_correct_the_errors_before_submitting'); ?>');
+            error_notify('<?php echo htmlspecialchars(get_phrase('Please_correct_the_errors_before_submitting'), ENT_QUOTES, 'UTF-8'); ?>');
             return false;
         }
 
@@ -206,7 +209,7 @@ $(document).ready(function() {
          * ============================= */
         const form = $(this);
         const submitButton = form.find('button[type="submit"]');
-        const adding_text = "<?php echo get_phrase('creating'); ?>...";
+        const adding_text = "<?php echo htmlspecialchars(get_phrase('creating'), ENT_QUOTES, 'UTF-8'); ?>...";
         submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> ' + adding_text);
 
         // Fonction CSRF
@@ -226,22 +229,63 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             dataType: 'json',
-            success: function(response) {
-                submitButton.prop('disabled', false).html('<?php echo get_phrase('Submit'); ?>');
 
-                if (response.status) {
+            success: function(response) {
+                submitButton.prop('disabled', false).html('<?php echo htmlspecialchars(get_phrase('Submit'), ENT_QUOTES, 'UTF-8'); ?>');
+                
+                // ✅ FIX: More robust status checking
+                if (response && (response.status === true || response.status === 'true' || response.status === 1)) {
                     success_notify(response.notification);
-                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    
+                    // Update CSRF token if provided
+                    if (response.csrf && response.csrf.name && response.csrf.hash) {
+                        $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    }
+                    
                     setTimeout(function() {
                         location.reload();
                     }, 600);
                 } else {
-                    error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>');
+                    console.warn('⚠️ Status is FALSE or invalid');
+                    console.warn('Status value:', response.status);
+                    // Show specific error message if provided
+                    const errorMsg = response.notification || '<?= htmlspecialchars(js_phrase(get_phrase('action_not_allowed')), ENT_QUOTES, 'UTF-8'); ?>';
+                    error_notify(errorMsg);
                 }
             },
-            error: function() {
-                submitButton.prop('disabled', false).html('<?php echo get_phrase('Submit'); ?>');
-                error_notify('<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>');
+            error: function(xhr, status, error) {
+                submitButton.prop('disabled', false).html('<?php echo htmlspecialchars(get_phrase('Submit'), ENT_QUOTES, 'UTF-8'); ?>');
+                
+  
+                // ✅ FIX: Check if response text starts with valid JSON
+                let responseText = xhr.responseText.trim();
+
+                // Try to find JSON in the response
+                let jsonStart = responseText.indexOf('{');
+                if (jsonStart > 0) {
+                    console.warn('⚠️ Found JSON at position', jsonStart, '- there is garbage before it!');
+                    console.warn('Garbage content:', responseText.substring(0, jsonStart));
+                    responseText = responseText.substring(jsonStart);
+                }
+                
+                // Try to parse response even on error (class might be created)
+                try {
+                    const response = JSON.parse(responseText);
+
+                    
+                    if (response && (response.status === true || response.status === 'true' || response.status === 1)) {
+                        success_notify(response.notification);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 600);
+                        return;
+                    }
+                } catch(e) {
+                    console.error('❌ JSON Parse Error:', e);
+                    console.error('Attempted to parse:', responseText.substring(0, 200));
+                }
+                
+                error_notify('<?= htmlspecialchars(js_phrase(get_phrase('an_error_occurred_during_submission')), ENT_QUOTES, 'UTF-8'); ?>');
             }
         });
     });
@@ -275,6 +319,7 @@ $(document).ready(function() {
 
 });
 </script>
+
 
 <style>
     .form-inline .form-control {
