@@ -77,9 +77,6 @@
               <!-- <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php if (!empty($school_creator)): ?>
                   <p><?php echo htmlspecialchars($school_creator['name']); ?></p>
               <?php endif; ?></li> -->
-
-              <!-- <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php // echo get_phrase("Aymane") 
-                                                                                                    ?></li> -->
             </ul>
 
             <p class="mb-4">
@@ -252,11 +249,6 @@
       <!-- Side card -->
       <aside class="col-lg-4">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-          <!-- <div class="ratio ratio-16x9">
-            <iframe src="https://www.youtube.com/embed/r8cCk-HXcMQ?rel=0&modestbranding=1"
-                    title="Présentation Wayo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen></iframe>
-          </div> -->
           <div class="bg-logo-communaute p-4 text-center">
             <div class="cercle-logo">
               <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute">
@@ -283,7 +275,6 @@
             <?php if ((int)$school['access'] > 0): ?>
               <div class="alert alert-warning small"><?php echo htmlspecialchars(get_phrase("Private community - join request only")); ?></div>
             <?php endif; ?>
-            <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
             <div class="community-app-button">
               <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
             </div>
