@@ -3156,5 +3156,6 @@
     "error_loading_classes": "Erreur lors du chargement des classes",
     "class_courses": "Class courses",
     "free_class_(set_price_to_0)": "Classe gratuite - prix à 0",
-    "class_created_successfully": "Classe créée avec succès"
+    "class_created_successfully": "Classe créée avec succès",
+    "mismatch_password": "Mot de passe non correspondant"
 }
