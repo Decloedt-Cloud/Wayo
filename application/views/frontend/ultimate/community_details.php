@@ -120,11 +120,18 @@
                         <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
                         <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
 
-                        <div class="text-secondary small d-flex align-items-center gap-2">
-                          <i class="fa-regular fa-calendar text-brand"></i>
-                          <strong class="date-start"><?php echo (new DateTime($class['date_debut']))->format('d M. Y'); ?></strong> →
-                          <strong class="date-end"><?php echo (new DateTime($class['date_fin']))->format('d M. Y'); ?></strong>
-                        </div>
+                        <?php if (!empty($class['date_debut']) && !empty($class['date_fin']) && 
+                                  $class['date_debut'] !== '0000-00-00' && $class['date_fin'] !== '0000-00-00'): ?>
+
+                                <div class="text-secondary small d-flex align-items-center gap-2">
+                                  <i class="fa-regular fa-calendar text-brand"></i>
+                                  <strong class="date-start"><?php echo (new DateTime($class['date_debut']))->format('d M. Y'); ?></strong> →
+                                  <strong class="date-end"><?php echo (new DateTime($class['date_fin']))->format('d M. Y'); ?></strong>
+                                </div>
+                        <?php else: ?>
+                                  &nbsp;
+                        <?php endif; ?>
+                        
                         <div class="small text-secondary">
                           <i class="fa-regular fa-circle-check me-1"></i>
                           <?php echo htmlspecialchars($class['nombre_max_membre']); ?> <?php echo get_phrase("Maximum_number") ?>
@@ -639,9 +646,25 @@ document.addEventListener("DOMContentLoaded", function() {
         // Dates
         const startText = '<?php echo get_phrase("From"); ?>';
         const endText = '<?php echo get_phrase("to"); ?>';
-        const startDate = formatDate(card.dataset.start);
-        const endDate = formatDate(card.dataset.end);
-        modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
+
+        const startDate = (card.dataset.start && card.dataset.start !== '0000-00-00' && card.dataset.start !== '') 
+                  ? formatDate(card.dataset.start) 
+                  : null;
+
+        const endDate = (card.dataset.end && card.dataset.end !== '0000-00-00' && card.dataset.end !== '') 
+                        ? formatDate(card.dataset.end) 
+                        : null;
+
+        if (startDate && endDate) {
+          const startText = '<?php echo get_phrase("From"); ?>';
+          const endText = '<?php echo get_phrase("to"); ?>';
+          modal.querySelector('#classDates').parentElement.style.display = 'inline-block';
+          modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
+        } else {
+          modal.querySelector('#classDates').parentElement.style.display = 'none';
+        }
+        
+        //modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
 
         // Nombre max
         const nombre_max = card.dataset.free;
