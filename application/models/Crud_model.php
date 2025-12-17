@@ -1511,8 +1511,22 @@ class Crud_model extends CI_Model
 			// Récupérer les données de la session
 			$enrolment_data = $this->session->userdata('enrolment_data');
 
+			// Toujours utiliser l'ID de la table students pour les inscriptions
+			$student_id = $enrolment_data['student_id'] ?? null;
+			$student_row = null;
+			if ($student_id) {
+				$student_row = $this->db->get_where('students', ['id' => $student_id])->row_array();
+				if (!$student_row) {
+					// Certains écrans envoient l'user_id : on mappe vers l'étudiant
+					$student_row = $this->db->get_where('students', [
+						'user_id'   => $student_id,
+						'school_id' => $enrolment_data['school_id'] ?? null
+					])->row_array();
+				}
+			}
+
 			// Utiliser les données
-			$data_enrols['student_id'] = $enrolment_data['student_id'];
+			$data_enrols['student_id'] = $student_row['id'];
 			$data_enrols['class_id'] = $enrolment_data['class_id'];
 
 			$data_enrols['school_id'] = $enrolment_data['school_id'];
