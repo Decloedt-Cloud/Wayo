@@ -84,18 +84,19 @@ if ($active_school_id) {
                     </span>
                     <span>
                         <span class="account-user-name"><?php echo $user_name; ?></span>
-                        <?php if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'): ?>
-                            <span class="account-position"><?php echo get_phrase('school_admin'); ?></span>
-                        <?php else: ?>
-                            <span class="account-position">
-                                <?php
-                                if ($this->db->get_where('users', array('id' => $user_id))->row('role') == "teacher")
-                                    echo get_phrase('mentor');
-                                else
-                                    echo ucfirst($this->db->get_where('users', array('id' => $user_id))->row('role')); ?>
-                            </span>
-                        <?php endif; ?>
-
+                        <?php 
+                            $user_role = strtolower($this->db->get_where('users', array('id' => $user_id))->row('role'));
+                            
+                            if ($user_role == 'admin'): ?>
+                                <span class="account-position"><?php echo get_phrase('school_admin'); ?></span>
+                            <?php elseif ($user_role == 'teacher'): ?>
+                                <span class="account-position"><?php echo get_phrase('mentor'); ?></span>
+                            <?php elseif ($user_role == 'student'): ?>
+                                <span class="account-position"><?php echo get_phrase('member'); ?></span>
+                            <?php elseif ($user_role == 'superadmin'): ?>
+                                <span class="account-position"><?php echo get_phrase('superadmin'); ?></span>
+                            <?php endif; 
+                        ?>
                     </span>
                 </a>
 
@@ -245,9 +246,13 @@ if ($active_school_id) {
 
 <!-- end Topbar -->
 <script>
+    
+
     window.checkCommunityNameUrl = '<?php echo site_url("home/check_community_name_exists"); ?>';
     window.csrfTokenName = '<?php echo $this->security->get_csrf_token_name(); ?>';
     window.csrfTokenValue = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+    
 </script>
 <script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
 <script type="text/javascript">
