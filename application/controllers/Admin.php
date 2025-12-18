@@ -1876,7 +1876,7 @@ class Admin extends CI_Controller
 
     if (empty($param1)) {
         $page_data['folder_name'] = 'exam';
-        $page_data['page_title'] = 'exam and exam';
+        $page_data['page_title'] = 'Certifications';
         $this->load->view('backend/index', $page_data);
     }
 }
