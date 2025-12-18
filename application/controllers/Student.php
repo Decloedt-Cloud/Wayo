@@ -18,7 +18,7 @@ class Student extends CI_Controller {
 		$this->load->library('Humhub_sso');
 		$this->load->library('session');
 		$this->config->load('config'); 
-    	
+    	$this->lmStudioUrl = 'http://154.146.250.62:7000/v1/chat/completions';
 		 require_once APPPATH . '../vendor/autoload.php';
 
 		/*LOADING ALL THE MODELS HERE*/
@@ -3391,4 +3391,239 @@ public function get_school_data() {
         ]);
     }
 }
+
+    /**
+     * Chat AI pour un syllabus spécifique avec système de CACHE
+     * Le texte est extrait une seule fois et mis en cache
+     * Supporte les formats: PDF, DOCX, DOC, TXT
+     * @param int $syllabus_id L'ID du syllabus
+     */
+    /**
+     * Chat AI pour un syllabus - Version optimisée
+     * Le texte est pré-extrait à l'upload, lecture directe depuis la BDD
+     * @param int $syllabus_id L'ID du syllabus
+     */
+    public function chat_document_syllabus($syllabus_id = '')
+    {
+        if (empty($syllabus_id)) {
+            redirect(site_url('student/syllabus'), 'refresh');
+            return;
+        }
+
+        // Récupérer le syllabus avec le texte pré-extrait
+        $syllabus = $this->db->get_where('syllabuses', array('id' => $syllabus_id))->row_array();
+        
+        if (empty($syllabus)) {
+            $this->session->set_flashdata('error', get_phrase('syllabus_not_found'));
+            redirect(site_url('student/syllabus'), 'refresh');
+            return;
+        }
+
+        // Vérifier si le texte a été extrait
+        $text = isset($syllabus['extracted_text']) ? $syllabus['extracted_text'] : '';
+        $page_count = isset($syllabus['page_count']) ? (int)$syllabus['page_count'] : 1;
+        $file_extension = strtolower(pathinfo($syllabus['file'], PATHINFO_EXTENSION));
+        
+        // Si le texte n'est pas encore extrait (ancien syllabus), l'extraire maintenant
+        if (empty($text)) {
+            $file_path = FCPATH . 'uploads/syllabus/' . $syllabus['file'];
+            
+            if (!file_exists($file_path)) {
+                $this->session->set_flashdata('error', get_phrase('file_not_found'));
+                redirect(site_url('student/syllabus'), 'refresh');
+                return;
+            }
+            
+            // Extraire et sauvegarder en BDD pour les prochaines fois
+            $extraction = $this->crud_model->extract_document_text($file_path, $file_extension);
+            $text = $extraction['text'];
+            $page_count = $extraction['page_count'];
+            
+            // Mettre à jour la BDD
+            if (!empty($text)) {
+                $this->db->where('id', $syllabus_id);
+                $this->db->update('syllabuses', [
+                    'extracted_text' => $text,
+                    'page_count' => $page_count
+                ]);
+            }
+        }
+        
+        // Nettoyer le texte et vérifier qu'il contient du contenu exploitable
+        $cleaned_text = trim(preg_replace('/\s+/', ' ', $text));
+        $text_length = strlen($cleaned_text);
+        
+        // Minimum 50 caractères de contenu réel pour être exploitable par l'IA
+        $minimum_text_length = 50;
+
+        if ($text_length >= $minimum_text_length) {
+            // Stocker le contexte en session (référence au syllabus)
+            $this->session->set_userdata([
+                'doc_context_syllabus_id' => $syllabus_id
+            ]);
+
+            $page_data = array(
+                'folder_name' => 'syllabus',
+                'page_name'   => 'index_chat_syllabus',
+                'page_title'  => 'chat_ai',
+                'syllabus'    => $syllabus,
+                'page_count'  => $page_count,
+                'text_length' => $text_length,
+                'context_id'  => 'syllabus_' . $syllabus_id,
+                'file_type'   => $file_extension
+            );
+            
+            $this->load->view('backend/index', $page_data);
+            return;
+        }
+        
+        // Afficher un toast d'erreur et rediriger
+        $error_message = get_phrase('document_contains_insufficient_text_for_ai_chat');
+        $redirect_url = site_url('student/syllabus');
+        
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>' . get_phrase('error') . '</title>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        </head>
+        <body>
+            <script>
+                Swal.fire({
+                    icon: "warning",
+                    title: "' . addslashes(get_phrase('insufficient_text')) . '",
+                    text: "' . addslashes($error_message) . '",
+                    confirmButtonColor: "#f47a1f",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location.href = "' . $redirect_url . '";
+                });
+            </script>
+        </body>
+        </html>';
+    }
+
+    /**
+     * API pour interroger le document (utilisé par le chat)
+     * Lit le contexte directement depuis la BDD
+     */
+    public function query_document()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+            return;
+        }
+
+        $query_in_progress = $this->session->userdata('doc_query_in_progress');
+        $query_started_at = $this->session->userdata('doc_query_started_at');
+        $timeout = 120;
+        $now = time();
+
+        if ($query_in_progress && $query_started_at && ($now - $query_started_at) < $timeout) {
+            $this->respond_with_json(array(
+                'status' => 'error', 
+                'message' => get_phrase('A_request_is_already_in_progress._Please_wait_for_the_response.')
+            ));
+            return;
+        }
+
+        $this->session->set_userdata('doc_query_in_progress', true);
+        $this->session->set_userdata('doc_query_started_at', $now);
+
+        $question = trim($this->input->post('question') ?? '');
+        if ($question === '') {
+            $this->_clear_query_lock();
+            $this->respond_with_json(array('status' => 'error', 'message' => 'La question est requise.'));
+            return;
+        }
+
+        // Récupérer le contexte depuis la BDD
+        $syllabus_id = $this->session->userdata('doc_context_syllabus_id');
+        if (empty($syllabus_id)) {
+            $this->_clear_query_lock();
+            $this->respond_with_json(array('status' => 'error', 'message' => 'Aucun contexte document disponible.'));
+            return;
+        }
+        
+        $syllabus = $this->db->get_where('syllabuses', array('id' => $syllabus_id))->row_array();
+        if (empty($syllabus) || empty($syllabus['extracted_text'])) {
+            $this->_clear_query_lock();
+            $this->respond_with_json(array('status' => 'error', 'message' => 'Le contexte du document est vide.'));
+            return;
+        }
+        
+        $context = $syllabus['extracted_text'];
+
+        try {
+            $data = [
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => "You are 『 Wayo AI 』🤖, a professional assistant specialized in document analysis.\n\n" .
+                                    "📄 DOCUMENT CONTEXT:\n" . $context . "\n\n" .
+                                    "INSTRUCTIONS:\n" .
+                                    "- Answer ONLY based on the document content\n" .
+                                    "- Be precise and helpful\n" .
+                                    "- Use the same language as the question"
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $question
+                    ]
+                ],
+                'temperature' => 0.3,
+                'max_tokens' => 2048,
+                'top_p' => 0.95
+            ];
+
+            $ch = curl_init($this->lmStudioUrl);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_TIMEOUT => 120
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            $this->_clear_query_lock();
+
+            if ($httpCode === 200) {
+                $result = json_decode($response, true);
+                $answer = $result['choices'][0]['message']['content'] ?? 'Aucune réponse générée.';
+                $this->respond_with_json(['status' => 'success', 'answer' => $answer]);
+            } else {
+                $this->respond_with_json(['status' => 'error', 'message' => 'Erreur API: ' . $httpCode]);
+            }
+            
+        } catch (Exception $e) {
+            $this->_clear_query_lock();
+            $this->respond_with_json(['status' => 'error', 'message' => 'Erreur: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Libère le verrou de requête document en cours
+     */
+    private function _clear_query_lock()
+    {
+        $this->session->unset_userdata(['doc_query_in_progress', 'doc_query_started_at']);
+    }
+
+    /**
+     * Helper method to send JSON response with CSRF token
+     */
+    private function respond_with_json($data) {
+        $data['csrf'] = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        );
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($data));
+    }
 }
