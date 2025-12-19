@@ -16,6 +16,7 @@ class Courses extends CI_Controller {
 
     $this->load->database();
     $this->load->library('session');
+    $this->lmStudioUrl = 'http://154.146.250.62:7000/v1/chat/completions';
 
     /*LOADING ALL THE MODELS HERE*/
     $this->load->model('Crud_model',     'crud_model');
@@ -524,4 +525,352 @@ public function get_csrf_token() {
       ->set_content_type('application/json')
       ->set_output(json_encode($csrf));
 }
+
+public function generate_questions_from_pdf()
+  {
+    if (!$this->input->is_ajax_request()) {
+      $this->respond_json([
+        'status' => false,
+        'message' => 'Accès refusé'
+      ], 400);
+      return;
+    }
+
+    // Vérification anti-doublon : empêcher plusieurs générations simultanées
+    $generation_key = 'pdf_generation_in_progress_' . $this->session->userdata('user_id');
+    $generation_lock = $this->session->userdata($generation_key);
+
+    if ($generation_lock && (time() - $generation_lock) < 300) {
+      $this->respond_json([
+        'status' => false,
+        'message' => 'Une génération est déjà en cours. Veuillez patienter ou réessayer dans quelques instants.'
+      ], 429);
+      return;
+    }
+
+    // Activer le verrouillage
+    $this->session->set_userdata($generation_key, time());
+
+    $exam_id         = $this->input->post('exam_id');
+    $num_questions   = (int) $this->input->post('number_of_questions');
+    $difficulty_level = $this->input->post('difficulty_level') ?: 'medium';
+    $overwrite_flag  = strtolower((string) $this->input->post('overwrite_existing'));
+    $should_overwrite = in_array($overwrite_flag, array('1', 'true', 'on', 'yes'), true);
+    
+    // Valider le niveau de difficulté
+    $valid_difficulties = array('easy', 'medium', 'hard', 'mixed');
+    if (!in_array($difficulty_level, $valid_difficulties)) {
+        $difficulty_level = 'medium';
+    }
+
+    if (empty($_FILES['pdf_file']['name'])) {
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json([
+        'status' => false,
+        'message' => 'Aucun fichier PDF'
+      ], 400);
+      return;
+    }
+
+    // === 1. Vérification MIME + Upload ===
+    if (!empty($_FILES['pdf_file']['tmp_name'])) {
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $mime  = finfo_file($finfo, $_FILES['pdf_file']['tmp_name']);
+      finfo_close($finfo);
+      if ($mime !== 'application/pdf') {
+        $this->session->unset_userdata($generation_key);
+        $this->respond_json([
+          'status' => false,
+          'message' => 'Fichier non PDF détecté'
+        ], 400);
+        return;
+      }
+    }
+
+    $upload_path = FCPATH . 'uploads/temp_pdf/';
+    if (!is_dir($upload_path)) {
+      mkdir($upload_path, 0755, true);
+    }
+
+    $this->load->library('upload');
+    $config = array(
+      'upload_path'   => $upload_path,
+      'allowed_types' => 'pdf',
+      'max_size'      => 3000,
+      'encrypt_name'  => true
+    );
+    $this->upload->initialize($config);
+
+    if (!$this->upload->do_upload('pdf_file')) {
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json([
+        'status' => false,
+        'message' => strip_tags($this->upload->display_errors())
+      ], 400);
+      return;
+    }
+
+    $upload_data = $this->upload->data();
+    $pdf_path    = $upload_data['full_path'];
+
+    // === 2. Extraction texte avec Smalot ===
+    try {
+      $parser = new \Smalot\PdfParser\Parser();
+      $pdf    = $parser->parseFile($pdf_path);
+      $text   = $pdf->getText();
+      unlink($pdf_path);
+
+      if (empty(trim($text))) {
+        $this->session->unset_userdata($generation_key);
+        $this->respond_json([
+          'status' => false,
+          'message' => 'Aucun texte extrait du PDF'
+        ], 422);
+        return;
+      }
+    } catch (Exception $e) {
+      @unlink($pdf_path);
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json([
+        'status' => false,
+        'message' => 'Erreur lecture PDF'
+      ], 500);
+      return;
+    }
+
+    // === 3. Génération QCM avec GUZZLE ===
+    $questions = $this->generate_mcq($text, $num_questions, $difficulty_level);
+
+    if (empty($questions)) {
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json([
+        'status' => false,
+        'message' => 'L\'IA n\'a pas généré de questions.'
+      ], 500);
+      return;
+    }
+
+    $this->db->trans_begin();
+
+    if ($should_overwrite && $exam_id) {
+      $this->db->where('exam_id', $exam_id);
+      $this->db->delete('exam_questions');
+    }
+
+    $added = 0;
+    foreach ($questions as $q) {
+      if ($this->add_mcq_from_ai($exam_id, $q)) {
+        $added++;
+      }
+    }
+
+    if ($added === 0) {
+      $this->db->trans_rollback();
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json(array(
+        'status'  => false,
+        'message' => 'Aucune nouvelle question n\'a pu être créée. Les questions existantes sont inchangées.'
+      ), 422);
+      return;
+    }
+
+    if ($this->db->trans_status() === false) {
+      $this->db->trans_rollback();
+      $this->session->unset_userdata($generation_key);
+      $this->respond_json(array(
+        'status'  => false,
+        'message' => 'Une erreur est survenue lors de l\'enregistrement des questions.'
+      ), 500);
+      return;
+    }
+
+    $this->db->trans_commit();
+
+    // Libérer le verrouillage après succès
+    $this->session->unset_userdata($generation_key);
+
+    $extra_message = $should_overwrite ? ' Les questions existantes ont été remplacées.' : '';
+
+    $this->respond_json(array(
+      'status'  => true,
+      'message' => "$added questions générées et ajoutées avec succès !" . $extra_message,
+      'questions_count' => $added
+    ));
+  }
+
+  private function generate_mcq($text, $num = 10, $difficulty = 'medium')
+  {
+    $text = substr(trim($text), 0, 28000);
+    
+    // Définir les instructions de difficulté
+    $difficulty_instructions = array(
+      'easy' => "NIVEAU DE DIFFICULTÉ : FACILE\n" .
+                "- Questions simples et directes\n" .
+                "- Réponses évidentes pour qui a lu le document\n" .
+                "- Évite les pièges et les nuances complexes\n" .
+                "- Les mauvaises réponses doivent être clairement incorrectes\n",
+      'medium' => "NIVEAU DE DIFFICULTÉ : MOYEN\n" .
+                 "- Questions de compréhension standard\n" .
+                 "- Nécessite une bonne lecture du document\n" .
+                 "- Inclus quelques questions de réflexion\n" .
+                 "- Les mauvaises réponses peuvent être plausibles\n",
+      'hard' => "NIVEAU DE DIFFICULTÉ : DIFFICILE\n" .
+                "- Questions approfondies et analytiques\n" .
+                "- Requiert une compréhension fine du contenu\n" .
+                "- Inclus des questions de synthèse et d'analyse\n" .
+                "- Les mauvaises réponses doivent être très plausibles (pièges subtils)\n",
+      'mixed' => "NIVEAU DE DIFFICULTÉ : MIXTE\n" .
+                "- Varie les niveaux : 30% facile, 40% moyen, 30% difficile\n" .
+                "- Commence par des questions simples et augmente progressivement\n" .
+                "- Inclus tous types de questions (mémorisation, compréhension, analyse)\n"
+    );
+    
+    $difficulty_text = isset($difficulty_instructions[$difficulty]) 
+                       ? $difficulty_instructions[$difficulty] 
+                       : $difficulty_instructions['medium'];
+
+    try {
+      $client = new \GuzzleHttp\Client([
+        'timeout'         => 400,
+        'connect_timeout' => 15,
+      ]);
+
+      $response = $client->post($this->lmStudioUrl, [
+        'headers' => ['Content-Type' => 'application/json'],
+        'json'    => [
+          'messages' => [
+            [
+              'role' => 'system',
+              'content' => "Tu es un expert en création de QCM pédagogiques.\n" .
+                "Tu dois générer EXACTEMENT $num questions à choix multiples (4 options, 1 seule bonne réponse).\n\n" .
+                $difficulty_text . "\n" .
+                "Réponds UNIQUEMENT avec du JSON valide, RIEN d'autre. Pas de markdown, pas de texte avant/après.\n\n" .
+                "Format strict :\n" .
+                "[\n" .
+                "  {\"title\": \"Question ?\", \"options\": [\"A\", \"B\", \"C\", \"D\"], \"correct_answer\": 1}\n" .
+                "]\n" .
+                "Commence directement par [ et termine par ]."
+            ],
+            [
+              'role' => 'user',
+              'content' => "Voici le document :\n\n$text\n\n" .
+                "Génère exactement $num questions QCM (4 options, 1 bonne réponse) en français."
+            ]
+          ],
+          'temperature'        => 0.6,
+          'max_tokens'         => 4000,
+          'top_p'              => 0.95,
+          'repetition_penalty' => 1.1,
+          'stop'               => null
+        ]
+      ]);
+
+      $result = json_decode($response->getBody()->getContents(), true);
+      $content = $result['choices'][0]['message']['content'] ?? '';
+
+      // Extraction ultra-robuste du JSON
+      if (preg_match('/\[[\s\S]*\]/', $content, $m)) {
+        $json = json_decode($m[0], true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($json)) {
+          return $json;
+        }
+      }
+
+      return [];
+    } catch (Exception $e) {
+      log_message('error', 'Qwen Guzzle Error: ' . $e->getMessage());
+      return [];
+    }
+  }
+
+  /**
+   * Normalize multilingual strings so that accents and apostrophes are stored as-is.
+   * We also decode any HTML entities that might have been introduced upstream.
+   */
+  private function sanitize_multilingual_text($value)
+  {
+    if (!is_string($value)) {
+      return '';
+    }
+
+    $value = trim($value);
+
+    if ($value === '') {
+      return '';
+    }
+
+    $html_entity_flags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
+    $value = html_entity_decode($value, $html_entity_flags, 'UTF-8');
+
+    if (function_exists('iconv')) {
+      $converted = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+      if ($converted !== false) {
+        $value = $converted;
+      }
+    }
+
+    return $value;
+  }
+
+  private function add_mcq_from_ai($exam_id, $question_data)
+  {
+    // Validation minimale
+    if (empty($question_data['title']) || empty($question_data['options']) || !isset($question_data['correct_answer'])) {
+      return false;
+    }
+
+    // Nettoyage et normalisation pour préserver les caractères accentués
+    $title   = $this->sanitize_multilingual_text($question_data['title']);
+    $options = $question_data['options'];
+    $correct_answer  = (int)$question_data['correct_answer']; // 1, 2, 3 ou 4
+
+    // On s'assure qu'il y a bien 4 options
+    if (count($options) !== 4) {
+      return false;
+    }
+
+    // On nettoie les options
+    $clean_options = [];
+    foreach ($options as $opt) {
+      $clean = $this->sanitize_multilingual_text($opt);
+      if ($clean === '') {
+        return false;
+      }
+      $clean_options[] = $clean;
+    }
+
+    // On vérifie que la bonne réponse est valide (1 à 4)
+    if ($correct_answer < 1 || $correct_answer > 4) {
+      $correct_answer = 1; // fallback
+    }
+
+    $data = [
+      'exam_id'           => $exam_id,
+      'title'             => $title,
+      'type'              => 'multiple_choice',
+      'number_of_options' => 4,
+      'options'           => json_encode($clean_options, JSON_UNESCAPED_UNICODE),
+      'correct_answers'   => json_encode([$correct_answer]), // tableau car ton modèle gère les réponses multiples
+      'order'             => $this->db->count_all('exam_questions') + 1 // ordre auto
+    ];
+
+    return $this->db->insert('exam_questions', $data);
+  }
+
+  private function respond_json($payload = array(), $status_code = 200)
+  {
+    if (!is_array($payload)) {
+      $payload = array();
+    }
+
+    $payload['csrf'] = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    $this->output
+      ->set_status_header($status_code)
+      ->set_content_type('application/json')
+      ->set_output(json_encode($payload, JSON_UNESCAPED_UNICODE));
+  }
 }

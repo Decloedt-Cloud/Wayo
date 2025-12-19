@@ -47,7 +47,7 @@
             <button type="button" class="btn btn-sm btn-icon btn-rounded btn-outline-secondary dropdown-btn1 dropdown-btn dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
             <div class="dropdown-menu dropdown-menu-right">
               
-              <a href="javascript:void(0);" class="dropdown-item"  onclick="largeModal('<?php echo site_url('modal/popup/student/profile/'.$application['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('profile'); ?></a>
+              <a href="javascript:void(0);" class="dropdown-item"  onclick="largeModal('<?php echo site_url('modal/popup/student/profile/'.$student['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><?php echo get_phrase('profile'); ?></a>
               <!-- item-->
               <a href="javascript:;" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$student['id'])?>', '<?php echo get_phrase('approved'); ?>');" class="dropdown-item"><?php echo get_phrase('approved'); ?></a>
               <!-- item -->

@@ -94,4 +94,3 @@ defined('HUMHUB_JWT_SECRET') OR define('HUMHUB_JWT_SECRET', 'ry4mRP6N8ZBKP_Xn699
  
 // Token API de HumHub (pour créer des utilisateurs par API REST)
 defined('HUMHUB_API_TOKEN') OR define('HUMHUB_API_TOKEN', 'JzJA-cCjiVsYcEKUJ_ZDTLqrPU0KZdTBgh5LuoviIDmAg9HeCXs5efdOqAoWfmNNYBAFDEy2VhOaWgi5-IMywl');
-

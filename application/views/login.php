@@ -85,6 +85,69 @@
 
 <!--Notify for ajax-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+    
+    
+$('#loginForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    // Disable submit button to prevent double submission
+    var $submitBtn = $(this).find('button[type="submit"]');
+    $submitBtn.prop('disabled', true);
+    
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+            if(response.status === 'success') {
+                window.location.href = response.redirect;
+            } else {
+                // Show error toast
+                toastr.error(response.message, '<?php echo get_phrase("oh_snap"); ?>', {
+                    closeButton: true,
+                    progressBar: false,
+                    timeOut: 5000
+                });
+
+                // Show error message
+                $('#error_message').text(response.message);
+                $('#password').addClass('is-invalid').val('');
+                $submitBtn.prop('disabled', false);
+
+                // Update CSRF token if provided
+                if(response.csrf_token_name && response.csrf_hash) {
+                    $('input[name="' + response.csrf_token_name + '"]').val(response.csrf_hash);
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            $('#error_message').text('<?php echo get_phrase("invalid_your_email_or_password"); ?>');
+            $('#password').addClass('is-invalid').val('');
+            $submitBtn.prop('disabled', false);
+
+            // Try to get new CSRF token from response
+            try {
+                var errorResponse = JSON.parse(xhr.responseText);
+                if(errorResponse.csrf_token_name && errorResponse.csrf_hash) {
+                    $('input[name="' + errorResponse.csrf_token_name + '"]').val(errorResponse.csrf_hash);
+                }
+            } catch(e) {
+                console.log('Could not parse CSRF from error response');
+            }
+        }
+    }); 
+});
+
+// Clear error on password input
+$('#password').on('input', function() {
+    $('#error_message').text('');
+    $(this).removeClass('is-invalid');
+});
+
+</script>
 <script>
 function forgotPass(){
     $('#loginForm').hide();

@@ -44,12 +44,6 @@ class Crud_model extends CI_Model
 		$this->db->from('classes');       // préciser la table
 		$this->db->where('school_id', $school_id);
 		$this->db->where('statut', "active");
-		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
-		$this->db->group_start();
-		$this->db->where('date_fin >=', date('Y-m-d'));
-		$this->db->or_where('date_fin', NULL);
-		$this->db->group_end();
-
 		return $this->db->count_all_results();
 	}
 
@@ -59,11 +53,6 @@ class Crud_model extends CI_Model
 		$this->db->from('classes');              // table classes
 		$this->db->where('school_id', $school_id);
 		$this->db->where('statut', "active");
-		// Afficher seulement les classes qui n'ont pas dépassé la date actuelle (ou sans date de fin)
-		$this->db->group_start();
-		$this->db->where('date_fin >=', date('Y-m-d'));
-		$this->db->or_where('date_fin', NULL);
-		$this->db->group_end();
 		$query = $this->db->get();
 		return $query->result_array();           // retourne toutes les classes sous forme de tableau
 	}
@@ -503,14 +492,141 @@ class Crud_model extends CI_Model
 		$data['school_id'] = html_escape($this->input->post('school_id'));
 		$file_ext = pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION);
 		$data['file'] = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-		move_uploaded_file($_FILES['syllabus_file']['tmp_name'], 'uploads/syllabus/' . $data['file']);
+		$file_path = 'uploads/syllabus/' . $data['file'];
+		move_uploaded_file($_FILES['syllabus_file']['tmp_name'], $file_path);
+		
+		// Extraire le texte du document pour le Chat AI
+		$extraction = $this->extract_document_text(FCPATH . $file_path, $file_ext);
+		$data['extracted_text'] = $extraction['text'];
+		$data['page_count'] = $extraction['page_count'];
+		
 		$this->db->insert('syllabuses', $data);
 
 		return array(
 			'status' => true,
 			'notification' => get_phrase('syllabus_added_successfully')
 		);
-		//return json_encode($response);
+	}
+	
+	/**
+	 * Extraire le texte d'un document (PDF, DOCX, DOC, TXT)
+	 * @param string $file_path Chemin complet du fichier
+	 * @param string $file_ext Extension du fichier
+	 * @return array ['text' => string, 'page_count' => int]
+	 */
+	public function extract_document_text($file_path, $file_ext)
+	{
+		$text = '';
+		$page_count = 1;
+		$file_ext = strtolower($file_ext);
+		
+		if (!file_exists($file_path)) {
+			return ['text' => '', 'page_count' => 1];
+		}
+		
+		try {
+			switch ($file_ext) {
+				case 'pdf':
+					$parser = new \Smalot\PdfParser\Parser();
+					$pdf = $parser->parseFile($file_path);
+					$text = $pdf->getText();
+					$page_count = count($pdf->getPages());
+					break;
+					
+				case 'docx':
+					$phpWord = \PhpOffice\PhpWord\IOFactory::load($file_path);
+					foreach ($phpWord->getSections() as $section) {
+						foreach ($section->getElements() as $element) {
+							$text .= $this->extractTextFromWordElement($element) . "\n";
+						}
+					}
+					$page_count = max(1, ceil(strlen($text) / 3000));
+					break;
+					
+				case 'doc':
+					$text = $this->extractTextFromDocFile($file_path);
+					$page_count = max(1, ceil(strlen($text) / 3000));
+					break;
+					
+				case 'txt':
+					$text = file_get_contents($file_path);
+					$page_count = max(1, ceil(strlen($text) / 3000));
+					break;
+			}
+		} catch (Exception $e) {
+			log_message('error', 'Document extraction error: ' . $e->getMessage());
+			$text = '';
+		}
+		
+		return ['text' => $text, 'page_count' => $page_count];
+	}
+	
+	/**
+	 * Extraire le texte d'un élément PhpWord récursivement
+	 */
+	private function extractTextFromWordElement($element)
+	{
+		$text = '';
+		
+		if ($element instanceof \PhpOffice\PhpWord\Element\Text) {
+			$text .= $element->getText();
+		} elseif ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+			foreach ($element->getElements() as $childElement) {
+				$text .= $this->extractTextFromWordElement($childElement);
+			}
+		} elseif ($element instanceof \PhpOffice\PhpWord\Element\TextBreak) {
+			$text .= "\n";
+		} elseif ($element instanceof \PhpOffice\PhpWord\Element\Table) {
+			foreach ($element->getRows() as $row) {
+				foreach ($row->getCells() as $cell) {
+					foreach ($cell->getElements() as $cellElement) {
+						$text .= $this->extractTextFromWordElement($cellElement) . "\t";
+					}
+				}
+				$text .= "\n";
+			}
+		} elseif ($element instanceof \PhpOffice\PhpWord\Element\ListItem) {
+			$textObject = $element->getTextObject();
+			if ($textObject !== null) {
+				$text .= "• " . $this->extractTextFromWordElement($textObject) . "\n";
+			}
+		} elseif ($element instanceof \PhpOffice\PhpWord\Element\Link) {
+			$text .= $element->getText();
+		} elseif (method_exists($element, 'getElements')) {
+			foreach ($element->getElements() as $childElement) {
+				$text .= $this->extractTextFromWordElement($childElement) . "\n";
+			}
+		} elseif (method_exists($element, 'getText')) {
+			$result = $element->getText();
+			if (is_string($result)) {
+				$text .= $result;
+			} elseif (is_object($result)) {
+				$text .= $this->extractTextFromWordElement($result);
+			}
+		}
+		
+		return $text;
+	}
+	
+	/**
+	 * Extraire le texte d'un fichier DOC (ancien format Word)
+	 */
+	private function extractTextFromDocFile($file_path)
+	{
+		$fileHandle = fopen($file_path, 'rb');
+		if (!$fileHandle) {
+			return '';
+		}
+		
+		$content = fread($fileHandle, filesize($file_path));
+		fclose($fileHandle);
+		
+		$text = '';
+		if (preg_match_all('/[\x20-\x7E\xA0-\xFF]{4,}/', $content, $matches)) {
+			$text = implode(' ', $matches[0]);
+		}
+		
+		return trim(preg_replace('/\s+/', ' ', $text));
 	}
 	public function syllabus_delete($param1)
 	{
@@ -1522,8 +1638,22 @@ class Crud_model extends CI_Model
 			// Récupérer les données de la session
 			$enrolment_data = $this->session->userdata('enrolment_data');
 
+			// Toujours utiliser l'ID de la table students pour les inscriptions
+			$student_id = $enrolment_data['student_id'] ?? null;
+			$student_row = null;
+			if ($student_id) {
+				$student_row = $this->db->get_where('students', ['id' => $student_id])->row_array();
+				if (!$student_row) {
+					// Certains écrans envoient l'user_id : on mappe vers l'étudiant
+					$student_row = $this->db->get_where('students', [
+						'user_id'   => $student_id,
+						'school_id' => $enrolment_data['school_id'] ?? null
+					])->row_array();
+				}
+			}
+
 			// Utiliser les données
-			$data_enrols['student_id'] = $enrolment_data['student_id'];
+			$data_enrols['student_id'] = $student_row['id'];
 			$data_enrols['class_id'] = $enrolment_data['class_id'];
 
 			$data_enrols['school_id'] = $enrolment_data['school_id'];

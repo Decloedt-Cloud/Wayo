@@ -6,9 +6,9 @@
           <div class="hero-copy">
             <div class="badge"><?php echo get_phrase("FAQ & User Guide") ?></div>
             <h2><?php echo get_phrase("Monetize your expertise.") ?><br/><?php echo get_phrase("Learn local, progress fast.") ?></h2>
-            <p><?php echo get_phrase("Wayo Academy connects local mentors and learners with practical learning paths, adapted to the Moroccan market.") ?></p>
+            <p><?php echo get_phrase("Wayo Academy connects local Experts and learners with practical learning paths, adapted to the Moroccan market.") ?></p>
             <div class="hero-points" style="margin-top:16px">
-              <span class="chip"><?php echo get_phrase("On-demand courses") ?></span>
+              <span class="chip"><?php echo get_phrase("On-community value courses") ?></span>
               <span class="chip"><?php echo get_phrase("Live sessions & Coaching") ?></span>
               <span class="chip"><?php echo get_phrase("Secure payments") ?></span>
               <span class="chip"><?php echo get_phrase("Certificates (depending on course)") ?></span>
@@ -16,8 +16,8 @@
           </div>
           <aside class="hero-card" aria-label="Vue rapide — How it works">
             <div class="pill"><?php echo get_phrase("How it works — overview") ?></div>
-            <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create") ?></strong> <?php echo get_phrase("a mentor or learner account.") ?></div></div>
-            <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Publish/Choose a course") ?></strong><?php echo get_phrase(" and set objectives & curriculum.") ?></div></div>
+            <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create") ?></strong> <?php echo get_phrase("a community or join acommunity account.") ?></div></div>
+            <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Publish/Choose a community") ?></strong><?php echo get_phrase(" and set objectives & curriculum.") ?></div></div>
             <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Secure payments") ?></strong> <?php echo get_phrase("& instant access.") ?></div></div>
             <div class="wayo-step"><div class="num">4</div><div><strong><?php echo get_phrase("Follow the path") ?></strong> : <?php echo get_phrase("videos, lives, Q&A, resources.") ?></div></div>
           </aside>
@@ -58,7 +58,7 @@
             <ul>
               <li><?php echo get_phrase("Filterable catalog (topic, level, language)") ?></li>
               <li><?php echo get_phrase("Secure payments & invoices") ?></li>
-              <li><?php echo get_phrase("Certificate of completion (depending on course)") ?></li>
+              <li><?php echo get_phrase("chat with other members") ?></li>
             </ul>
           </div>
         </div>
@@ -75,7 +75,7 @@
         <div class="grid-2">
           <div class="card">
             <h4 style="color:var(--wayo-orange-700)"><?php echo get_phrase("Mentor Path (6 steps)") ?></h4>
-            <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create an account & profile") ?></strong> : <?php echo get_phrase("bio, expertise, photo, social links.") ?></div></div>
+            <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create your community") ?></strong> : <?php echo get_phrase("bio, expertise, photo, social links.") ?></div></div>
             <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Define your offer") ?></strong> : <?php echo get_phrase("con-demand / live / coaching (+ objectives & program).") ?></div></div>
             <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Set pricing & schedule") ?></strong> : <?php echo get_phrase("rates, seats, availability.") ?></div></div>
             <div class="wayo-step"><div class="num">4</div><div><strong><?php echo get_phrase("Publish & share") ?></strong> : <?php echo get_phrase("put on sale + share the link.") ?></div></div>
@@ -85,9 +85,9 @@
           <div class="card">
             <h4 style="color:var(--wayo-orange-700)"><?php echo get_phrase("Learner Path (6 steps)") ?></h4>
             <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create an account") ?></strong> : <?php echo get_phrase("email + password.") ?></div></div>
-            <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Explore catalog") ?></strong> : <?php echo get_phrase("topic, level, language, price, reviews.") ?></div></div>
-            <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Select a course") ?></strong> :  .<?php echo get_phrase("objectives, curriculum, prerequisites") ?></div></div>
-            <div class="wayo-step"><div class="num">4</div><div><strong><?php echo get_phrase("Pay online") ?></strong> : <?php echo get_phrase("secure checkout, instant confirmation.") ?></div></div>
+            <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Explore communities") ?></strong> : <?php echo get_phrase("topic, level, language, price, reviews.") ?></div></div>
+            <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Select a community") ?></strong> :  .<?php echo get_phrase("objectives, curriculum, prerequisites") ?></div></div>
+            <div class="wayo-step"><div class="num">4</div><div><strong><?php echo get_phrase("Pay online or cash") ?></strong> : <?php echo get_phrase("secure checkout, instant confirmation.") ?></div></div>
             <div class="wayo-step"><div class="num">5</div><div><strong><?php echo get_phrase("Follow the training") ?></strong> : <?php echo get_phrase("videos, lives, resources, messaging.") ?></div></div>
             <div class="wayo-step"><div class="num">6</div><div><strong><?php echo get_phrase("Complete & certify") ?></strong> : <?php echo get_phrase("quizzes/evaluations (if any), certificate (if offered).") ?></div></div>
           </div>
@@ -136,7 +136,7 @@
                 </div>
                 <div>
                     <h4><?php echo get_phrase("Progress & certificates") ?></h4>
-                    <p><?php echo get_phrase("Learner stats, evaluations (if any), and certificates for selected courses.") ?></p>
+                    <p><?php echo get_phrase("Learner stats, evaluations Quizes.") ?></p>
                 </div>
             </div>
             <div class="card feat">
@@ -144,7 +144,7 @@
                     <i class="fas fa-lock"></i>
                 </div>
                 <div>
-                    <h4><?php echo get_phrase("Secure payments") ?></h4>
+                    <h4><?php echo get_phrase("Secure payments instant or casl") ?></h4>
                     <p><?php echo get_phrase("Certified providers, encrypted connections, downloadable invoices.") ?></p>
                 </div>
             </div>
@@ -177,7 +177,7 @@
     </section>
 
     <!-- MENTORS -->
-    <section class="bg-section-secondary" id="mentors" aria-label="Mentors">
+    <!-- <section class="bg-section-secondary" id="mentors" aria-label="Mentors">
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("Featured Mentors") ?></h3>
@@ -198,7 +198,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- TARIFS -->
     <section class="bg-section-primary" id="tarifs" aria-label="Tarifs">
@@ -210,7 +210,12 @@
         <div class="pricing">
           <div class="price">
             <h4><?php echo get_phrase("Learner — À la carte") ?></h4>
-            <p class="big"><?php echo get_phrase("From 199 MAD") ?></p>
+             <div class="plan-price-split">
+            <p class="big">
+               <?php echo get_phrase("From") ?> <span class="price-value"></span>
+               <span class="price-currency"></span>
+            </p>
+            </div>
             <p><?php echo get_phrase("Purchase course by course, access depending on format (on-demand, live, coaching).") ?></p>
             <a class="btn-login" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Discover our communities") ?></a>
           </div>
@@ -221,10 +226,10 @@
             <a class="btn-login" href="<?php echo site_url('admission/online_admission'); ?>"><?php echo get_phrase("Become a Mentor") ?></a>
           </div>
           <div class="price">
-            <h4><?php echo get_phrase("Teams & Schools") ?></h4>
-            <p class="big"><?php echo get_phrase("Custom quote") ?></p>
+            <h4><?php echo get_phrase("Easy use") ?></h4>
+            <p class="big"><?php echo get_phrase("Full control") ?></p>
             <p><?php echo get_phrase("Private training, group access, reporting & certificates.") ?></p>
-            <a class="btn-login" href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("Contact us") ?></a>
+            <a class="btn-login" href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("For more infos") ?></a>
           </div>
         </div>
       </div>
@@ -276,7 +281,7 @@
         <div class="grid-2">
           <div class="card">
             <h4><?php echo get_phrase("Ready to share your knowledge ?") ?></h4>
-            <p><?php echo get_phrase("Join Wayo ambassadors and publish your first course today.") ?></p>
+            <p><?php echo get_phrase("Join us and creat your community today.") ?></p>
             <a class="btn-login-faq" href="#"><?php echo get_phrase("Create my Mentor account") ?></a>
           </div>
           <div id="support" class="card">
@@ -326,4 +331,65 @@
         document.addEventListener('click', function(){ wrap.classList.remove('open'); });
       }
     })();
+  </script>
+
+  <script>
+     async function updatePrices() {
+              try {
+                  // Get user's country
+
+                  const response = await fetch('https://api.country.is/');
+                  const data = await response.json();
+                  const country = data.country; 
+                  
+                  // Base price in MAD (Moroccan Dirham)
+                  const basePriceMAD = 790;
+                  
+                  // Get live exchange rate MAD to AED
+                  const exchangeRate = await getExchangeRate('MAD', 'AED');
+                  
+                  // Calculate prices
+                  const prices = {
+                      'MA': { 
+                          value: basePriceMAD.toFixed(2).replace('.', ','), 
+                          currency: 'DH' 
+                      },
+                      'AE': { 
+                          value: (basePriceMAD * exchangeRate).toFixed(2), 
+                          currency: 'AED' 
+                      }
+                  };
+                  
+                  // Get the price based on country
+                  const priceData = prices[country] || prices['MA'];
+                  
+                  // Update all price elements
+                  const priceElements = document.querySelectorAll('.plan-price-split');
+                  
+                  priceElements.forEach(element => {
+                      const priceValue = element.querySelector('.price-value');
+                      const priceCurrency = element.querySelector('.price-currency');
+                      
+                      if (priceValue) priceValue.textContent = parseInt(priceData.value);
+                      if (priceCurrency) priceCurrency.textContent = priceData.currency;
+                  });
+                  
+              } catch (error) {
+                  console.error('Error updating prices:', error);
+              }
+          }
+          // Récupérer les taux de change avec Currency-API
+          async function getExchangeRate(from, to) {
+              try {
+                  // Using free exchangerate-api.com
+                  const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
+                  const data = await response.json();
+                  return data.rates[to] || 0.4; // Fallback rate if API fails
+              } catch (error) {
+                  console.error('Error fetching exchange rate:', error);
+                  return 0.4; // Fallback: 1 MAD ≈ 0.4 AED
+              }
+          }
+        // Initialiser les prix au chargement de la page
+        document.addEventListener('DOMContentLoaded', updatePrices);
   </script>
