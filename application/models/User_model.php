@@ -1622,9 +1622,10 @@ class User_model extends CI_Model
 			$enrol_data['birthday'] = $user_details['birthday'];
 			$enrol_data['gender'] = $user_details['gender'];
 
-			$class_details = $this->crud_model->get_class_details_by_id($enrol_data['class_id'])->row_array();
+			$class_id = isset($enrol_data['class_id']) ? $enrol_data['class_id'] : null;
+			$class_details = $class_id ? $this->crud_model->get_class_details_by_id($class_id)->row_array() : null;
 
-			$enrol_data['class_name'] = $class_details['name'];
+			$enrol_data['class_name'] = isset($class_details['name']) ? $class_details['name'] : '';
 		}
 		return $enrol_data;
 	}
@@ -2276,7 +2277,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 
 	public function join_school($school_id, $data_invoice = array())
 	{
-
+	
 		if ($this->session->userdata('user_id') == null || $this->session->userdata('user_id') == "") {
 			$this->session->set_flashdata('error', get_phrase('please_login_before_continuing'));
 			if (isset($_SERVER['HTTP_REFERER'])) {
@@ -2299,6 +2300,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 					redirect($_SERVER['HTTP_REFERER'], 'refresh');
 				}
 			} else {
+
 				$student_row = $this->db->get_where('students', array('user_id' => $user_id))->row_array();
 				$student_code = !empty($student_row) ? $student_row['code'] : student_code();
 
@@ -2306,10 +2308,11 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 				$data['user_id'] = $user_id;
 				$data['code'] = $student_code;
 				$data['session'] = $this->active_session;
-
 				$query = $this->db->get_where('schools', array('id' => $school_id));
+
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
+
 					if ($row->access == 1) {
 						$data['status'] = 1; //Public
 					} else {
@@ -2329,17 +2332,49 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 					$invoice_details = $this->db->get('invoices')->row_array();
 
 					if (!empty($invoice_details)) {
-						$paid_amount = isset($data_invoice['amount_paid']) ? $data_invoice['amount_paid'] : 0;
-						$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
-						if ($due_amount == $paid_amount) {
+						$paid_amount = isset($data_invoice['amount_paid']) ? (float)$data_invoice['amount_paid'] : 0;
+						$invoice_amount_paid = isset($invoice_details['amount_paid']) ? (float)$invoice_details['amount_paid'] : 0;
+						$invoice_total = (float)$invoice_details['total_amount'];
+						$due_amount = $invoice_total - $invoice_amount_paid;
+						
+						// Si une conversion de devise a été appliquée, utiliser le montant original
+						$amount_to_compare = $paid_amount;
+						if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied'] && isset($data_invoice['original_amount'])) {
+							$amount_to_compare = (float)$data_invoice['original_amount'];
+						}
+						
+						// Tolérance de 0.01 pour les erreurs d'arrondi
+						$is_full_payment = abs($due_amount - $amount_to_compare) < 0.01;
+						
+						log_message('debug', "Community payment check: due={$due_amount}, compare={$amount_to_compare}, is_full=" . ($is_full_payment ? 'true' : 'false'));
+						
+						if ($is_full_payment) {
 							$updater = array(
 								'status' => 'paid',
 								'payment_method' => isset($data_invoice['payment_method']) ? $data_invoice['payment_method'] : $invoice_details['payment_method'],
-								'paid_amount' => $paid_amount + $invoice_details['paid_amount'],
+								'paid_amount' => $invoice_total, // Marquer comme totalement payé
+								'currency' => isset($data_invoice['original_currency']) ? $data_invoice['original_currency'] : (isset($data_invoice['currency']) ? $data_invoice['currency'] : $invoice_details['currency']),
+								'payment_type' => isset($data_invoice['payment_type']) ? $data_invoice['payment_type'] : $invoice_details['payment_type'],
+								'vat_amount' => isset($data_invoice['vat_amount']) ? $data_invoice['vat_amount'] : $invoice_details['vat_amount'],
+								'vat_rate' => isset($data_invoice['vat_rate']) ? $data_invoice['vat_rate'] : $invoice_details['vat_rate'],
+								'sub_total' => isset($data_invoice['sub_total']) ? $data_invoice['sub_total'] : $invoice_details['sub_total'],
+								'total_amount' => $invoice_total,
 								'updated_at'  => strtotime(date('d-M-Y'))
 							);
+							
+							// Ajouter les infos de conversion FX si présentes
+							if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied']) {
+								$updater['payment_currency'] = isset($data_invoice['currency']) ? $data_invoice['currency'] : null;
+								$updater['payment_amount_converted'] = $paid_amount;
+								$updater['fx_rate'] = isset($data_invoice['fx_rate']) ? $data_invoice['fx_rate'] : null;
+								$updater['fx_rate_date'] = isset($data_invoice['fx_rate_date']) ? $data_invoice['fx_rate_date'] : null;
+								$updater['conversion_applied'] = 1;
+							}
+							
 							$this->db->where('id', $data_invoice['invoice_id']);
 							$this->db->update('invoices', $updater);
+							
+							log_message('info', "Community invoice #{$data_invoice['invoice_id']} marked as paid");
 						}
 					}
 				}

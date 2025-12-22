@@ -629,6 +629,7 @@ class Settings_model extends CI_Model
   }
   function get_currencies()
   {
+    $this->db->where('payumoney_supported', 1);
     return $this->db->get('currencies')->result_array();
   }
 

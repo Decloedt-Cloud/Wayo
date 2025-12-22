@@ -3063,5 +3063,16 @@
     "invalid_price_(must_be_a_non_negative_number)": "سعر غير صالح (يجب أن يكون رقمًا غير سالب)",
     "your_trial_has_ended": "تم انتهاء تجربتك",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "للمتابعة في استخدام مجتمعك، تحتاج إلى تنشيط اشتراكك.",
-    "go_to_payment_page": "الذهاب إلى صفحة الدفع"
+    "go_to_payment_page": "الذهاب إلى صفحة الدفع",
+    "payment_url_not_found": "رابط الدفع غير موجود",
+    "subscription_activated_successfully": "تم تنشيط الاشتراك بنجاح",
+    "as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.": "كمرشد، يرجى الاتصال بمدير مجتمعك لتجديد الاشتراك.",
+    "subscription_wayo": "اشتراك وايو",
+    "your_account_has_been_disabled": "تم تعطيل حسابك",
+    "paypal_validation_failed": "فشل تحقق PayPal",
+    "currency_conversion": "تحويل العملة",
+    "exchange_rate": "سعر الصرف",
+    "original_price": "السعر الأصلي",
+    "rate_may_be_outdated": "قد يكون سعر الصرف قديم",
+    "converted_amount": "المبلغ المحول"
 }

@@ -3141,5 +3141,15 @@
     "invalid_price_(must_be_a_non_negative_number)": "Prix invalide (doit être un nombre non négatif)",
     "your_trial_has_ended": "Votre essai a expiré",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Pour continuer à utiliser votre communauté, vous devez activer votre abonnement.",
-    "go_to_payment_page": "Aller à la page de paiement"
+    "go_to_payment_page": "Aller à la page de paiement",
+    "payment_url_not_found": "URL de paiement introuvable",
+    "subscription_activated_successfully": "Abonnement activé avec succès",
+    "as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.": "En tant que mentor, veuillez contacter l’administrateur de votre communauté pour renouveler l’abonnement.",
+    "subscription_wayo": "Abonnement Wayo",
+    "paypal_validation_failed": "La validation PayPal a échoué",
+    "currency_conversion": "Conversion de devise",
+    "exchange_rate": "Taux de change",
+    "original_price": "Prix d’origine",
+    "rate_may_be_outdated": "Le taux peut être obsolète",
+    "converted_amount": "Montant converti"
 }

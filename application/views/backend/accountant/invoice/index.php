@@ -1,3 +1,5 @@
+<!-- CSRF Token -->
+<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" id="csrf_token">
 <!-- start page title -->
 <div class="row ">
   <div class="col-xl-12">
@@ -103,16 +105,42 @@ function getExportUrl(type) {
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id').val();
   var selectedStatus = $('#status').val();
+  
+  var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+  var csrfHash = $('#csrf_token').val();
+  
+  if (!csrfHash) {
+    console.error('CSRF token not found');
+    return;
+  }
+  
+  var postData = {
+    type: type, 
+    dateRange: dateRange, 
+    selectedClass: selectedClass, 
+    selectedStatus: selectedStatus
+  };
+  postData[csrfName] = csrfHash;
+  
   $.ajax({
-    type : 'post',
+    type: 'POST',
     url: url,
-    data : {type : type, dateRange : dateRange, selectedClass : selectedClass, selectedStatus : selectedStatus},
-    success : function(response) {
-      if (type == 'csv') {
-        window.open(response, '_self');
-      }else{
-        window.open(response, '_blank');
+    data: postData,
+    dataType: 'json',
+    success: function(response) {
+      if (response && response.url) {
+        if (type == 'csv') {
+          window.open(response.url, '_self');
+        } else {
+          window.open(response.url, '_blank');
+        }
+        if (response.csrf && response.csrf.csrfHash) {
+          $('#csrf_token').val(response.csrf.csrfHash);
+        }
       }
+    },
+    error: function(xhr, status, error) {
+      console.error('Export error:', status, error);
     }
   });
 }

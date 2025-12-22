@@ -579,7 +579,9 @@ $config['csrf_exclude_uris'] = array(
     'admin/teacher/create',
     'admission/check_duplication_ajax',
     'home/get_communities_by_role',
-    'home/check_community_name_exists'
+    'home/check_community_name_exists',
+    'api/fx/.*',
+    'cron/fx_.*'
 );
  
 /*
@@ -670,4 +672,23 @@ $config['enable_hooks'] = TRUE;
 $config['humhub_url'] = 'https://preprodwayosocial.wayo.site/';
 // $config['humhub_url'] = 'http://localhost/social-voicemessage/humhub-1.17.2/';   
 // $config['humhub_image'] = 'C:/xampp/htdocs/social-voicemessage/humhub-1.17.2/uploads/profile_image/';   
-$config['humhub_image'] = 'https://preprodwayosocial.wayo.site/uploads/profile_image/';  
+$config['humhub_image'] = 'https://preprodwayosocial.wayo.site/uploads/profile_image/';
+
+/*
+|--------------------------------------------------------------------------
+| FX RATES API CONFIGURATION
+|--------------------------------------------------------------------------
+|
+| Configuration for ExchangeRate-API integration
+| API Documentation: https://www.exchangerate-api.com/docs/overview
+|
+*/
+
+// Clé API ExchangeRate-API (obtenir sur https://www.exchangerate-api.com/)
+$config['EXCHANGE_RATE_API_KEY'] = 'be04c41a7f57bbb46fdfe5eb';
+
+// Token pour les endpoints API (générer: openssl rand -hex 32)
+$config['FXRATES_API_TOKEN'] = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';
+
+// Token pour le cron (générer: openssl rand -hex 32)
+$config['FXRATES_CRON_TOKEN'] = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';  

@@ -3099,5 +3099,16 @@
     "invalid_price_(must_be_a_non_negative_number)": "Precio inválido (debe ser un número no negativo)",
     "your_trial_has_ended": "Tu prueba ha expirado",
     "to_continue_using_your_community_you_need_to_activate_your_subscription.": "Para continuar usando tu comunidad, necesitas activar tu suscripción.",
-    "go_to_payment_page": "Ir a la página de pago"
+    "go_to_payment_page": "Ir a la página de pago",
+    "payment_url_not_found": "URL de pago no encontrada",
+    "subscription_activated_successfully": "Suscripción activada con éxito",
+    "as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.": "Como mentor, por favor contacte con el administrador de su comunidad para renovar la suscripción.",
+    "subscription_wayo": "Suscripción Wayo",
+    "your_account_has_been_disabled": "Su cuenta ha sido desactivada",
+    "paypal_validation_failed": "La validación de PayPal ha fallado",
+    "currency_conversion": "Conversión de moneda",
+    "exchange_rate": "Tipo de cambio",
+    "original_price": "Precio original",
+    "rate_may_be_outdated": "El tipo de cambio puede estar desactualizado",
+    "converted_amount": "Monto convertido"
 }

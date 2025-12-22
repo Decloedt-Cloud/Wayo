@@ -3,6 +3,41 @@
 <?php endif; ?>
 
 <?php
+// --------- TVA / VAT CALCULATION ---------
+// On récupère les réglages fiscaux de la communauté / école
+$settings_school = $this->settings_model->get_settings_school_data($school_id);
+
+$vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
+$tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+
+$vat_rate = 0; // en pourcentage
+if ($vat_applicable) {
+    if ($tax_residence === 'MA') {
+        // 1 - Communauté au Maroc  => 20% de TVA
+        $vat_rate = 20;
+    } elseif ($tax_residence === 'UAE') {
+        // 2 - Communauté aux EAU => 5% de TVA
+        $vat_rate = 5;
+    }
+}
+
+// Calcul du prix avec TVA pour la communauté
+$school_price_ht = (float)$school['price'];
+$school_vat_amount = $school_price_ht * ($vat_rate / 100);
+$school_price_ttc = $school_price_ht + $school_vat_amount;
+
+// Calcul du prix avec TVA pour chaque classe
+$classes_with_vat = [];
+foreach ($classes as $key => $class) {
+    $class_price_ht = isset($class['price']) ? (float)$class['price'] : 0;
+    $class_vat_amount = $class_price_ht * ($vat_rate / 100);
+    $class_price_ttc = $class_price_ht + $class_vat_amount;
+    
+    $classes_with_vat[$key] = $class;
+    $classes_with_vat[$key]['price_ht'] = $class_price_ht;
+    $classes_with_vat[$key]['vat_amount'] = $class_vat_amount;
+    $classes_with_vat[$key]['price_ttc'] = $class_price_ttc;
+}
 ?>
 
 <!-- ===== HERO ===== -->
@@ -67,7 +102,10 @@
               <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i>
                 <?php
                 if ((float)$school['price'] > 0) {
-                  echo $school['price'] . " " . $settings_data['system_currency'];
+                  echo number_format($school_price_ttc, 2) . " " . $settings_data['system_currency'];
+                  if ($vat_rate > 0) {
+                    echo " <small class='text-muted'>(TTC)</small>";
+                  }
                 } else {
                   echo get_phrase("Free");
                 }
@@ -112,7 +150,11 @@
                           <span class="badge rounded-pill border text-brand fw-bold price-badge">
                             <?php
                             if (isset($class['price']) && $class['price'] > 0) {
-                              echo $class['price'] . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                              $class_price_ttc = isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price'];
+                              echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                              if ($vat_rate > 0) {
+                                echo " <small class='text-muted'>(TTC)</small>";
+                              }
                               if (!empty($class['cycle'])) echo ' ' . $class['cycle'];
                             } else {
                               echo "Gratuit";
@@ -159,7 +201,7 @@
                                 <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
                                   <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
                                   <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
-                                  <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
+                                  <input type="hidden" name="price" value="<?php echo $school_price_ttc; ?>" />
                                   <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
                                 <?php
                               } else {
@@ -170,7 +212,7 @@
                                     <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
                                     <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
                                     <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
-                                    <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                                    <input type="hidden" name="price" value="<?php echo isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price']; ?>" />
                                     <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
                                 <?php
                               }
@@ -214,7 +256,10 @@
                 <span class="text-wayo fw-bold">
                   <?php
                   if ((float)$school['price'] > 0) {
-                    echo $school['price'] . " " . $settings_data['system_currency'];
+                    echo number_format($school_price_ttc, 2) . " " . $settings_data['system_currency'];
+                    if ($vat_rate > 0) {
+                      echo " <small class='text-muted'>(TTC)</small>";
+                    }
                   } else {
                     
                     echo get_phrase("Free");
@@ -234,7 +279,7 @@
             <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
               <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
-              <input type="hidden" name="price" value="<?php echo $school['price']; ?>" />
+              <input type="hidden" name="price" value="<?php echo $school_price_ttc; ?>" />
               <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
               <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
             </form>
@@ -474,8 +519,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const nombre_max = card.dataset.free;
         modal.querySelector('#classFree').textContent = nombre_max + ' <?php echo get_phrase("Maximum_number"); ?>';
 
-        // Prix
-        modal.querySelector('#classPrice').textContent = (card.dataset.price > 0 ? card.dataset.price + ' ' + card.dataset.currency + ' ' + card.dataset.cycle : 'Gratuit');
+        // Prix avec TVA
+        const classPrice = parseFloat(card.dataset.price) || 0;
+        let displayPrice = 'Gratuit';
+        if (classPrice > 0) {
+          // Calculer le prix TTC pour la modal
+          const vatRate = <?php echo $vat_rate; ?>;
+          const classPriceTTC = vatRate > 0 ? classPrice * (1 + (vatRate / 100)) : classPrice;
+          displayPrice = classPriceTTC.toFixed(2) + ' ' + card.dataset.currency + ' ' + card.dataset.cycle;
+          if (vatRate > 0) {
+            displayPrice += ' (TTC)';
+          }
+        }
+        modal.querySelector('#classPrice').textContent = displayPrice;
       });
     });
   });

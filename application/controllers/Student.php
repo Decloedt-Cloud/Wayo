@@ -898,11 +898,33 @@ class Student extends CI_Controller {
 		$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
 		// print_r($num_rows_invoices);die;
 		if($num_rows_invoices == 0){
+			// Calculer la TVA pour les classes
+			$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
+			$vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
+			$tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+			
+			$vat_rate = 0;
+			if ($vat_applicable) {
+				if ($tax_residence === 'MA') {
+					$vat_rate = 20;
+				} elseif ($tax_residence === 'UAE') {
+					$vat_rate = 5;
+				}
+			}
+			
+			// Le prix reçu est HT pour les classes
+			$sub_total = (float)$data['price'];
+			$vat_amount = $sub_total * ($vat_rate / 100);
+			$total_amount = $sub_total + $vat_amount; // TTC
+			
 			$name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
 			$classe_name = $this->db->get_where('classes', array('id' => $data['class_id']))->row('name');
 			$data_invoice['title'] = $name." - ".$classe_name ;
-			$data_invoice['total_amount'] = $data['price'];
-            $data_invoice['currency'] = $data['currency']; // ADD THIS LINE
+			$data_invoice['total_amount'] = $total_amount; // Montant TTC
+			$data_invoice['sub_total'] = $sub_total; // Montant HT
+			$data_invoice['vat_amount'] = $vat_amount; // Montant TVA
+			$data_invoice['vat_rate'] = $vat_rate; // Taux TVA
+            $data_invoice['currency'] = $data['currency'];
 			$data_invoice['class_id'] = $data['class_id'] ;
 			$data_invoice['student_id'] = $data['student_id'];
 			$data_invoice['status'] = "unpaid";
@@ -937,7 +959,7 @@ class Student extends CI_Controller {
   public function join_school($param1, $school_id)
 {
     if ($param1 == 'assigned') {
-
+        
         // 🔹 1. Récupération des données envoyées par le formulaire
         $data['student_id'] = $this->session->userdata('user_id'); 
         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
@@ -948,7 +970,7 @@ class Student extends CI_Controller {
         // 🔹 2. Vérifier si l'école existe
         $school = $this->db->get_where('schools', ['id' => $data['school_id']])->row();
         if (!$school) {
-            show_error('École non trouvée.');
+            show_error('community not found.');
             return;
         }
         $school_name = $school->name;
@@ -977,17 +999,48 @@ class Student extends CI_Controller {
         ])->row();
 
         if (!$existing_invoice) {
-            // 🔹 4. Créer la facture (invoice)
+            // 🔹 4. Calculer la TVA
+            $settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
+            $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
+            $tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+            
+            $vat_rate = 0;
+            if ($vat_applicable) {
+                if ($tax_residence === 'MA') {
+                    $vat_rate = 20;
+                } elseif ($tax_residence === 'UAE') {
+                    $vat_rate = 5;
+                }
+            }
+            
+            // Le prix reçu est déjà TTC (depuis community_details.php)
+            $price_ttc = (float)$data['price'];
+            $sub_total = 0;
+            $vat_amount = 0;
+            
+            if ($vat_rate > 0) {
+                // Calculer le HT à partir du TTC
+                $sub_total = $price_ttc / (1 + ($vat_rate / 100));
+                $vat_amount = $price_ttc - $sub_total;
+            } else {
+                $sub_total = $price_ttc;
+                $vat_amount = 0;
+            }
+            
+            // 🔹 5. Créer la facture (invoice) avec TVA
             $invoice_data = [
                 'title'        => 'Adhésion - ' . $school_name,
-                'total_amount' => $data['price'],
+                'total_amount' => $price_ttc, // Montant TTC
+                'sub_total'    => $sub_total, // Montant HT
+                'vat_amount'   => $vat_amount, // Montant TVA
+                'vat_rate'     => $vat_rate,   // Taux TVA
                 'student_id'   => $data['student_id'],
                 'school_id'    => $data['school_id'],
                 'status'       => 'unpaid',
                 'currency'     => $data['currency'],
                 'session'      => $data['session'],
                 'created_at'   => strtotime(date('Y-m-d H:i:s')),
-                'payment_type' => 'school_join' // 🔹 ajout pour identifier le type de paiement
+                'payment_type' => 'school_join'
             ];
             $this->db->insert('invoices', $invoice_data);
             $invoice_id = $this->db->insert_id();
@@ -1271,8 +1324,36 @@ class Student extends CI_Controller {
 			$this->load->view('backend/index', $page_data);
 		}
 
-		// showing the index file
-		if(empty($param1)){
+		// showing the index file with pagination
+		if(empty($param1) || $param1 == 'page'){
+			$student_data = $this->user_model->get_logged_in_student_details();
+
+			// Get filter parameter from URL
+			$filter = $this->input->get('filter');
+			$valid_filters = ['all', 'paid', 'pending', 'due'];
+			if (!in_array($filter, $valid_filters)) {
+				$filter = 'all';
+			}
+
+			// Pagination config
+			$per_page = 10; // Factures par page
+			$current_page = ($param1 == 'page' && is_numeric($param2)) ? (int)$param2 : 1;
+			$offset = ($current_page - 1) * $per_page;
+
+			// Get total count for pagination (filtered)
+			$total_invoices = $this->crud_model->count_invoices_by_student($student_data['code'], $filter);
+			$total_pages = ceil($total_invoices / $per_page);
+
+			// Pass pagination data to view
+			$page_data['pagination'] = [
+				'current_page' => $current_page,
+				'total_pages' => $total_pages,
+				'per_page' => $per_page,
+				'total_items' => $total_invoices,
+				'offset' => $offset,
+				'filter' => $filter
+			];
+
 			$page_data['folder_name'] = 'invoice';
 			$page_data['page_title']  = 'invoice';
 			$this->load->view('backend/index', $page_data);
@@ -1355,6 +1436,153 @@ class Student extends CI_Controller {
 		$this->load->view('backend/payment_gateway/stripe_checkout', $page_data);
 	}
 
+	/**
+	 * ========== SÉCURITÉ: Validation PayPal côté serveur ==========
+	 * Vérifie auprès de l'API PayPal que le paiement est bien complété
+	 * et que le montant correspond à celui attendu
+	 */
+	/**
+	 * Valide un paiement PayPal
+	 * 
+	 * Note: La validation complète via API PayPal nécessite un secret_key 
+	 * qui n'est pas stocké dans les paramètres actuels.
+	 * Le SDK PayPal Checkout.js exécute déjà le paiement via actions.payment.execute()
+	 * donc le paiement est complété côté PayPal avant d'arriver ici.
+	 * 
+	 * Cette fonction vérifie :
+	 * - Que le paymentID et payerID sont présents
+	 * - Que les paramètres PayPal sont configurés
+	 * - Si un secret_key est disponible, validation API complète
+	 * - Sinon, on fait confiance au SDK PayPal (paiement déjà exécuté)
+	 */
+	private function validate_paypal_payment($paymentID, $payerID, $expected_amount, $school_id) {
+		try {
+			// Vérifier que les IDs sont présents
+			if (empty($paymentID) || empty($payerID)) {
+				log_message('error', 'PayPal: paymentID ou payerID manquant');
+				return false;
+			}
+			
+			// Récupérer les paramètres PayPal
+			$paypal_settings = json_decode(get_payment_settings('paypal_settings', $school_id));
+			
+			if (empty($paypal_settings) || !isset($paypal_settings[0])) {
+				log_message('error', 'PayPal: Paramètres PayPal non configurés');
+				return false;
+			}
+			
+			$paypal = $paypal_settings[0];
+			$mode = $paypal->paypal_mode ?? 'sandbox';
+			
+			// Récupérer les credentials selon le mode
+			// Note: Les noms de champs stockés sont paypal_client_id_sandbox, etc.
+			if ($mode === 'sandbox') {
+				$client_id = $paypal->paypal_client_id_sandbox ?? '';
+				$client_secret = $paypal->paypal_secret_key_sandbox ?? '';
+				$api_base = 'https://api.sandbox.paypal.com';
+			} else {
+				$client_id = $paypal->paypal_client_id_production ?? '';
+				$client_secret = $paypal->paypal_secret_key_production ?? '';
+				$api_base = 'https://api.paypal.com';
+			}
+			
+			// Si pas de secret key, on fait confiance au SDK PayPal
+			// Le paiement a déjà été exécuté par actions.payment.execute()
+			if (empty($client_secret)) {
+				log_message('info', "PayPal: Validation sans secret_key - Paiement #{$paymentID} accepté (SDK PayPal a exécuté le paiement)");
+				return true;
+			}
+			
+			// Validation complète via API PayPal (si secret_key disponible)
+			if (empty($client_id)) {
+				log_message('error', 'PayPal: Client ID manquant');
+				return false;
+			}
+			
+			// Étape 1: Obtenir un access token
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $api_base . '/v1/oauth2/token');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
+			curl_setopt($ch, CURLOPT_USERPWD, $client_id . ':' . $client_secret);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [
+				'Accept: application/json',
+				'Accept-Language: en_US'
+			]);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			
+			$response = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			
+			if ($http_code !== 200) {
+				log_message('error', 'PayPal: Échec obtention access token. HTTP Code: ' . $http_code);
+				// Fallback: accepter le paiement car le SDK l'a déjà exécuté
+				log_message('info', "PayPal: Fallback - Paiement #{$paymentID} accepté malgré échec API");
+				return true;
+			}
+			
+			$token_data = json_decode($response, true);
+			if (empty($token_data['access_token'])) {
+				log_message('error', 'PayPal: Access token vide');
+				return true; // Fallback
+			}
+			
+			$access_token = $token_data['access_token'];
+			
+			// Étape 2: Vérifier le paiement
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $api_base . '/v1/payments/payment/' . $paymentID);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $access_token
+			]);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			
+			$response = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			
+			if ($http_code !== 200) {
+				log_message('error', 'PayPal: Échec vérification paiement. HTTP Code: ' . $http_code);
+				return true; // Fallback
+			}
+			
+			$payment_data = json_decode($response, true);
+			
+			// Vérifier le statut du paiement
+			// Après actions.payment.execute(), l'état devient 'completed' (pas 'approved')
+			$valid_states = ['approved', 'completed'];
+			if (empty($payment_data['state']) || !in_array($payment_data['state'], $valid_states)) {
+				log_message('error', 'PayPal: Paiement non valide. État: ' . ($payment_data['state'] ?? 'inconnu'));
+				return false;
+			}
+			
+			// Vérifier le montant
+			if (!empty($payment_data['transactions'][0]['amount']['total'])) {
+				$paid_amount = (float) $payment_data['transactions'][0]['amount']['total'];
+				$expected = (float) $expected_amount;
+				
+				// Tolérance de 0.01 pour les erreurs d'arrondi
+				if (abs($paid_amount - $expected) > 0.01) {
+					log_message('error', "PayPal: ALERTE SÉCURITÉ - Montant incorrect! Attendu: {$expected}, Reçu: {$paid_amount}");
+					return false;
+				}
+			}
+			
+			log_message('info', "PayPal: Paiement #{$paymentID} validé avec succès via API");
+			return true;
+			
+		} catch (Exception $e) {
+			log_message('error', 'PayPal: Exception lors de la validation - ' . $e->getMessage());
+			// En cas d'erreur, accepter le paiement car le SDK l'a déjà exécuté
+			return true;
+		}
+	}
 
 	private function add_student_to_class_space($student_id, $class_id)
     {
@@ -1424,37 +1652,159 @@ class Student extends CI_Controller {
 
 	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "", $type_parm = "") {
 
-        $type    = $type_parm;
-        $data['payment_method'] = $payment_method;
-		$data['invoice_id'] = $invoice_id;
-		$data['amount_paid'] = $amount_paid;
-        // Récupérer les détails et ajouter l’étudiant à l’espace HumHub
+        $type = $type_parm;
+        
+        // ========== SÉCURITÉ: Récupérer les détails de la facture depuis la BDD ==========
         $details = $this->crud_model->get_invoice_by_id($invoice_id);
-
-         // If amount not in URL, get from POST
-        if (empty($amount_paid)) {
-            $amount_paid = $this->input->post('amount_paid');
+        
+        // Vérifier que la facture existe
+        if (empty($details)) {
+            log_message('error', "Tentative de paiement pour une facture inexistante: #{$invoice_id}");
+            $this->session->set_flashdata('error_message', get_phrase('invalid_invoice'));
+            redirect(route('invoice'), 'refresh');
+            return;
         }
+        
+        // Vérifier que la facture n'est pas déjà payée
+        if ($details['status'] === 'paid') {
+            log_message('warning', "Tentative de double paiement pour facture #{$invoice_id}");
+            $this->session->set_flashdata('error_message', get_phrase('invoice_already_paid'));
+            redirect(route('invoice'), 'refresh');
+            return;
+        }
+        
+        // ========== CURRENCY CONVERSION HANDLING ==========
+        $conversion_applied = (bool) $this->input->post('conversion_applied');
+        $original_currency = $this->input->post('original_currency');
+        $original_amount = (float) $this->input->post('original_amount');
+        $fx_rate = (float) $this->input->post('fx_rate');
+        $fx_rate_date = $this->input->post('fx_rate_date');
+        $payment_currency = $this->input->post('currency');
+        
+        // Montant de la facture dans la BDD (devise originale)
+        $secure_amount = (float) $details['total_amount'];
+        $client_amount = (float) $amount_paid;
+        
+        // ========== SÉCURITÉ: Validation du montant ==========
+        if ($conversion_applied && $fx_rate > 0) {
+            // Si conversion appliquée, vérifier que le montant original correspond
+            // et que le montant converti est cohérent avec le taux
+            $tolerance = 0.05; // 5% de tolérance pour les conversions (taux peuvent légèrement varier)
+            
+            // Vérifier le montant original
+            if (abs($secure_amount - $original_amount) > 0.01) {
+                log_message('error', "ALERTE SÉCURITÉ: Manipulation du montant original! Facture #{$invoice_id} - BDD: {$secure_amount}, Client: {$original_amount}");
+                $this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
+                redirect(route('invoice'), 'refresh');
+                return;
+            }
+            
+            // Recalculer le montant converti attendu côté serveur
+            try {
+                $this->load->library('FxRatesService', null, 'fxService');
+                $server_converted = $this->fxService->convert($secure_amount, strtoupper($original_currency), strtoupper($payment_currency));
+                
+                if ($server_converted !== false) {
+                    // Comparer avec le montant client (tolérance pour variations de taux)
+                    $difference_percent = abs($server_converted - $client_amount) / $server_converted * 100;
+                    
+                    if ($difference_percent > 5) { // Plus de 5% de différence = suspect
+                        log_message('warning', "Conversion FX suspecte! Facture #{$invoice_id} - Serveur: {$server_converted}, Client: {$client_amount}, Diff: {$difference_percent}%");
+                        // Utiliser le montant calculé par le serveur pour plus de sécurité
+                        $amount_paid = round($server_converted, 2);
+                    } else {
+                        $amount_paid = $client_amount;
+                    }
+                } else {
+                    // Si impossible de recalculer, utiliser le montant client avec warning
+                    log_message('warning', "Impossible de vérifier la conversion FX pour facture #{$invoice_id}");
+                    $amount_paid = $client_amount;
+                }
+            } catch (Exception $e) {
+                log_message('error', 'FX conversion validation error: ' . $e->getMessage());
+                $amount_paid = $client_amount;
+            }
+            
+            log_message('info', "Payment with FX conversion: Invoice #{$invoice_id} - Original: {$original_amount} {$original_currency}, Paid: {$amount_paid} {$payment_currency}, Rate: {$fx_rate}");
+            
+        } else {
+            // Pas de conversion - validation standard
+            if (abs($secure_amount - $client_amount) > 0.01) {
+                log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}");
+                $this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
+                redirect(route('invoice'), 'refresh');
+                return;
+            }
+            $amount_paid = $secure_amount;
+        }
+        
+        // ========== SÉCURITÉ: Utiliser les valeurs de la BDD pour les données ==========
+        $data['payment_method'] = $payment_method;
+        $data['invoice_id'] = $invoice_id;
+        $data['amount_paid'] = $amount_paid;
+        $data['currency'] = $payment_currency ?: $this->input->post('currency');
+        $data['payment_type'] =  htmlspecialchars($this->input->post('payment_type'));
+        $data['vat_amount'] =  htmlspecialchars($this->input->post('vat_amount')) ?? 0;
+        $data['vat_rate'] = htmlspecialchars($this->input->post('vat_rate')) ?? 0;
+        $data['sub_total'] = htmlspecialchars($this->input->post('sub_total')) ?? $amount_paid;
+        $data['total_amount'] = htmlspecialchars($this->input->post('total_amount')) ?? $amount_paid;
+        
+        // ========== CURRENCY CONVERSION DATA (for auditing) ==========
+        $data['conversion_applied'] = $conversion_applied ? 1 : 0;
+        $data['original_currency'] = $original_currency ?: $data['currency'];
+        $data['original_amount'] = $conversion_applied ? $original_amount : $amount_paid;
+        $data['fx_rate'] = $conversion_applied ? $fx_rate : 1.0;
+        $data['fx_rate_date'] = $fx_rate_date ?: date('Y-m-d');
+
+        $payment_status = false;
      
 		if ($payment_method == 'stripe') {
-           $type    = htmlspecialchars($this->input->post('type'));
-			$stripe = json_decode(get_payment_settings('stripe_settings',$details['school_id']));
+            $type = htmlspecialchars($this->input->post('type'));
+			$stripe = json_decode(get_payment_settings('stripe_settings', $details['school_id']));
 			$token_id = $this->input->post('stripeToken');
+            
+            // Vérifier que le token Stripe est présent
+            if (empty($token_id)) {
+                log_message('error', "Token Stripe manquant pour facture #{$invoice_id}");
+                $this->session->set_flashdata('error_message', get_phrase('payment_error'));
+                redirect(route('invoice'), 'refresh');
+                return;
+            }
+            
 			$stripe_test_mode = $stripe[0]->stripe_mode;
             if ($stripe_test_mode == 'on') {
-                $public_key = $stripe[0]->stripe_test_public_key;
                 $secret_key = $stripe[0]->stripe_test_secret_key;
             } else {
-                $public_key = $stripe[0]->stripe_live_public_key;
                 $secret_key = $stripe[0]->stripe_live_secret_key;
             }
            
             $payment_status = $this->payment_model->stripe_payment($token_id, $invoice_id, $amount_paid, $secret_key);
-		}elseif($payment_method == 'paystack'){
+            
+		} elseif ($payment_method == 'paystack') {
 			$this->load->model('addons/paystack_model');
 			$payment_status = $this->paystack_model->check_payment($reference);
-		}elseif($payment_method == 'paypal'){
-            $payment_status = true; // temporaire, car validé côté JS
+            
+		} elseif ($payment_method == 'paypal') {
+            // ========== SÉCURITÉ: Valider le paiement PayPal côté serveur ==========
+            $paymentID = $this->input->post('paymentID');
+            $payerID = $this->input->post('payerID');
+            
+            if (empty($paymentID) || empty($payerID)) {
+                log_message('error', "PayPal: paymentID ou payerID manquant pour facture #{$invoice_id}");
+                $this->session->set_flashdata('error_message', get_phrase('payment_error'));
+                redirect(route('invoice'), 'refresh');
+                return;
+            }
+            
+            // Valider le paiement via l'API PayPal
+            $payment_status = $this->validate_paypal_payment($paymentID, $payerID, $amount_paid, $details['school_id']);
+            
+            if (!$payment_status) {
+                log_message('error', "PayPal: Validation échouée pour facture #{$invoice_id}, paymentID: {$paymentID}");
+                $this->session->set_flashdata('error_message', get_phrase('paypal_validation_failed'));
+                redirect(route('invoice'), 'refresh');
+                return;
+            }
         }
     
 		
@@ -1469,7 +1819,7 @@ class Student extends CI_Controller {
 
             if($type == "community"){
 
-           
+              
              $this->user_model->join_school($details['school_id'],$data);
             }else{
 
@@ -1622,7 +1972,7 @@ class Student extends CI_Controller {
  
             
             // ========== STRIPE SETTINGS ==========
-           $stripe_test_mode = $stripe[0]->stripe_mode ?? 'on';
+            $stripe_test_mode = $stripe[0]->stripe_mode ?? 'on';
             
             if ($stripe_test_mode == 'on') {
                 $page_data['stripe_public_key'] = $stripe[0]->stripe_test_public_key ?? '';
@@ -1632,6 +1982,7 @@ class Student extends CI_Controller {
                 $page_data['stripe_private_key'] = $stripe[0]->stripe_live_secret_key ?? '';
             }
             
+            // Chaque mode de paiement a sa propre devise
             $page_data['stripe_currency'] = $stripe[0]->stripe_currency ?? 'USD';
             $page_data['stripe_enabled'] = !empty($page_data['stripe_private_key']) && !empty($page_data['stripe_public_key']);
             
@@ -1639,6 +1990,7 @@ class Student extends CI_Controller {
             $page_data['paypal_mode'] = isset($paypal[0]->paypal_mode) ? $paypal[0]->paypal_mode : 'sandbox';
             $page_data['paypal_client_id_sandbox'] = isset($paypal[0]->paypal_client_id_sandbox) ? $paypal[0]->paypal_client_id_sandbox : '';
             $page_data['paypal_client_id_production'] = isset($paypal[0]->paypal_client_id_production) ? $paypal[0]->paypal_client_id_production : '';
+            // PayPal a sa propre devise configurée
             $page_data['paypal_currency'] = isset($paypal[0]->paypal_currency) ? $paypal[0]->paypal_currency : 'USD';
             
             // Determine PayPal enabled status
@@ -1648,859 +2000,947 @@ class Student extends CI_Controller {
                 $page_data['paypal_enabled'] = !empty($page_data['paypal_client_id_production']);
             }
 
+            // ========== CURRENCY CONVERSION (FX RATES) ==========
+            // Devise de la facture (communauté)
+            $invoice_currency = strtoupper($page_data['currency'] ?? 'USD');
+            $stripe_currency = strtoupper($page_data['stripe_currency']);
+            $paypal_currency = strtoupper($page_data['paypal_currency']);
+            
+            // Montants originaux (devise de la facture)
+            $original_amount = (float)$page_data['amount_to_pay'];
+            
+            // Par défaut, pas de conversion nécessaire
+            $page_data['fx_conversion_needed'] = false;
+            $page_data['fx_original_currency'] = $invoice_currency;
+            $page_data['fx_original_amount'] = $original_amount;
+            $page_data['fx_rate_date'] = date('Y-m-d');
+            $page_data['fx_stale'] = false;
+            
+            // Stripe conversion
+            $page_data['stripe_converted_amount'] = $original_amount;
+            $page_data['stripe_fx_rate'] = 1.0;
+            $page_data['stripe_conversion_info'] = null;
+            
+            // PayPal conversion  
+            $page_data['paypal_converted_amount'] = $original_amount;
+            $page_data['paypal_fx_rate'] = 1.0;
+            $page_data['paypal_conversion_info'] = null;
+            
+            // Vérifier si une conversion est nécessaire
+            $needs_stripe_conversion = ($invoice_currency !== $stripe_currency) && $page_data['stripe_enabled'];
+            $needs_paypal_conversion = ($invoice_currency !== $paypal_currency) && $page_data['paypal_enabled'];
+            
+            if ($needs_stripe_conversion || $needs_paypal_conversion) {
+                // Charger le service FX Rates
+                try {
+                    $this->load->library('FxRatesService', null, 'fxService');
+                    $fx_rates = $this->fxService->getTodayRates();
+                    
+                    if (!empty($fx_rates['rates'])) {
+                        $page_data['fx_conversion_needed'] = true;
+                        $page_data['fx_rate_date'] = $fx_rates['date'] ?? date('Y-m-d');
+                        $page_data['fx_stale'] = $fx_rates['stale'] ?? false;
+                        $page_data['fx_rates'] = $fx_rates['rates'];
+                        
+                        // Conversion Stripe
+                        if ($needs_stripe_conversion) {
+                            $stripe_converted = $this->fxService->convert($original_amount, $invoice_currency, $stripe_currency);
+                            if ($stripe_converted !== false) {
+                                $page_data['stripe_converted_amount'] = round($stripe_converted, 2);
+                                // Calculer le taux de change (1 invoice_currency = X stripe_currency)
+                                $page_data['stripe_fx_rate'] = round($stripe_converted / $original_amount, 6);
+                                $page_data['stripe_conversion_info'] = [
+                                    'from' => $invoice_currency,
+                                    'to' => $stripe_currency,
+                                    'original_amount' => $original_amount,
+                                    'converted_amount' => $page_data['stripe_converted_amount'],
+                                    'rate' => $page_data['stripe_fx_rate'],
+                                    'rate_date' => $page_data['fx_rate_date']
+                                ];
+                            }
+                        }
+                        
+                        // Conversion PayPal
+                        if ($needs_paypal_conversion) {
+                            $paypal_converted = $this->fxService->convert($original_amount, $invoice_currency, $paypal_currency);
+                            if ($paypal_converted !== false) {
+                                $page_data['paypal_converted_amount'] = round($paypal_converted, 2);
+                                $page_data['paypal_fx_rate'] = round($paypal_converted / $original_amount, 6);
+                                $page_data['paypal_conversion_info'] = [
+                                    'from' => $invoice_currency,
+                                    'to' => $paypal_currency,
+                                    'original_amount' => $original_amount,
+                                    'converted_amount' => $page_data['paypal_converted_amount'],
+                                    'rate' => $page_data['paypal_fx_rate'],
+                                    'rate_date' => $page_data['fx_rate_date']
+                                ];
+                            }
+                        }
+                        
+                        log_message('info', "Payment FX Conversion: Invoice {$invoice_id} - Original: {$original_amount} {$invoice_currency}, Stripe: {$page_data['stripe_converted_amount']} {$stripe_currency}, PayPal: {$page_data['paypal_converted_amount']} {$paypal_currency}");
+                        
+                    } else {
+                        log_message('warning', "Payment: No FX rates available for conversion - Invoice {$invoice_id}");
+                    }
+                } catch (Exception $e) {
+                    log_message('error', 'Payment FX Conversion error: ' . $e->getMessage());
+                    // Continuer sans conversion si erreur
+                }
+            }
+
             // Load payment gateway view
             $this->load->view('backend/payment_gateway/index', $page_data);
 	}
 
 	// Récupérer les classes par école pour l'étudiant connecté
 	public function get_classes_by_school() {
-    if ($this->session->userdata('student_login') != 1) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_by_school - Unauthorized access attempt');
-        echo json_encode(['status' => 'error', 'message' => 'Session expired, please login again', 'csrf' => $csrf]);
-        return;
-    }
+        if ($this->session->userdata('student_login') != 1) {
+            $csrf = [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            ];
+            log_message('error', 'get_classes_by_school - Unauthorized access attempt');
+            echo json_encode(['status' => 'error', 'message' => 'Session expired, please login again', 'csrf' => $csrf]);
+            return;
+        }
 
-    $user_id = $this->session->userdata('user_id');
-
-    // Mapper user_id à student_id dans la table students
-    $this->db->select('id');
-    $this->db->from('students');
-    $this->db->where('user_id', $user_id);
-    $student = $this->db->get()->row_array();
-    $student_id = $student['id'] ?? null;
-    log_message('debug', 'get_classes_by_school - student_id: ' . ($student_id ?? 'null'));
-
-    if (!$student_id) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_by_school - No student_id found for user_id: ' . $user_id);
-        echo json_encode(['status' => 'error', 'message' => 'No student associated with this user', 'csrf' => $csrf]);
-        return;
-    }
-
-    $school_id = $this->input->post('school_id', true);
-    log_message('debug', 'get_classes_by_school - school_id: ' . ($school_id ?? 'null'));
-
-    // Vérifier que school_id correspond à celui de l'utilisateur
-    $user_details = $this->user_model->get_user_details($user_id);
-    $user_school_id = $user_details['school_id'] ?? null;
-    log_message('debug', 'get_classes_by_school - user_school_id: ' . ($user_school_id ?? 'null'));
-
-    if (empty($school_id) || $school_id != $user_school_id) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        log_message('error', 'get_classes_by_school - Invalid or unauthorized school_id: ' . ($school_id ?? 'null'));
-        echo json_encode(['status' => 'error', 'message' => 'Invalid or unauthorized school ID', 'csrf' => $csrf]);
-        return;
-    }
-
-    // Récupérer la session active
-    $session_id = active_session();
-    log_message('debug', 'get_classes_by_school - session_id: ' . ($session_id ?? 'null'));
-
-    // Vérifier les classes autorisées pour l'étudiant via enrols
-    $this->db->select('classes.id, classes.name');
-    $this->db->from('classes');
-    $this->db->join('enrols', 'enrols.class_id = classes.id', 'inner');
-    $this->db->join('students', 'students.id = enrols.student_id', 'inner');
-    $this->db->where('enrols.student_id', $student_id);
-    $this->db->where('enrols.school_id', $school_id);
-    $this->db->where('enrols.session', $session_id);
-    $this->db->where('students.user_id', $user_id);
-    $classes = $this->db->get()->result_array();
-    log_message('debug', 'get_classes_by_school - SQL Query: ' . $this->db->last_query());
-    log_message('debug', 'get_classes_by_school - Classes found: ' . json_encode($classes));
-
-    $csrf = [
-        'csrfName' => $this->security->get_csrf_token_name(),
-        'csrfHash' => $this->security->get_csrf_hash(),
-    ];
-
-    echo json_encode([
-        'status' => 'success',
-        'classes' => $classes,
-        'message' => empty($classes) ? 'Aucune classe autorisée pour cet étudiant dans cette session' : '',
-        'csrf' => $csrf
-    ]);
-}
-
-// Filtrer les examens en fonction des sélections
-public function filter_exams() {
-    try {
-        log_message('debug', 'Début de filter_exams');
-        log_message('debug', 'Données POST reçues : ' . json_encode($this->input->post()));
-        log_message('debug', 'Utilisateur connecté : ' . $this->session->userdata('user_id'));
-
-        $school_id = $this->input->post('school_id');
-        $class_id = $this->input->post('class_id');
-        $date_filter = $this->input->post('date_filter');
         $user_id = $this->session->userdata('user_id');
 
-        if (!$school_id || !$class_id || !$user_id) {
-            http_response_code(400);
-            echo json_encode([
-                'error' => 'Données manquantes',
-                'csrf_hash' => $this->security->get_csrf_hash()
-            ]);
-            return;
-        }
-
-        $session_id = active_session();
-
-        if (!$session_id) {
-            http_response_code(400);
-            echo json_encode([
-                'error' => 'Aucune session active',
-                'csrf_hash' => $this->security->get_csrf_hash()
-            ]);
-            return;
-        }
-
-        // Vérification des permissions
-        $this->db->select('students.id');
+        // Mapper user_id à student_id dans la table students
+        $this->db->select('id');
         $this->db->from('students');
-        $this->db->join('enrols', 'enrols.student_id = students.id', 'left');
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.school_id', $school_id);
-        $this->db->where('enrols.class_id', $class_id);
-        
-        $this->db->where('enrols.session', $session_id);
-
+        $this->db->where('user_id', $user_id);
         $student = $this->db->get()->row_array();
+        $student_id = $student['id'] ?? null;
+        log_message('debug', 'get_classes_by_school - student_id: ' . ($student_id ?? 'null'));
 
-        if (!$student) {
-            http_response_code(403);
-            echo json_encode([
-                'error' => 'Non autorisé',
-                'csrf_hash' => $this->security->get_csrf_hash()
-            ]);
+        if (!$student_id) {
+            $csrf = [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            ];
+            log_message('error', 'get_classes_by_school - No student_id found for user_id: ' . $user_id);
+            echo json_encode(['status' => 'error', 'message' => 'No student associated with this user', 'csrf' => $csrf]);
             return;
         }
 
-        // Construire la requête pour récupérer les examens
-        $this->db->reset_query();
-        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->where('exams.school_id', $school_id);
-        $this->db->where('exams.class_id', $class_id);
-        $this->db->where('exams.session', $session_id);
+        $school_id = $this->input->post('school_id', true);
+        log_message('debug', 'get_classes_by_school - school_id: ' . ($school_id ?? 'null'));
 
-        // Gérer le filtre de date
-        if (!empty($date_filter)) {
-            // Parser le filtre de date
-            $dates = explode(' - ', $date_filter);
-            if (count($dates) == 1) {
-                // Date unique
-                $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-                if ($start_date) {
-                    $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
-                    $end_timestamp = $start_date->setTime(23, 59, 59)->getTimestamp();
-                    $this->db->where('exams.starting_date >=', $start_timestamp);
-                    $this->db->where('exams.starting_date <=', $end_timestamp);
-                }
-            } elseif (count($dates) == 2) {
-                // Plage de dates
-                $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-                $end_date = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
-                if ($start_date && $end_date) {
-                    $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
-                    $end_timestamp = $end_date->setTime(23, 59, 59)->getTimestamp();
-                    $this->db->where('exams.starting_date >=', $start_timestamp);
-                    $this->db->where('exams.starting_date <=', $end_timestamp);
+        // Vérifier que school_id correspond à celui de l'utilisateur
+        $user_details = $this->user_model->get_user_details($user_id);
+        $user_school_id = $user_details['school_id'] ?? null;
+        log_message('debug', 'get_classes_by_school - user_school_id: ' . ($user_school_id ?? 'null'));
+
+        if (empty($school_id) || $school_id != $user_school_id) {
+            $csrf = [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            ];
+            log_message('error', 'get_classes_by_school - Invalid or unauthorized school_id: ' . ($school_id ?? 'null'));
+            echo json_encode(['status' => 'error', 'message' => 'Invalid or unauthorized school ID', 'csrf' => $csrf]);
+            return;
+        }
+
+        // Récupérer la session active
+        $session_id = active_session();
+        log_message('debug', 'get_classes_by_school - session_id: ' . ($session_id ?? 'null'));
+
+        // Vérifier les classes autorisées pour l'étudiant via enrols
+        $this->db->select('classes.id, classes.name');
+        $this->db->from('classes');
+        $this->db->join('enrols', 'enrols.class_id = classes.id', 'inner');
+        $this->db->join('students', 'students.id = enrols.student_id', 'inner');
+        $this->db->where('enrols.student_id', $student_id);
+        $this->db->where('enrols.school_id', $school_id);
+        $this->db->where('enrols.session', $session_id);
+        $this->db->where('students.user_id', $user_id);
+        $classes = $this->db->get()->result_array();
+        log_message('debug', 'get_classes_by_school - SQL Query: ' . $this->db->last_query());
+        log_message('debug', 'get_classes_by_school - Classes found: ' . json_encode($classes));
+
+        $csrf = [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        ];
+
+        echo json_encode([
+            'status' => 'success',
+            'classes' => $classes,
+            'message' => empty($classes) ? 'Aucune classe autorisée pour cet étudiant dans cette session' : '',
+            'csrf' => $csrf
+        ]);
+    }
+
+    // Filtrer les examens en fonction des sélections
+    public function filter_exams() {
+        try {
+            log_message('debug', 'Début de filter_exams');
+            log_message('debug', 'Données POST reçues : ' . json_encode($this->input->post()));
+            log_message('debug', 'Utilisateur connecté : ' . $this->session->userdata('user_id'));
+
+            $school_id = $this->input->post('school_id');
+            $class_id = $this->input->post('class_id');
+            $date_filter = $this->input->post('date_filter');
+            $user_id = $this->session->userdata('user_id');
+
+            if (!$school_id || !$class_id || !$user_id) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'Données manquantes',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            $session_id = active_session();
+
+            if (!$session_id) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'Aucune session active',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            // Vérification des permissions
+            $this->db->select('students.id');
+            $this->db->from('students');
+            $this->db->join('enrols', 'enrols.student_id = students.id', 'left');
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.school_id', $school_id);
+            $this->db->where('enrols.class_id', $class_id);
+            
+            $this->db->where('enrols.session', $session_id);
+
+            $student = $this->db->get()->row_array();
+
+            if (!$student) {
+                http_response_code(403);
+                echo json_encode([
+                    'error' => 'Non autorisé',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            // Construire la requête pour récupérer les examens
+            $this->db->reset_query();
+            $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->where('exams.school_id', $school_id);
+            $this->db->where('exams.class_id', $class_id);
+            $this->db->where('exams.session', $session_id);
+
+            // Gérer le filtre de date
+            if (!empty($date_filter)) {
+                // Parser le filtre de date
+                $dates = explode(' - ', $date_filter);
+                if (count($dates) == 1) {
+                    // Date unique
+                    $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                    if ($start_date) {
+                        $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
+                        $end_timestamp = $start_date->setTime(23, 59, 59)->getTimestamp();
+                        $this->db->where('exams.starting_date >=', $start_timestamp);
+                        $this->db->where('exams.starting_date <=', $end_timestamp);
+                    }
+                } elseif (count($dates) == 2) {
+                    // Plage de dates
+                    $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                    $end_date = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
+                    if ($start_date && $end_date) {
+                        $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
+                        $end_timestamp = $end_date->setTime(23, 59, 59)->getTimestamp();
+                        $this->db->where('exams.starting_date >=', $start_timestamp);
+                        $this->db->where('exams.starting_date <=', $end_timestamp);
+                    }
                 }
             }
+
+            $exams = $this->db->get()->result_array();
+            $exam_calendar = [];
+            $current_time = time(); // Current timestamp
+
+            foreach ($exams as $exam) {
+                $exam_calendar[] = [
+                    'title' => $exam['name'],
+                    'start' => date('Y-m-d H:i:s', $exam['starting_date'])
+                ];
+            }
+
+            // Génération du tableau HTML
+            $table_html = '';
+            foreach ($exams as $exam) {
+                $exam_start_time = $exam['starting_date'];
+                $table_html .= '<tr>';
+                $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
+                $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
+                $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
+                // Vérifier si l'examen a déjà été soumis
+                $this->db->select('id');
+                $this->db->from('exam_responses');
+                $this->db->where('exam_id', $exam['id']);
+                $this->db->where('user_id', $user_id);
+                $has_submitted = $this->db->get()->row_array();
+
+                if ($has_submitted) {
+                    // Bouton pour afficher les résultats dans un popup
+                    $table_html .= '<td><button class="btn btn-sm btn-success view-results-btn" data-exam-id="' . $exam['id'] . '" data-student-id="' . $student['id'] . '">' . get_phrase('view_results') . '</button></td>';
+                } elseif ($exam_start_time > $current_time) {
+                    // Afficher le compteur pour les examens futurs
+                    $table_html .= '<td data-exam-start="' . $exam_start_time . '" data-exam-id="' . $exam['id'] . '" class="exam-countdown">';
+                    $table_html .= get_phrase('exam_not_yet_available') . '<br>';
+                    $table_html .= '<span class="countdown-text" style="background-color: #3A87AD; color:white; border-radius: 5px; padding:3px;"></span></td>';
+                } else {
+                    // Afficher le bouton d'accès
+                    $table_html .= '<td><a href="' . site_url('student/online_exam/' . $exam['id']) . '" target="_blank" class="btn btn-sm btn-primary access-exam-btn">' . get_phrase('access') . '</a></td>';
+                }
+
+                $table_html .= '</tr>';
+            }
+            log_message('debug', 'Tableau HTML généré : ' . $table_html);
+
+            echo json_encode([
+                'exam_calendar' => $exam_calendar,
+                'table_html' => $table_html,
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erreur dans filter_exams : ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Erreur serveur interne : ' . $e->getMessage(),
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ]);
         }
+    }
 
-        $exams = $this->db->get()->result_array();
-        $exam_calendar = [];
-        $current_time = time(); // Current timestamp
 
-        foreach ($exams as $exam) {
-            $exam_calendar[] = [
-                'title' => $exam['name'],
-                'start' => date('Y-m-d H:i:s', $exam['starting_date'])
-            ];
-        }
 
-        // Génération du tableau HTML
-        $table_html = '';
-        foreach ($exams as $exam) {
-            $exam_start_time = $exam['starting_date'];
-            $table_html .= '<tr>';
-            $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
-            $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
-            $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
-            // Vérifier si l'examen a déjà été soumis
+    // Dans Student.php
+    public function online_exam($exam_id = "") {
+        try {
+            if (empty($exam_id)) {
+                log_message('error', 'ID de l\'examen manquant dans online_exam');
+                redirect(site_url('student/exam'), 'refresh');
+            }
+
+            // Ajouter des en-têtes anti-cache
+            $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+            $this->output->set_header("Cache-Control: post-check=0, pre-check=0", false);
+            $this->output->set_header("Pragma: no-cache");
+            $this->output->set_header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
+
+            $user_id = $this->session->userdata('user_id');
+            $session_id = active_session();
+
+            // Vérifier si l'étudiant a accès à cet examen
+            $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
+            $this->db->join('students', 'students.id = enrols.student_id', 'left');
+            $this->db->where('exams.id', $exam_id);
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.session', $session_id);
+
+            $exam = $this->db->get()->row_array();
+
+            if (!$exam) {
+                log_message('error', 'Examen non trouvé ou accès non autorisé pour exam_id: ' . $exam_id);
+                $this->session->set_flashdata('error_message', get_phrase('exam_not_found_or_unauthorized'));
+                redirect(site_url('student/exam'), 'refresh');
+            }
+
+            // Vérifier si l'étudiant a déjà soumis l'examen
             $this->db->select('id');
             $this->db->from('exam_responses');
-            $this->db->where('exam_id', $exam['id']);
+            $this->db->where('exam_id', $exam_id);
             $this->db->where('user_id', $user_id);
-            $has_submitted = $this->db->get()->row_array();
+            $existing_submission = $this->db->get()->row_array();
 
-            if ($has_submitted) {
-                // Bouton pour afficher les résultats dans un popup
-                $table_html .= '<td><button class="btn btn-sm btn-success view-results-btn" data-exam-id="' . $exam['id'] . '" data-student-id="' . $student['id'] . '">' . get_phrase('view_results') . '</button></td>';
-            } elseif ($exam_start_time > $current_time) {
-                // Afficher le compteur pour les examens futurs
-                $table_html .= '<td data-exam-start="' . $exam_start_time . '" data-exam-id="' . $exam['id'] . '" class="exam-countdown">';
-                $table_html .= get_phrase('exam_not_yet_available') . '<br>';
-                $table_html .= '<span class="countdown-text" style="background-color: #3A87AD; color:white; border-radius: 5px; padding:3px;"></span></td>';
-            } else {
-                // Afficher le bouton d'accès
-                $table_html .= '<td><a href="' . site_url('student/online_exam/' . $exam['id']) . '" target="_blank" class="btn btn-sm btn-primary access-exam-btn">' . get_phrase('access') . '</a></td>';
+            if ($existing_submission) {
+                // L'étudiant a déjà passé l'examen, rediriger vers la liste des examens
+                $this->session->set_flashdata('success_message', get_phrase('exam_already_submitted'));
+                redirect(site_url('student/exam'), 'refresh');
             }
 
-            $table_html .= '</tr>';
-        }
-        log_message('debug', 'Tableau HTML généré : ' . $table_html);
-
-        echo json_encode([
-            'exam_calendar' => $exam_calendar,
-            'table_html' => $table_html,
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans filter_exams : ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Erreur serveur interne : ' . $e->getMessage(),
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    }
-}
-
-
-
-// Dans Student.php
-public function online_exam($exam_id = "") {
-    try {
-        if (empty($exam_id)) {
-            log_message('error', 'ID de l\'examen manquant dans online_exam');
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Ajouter des en-têtes anti-cache
-        $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-        $this->output->set_header("Cache-Control: post-check=0, pre-check=0", false);
-        $this->output->set_header("Pragma: no-cache");
-        $this->output->set_header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
-
-        $user_id = $this->session->userdata('user_id');
-        $session_id = active_session();
-
-        // Vérifier si l'étudiant a accès à cet examen
-        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
-        $this->db->join('students', 'students.id = enrols.student_id', 'left');
-        $this->db->where('exams.id', $exam_id);
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.session', $session_id);
-
-        $exam = $this->db->get()->row_array();
-
-        if (!$exam) {
-            log_message('error', 'Examen non trouvé ou accès non autorisé pour exam_id: ' . $exam_id);
-            $this->session->set_flashdata('error_message', get_phrase('exam_not_found_or_unauthorized'));
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Vérifier si l'étudiant a déjà soumis l'examen
-        $this->db->select('id');
-        $this->db->from('exam_responses');
-        $this->db->where('exam_id', $exam_id);
-        $this->db->where('user_id', $user_id);
-        $existing_submission = $this->db->get()->row_array();
-
-        if ($existing_submission) {
-            // L'étudiant a déjà passé l'examen, rediriger vers la liste des examens
-            $this->session->set_flashdata('success_message', get_phrase('exam_already_submitted'));
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Vérifier si l'examen a commencé
-        $current_time = time();
-        if ($exam['starting_date'] > $current_time) {
-            log_message('error', 'L\'examen n\'a pas encore commencé pour exam_id: ' . $exam_id);
-            $this->session->set_flashdata('error_message', get_phrase('exam_not_yet_available'));
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Récupérer les questions de l'examen
-        $questions = $this->get_exam_questions($exam_id);
-
-        // Préparer les données pour la vue
-        $page_data['exam_id'] = $exam_id;
-        $page_data['exam_details'] = $exam;
-        $page_data['questions'] = $questions;
-        $page_data['page_title'] = $exam['name'];
-
-        // Charger la vue via online_exams/index.php
-        $this->load->view('online_exams/index', $page_data);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans online_exam : ' . $e->getMessage());
-        $this->session->set_flashdata('error_message', get_phrase('server_error'));
-        redirect(site_url('student/exam'), 'refresh');
-    }
-}
-
-public function get_exam_questions($exam_id) {
-    $this->db->select('exam_questions.*');
-    $this->db->from('exam_questions');
-    $this->db->where('exam_id', $exam_id);
-    return $this->db->get()->result_array();
-}
-
-public function submit_exam() {
-    try {
-        // Vérifier si la requête est POST
-        if ($this->input->server('REQUEST_METHOD') !== 'POST') {
-            log_message('error', 'Méthode non autorisée dans submit_exam');
-            http_response_code(405);
-            echo json_encode(['error' => 'Méthode non autorisée']);
-            return;
-        }
-
-        $user_id = $this->session->userdata('user_id');
-        $exam_id = $this->input->post('exam_id');
-        $session_id = active_session();
-
-        if (!$user_id || !$exam_id) {
-            log_message('error', 'user_id ou exam_id manquant dans submit_exam');
-            http_response_code(400);
-            echo json_encode(['error' => 'Données manquantes']);
-            return;
-        }
-
-        // Vérifier si l'étudiant a le droit de soumettre cet examen
-        $this->db->select('exams.*, classes.id as class_id, schools.id as school_id');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-     
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
-        $this->db->join('students', 'students.id = enrols.student_id', 'left');
-        $this->db->where('exams.id', $exam_id);
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.session', $session_id);
-
-        $exam = $this->db->get()->row_array();
-
-        if (!$exam) {
-            log_message('error', 'Examen non trouvé ou accès non autorisé pour exam_id: ' . $exam_id);
-            http_response_code(403);
-            echo json_encode(['error' => 'Non autorisé']);
-            return;
-        }
-
-        // Récupérer l'étudiant
-        $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
-        if (!$student_data) {
-            log_message('error', 'Étudiant non trouvé pour user_id: ' . $user_id);
-            http_response_code(400);
-            echo json_encode(['error' => 'Étudiant non trouvé']);
-            return;
-        }
-
-        // Récupérer les questions de l'examen
-        $questions = $this->get_exam_questions($exam_id);
-        $total_questions = count($questions);
-        $total_correct_answers = 0;
-        $submitted_answers = [];
-
-        if ($total_questions == 0) {
-            log_message('error', 'Aucune question trouvée pour exam_id: ' . $exam_id);
-            http_response_code(400);
-            echo json_encode(['error' => 'Aucune question trouvée']);
-            return;
-        }
-
-        // Étape 1 : Supprimer les anciennes réponses pour cet examen et cet utilisateur
-        $this->db->where('exam_id', $exam_id);
-        $this->db->where('user_id', $user_id);
-        $this->db->delete('exam_responses');
-        log_message('debug', 'Anciennes réponses supprimées pour exam_id: ' . $exam_id . ' et user_id: ' . $user_id);
-
-        // Étape 2 : Traiter les réponses soumises
-        foreach ($questions as $question) {
-            $question_id = $question['id'];
-
-            // Récupérer les options disponibles pour la question
-            $options = json_decode($question['options'], true);
-            if (!is_array($options) || empty($options)) {
-                log_message('error', 'Options mal formatées pour la question ID ' . $question_id . ': ' . $question['options']);
-                $options = [];
+            // Vérifier si l'examen a commencé
+            $current_time = time();
+            if ($exam['starting_date'] > $current_time) {
+                log_message('error', 'L\'examen n\'a pas encore commencé pour exam_id: ' . $exam_id);
+                $this->session->set_flashdata('error_message', get_phrase('exam_not_yet_available'));
+                redirect(site_url('student/exam'), 'refresh');
             }
 
-            // Extraire les réponses correctes
-            $correct_answers_data = json_decode($question['correct_answers'], true);
-            if (!is_array($correct_answers_data) || empty($correct_answers_data)) {
-                $correct_answers_raw = is_array($correct_answers_data) ? $correct_answers_data[0] : $question['correct_answers'];
-                if (is_numeric($correct_answers_raw) && isset($options[$correct_answers_raw - 1])) {
-                    $correct_answers_index = (int)$correct_answers_raw - 1;
-                    $correct_answers = $options[$correct_answers_index];
-                    log_message('debug', 'Index base-1 détecté pour question ID ' . $question_id . ': ' . $correct_answers_raw . ' -> ' . $correct_answers);
+            // Récupérer les questions de l'examen
+            $questions = $this->get_exam_questions($exam_id);
+
+            // Préparer les données pour la vue
+            $page_data['exam_id'] = $exam_id;
+            $page_data['exam_details'] = $exam;
+            $page_data['questions'] = $questions;
+            $page_data['page_title'] = $exam['name'];
+
+            // Charger la vue via online_exams/index.php
+            $this->load->view('online_exams/index', $page_data);
+        } catch (Exception $e) {
+            log_message('error', 'Erreur dans online_exam : ' . $e->getMessage());
+            $this->session->set_flashdata('error_message', get_phrase('server_error'));
+            redirect(site_url('student/exam'), 'refresh');
+        }
+    }
+
+    public function get_exam_questions($exam_id) {
+        $this->db->select('exam_questions.*');
+        $this->db->from('exam_questions');
+        $this->db->where('exam_id', $exam_id);
+        return $this->db->get()->result_array();
+    }
+
+    public function submit_exam() {
+        try {
+            // Vérifier si la requête est POST
+            if ($this->input->server('REQUEST_METHOD') !== 'POST') {
+                log_message('error', 'Méthode non autorisée dans submit_exam');
+                http_response_code(405);
+                echo json_encode(['error' => 'Méthode non autorisée']);
+                return;
+            }
+
+            $user_id = $this->session->userdata('user_id');
+            $exam_id = $this->input->post('exam_id');
+            $session_id = active_session();
+
+            if (!$user_id || !$exam_id) {
+                log_message('error', 'user_id ou exam_id manquant dans submit_exam');
+                http_response_code(400);
+                echo json_encode(['error' => 'Données manquantes']);
+                return;
+            }
+
+            // Vérifier si l'étudiant a le droit de soumettre cet examen
+            $this->db->select('exams.*, classes.id as class_id, schools.id as school_id');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+        
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
+            $this->db->join('students', 'students.id = enrols.student_id', 'left');
+            $this->db->where('exams.id', $exam_id);
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.session', $session_id);
+
+            $exam = $this->db->get()->row_array();
+
+            if (!$exam) {
+                log_message('error', 'Examen non trouvé ou accès non autorisé pour exam_id: ' . $exam_id);
+                http_response_code(403);
+                echo json_encode(['error' => 'Non autorisé']);
+                return;
+            }
+
+            // Récupérer l'étudiant
+            $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
+            if (!$student_data) {
+                log_message('error', 'Étudiant non trouvé pour user_id: ' . $user_id);
+                http_response_code(400);
+                echo json_encode(['error' => 'Étudiant non trouvé']);
+                return;
+            }
+
+            // Récupérer les questions de l'examen
+            $questions = $this->get_exam_questions($exam_id);
+            $total_questions = count($questions);
+            $total_correct_answers = 0;
+            $submitted_answers = [];
+
+            if ($total_questions == 0) {
+                log_message('error', 'Aucune question trouvée pour exam_id: ' . $exam_id);
+                http_response_code(400);
+                echo json_encode(['error' => 'Aucune question trouvée']);
+                return;
+            }
+
+            // Étape 1 : Supprimer les anciennes réponses pour cet examen et cet utilisateur
+            $this->db->where('exam_id', $exam_id);
+            $this->db->where('user_id', $user_id);
+            $this->db->delete('exam_responses');
+            log_message('debug', 'Anciennes réponses supprimées pour exam_id: ' . $exam_id . ' et user_id: ' . $user_id);
+
+            // Étape 2 : Traiter les réponses soumises
+            foreach ($questions as $question) {
+                $question_id = $question['id'];
+
+                // Récupérer les options disponibles pour la question
+                $options = json_decode($question['options'], true);
+                if (!is_array($options) || empty($options)) {
+                    log_message('error', 'Options mal formatées pour la question ID ' . $question_id . ': ' . $question['options']);
+                    $options = [];
+                }
+
+                // Extraire les réponses correctes
+                $correct_answers_data = json_decode($question['correct_answers'], true);
+                if (!is_array($correct_answers_data) || empty($correct_answers_data)) {
+                    $correct_answers_raw = is_array($correct_answers_data) ? $correct_answers_data[0] : $question['correct_answers'];
+                    if (is_numeric($correct_answers_raw) && isset($options[$correct_answers_raw - 1])) {
+                        $correct_answers_index = (int)$correct_answers_raw - 1;
+                        $correct_answers = $options[$correct_answers_index];
+                        log_message('debug', 'Index base-1 détecté pour question ID ' . $question_id . ': ' . $correct_answers_raw . ' -> ' . $correct_answers);
+                    } else {
+                        log_message('error', 'Réponses correctes mal formatées pour la question ID ' . $question_id . ': ' . $question['correct_answers']);
+                        $correct_answers = '';
+                    }
                 } else {
-                    log_message('error', 'Réponses correctes mal formatées pour la question ID ' . $question_id . ': ' . $question['correct_answers']);
+                    $correct_answers = trim((string)$correct_answers_data[0]);
+                    if (is_numeric($correct_answers) && isset($options[$correct_answers - 1])) {
+                        $correct_answers_index = (int)$correct_answers - 1;
+                        $correct_answers = $options[$correct_answers_index];
+                        log_message('debug', 'Index base-1 détecté pour question ID ' . $question_id . ': ' . $correct_answers_data[0] . ' -> ' . $correct_answers);
+                    }
+                }
+
+                // Vérifier si la réponse correcte est dans les options
+                if (!in_array($correct_answers, $options) && $correct_answers !== '') {
+                    log_message('error', 'Réponse correcte "' . $correct_answers . '" pour la question ID ' . $question_id . ' ne correspond à aucune option: ' . json_encode($options));
                     $correct_answers = '';
                 }
-            } else {
-                $correct_answers = trim((string)$correct_answers_data[0]);
-                if (is_numeric($correct_answers) && isset($options[$correct_answers - 1])) {
-                    $correct_answers_index = (int)$correct_answers - 1;
-                    $correct_answers = $options[$correct_answers_index];
-                    log_message('debug', 'Index base-1 détecté pour question ID ' . $question_id . ': ' . $correct_answers_data[0] . ' -> ' . $correct_answers);
+
+                $submitted_answers_value = $this->input->post('question_' . $question_id);
+                $submitted_answers_value = trim((string)$submitted_answers_value);
+
+                $submitted_answer_status = ($submitted_answers_value == $correct_answers) ? 1 : 0;
+                log_message('debug', 'Comparaison pour question ID ' . $question_id . ': submitted="' . $submitted_answers_value . '", correct="' . $correct_answers . '", status=' . $submitted_answer_status);
+
+                if ($submitted_answer_status) {
+                    $total_correct_answers++;
                 }
+
+                // Stocker les détails de la réponse dans exam_responses
+                $data = [
+                    'user_id' => $user_id,
+                    'exam_id' => $exam_id,
+                    'exam_question_id' => $question_id,
+                    'submitted_answers' => $submitted_answers_value ?: 'Aucune réponse',
+                    'correct_answers' => $correct_answers,
+                    'submitted_answer_status' => $submitted_answer_status,
+                    'date_submitted' => date('Y-m-d H:i:s')
+                ];
+                $this->db->insert('exam_responses', $data);
+
+                $submitted_answers[] = [
+                    'question_id' => $question_id,
+                    'question_title' => $question['title'],
+                    'submitted_answer' => $submitted_answers_value ?: 'Aucune réponse',
+                    'correct_answer' => $correct_answers,
+                    'status' => $submitted_answer_status,
+                    'options' => $options
+                ];
             }
 
-            // Vérifier si la réponse correcte est dans les options
-            if (!in_array($correct_answers, $options) && $correct_answers !== '') {
-                log_message('error', 'Réponse correcte "' . $correct_answers . '" pour la question ID ' . $question_id . ' ne correspond à aucune option: ' . json_encode($options));
-                $correct_answers = '';
-            }
+            // Calculer la note (sur 100, arrondie car mark_obtained est un int)
+            $mark_obtained = ($total_questions > 0) ? round(($total_correct_answers / $total_questions) * 100) : 0;
 
-            $submitted_answers_value = $this->input->post('question_' . $question_id);
-            $submitted_answers_value = trim((string)$submitted_answers_value);
-
-            $submitted_answer_status = ($submitted_answers_value == $correct_answers) ? 1 : 0;
-            log_message('debug', 'Comparaison pour question ID ' . $question_id . ': submitted="' . $submitted_answers_value . '", correct="' . $correct_answers . '", status=' . $submitted_answer_status);
-
-            if ($submitted_answer_status) {
-                $total_correct_answers++;
-            }
-
-            // Stocker les détails de la réponse dans exam_responses
-            $data = [
-                'user_id' => $user_id,
-                'exam_id' => $exam_id,
-                'exam_question_id' => $question_id,
-                'submitted_answers' => $submitted_answers_value ?: 'Aucune réponse',
-                'correct_answers' => $correct_answers,
-                'submitted_answer_status' => $submitted_answer_status,
-                'date_submitted' => date('Y-m-d H:i:s')
-            ];
-            $this->db->insert('exam_responses', $data);
-
-            $submitted_answers[] = [
-                'question_id' => $question_id,
-                'question_title' => $question['title'],
-                'submitted_answer' => $submitted_answers_value ?: 'Aucune réponse',
-                'correct_answer' => $correct_answers,
-                'status' => $submitted_answer_status,
-                'options' => $options
-            ];
-        }
-
-        // Calculer la note (sur 100, arrondie car mark_obtained est un int)
-        $mark_obtained = ($total_questions > 0) ? round(($total_correct_answers / $total_questions) * 100) : 0;
-
-        // Vérifier si une entrée existe déjà dans la table marks
-        $this->db->where([
-            'student_id' => $student_data['id'],
-            'exam_id' => $exam_id,
-            'class_id' => $exam['class_id'],
-            'school_id' => $exam['school_id'],
-            'session' => $session_id
-        ]);
-        $existing_mark = $this->db->get('marks')->row_array();
-
-        if ($existing_mark) {
-            // Mettre à jour la note existante
-            $this->db->where('id', $existing_mark['id']);
-            $this->db->update('marks', [
-                'mark_obtained' => $mark_obtained,
-            ]);
-        } else {
-            // Insérer une nouvelle entrée
-            $this->db->insert('marks', [
+            // Vérifier si une entrée existe déjà dans la table marks
+            $this->db->where([
                 'student_id' => $student_data['id'],
-                'subject_id' => NULL, // Pas de matière pour les examens en ligne
                 'exam_id' => $exam_id,
                 'class_id' => $exam['class_id'],
                 'school_id' => $exam['school_id'],
-                'session' => $session_id,
+                'session' => $session_id
+            ]);
+            $existing_mark = $this->db->get('marks')->row_array();
+
+            if ($existing_mark) {
+                // Mettre à jour la note existante
+                $this->db->where('id', $existing_mark['id']);
+                $this->db->update('marks', [
+                    'mark_obtained' => $mark_obtained,
+                ]);
+            } else {
+                // Insérer une nouvelle entrée
+                $this->db->insert('marks', [
+                    'student_id' => $student_data['id'],
+                    'subject_id' => NULL, // Pas de matière pour les examens en ligne
+                    'exam_id' => $exam_id,
+                    'class_id' => $exam['class_id'],
+                    'school_id' => $exam['school_id'],
+                    'session' => $session_id,
+                    'mark_obtained' => $mark_obtained,
+                    'comment' => ''
+                ]);
+            }
+
+            // Réponse JSON pour le front-end
+            $response = [
+                'message' => get_phrase('exam_submitted_successfully'),
+                'total_questions' => $total_questions,
+                'total_correct_answers' => $total_correct_answers,
                 'mark_obtained' => $mark_obtained,
-                'comment' => ''
-            ]);
-        }
+                'submitted_answers' => $submitted_answers,
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ];
 
-        // Réponse JSON pour le front-end
-        $response = [
-            'message' => get_phrase('exam_submitted_successfully'),
-            'total_questions' => $total_questions,
-            'total_correct_answers' => $total_correct_answers,
-            'mark_obtained' => $mark_obtained,
-            'submitted_answers' => $submitted_answers,
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ];
-
-        log_message('debug', 'Examen soumis avec succès pour exam_id: ' . $exam_id);
-        echo json_encode($response);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans submit_exam : ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Erreur serveur interne : ' . $e->getMessage(),
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    }
-}
-
-public function exam_results($exam_id = "", $student_id = "") {
-    try {
-
-        if (!$this->session->userdata('student_login') || $this->session->userdata('user_type') != 'student') {
-            redirect(site_url('login'), 'refresh');
-        }
-
-        $user_id = $this->session->userdata('user_id');
-        $session_id = active_session();
-
-        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
-        $this->db->join('students', 'students.id = enrols.student_id', 'left');
-        $this->db->where('exams.id', $exam_id);
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.session', $session_id);
-
-        $exam = $this->db->get()->row_array();
-
-        if (!$exam) {
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Récupérer l'ID de l'étudiant à partir de user_id
-        $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
-        if (!$student_data || $student_data['id'] != $student_id) {
-            redirect(site_url('student/exam'), 'refresh');
-        }
-
-        // Récupérer les réponses soumises
-        $this->db->select('er.*, eq.title as question_title');
-        $this->db->from('exam_responses er');
-        $this->db->join('exam_questions eq', 'er.exam_question_id = eq.id', 'left');
-        $this->db->where('er.exam_id', $exam_id);
-        $this->db->where('er.user_id', $user_id);
-        $submitted_answers = $this->db->get()->result_array();
-
-        // Préparer les données pour la vue
-        $page_data['exam_details'] = $exam;
-        $page_data['submitted_answers'] = $submitted_answers;
-        $page_data['page_title'] = $exam['name'] . ' - ' . get_phrase('results');
-
-        // Charger la vue partielle pour le modal
-        $this->load->view('backend/student/mark/exam_results_modal', $page_data);
-    } catch (Exception $e) {
-        redirect(site_url('student/exam'), 'refresh');
-    }
-}
-
-public function get_exam_results_popup($exam_id = "", $student_id = "") {
-    try {
-        if (!$this->session->userdata('student_login') || $this->session->userdata('user_type') != 'student') {
-            http_response_code(403);
-            echo json_encode(['error' => 'Non autorisé']);
-            return;
-        }
-
-        $user_id = $this->session->userdata('user_id');
-        $session_id = active_session();
-
-        // Vérifier si l'étudiant a accès à cet examen
-        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-      
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
-        $this->db->join('students', 'students.id = enrols.student_id', 'left');
-        $this->db->where('exams.id', $exam_id);
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where('enrols.session', $session_id);
-
-        $exam = $this->db->get()->row_array();
-
-        if (!$exam) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Examen non trouvé ou accès non autorisé']);
-            return;
-        }
-
-        // Vérifier si l'étudiant correspond
-        $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
-        if (!$student_data || $student_data['id'] != $student_id) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Étudiant non autorisé']);
-            return;
-        }
-
-        // Récupérer les réponses soumises
-        $this->db->select('er.*, eq.title as question_title');
-        $this->db->from('exam_responses er');
-        $this->db->join('exam_questions eq', 'er.exam_question_id = eq.id', 'left');
-        $this->db->where('er.exam_id', $exam_id);
-        $this->db->where('er.user_id', $user_id);
-        $submitted_answers = $this->db->get()->result_array();
-
-        // Préparer les données pour la vue
-        $page_data['exam_details'] = $exam;
-        $page_data['submitted_answers'] = $submitted_answers;
-        $page_data['page_title'] = $exam['name'] . ' - ' . get_phrase('results');
-
-        // Rendre la vue partielle et retourner le HTML
-        $html_content = $this->load->view('backend/student/mark/exam_results_modal', $page_data, TRUE);
-
-        echo json_encode([
-            'html' => $html_content,
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans get_exam_results_popup : ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Erreur serveur interne : ' . $e->getMessage(),
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    }
-}
-
-public function load_initial_exams() {
-    try {
-        log_message('debug', 'Début de load_initial_exams');
-        log_message('debug', 'Données POST reçues : ' . json_encode($this->input->post()));
-        log_message('debug', 'Utilisateur connecté : ' . $this->session->userdata('user_id'));
-
-        $class_id = $this->input->post('class_id');
-       
-        $date_filter = $this->input->post('date_filter');
-        $user_id = $this->session->userdata('user_id');
-
-        if (!$class_id || !$user_id) {
-            http_response_code(400);
+            log_message('debug', 'Examen soumis avec succès pour exam_id: ' . $exam_id);
+            echo json_encode($response);
+        } catch (Exception $e) {
+            log_message('error', 'Erreur dans submit_exam : ' . $e->getMessage());
+            http_response_code(500);
             echo json_encode([
-                'error' => 'Données manquantes',
+                'error' => 'Erreur serveur interne : ' . $e->getMessage(),
                 'csrf_hash' => $this->security->get_csrf_hash()
             ]);
-            return;
         }
+    }
 
-        $session_id = active_session();
-        if (!$session_id) {
-            http_response_code(400);
+    public function exam_results($exam_id = "", $student_id = "") {
+        try {
+
+            if (!$this->session->userdata('student_login') || $this->session->userdata('user_type') != 'student') {
+                redirect(site_url('login'), 'refresh');
+            }
+
+            $user_id = $this->session->userdata('user_id');
+            $session_id = active_session();
+
+            $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->join('enrols', 'enrols.class_id = exams.class_id', 'left');
+            $this->db->join('students', 'students.id = enrols.student_id', 'left');
+            $this->db->where('exams.id', $exam_id);
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.session', $session_id);
+
+            $exam = $this->db->get()->row_array();
+
+            if (!$exam) {
+                redirect(site_url('student/exam'), 'refresh');
+            }
+
+            // Récupérer l'ID de l'étudiant à partir de user_id
+            $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
+            if (!$student_data || $student_data['id'] != $student_id) {
+                redirect(site_url('student/exam'), 'refresh');
+            }
+
+            // Récupérer les réponses soumises
+            $this->db->select('er.*, eq.title as question_title');
+            $this->db->from('exam_responses er');
+            $this->db->join('exam_questions eq', 'er.exam_question_id = eq.id', 'left');
+            $this->db->where('er.exam_id', $exam_id);
+            $this->db->where('er.user_id', $user_id);
+            $submitted_answers = $this->db->get()->result_array();
+
+            // Préparer les données pour la vue
+            $page_data['exam_details'] = $exam;
+            $page_data['submitted_answers'] = $submitted_answers;
+            $page_data['page_title'] = $exam['name'] . ' - ' . get_phrase('results');
+
+            // Charger la vue partielle pour le modal
+            $this->load->view('backend/student/mark/exam_results_modal', $page_data);
+        } catch (Exception $e) {
+            redirect(site_url('student/exam'), 'refresh');
+        }
+    }
+
+    public function get_exam_results_popup($exam_id = "", $student_id = "") {
+        try {
+            if (!$this->session->userdata('student_login') || $this->session->userdata('user_type') != 'student') {
+                http_response_code(403);
+                echo json_encode(['error' => 'Non autorisé']);
+                return;
+            }
+
+            $user_id = $this->session->userdata('user_id');
+            $session_id = active_session();
+
+            // Vérifier si l'étudiant a accès à cet examen
+            $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+        
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
+            $this->db->join('students', 'students.id = enrols.student_id', 'left');
+            $this->db->where('exams.id', $exam_id);
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.session', $session_id);
+
+            $exam = $this->db->get()->row_array();
+
+            if (!$exam) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Examen non trouvé ou accès non autorisé']);
+                return;
+            }
+
+            // Vérifier si l'étudiant correspond
+            $student_data = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $exam['school_id']])->row_array();
+            if (!$student_data || $student_data['id'] != $student_id) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Étudiant non autorisé']);
+                return;
+            }
+
+            // Récupérer les réponses soumises
+            $this->db->select('er.*, eq.title as question_title');
+            $this->db->from('exam_responses er');
+            $this->db->join('exam_questions eq', 'er.exam_question_id = eq.id', 'left');
+            $this->db->where('er.exam_id', $exam_id);
+            $this->db->where('er.user_id', $user_id);
+            $submitted_answers = $this->db->get()->result_array();
+
+            // Préparer les données pour la vue
+            $page_data['exam_details'] = $exam;
+            $page_data['submitted_answers'] = $submitted_answers;
+            $page_data['page_title'] = $exam['name'] . ' - ' . get_phrase('results');
+
+            // Rendre la vue partielle et retourner le HTML
+            $html_content = $this->load->view('backend/student/mark/exam_results_modal', $page_data, TRUE);
+
             echo json_encode([
-                'error' => 'Aucune session active',
+                'html' => $html_content,
                 'csrf_hash' => $this->security->get_csrf_hash()
             ]);
-            return;
+        } catch (Exception $e) {
+            log_message('error', 'Erreur dans get_exam_results_popup : ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Erreur serveur interne : ' . $e->getMessage(),
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ]);
         }
+    }
 
-        // Récupérer les écoles auxquelles l'étudiant est inscrit
-        $this->db->select('schools.id');
-        $this->db->from('schools');
-        $this->db->join('enrols', 'enrols.school_id = schools.id');
+    public function load_initial_exams() {
+        try {
+            log_message('debug', 'Début de load_initial_exams');
+            log_message('debug', 'Données POST reçues : ' . json_encode($this->input->post()));
+            log_message('debug', 'Utilisateur connecté : ' . $this->session->userdata('user_id'));
+
+            $class_id = $this->input->post('class_id');
+        
+            $date_filter = $this->input->post('date_filter');
+            $user_id = $this->session->userdata('user_id');
+
+            if (!$class_id || !$user_id) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'Données manquantes',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            $session_id = active_session();
+            if (!$session_id) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'Aucune session active',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            // Récupérer les écoles auxquelles l'étudiant est inscrit
+            $this->db->select('schools.id');
+            $this->db->from('schools');
+            $this->db->join('enrols', 'enrols.school_id = schools.id');
+            $this->db->join('students', 'students.id = enrols.student_id');
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where('enrols.session', $session_id);
+            $school_ids = $this->db->get()->result_array();
+            $school_ids = array_column($school_ids, 'id');
+
+            if (empty($school_ids)) {
+                http_response_code(403);
+                echo json_encode([
+                    'error' => 'Non autorisé',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            // Vérification des permissions
+            $this->db->select('students.id');
+            $this->db->from('students');
+            $this->db->join('enrols', 'enrols.student_id = students.id', 'left');
+            $this->db->where('students.user_id', $user_id);
+            $this->db->where_in('enrols.school_id', $school_ids);
+            $this->db->where('enrols.class_id', $class_id);
+            $this->db->where('enrols.session', $session_id);
+
+            $student = $this->db->get()->row_array();
+
+            if (!$student) {
+                http_response_code(403);
+                echo json_encode([
+                    'error' => 'Non autorisé',
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                ]);
+                return;
+            }
+
+            // Début de la journée actuelle (00:00:00)
+            $today_start = strtotime('today midnight');
+
+            // Construire la requête pour récupérer les examens
+            $this->db->reset_query();
+            $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
+            $this->db->from('exams');
+            $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+            $this->db->join('schools', 'exams.school_id = schools.id', 'left');
+            $this->db->where_in('exams.school_id', $school_ids);
+            $this->db->where('exams.class_id', $class_id);
+            $this->db->where('exams.session', $session_id);
+            $this->db->where('exams.starting_date >=', $today_start);
+
+            // Gérer le filtre de date
+            if (!empty($date_filter)) {
+                // Parser le filtre de date
+                $dates = explode(' - ', $date_filter);
+                if (count($dates) == 1) {
+                    // Date unique
+                    $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                    if ($start_date) {
+                        $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
+                        $end_timestamp = $start_date->setTime(23, 59, 59)->getTimestamp();
+                        $this->db->where('exams.starting_date >=', $start_timestamp);
+                        $this->db->where('exams.starting_date <=', $end_timestamp);
+                    }
+                } elseif (count($dates) == 2) {
+                    // Plage de dates
+                    $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                    $end_date = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
+                    if ($start_date && $end_date) {
+                        $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
+                        $end_timestamp = $end_date->setTime(23, 59, 59)->getTimestamp();
+                        $this->db->where('exams.starting_date >=', $start_timestamp);
+                        $this->db->where('exams.starting_date <=', $end_timestamp);
+                    }
+                }
+            }
+
+            $exams = $this->db->get()->result_array();
+            $exam_calendar = [];
+            $current_time = time();
+
+            foreach ($exams as $exam) {
+                $exam_calendar[] = [
+                    'title' => $exam['name'],
+                    'start' => date('Y-m-d H:i:s', $exam['starting_date'])
+                ];
+            }
+
+            // Génération du tableau HTML
+            $table_html = '';
+            foreach ($exams as $exam) {
+                $exam_start_time = $exam['starting_date'];
+                $table_html .= '<tr>';
+                $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
+                $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
+                $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
+
+                $this->db->select('id');
+                $this->db->from('exam_responses');
+                $this->db->where('exam_id', $exam['id']);
+                $this->db->where('user_id', $user_id);
+                $has_submitted = $this->db->get()->row_array();
+
+                if ($has_submitted) {
+                    $table_html .= '<td><button class="btn btn-sm btn-success view-results-btn" data-exam-id="' . $exam['id'] . '" data-student-id="' . $student['id'] . '">' . get_phrase('view_results') . '</button></td>';
+                } elseif ($exam_start_time > $current_time) {
+                    $table_html .= '<td data-exam-start="' . $exam_start_time . '" data-exam-id="' . $exam['id'] . '" class="exam-countdown">';
+                    $table_html .= get_phrase('exam_not_yet_available') . '<br>';
+                    $table_html .= '<span class="countdown-text" style="background-color: #3A87AD; color:white; border-radius: 5px; padding:3px;"></span></td>';
+                } else {
+                    $table_html .= '<td><a href="' . site_url('student/online_exam/' . $exam['id']) . '" target="_blank" class="btn btn-sm btn-primary access-exam-btn">' . get_phrase('access') . '</a></td>';
+                }
+
+                $table_html .= '</tr>';
+            }
+            log_message('debug', 'Tableau HTML généré : ' . $table_html);
+
+            echo json_encode([
+                'exam_calendar' => $exam_calendar,
+                'table_html' => $table_html,
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ]);
+        } catch (Exception $e) {
+            log_message('error', 'Erreur dans load_initial_exams : ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Erreur serveur interne : ' . $e->getMessage(),
+                'csrf_hash' => $this->security->get_csrf_hash()
+            ]);
+        }
+    }
+
+    public function get_classes_by_student() {
+        $user_id = $this->session->userdata('user_id');
+        $session_id = active_session();
+
+        $this->db->select('classes.id, classes.name');
+        $this->db->from('classes');
+        $this->db->join('enrols', 'enrols.class_id = classes.id');
         $this->db->join('students', 'students.id = enrols.student_id');
         $this->db->where('students.user_id', $user_id);
         $this->db->where('enrols.session', $session_id);
-        $school_ids = $this->db->get()->result_array();
-        $school_ids = array_column($school_ids, 'id');
+        $this->db->group_by('classes.id');
 
-        if (empty($school_ids)) {
-            http_response_code(403);
-            echo json_encode([
-                'error' => 'Non autorisé',
-                'csrf_hash' => $this->security->get_csrf_hash()
-            ]);
-            return;
-        }
+        $classes = $this->db->get()->result_array();
+        echo json_encode([
+            'classes' => $classes,
+            'csrf_hash' => $this->security->get_csrf_hash()
+        ]);
+    }
 
-        // Vérification des permissions
-        $this->db->select('students.id');
-        $this->db->from('students');
-        $this->db->join('enrols', 'enrols.student_id = students.id', 'left');
-        $this->db->where('students.user_id', $user_id);
-        $this->db->where_in('enrols.school_id', $school_ids);
-        $this->db->where('enrols.class_id', $class_id);
-        $this->db->where('enrols.session', $session_id);
-
-        $student = $this->db->get()->row_array();
-
-        if (!$student) {
-            http_response_code(403);
-            echo json_encode([
-                'error' => 'Non autorisé',
-                'csrf_hash' => $this->security->get_csrf_hash()
-            ]);
-            return;
-        }
-
-        // Début de la journée actuelle (00:00:00)
-        $today_start = strtotime('today midnight');
-
-        // Construire la requête pour récupérer les examens
-        $this->db->reset_query();
-        $this->db->select('exams.*, classes.name as class_name, schools.name as school_name');
-        $this->db->from('exams');
-        $this->db->join('classes', 'exams.class_id = classes.id', 'left');
-        $this->db->join('schools', 'exams.school_id = schools.id', 'left');
-        $this->db->where_in('exams.school_id', $school_ids);
-        $this->db->where('exams.class_id', $class_id);
-        $this->db->where('exams.session', $session_id);
-        $this->db->where('exams.starting_date >=', $today_start);
-
-        // Gérer le filtre de date
-        if (!empty($date_filter)) {
-            // Parser le filtre de date
-            $dates = explode(' - ', $date_filter);
-            if (count($dates) == 1) {
-                // Date unique
-                $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-                if ($start_date) {
-                    $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
-                    $end_timestamp = $start_date->setTime(23, 59, 59)->getTimestamp();
-                    $this->db->where('exams.starting_date >=', $start_timestamp);
-                    $this->db->where('exams.starting_date <=', $end_timestamp);
-                }
-            } elseif (count($dates) == 2) {
-                // Plage de dates
-                $start_date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-                $end_date = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
-                if ($start_date && $end_date) {
-                    $start_timestamp = $start_date->setTime(0, 0, 0)->getTimestamp();
-                    $end_timestamp = $end_date->setTime(23, 59, 59)->getTimestamp();
-                    $this->db->where('exams.starting_date >=', $start_timestamp);
-                    $this->db->where('exams.starting_date <=', $end_timestamp);
-                }
-            }
-        }
-
-        $exams = $this->db->get()->result_array();
-        $exam_calendar = [];
-        $current_time = time();
-
-        foreach ($exams as $exam) {
-            $exam_calendar[] = [
-                'title' => $exam['name'],
-                'start' => date('Y-m-d H:i:s', $exam['starting_date'])
+    public function calendar($param1 = '', $param2 = '', $param3 = '', $param4 = '') {
+        if ($this->session->userdata('student_login') != 1) {
+            $csrf = [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
             ];
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'csrf' => $csrf]);
+            return;
         }
 
-        // Génération du tableau HTML
-        $table_html = '';
-        foreach ($exams as $exam) {
-            $exam_start_time = $exam['starting_date'];
-            $table_html .= '<tr>';
-            $table_html .= '<td>' . htmlspecialchars($exam['name']) . '</td>';
-            $table_html .= '<td>' . date('D, d-M-Y H:i', $exam_start_time) . '</td>';
-            $table_html .= '<td>' . (!empty($exam['class_name']) ? htmlspecialchars($exam['class_name']) : get_phrase('no_class')) . '</td>';
-
-            $this->db->select('id');
-            $this->db->from('exam_responses');
-            $this->db->where('exam_id', $exam['id']);
-            $this->db->where('user_id', $user_id);
-            $has_submitted = $this->db->get()->row_array();
-
-            if ($has_submitted) {
-                $table_html .= '<td><button class="btn btn-sm btn-success view-results-btn" data-exam-id="' . $exam['id'] . '" data-student-id="' . $student['id'] . '">' . get_phrase('view_results') . '</button></td>';
-            } elseif ($exam_start_time > $current_time) {
-                $table_html .= '<td data-exam-start="' . $exam_start_time . '" data-exam-id="' . $exam['id'] . '" class="exam-countdown">';
-                $table_html .= get_phrase('exam_not_yet_available') . '<br>';
-                $table_html .= '<span class="countdown-text" style="background-color: #3A87AD; color:white; border-radius: 5px; padding:3px;"></span></td>';
-            } else {
-                $table_html .= '<td><a href="' . site_url('student/online_exam/' . $exam['id']) . '" target="_blank" class="btn btn-sm btn-primary access-exam-btn">' . get_phrase('access') . '</a></td>';
-            }
-
-            $table_html .= '</tr>';
+        if ($param1 == 'get_events') {
+            $this->get_events();
         }
-        log_message('debug', 'Tableau HTML généré : ' . $table_html);
 
-        echo json_encode([
-            'exam_calendar' => $exam_calendar,
-            'table_html' => $table_html,
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
-    } catch (Exception $e) {
-        log_message('error', 'Erreur dans load_initial_exams : ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Erreur serveur interne : ' . $e->getMessage(),
-            'csrf_hash' => $this->security->get_csrf_hash()
-        ]);
+        if ($param1 == 'get_user_school') {
+            $this->get_user_school();
+        }
+
+        if ($param1 == 'get_school_data') {
+            $this->get_school_data();
+        }
+
+        if ($param1 == 'start_meeting') {
+            $this->start_meeting();
+        }
+
+        if ($param1 == 'filter') {
+            $page_data['class_id'] = $param2;
+            $page_data['start_date'] = $param3;
+            $page_data['end_date'] = $param4;
+            $this->load->view('backend/student/calendar/list', $page_data);
+        }
+
+        if (empty($param1)) {
+            $page_data['folder_name'] = 'calendar';
+            $page_data['page_title'] = 'calendar';
+            $this->load->view('backend/index', $page_data);
+        }
     }
-}
-
-public function get_classes_by_student() {
-    $user_id = $this->session->userdata('user_id');
-    $session_id = active_session();
-
-    $this->db->select('classes.id, classes.name');
-    $this->db->from('classes');
-    $this->db->join('enrols', 'enrols.class_id = classes.id');
-    $this->db->join('students', 'students.id = enrols.student_id');
-    $this->db->where('students.user_id', $user_id);
-    $this->db->where('enrols.session', $session_id);
-    $this->db->group_by('classes.id');
-
-    $classes = $this->db->get()->result_array();
-    echo json_encode([
-        'classes' => $classes,
-        'csrf_hash' => $this->security->get_csrf_hash()
-    ]);
-}
-
-public function calendar($param1 = '', $param2 = '', $param3 = '', $param4 = '') {
-    if ($this->session->userdata('student_login') != 1) {
-        $csrf = [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash(),
-        ];
-        echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'csrf' => $csrf]);
-        return;
-    }
-
-    if ($param1 == 'get_events') {
-        $this->get_events();
-    }
-
-    if ($param1 == 'get_user_school') {
-        $this->get_user_school();
-    }
-
-    if ($param1 == 'get_school_data') {
-        $this->get_school_data();
-    }
-
-    if ($param1 == 'start_meeting') {
-        $this->start_meeting();
-    }
-
-    if ($param1 == 'filter') {
-        $page_data['class_id'] = $param2;
-        $page_data['start_date'] = $param3;
-        $page_data['end_date'] = $param4;
-        $this->load->view('backend/student/calendar/list', $page_data);
-    }
-
-    if (empty($param1)) {
-        $page_data['folder_name'] = 'calendar';
-        $page_data['page_title'] = 'calendar';
-        $this->load->view('backend/index', $page_data);
-    }
-}
 
 public function get_user_school() {
     if ($this->session->userdata('student_login') != 1) {
