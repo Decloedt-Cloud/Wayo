@@ -639,3 +639,21 @@ $route['bigbluebutton/create_room'] = 'BigBlueButton/create_room';
 $route['bigbluebutton/webhook'] = 'bigbluebutton/webhook';
 
 $route['meeting_states'] = 'bigbluebutton/meeting_states';
+
+// =====================================================
+// FX RATES API ROUTES
+// =====================================================
+$route['api/fx'] = 'api/FxRates/index';
+$route['api/fx/today'] = 'api/FxRates/today';
+$route['api/fx/latest'] = 'api/FxRates/latest';
+$route['api/fx/date/(:any)'] = 'api/FxRates/date/$1';
+$route['api/fx/range'] = 'api/FxRates/range';
+$route['api/fx/convert'] = 'api/FxRates/convert';
+$route['api/fx/health'] = 'api/FxRates/health';
+
+// FX RATES CRON ROUTES
+$route['cron/fx_fetch_daily'] = 'Cron/fx_fetch_daily';
+$route['cron/fx_health'] = 'Cron/fx_health';
+$route['cron/fx_cleanup'] = 'Cron/fx_cleanup';
+$route['cron/fx_clear_cache'] = 'Cron/fx_clear_cache';
+$route['cron/fx_test_api'] = 'Cron/fx_test_api';

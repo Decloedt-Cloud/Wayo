@@ -779,7 +779,13 @@ class Frontend_model extends CI_Model
     }
 
     // Prepare school data
-    $access = $this->input->post('visibility') ? 1 : 0;
+    if(htmlspecialchars($this->input->post('price')) == 0 || htmlspecialchars($this->input->post('i_am')) == 'Particulier'){
+      $access = 1;
+    } else {
+      $access = $this->input->post('visibility') ? 1 : 0;
+    }
+  
+    
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
         'Rue' => htmlspecialchars($this->input->post('street')),

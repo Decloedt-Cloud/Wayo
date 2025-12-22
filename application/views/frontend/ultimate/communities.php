@@ -34,7 +34,7 @@
                 name="search"
                 class="form-control border-0 bg-transparent ps-3"
                 placeholder="<?php echo get_phrase('Search'); ?>"
-                value="<?php if ($input_search) echo ($input_search); ?>">
+                value="<?php if (isset($input_search) && $input_search) echo ($input_search); ?>">
               <button type="submit" class="btn-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
               </button>

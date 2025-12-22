@@ -43,6 +43,89 @@ class Teacher extends CI_Controller {
 		if($this->session->userdata('teacher_login') != 1){
 			redirect(site_url('login'), 'refresh');
 		}
+
+		// ---- Vérification du statut de paiement de la communauté pour bloquer les mentors ----
+		// Après la vérification ci-dessus, on est sûr que c'est un teacher
+		// Donc on vérifie toujours le statut de la communauté
+		{
+			$school_id = $this->session->userdata('school_id');
+			if (!$school_id) {
+				$school_id = $this->session->userdata('active_school_id');
+			}
+			
+			if ($school_id) {
+				$school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+			} else {
+				$school = null;
+			}
+
+			$current_method = $this->router->method;
+			
+			log_message('debug', "Teacher construct - is_teacher: true, school_id: $school_id, method: $current_method");
+
+			// ---- Gestion de la période d'essai de 14 jours et de l'abonnement mensuel ----
+			$trial_expired = false;
+			$subscription_expired = false;
+			$school_not_approved = false;
+			
+			// Protection de base : communauté non approuvée
+			if (!$school || (int)$school['status'] !== 1) {
+				$school_not_approved = true;
+				log_message('debug', "Teacher construct - School not approved or not found");
+			}
+			
+			if ($school) {
+				$now             = time();
+				$is_trial        = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
+				$is_paid         = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;
+				$trial_end       = isset($school['trial_end']) ? (int)$school['trial_end'] : 0;
+				$subscription_end = isset($school['subscription_end']) ? (int)$school['subscription_end'] : 0;
+
+				// DEBUG: Log pour vérifier les valeurs
+				log_message('debug', "Teacher construct - school_id: $school_id, is_paid: $is_paid, subscription_end: $subscription_end, now: $now");
+				if ($subscription_end > 0) {
+					log_message('debug', "Teacher construct - subscription_end date: " . date('Y-m-d H:i:s', $subscription_end) . ", now date: " . date('Y-m-d H:i:s', $now));
+				}
+
+				// Vérifier si l'essai de 14 jours est expiré
+				if ($is_trial === 1 && $is_paid === 0 && $trial_end > 0 && $now > $trial_end) {
+					$trial_expired = true;
+					log_message('debug', "Teacher construct - Trial expired detected");
+				}
+
+				// Vérifier si l'abonnement mensuel est expiré
+				// Si subscription_end existe et est passé, l'abonnement est expiré (peu importe is_paid)
+				// On vérifie seulement si l'école n'est pas en période d'essai (is_trial = 0)
+				if ($is_trial === 0 && $subscription_end > 0 && $now > $subscription_end) {
+					$subscription_expired = true;
+					log_message('debug', "Teacher construct - Subscription expired detected: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") < now (" . date('Y-m-d H:i:s', $now) . ")");
+				} elseif ($is_trial === 0 && $subscription_end > 0 && $now <= $subscription_end) {
+					// Log pour confirmer que l'abonnement est encore valide
+					log_message('debug', "Teacher construct - Subscription still valid: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") >= now (" . date('Y-m-d H:i:s', $now) . ")");
+				}
+			}
+
+			// Partage l'info avec les vues
+			$this->trial_expired = $trial_expired || $subscription_expired || $school_not_approved;
+			$this->school_data   = $school;
+
+			// Si l'essai ou l'abonnement est expiré, OU si la communauté n'est pas approuvée, on bloque l'accès
+			if ($trial_expired || $subscription_expired || $school_not_approved) {
+				// Laisser accès uniquement au dashboard, au logout et au changement de langue
+				// Note: Les mentors ne peuvent pas payer directement, seul l'admin peut payer
+				$allowed_methods_trial = ['dashboard', 'logout', 'language'];
+
+				if (!in_array($current_method, $allowed_methods_trial)) {
+					// Bloquer l'accès : rediriger vers le dashboard où un message sera affiché
+					log_message('debug', "Teacher construct - Access blocked for method '$current_method' (trial_expired: " . ($trial_expired ? 'true' : 'false') . ", subscription_expired: " . ($subscription_expired ? 'true' : 'false') . ", school_not_approved: " . ($school_not_approved ? 'true' : 'false') . ")");
+					redirect(site_url('teacher/dashboard'));
+				} else {
+					log_message('debug', "Teacher construct - Access allowed for method '$current_method' (blocked but method is in allowed list)");
+				}
+			} else {
+				log_message('debug', "Teacher construct - Access allowed for method '$current_method' (no blocking conditions)");
+			}
+		}
 	}
 	//dashboard
 	public function index(){

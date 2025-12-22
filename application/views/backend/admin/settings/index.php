@@ -23,7 +23,7 @@ $class = 'col-xl-10 offset-xl-1';
 
 <!-- end page title -->
 <div class="row">
-  <div class="<?php echo $class; ?>">
+  <div class="<?php echo isset($class) ? $class : 'col-12'; ?>">
     <div class="settings_content">
       <?php include $settings_type.'.php'; ?>
     </div>
