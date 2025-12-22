@@ -228,6 +228,8 @@ $(document).ready(function() {
                 // Met à jour le token CSRF
                 $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
 
+                
+                showNotification('success', response.notification || '<?php echo get_phrase('updated_successfully'); ?>');
                 // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
                 setTimeout(function() {
                   location.reload();
@@ -247,7 +249,7 @@ $(document).ready(function() {
 });
 
 function checkPriceForParticulier(input) {
-alert('test');
+
     const userType = "<?php echo $type; ?>";
     const isFreeCheckbox = document.getElementById('is_free');
     const warning = document.getElementById('price-warning');

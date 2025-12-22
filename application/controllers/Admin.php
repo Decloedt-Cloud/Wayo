@@ -2456,7 +2456,7 @@ class Admin extends CI_Controller
 
     if (empty($param1)) {
         $page_data['folder_name'] = 'exam';
-        $page_data['page_title'] = 'exam and exam';
+        $page_data['page_title'] = 'Certifications';
         $this->load->view('backend/index', $page_data);
     }
 }
@@ -3542,59 +3542,44 @@ class Admin extends CI_Controller
 	//MANAGE PROFILE ENDS
 
 	// ABOUT APPLICATION STARTS
-	public function online_admission($param1 = "", $user_id = "")
-	{
 
+    public function online_admission($param1 = "", $user_id = "")
+{
+    if ($param1 == 'assigned') {
+        $data['student_id'] = $this->input->post('student_id');
 
-		if ($param1 == 'assigned') {
-			$data['student_id'] = $this->input->post('student_id');
-		
-			$user_id = $this->db->get_where('students', array('id' => $data['student_id']))->row('user_id');
-			 $this->email_model->approved_online_admission($data['student_id'], $user_id);
+        $user_id = $this->db->get_where('students', array('id' => $data['student_id']))->row('user_id');
+        $this->email_model->approved_online_admission($data['student_id'], $user_id);
 
-			$this->db->where('user_id', $user_id);
-			$this->db->update('students', array('status' => 1));
+        $this->db->where('user_id', $user_id);
+        $this->db->update('students', array('status' => 1));
 
+        $this->session->set_flashdata('flash_message', get_phrase('admission_request_has_been_updated'));
+        redirect(site_url('admin/online_admission'), 'refresh');
+    }
 
-			$this->session->set_flashdata('flash_message', get_phrase('admission_request_has_been_updated'));
-			redirect(site_url('admin/online_admission'), 'refresh');
-		}
-		if ($param1 == 'delete') {
+    if ($param1 == 'delete') {
+        $this->db->where('user_id', $user_id);
+        $this->db->delete('students');
 
-			// $this->db->where('id', $user_id);
-			// $this->db->delete('users');
+        $this->session->set_flashdata('flash_message', get_phrase('admission_data_deleted_successfully'));
+        redirect(site_url('admin/online_admission'), 'refresh');
+    }
 
-			$this->db->where('user_id', $user_id);
-			$this->db->delete('students');
-			$this->session->set_flashdata('flash_message', get_phrase('admission_data_deleted_successfully'));
-			redirect(site_url('admin/online_admission'), 'refresh');
-		}
+    // JOIN POUR RÉCUPÉRER USERS + STUDENTS
+    $this->db->select('students.id as student_id, students.user_id, students.school_id, users.id, users.name, users.email');
+    $this->db->from('students');
+    $this->db->join('users', 'users.id = students.user_id');
+    $this->db->where('students.status', 0);
+    $this->db->where('students.school_id', $this->session->userdata('school_id'));
 
-		$this->db->select('*');
-		$this->db->where('status', 0);
-		$this->db->where('school_id', $this->session->userdata('school_id'));
-		$query = $this->db->get('students');
+    $page_data['applications'] = $this->db->get();
 
-		if ($query->num_rows() > 0) {
-			foreach ($query->result() as $row) {
-				$user_ids[] = $row->user_id;
-			}
-		}
+    $page_data['folder_name'] = 'online_admission';
+    $page_data['page_title'] = 'online_admission';
 
-		if (!empty($user_ids)) {
-
-			$this->db->where_in('id', $user_ids);
-            $users = $this->db->get('users');
-			$page_data['applications'] = $query;
-		} else {
-			$page_data['applications'] = null;
-		}
-
-
-		$page_data['folder_name'] = 'online_admission';
-		$page_data['page_title'] = 'online_admission';
-		$this->load->view('backend/index', $page_data);
-	}
+    $this->load->view('backend/index', $page_data);
+}
 	// ABOUT APPLICATION ENDS
 
 	//   transport feature starts

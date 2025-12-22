@@ -37,8 +37,12 @@ function previewModal(url, header)
 
 function rightModal(url, header)
 {
+  
+
   // LOADING THE AJAX MODAL
   jQuery('#right-modal').modal('show', {backdrop: 'true'});
+
+
 
   // SHOW AJAX RESPONSE ON REQUEST SUCCESS
   $.ajax({
@@ -47,6 +51,7 @@ function rightModal(url, header)
     {
       jQuery('#right-modal .modal-body').html(response);
       jQuery('#right-modal .modal-title').html(header);
+      
     }
   });
 }
@@ -75,15 +80,28 @@ function confirmModal(delete_url, callback) {
 
                 // Afficher une notification basée sur la réponse
                 if (response.status) {
+                    
                     showNotification('success', response.notification || '<?php echo get_phrase('deleted_successfully'); ?>');
+
+                    // Update CSRF token with the new one from response
+                    if (response.csrf) {
+                        $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                    }
+
+                    // Call callback or reload after short delay
+                    setTimeout(function() {
+                        if (callback && typeof callback === 'function') {
+                            callback(response);
+                        } else {
+                            location.reload();
+                        }
+                    }, 500);
+
                 } else {
                     showNotification('error', response.notification || '<?php echo get_phrase('failed_to_delete'); ?>');
                 }
 
-                // Appeler le callback avec la réponse
-                if (callback && typeof callback === 'function') {
-                    callback(response);
-                }
+                
             },
             error: function(xhr, status, error) {
                 console.error('Erreur AJAX : ', error);
@@ -95,7 +113,8 @@ function confirmModal(delete_url, callback) {
             }
         });
     });
-}
+} 
+
 
 function confirmModalRedirect(delete_url)
 {
@@ -202,7 +221,7 @@ function updateLargeModal(url, header) {
 
 <!--  Large Modal -->
 <div class="modal fade" id="large-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header d-print-none">
         <h4 class="modal-title" id="myLargeModalLabel"></h4>
@@ -211,9 +230,13 @@ function updateLargeModal(url, header) {
       <div class="modal-body">
 
       </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+<!--/.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+ 
 
 <!-- Info Alert Modal -->
 <div id="alert-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">

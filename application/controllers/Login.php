@@ -116,7 +116,20 @@ class Login extends CI_Controller
 				$this->session->set_userdata('active_school_id', $active_school_id);
 				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				redirect(site_url('superadmin/dashboard'), 'refresh');
+
+				// AJAX response
+				if ($this->input->is_ajax_request()) {
+					echo json_encode([
+						'status' => 'success',
+						'redirect' => site_url('superadmin/dashboard')
+					]);
+					return;
+				} else {
+
+					redirect(site_url('superadmin/dashboard'), 'refresh');
+				}
+
+				//redirect(site_url('superadmin/dashboard'), 'refresh');
 			} elseif ($row->role == 'admin') {
 				$this->session->set_userdata('admin_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -140,7 +153,19 @@ class Login extends CI_Controller
 				$this->session->set_userdata('active_school_id', $active_school_id);
 				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				redirect(site_url('admin/dashboard'), 'refresh');
+
+				// AJAX response
+				if ($this->input->is_ajax_request()) {
+					echo json_encode([
+						'status' => 'success',
+						'redirect' => site_url('admin/dashboard')
+					]);
+					return;
+				} else {
+					redirect(site_url('admin/dashboard'), 'refresh');
+				}
+
+				//redirect(site_url('admin/dashboard'), 'refresh');
 			} elseif ($row->role == 'teacher') {
 				$this->session->set_userdata('teacher_login', true);
 				$this->session->set_userdata('user_id', $row->id);
@@ -164,7 +189,19 @@ class Login extends CI_Controller
 				$this->session->set_userdata('active_school_id', $active_school_id);
 				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
-				redirect(site_url('teacher/dashboard'), 'refresh');
+
+				// AJAX response
+				if ($this->input->is_ajax_request()) {
+					echo json_encode([
+						'status' => 'success',
+						'redirect' => site_url('teacher/dashboard')
+					]);
+					return;
+				} else {
+					redirect(site_url('teacher/dashboard'), 'refresh');
+				}
+
+				//redirect(site_url('teacher/dashboard'), 'refresh');
 			} elseif ($row->role == 'student') {
 				if ($row->status != 1) {
 					$this->session->set_flashdata('error_message', get_phrase('your_account_has_been_disabled'));
@@ -200,7 +237,18 @@ class Login extends CI_Controller
 					if ($redirect_role && $redirect_role !== 'student') {
 						redirect(site_url($redirect_role . '/dashboard'), 'refresh');
 					} else {
-						redirect(site_url('student/dashboard'), 'refresh');
+						// AJAX response
+						if ($this->input->is_ajax_request()) {
+							echo json_encode([
+								'status' => 'success',
+								'redirect' => site_url('student/dashboard')
+							]);
+							return;
+						} else {
+							redirect(site_url('student/dashboard'), 'refresh');
+						}
+
+						//redirect(site_url('student/dashboard'), 'refresh');
 					}
 				}
 			} elseif ($row->role == 'librarian') {
@@ -229,8 +277,21 @@ class Login extends CI_Controller
 				redirect(site_url('driver/dashboard'), 'refresh');
 			}
 		} else {
-			$this->session->set_flashdata('error_message', get_phrase('invalid_your_email_or_password'));
-			redirect(site_url('login'), 'refresh');
+
+			// Wrong credentials
+			if ($this->input->is_ajax_request()) {
+				echo json_encode([
+					'status' => 'error',
+					'message' => get_phrase('invalid_your_email_or_password'),
+					'csrf_token_name' => $this->security->get_csrf_token_name(),
+            		'csrf_hash' => $this->security->get_csrf_hash()
+				]);
+				return;
+			} else {
+				$this->session->set_flashdata('error_message', get_phrase('invalid_your_email_or_password'));
+				redirect(site_url('login'), 'refresh');
+			}
+
 		}
 	}
 
@@ -273,6 +334,7 @@ class Login extends CI_Controller
 				$this->session->set_userdata('active_school_id', $active_school_id);
 				$this->session->set_userdata('school_id', $active_school_id);
 				$this->session->set_flashdata('flash_message', get_phrase('welcome_back'));
+						
 				redirect('/superadmin/dashboard', 'refresh');
 			} elseif ($row->role == 'admin') {
 				$this->session->set_userdata('admin_login', true);
@@ -405,8 +467,8 @@ class Login extends CI_Controller
 				}
 			}
 		} else {
-			$this->session->set_flashdata('error_message', get_phrase('invalid_your_email_or_password'));
-			redirect($_SERVER['HTTP_REFERER'], 'refresh');
+				$this->session->set_flashdata('error_message', get_phrase('invalid_your_email_or_password'));
+				redirect($_SERVER['HTTP_REFERER'], 'refresh');	
 		}
 	}
 

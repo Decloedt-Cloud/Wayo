@@ -115,9 +115,6 @@ foreach ($classes as $key => $class) {
               <!-- <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-wayo me-1"></i><?php if (!empty($school_creator)): ?>
                   <p><?php echo htmlspecialchars($school_creator['name']); ?></p>
               <?php endif; ?></li> -->
-
-              <!-- <li class="list-inline-item"><i class="fa-solid fa-user-tie text-wayo me-1"></i><?php // echo get_phrase("Aymane") 
-                                                                                                    ?></li> -->
             </ul>
 
             <p class="mb-4">
@@ -126,8 +123,12 @@ foreach ($classes as $key => $class) {
 
             <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
+             <?php
+              $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
+              ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
+                
                 <?php foreach ($classes as $class): ?>
                   <div class="col">
                     <div class="card h-100 border rounded-4 class-card position-relative"
@@ -140,7 +141,7 @@ foreach ($classes as $key => $class) {
                       data-start="<?php echo isset($class['date_debut']) ? htmlspecialchars($class['date_debut']) : ''; ?>"
                       data-end="<?php echo isset($class['date_fin']) ? htmlspecialchars($class['date_fin']) : ''; ?>"
                       data-price="<?php echo isset($class['price']) ? $class['price'] : 0; ?>"
-                      data-currency="<?php echo isset($class['currency']) ? htmlspecialchars($class['currency']) : 'DH'; ?>"
+                      data-currency="<?php echo $currencies; ?>"
                       data-cycle="<?php echo isset($class['cycle']) ? htmlspecialchars($class['cycle']) : ''; ?>"
                       data-free="<?php echo htmlspecialchars($class['nombre_max_membre']); ?>">
 
@@ -149,6 +150,7 @@ foreach ($classes as $key => $class) {
                           <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
                           <span class="badge rounded-pill border text-brand fw-bold price-badge">
                             <?php
+                            $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
                             if (isset($class['price']) && $class['price'] > 0) {
                               $class_price_ttc = isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price'];
                               echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
@@ -165,61 +167,125 @@ foreach ($classes as $key => $class) {
                         <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
                         <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
 
-                        <div class="text-secondary small d-flex align-items-center gap-2">
-                          <i class="fa-regular fa-calendar text-brand"></i>
-                          <strong class="date-start"><?php echo (new DateTime($class['date_debut']))->format('d M. Y'); ?></strong> →
-                          <strong class="date-end"><?php echo (new DateTime($class['date_fin']))->format('d M. Y'); ?></strong>
-                        </div>
+                        <?php if (!empty($class['date_debut']) && !empty($class['date_fin']) && 
+                                  $class['date_debut'] !== '0000-00-00' && $class['date_fin'] !== '0000-00-00'): ?>
+
+                                <div class="text-secondary small d-flex align-items-center gap-2">
+                                  <i class="fa-regular fa-calendar text-brand"></i>
+                                  <strong class="date-start"><?php echo (new DateTime($class['date_debut']))->format('d M. Y'); ?></strong> →
+                                  <strong class="date-end"><?php echo (new DateTime($class['date_fin']))->format('d M. Y'); ?></strong>
+                                </div>
+                        <?php else: ?>
+                                  &nbsp;
+                        <?php endif; ?>
+                        
                         <div class="small text-secondary">
                           <i class="fa-regular fa-circle-check me-1"></i>
                           <?php echo htmlspecialchars($class['nombre_max_membre']); ?> <?php echo get_phrase("Maximum_number") ?>
                         </div>
                         <div class="d-flex gap-2 mt-2">
-                          <button class="btn btn-outline-wayo btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#classModal"><?php echo get_phrase("See more") ?></button>
+                     <button 
+                        class="btn btn-outline-wayo btn-sm flex-fill openClassModal" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#classModal"
+                        data-class-id="<?php echo $class['id']; ?>"
+                        data-class-price="<?php echo $class['price']; ?>"
+                        data-class-enrolled="<?php 
+                            echo $this->db->get_where('enrols', [
+                                'student_id' => $student_id,
+                                'school_id' => $school_id,
+                                'class_id' => $class['id']
+                            ])->num_rows(); 
+                        ?>"
+                      >
+                        <?php echo get_phrase("See more"); ?>
+                      </button>
                           <?php
-                          // Vérifier d'abord le nombre d'inscriptions
-                          $enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_id, 'school_id' => $school_id, 'class_id' => $class['id']))->num_rows();
-                          $enrols_max = $this->db->get_where('enrols', array('school_id' => $school_id, 'class_id' => $class['id']))->num_rows();
+                            // Vérifier si déjà inscrit à la classe
+                            $enrols_datas = $this->db->get_where('enrols', array(
+                                'student_id' => $student_id,
+                                'school_id' => $school_id,
+                                'class_id' => $class['id']
+                            ))->num_rows();
 
-                          // Vérifier si le nombre maximum est atteint
-                          $nombre_max = isset($class['nombre_max_membre']) ? (int)$class['nombre_max_membre'] : 0;
-                          $is_max_reached = ($nombre_max > 0 && $enrols_max >= $nombre_max);
+                            $enrols_max = $this->db->get_where('enrols', array(
+                                'school_id' => $school_id,
+                                'class_id' => $class['id']
+                            ))->num_rows();
 
-                          if ($enrols_datas > 0): ?>
-                            <a id="paye-button" class="btn btn-outline-wayo-join btn-sm flex-fill"> <?php echo htmlspecialchars(get_phrase("start_course")); ?> </a>
+                            $nombre_max = isset($class['nombre_max_membre']) ? (int)$class['nombre_max_membre'] : 0;
+                            $is_max_reached = ($nombre_max > 0 && $enrols_max >= $nombre_max);
 
-                          <?php elseif ($is_max_reached): ?>
-                            <!-- Afficher "waiting list" si le nombre maximum est atteint -->
-                            <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled><?php echo htmlspecialchars(get_phrase("waiting_list")); ?></button>
+                            // CASE 1 : déjà inscrit à la classe → Start course
+                            if ($enrols_datas > 0): ?>
+                              <button class="btn btn-outline-wayo-join fw-bold start-course-btn"
+                                      data-class-id="<?php echo $class['id']; ?>">
+                                <?php echo get_phrase("start_course"); ?>
+                              </button>
 
-                            <?php else:
-                              // Afficher le formulaire seulement si le maximum n'est pas atteint
+                            <?php 
+                            // CASE 2 : classe full → liste d’attente
+                            elseif ($is_max_reached): ?>
+                              <button type="button" class="btn btn-outline-secondary fw-bold" disabled>
+                                <?php echo htmlspecialchars(get_phrase("waiting_list")); ?>
+                              </button>
+
+                            <?php 
+                            // CASE 3 : pas encore inscrit
+                            else:
                               $status = $this->user_model->check_student_status($school_id);
-                              if ($status == -1) {
-                              ?>
+
+                              // CASE 3.1 : pas encore dans la communauté
+                              if ($status == -1): ?>
 
                                 <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
-                                  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                                  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>"
+                                        value="<?php echo $this->security->get_csrf_hash(); ?>" />
                                   <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
                                   <input type="hidden" name="price" value="<?php echo $school_price_ttc; ?>" />
                                   <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
-                                <?php
-                              } else {
-                                ?>
-                                  <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
+
+                                  <button type="submit" class="btn btn-wayo fw-bold join-community-login-popup">
+                                    <?php echo htmlspecialchars(get_phrase("join_community")); ?>
+                                  </button>
+                                </form>
+
+                              <?php 
+                              // CASE 3.2 : déjà dans la communauté
+                              else:
+
+                                // NOUVELLE CONDITION : classe gratuite → Start course direct
+                                if ((float)$class['price'] == 0): ?>
+                                  
+                                  <button class="btn btn-outline-wayo-join fw-bold start-course-btn"
+                                          data-class-id="<?php echo $class['id']; ?>">
+                                    <?php echo get_phrase("start_course"); ?>
+                                  </button>
+
+                                <?php else: ?>
+
+                                  <!-- Classe payante : inscription normale -->
                                   <form action="<?php echo site_url('student/online_admission/assigned'); ?>" method="post">
-                                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>"
+                                          value="<?php echo $this->security->get_csrf_hash(); ?>" />
+
                                     <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
                                     <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
                                     <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
                                     <input type="hidden" name="price" value="<?php echo isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price']; ?>" />
                                     <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
-                                <?php
-                              }
-                                ?>
-                                <button id="paye-button" type="submit" class="btn btn-outline-wayo-join btn-sm flex-fill"> <?php echo htmlspecialchars(get_phrase("join")); ?> </button>
-                                </form>
+
+                                    <button type="submit" class="btn btn-wayo fw-bold">
+                                      <?php echo htmlspecialchars(get_phrase("join_classe")); ?>
+                                    </button>
+                                  </form>
+
+                                <?php endif; ?>
+
                               <?php endif; ?>
+
+                            <?php endif; ?>
+
                         </div>
                       </div>
                     </div>
@@ -237,11 +303,6 @@ foreach ($classes as $key => $class) {
       <!-- Side card -->
       <aside class="col-lg-4">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-          <!-- <div class="ratio ratio-16x9">
-            <iframe src="https://www.youtube.com/embed/r8cCk-HXcMQ?rel=0&modestbranding=1"
-                    title="Présentation Wayo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen></iframe>
-          </div> -->
           <div class="bg-logo-communaute p-4 text-center">
             <div class="cercle-logo">
               <img src="<?php echo $this->user_model->get_school_image($school_id); ?>" alt="Logo communauté" class="logo-communaute">
@@ -271,7 +332,6 @@ foreach ($classes as $key => $class) {
             <?php if ((int)$school['access'] > 0): ?>
               <div class="alert alert-warning small"><?php echo htmlspecialchars(get_phrase("Private community - join request only")); ?></div>
             <?php endif; ?>
-            <!-- <a href="#" class="btn btn-wayo w-100">Rejoindre gratuitement</a> -->
             <div class="community-app-button">
               <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
             </div>
@@ -302,6 +362,7 @@ foreach ($classes as $key => $class) {
 </button>
 
 
+<!-- MODAL DETAILS CLASS -->
 <!-- MODAL DETAILS CLASS -->
 <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -342,7 +403,10 @@ foreach ($classes as $key => $class) {
       </div>
       <div class="modal-footer d-flex justify-content-between">
         <span class="fw-bold text-brand" id="classPrice">—</span>
-        <button class="btn btn-wayo fw-bold" id="modalApplyBtn" type="button"><?php echo get_phrase("Sign up") ?></button>
+
+        <!-- CONTENEUR DU BOUTON : JS injectera Start/Join -->
+        <div id="modalActionBtnContainer"></div>
+
       </div>
     </div>
   </div>
@@ -350,26 +414,144 @@ foreach ($classes as $key => $class) {
 
 
 
+
+
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+
+<script>
+const base_url = "<?php echo base_url(); ?>";
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  // Quand on clique sur "See More"
+  document.querySelectorAll('.openClassModal').forEach(btn => {
+    btn.addEventListener('click', function() {
+
+      const classId = this.dataset.classId;
+      const classPrice = parseFloat(this.dataset.classPrice);
+      const enrolled = parseInt(this.dataset.classEnrolled); // 0 = pas payé, 1 = déjà payé
+      const studentId = this.dataset.studentId;
+      const schoolId = this.dataset.schoolId;
+      const csrfName = "<?php echo $this->security->get_csrf_token_name(); ?>";
+      const csrfHash = "<?php echo $this->security->get_csrf_hash(); ?>";
+      const currency = "<?php echo $settings_data['system_currency']; ?>";
+
+      const container = document.getElementById('modalActionBtnContainer');
+      container.innerHTML = ""; // reset le bouton
+
+      if (enrolled > 0 || classPrice === 0) {
+        // L'utilisateur a déjà payé ou la classe est gratuite → Start Course
+        const startBtn = document.createElement('button');
+        startBtn.className = 'btn btn-outline-wayo-join fw-bold start-course-btn';
+        startBtn.dataset.classId = classId;
+        startBtn.textContent = "<?php echo get_phrase('start_course'); ?>";
+        container.appendChild(startBtn);
+      } else {
+        // Classe payante → Join Class (paiement)
+        const form = document.createElement('form');
+        form.action = base_url + "student/online_admission/assigned";
+        form.method = 'post';
+        form.innerHTML = `
+          <input type="hidden" name="${csrfName}" value="${csrfHash}">
+          <input type="hidden" name="student_id" value="${studentId}">
+          <input type="hidden" name="school_id" value="${schoolId}">
+          <input type="hidden" name="class_id" value="${classId}">
+          <input type="hidden" name="price" value="${classPrice}">
+          <input type="hidden" name="currency" value="${currency}">
+          <button type="submit" class="btn btn-wayo fw-bold"><?php echo get_phrase('join_class'); ?></button>
+        `;
+        container.appendChild(form);
+      }
+    });
+  });
+
+  // Start Course redirection
+  document.addEventListener('click', function(e){
+    if (!e.target.classList.contains('start-course-btn')) return;
+    const classId = e.target.dataset.classId;
+    if (!classId) return;
+    window.location.href = base_url + "student/courses/" + classId;
+  });
+
+});
+
+</script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const joinBtn = document.getElementById("login-join-button");
 
-    joinBtn?.addEventListener("click", function() {
-        // Scroll vers le haut de la page avec animation
-        window.scrollTo({ top: 0, behavior: "smooth" });
+  // Bouton login déjà existant
+  const loginJoinBtn = document.getElementById("login-join-button");
+
+  // Tous les boutons avec la classe join-community-login
+  const joinCommunityBtns = document.querySelectorAll(".join-community-login");
+
+  function openPopup() {
+    const toggle = document.querySelector('.login-toggle');
+    if (toggle) {
+      toggle.click(); // ouvre le popup
+    }
+  }
+
+  // Pour login-join-button
+  if (loginJoinBtn) {
+    loginJoinBtn.addEventListener("click", openPopup);
+  }
+
+  // Pour tous les boutons avec la classe join-community-login
+  joinCommunityBtns.forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();       // empêche submit
+      openPopup();              // ouvre popup
     });
+  });
+
 });
+</script>
+
+<!-- script de button join community affichage poupup and hide modal -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+
+  // ID de ton modal Bootstrap à fermer
+  const applyModal = document.getElementById("classModal"); 
+
+  //  boutons dans le footer avec cette classe
+  const popupBtns = document.querySelectorAll(".join-community-login-popup");
+
+  function openPopupAndCloseModal() {
+
+    // Ouvrir le popup login
+    const toggle = document.querySelector('.login-toggle');
+    if (toggle) {
+      toggle.click();
+    }
+
+    // Fermer le modal
+    if (applyModal) {
+      const modalInstance = bootstrap.Modal.getInstance(applyModal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+  }
+
+  // l’événement sur tous les boutons
+  popupBtns.forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();      
+      openPopupAndCloseModal();
+    });
+  });
+
+});
+
 </script>
 <script>
   /* ===== Utilitaires prix ===== */
-  const formatPrice = (p) => (Number(p || 0) > 0 ? `${Number(p)} €` : 'Gratuit');
-
-  /* ===== Badges prix auto (selon data-price) ===== */
-  document.querySelectorAll('.class-card').forEach(card => {
-    const badge = card.querySelector('.price-badge');
-    if (badge) badge.textContent = formatPrice(card.dataset.price);
-  });
+document.querySelectorAll('.class-card').forEach(card => {
+  const badge = card.querySelector('.price-badge');
+  if (badge) badge.textContent = formatPrice(card.dataset.price);
+});
 
 
   /* ===== Scroll-to-top ===== */
@@ -511,9 +693,25 @@ document.addEventListener("DOMContentLoaded", function() {
         // Dates
         const startText = '<?php echo get_phrase("From"); ?>';
         const endText = '<?php echo get_phrase("to"); ?>';
-        const startDate = formatDate(card.dataset.start);
-        const endDate = formatDate(card.dataset.end);
-        modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
+
+        const startDate = (card.dataset.start && card.dataset.start !== '0000-00-00' && card.dataset.start !== '') 
+                  ? formatDate(card.dataset.start) 
+                  : null;
+
+        const endDate = (card.dataset.end && card.dataset.end !== '0000-00-00' && card.dataset.end !== '') 
+                        ? formatDate(card.dataset.end) 
+                        : null;
+
+        if (startDate && endDate) {
+          const startText = '<?php echo get_phrase("From"); ?>';
+          const endText = '<?php echo get_phrase("to"); ?>';
+          modal.querySelector('#classDates').parentElement.style.display = 'inline-block';
+          modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
+        } else {
+          modal.querySelector('#classDates').parentElement.style.display = 'none';
+        }
+        
+        //modal.querySelector('#classDates').textContent = `${startText} ${startDate} ${endText} ${endDate}`;
 
         // Nombre max
         const nombre_max = card.dataset.free;
