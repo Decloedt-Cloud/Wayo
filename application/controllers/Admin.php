@@ -198,7 +198,7 @@ class Admin extends CI_Controller
 				$allowed_methods_trial = ['dashboard', 'logout', 'language', 'subscription', 'payment', 'payment_success'];
 
 				if (!in_array($current_method, $allowed_methods_trial)) {
-                    die('test');
+                   
 					// Bloquer l'accès : rediriger vers le dashboard où un pop-up de paiement sera affiché
 					log_message('debug', "Admin construct - Access blocked for method '$current_method' (trial_expired: " . ($trial_expired ? 'true' : 'false') . ", subscription_expired: " . ($subscription_expired ? 'true' : 'false') . ")");
 					redirect(site_url('admin/dashboard'));
