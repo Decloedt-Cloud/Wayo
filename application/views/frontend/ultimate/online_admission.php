@@ -128,9 +128,366 @@
         border: 1px solid #ffe0a3;
         color: #7a4d00;
     }
+
+    /* onording popup */
+     /* Overlay */
+    .onb-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+      z-index: 99999;
+    }
+    .onb-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Modal wrapper */
+    .onb-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 100000;
+      padding: 1rem;
+    }
+    .onb-modal.active {
+      pointer-events: auto;
+    }
+
+    /* Card */
+    .onb-card {
+      background: #fff;
+      width: min(700px, 100%);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(20px) scale(0.98);
+      opacity: 0;
+      transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .onb-modal.active .onb-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    /* Close */
+    .onb-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      border: none;
+      background: #f3f4f6;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      color: #374151;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, color .2s;
+      z-index: 10;
+    }
+    .onb-close:hover {
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    /* Header */
+    .onb-header {
+      padding: 1.5rem 2rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .onb-brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #111827;
+      margin-left: 0.5rem;
+    }
+
+    .onb-progress {
+      height: 6px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      margin-top: 1.25rem;
+      overflow: hidden;
+    }
+    .onb-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #f47a1f;
+      border-radius: 10px;
+      transition: width .4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Body */
+    .onb-body {
+      padding: 2rem;
+      min-height: 200px;
+    }
+    .onb-step {
+      display: none;
+      animation: fadeIn .4s ease;
+    }
+    .onb-step.is-active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .onb-step h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 1rem;
+    }
+    .onb-step p {
+      font-size: 1.05rem;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    .onb-step ul {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        color: #4b5563;
+    }
+
+    /* Footer */
+    .onb-footer {
+      padding: 1.25rem 2rem;
+      border-top: 1px solid #f3f4f6;
+      background: #fff;
+    }
+
+    /* Buttons override */
+    .btn-primary-custom, .btn-outline-primary-custom {
+      padding: 0.75rem 1.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+    }
+
+    .btn-primary-custom {
+      background: #f47a1f;
+      border: 1px solid #f47a1f;
+      color: white;
+      box-shadow: 0 4px 6px rgba(244, 122, 31, 0.2);
+    }
+    .btn-primary-custom:hover {
+      background: #e06912;
+      border-color: #e06912;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(244, 122, 31, 0.3);
+      color:#fff;
+    }
+
+    .btn-outline-primary-custom {
+      background: transparent;
+      color: #f47a1f;
+      border: 1px solid #f47a1f;
+    }
+    .btn-outline-primary-custom:hover {
+      background: #fff2ea;
+      color: #e06912;
+      border-color: #e06912;
+    }
+    .btn-outline-primary-custom:disabled,
+    .btn-primary-custom:disabled {
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    /* Responsive Mobile */
+    @media (max-width: 576px) {
+        .onb-card {
+           width: 95%;
+           margin: 10px;
+        }
+        
+        .onb-header {
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .onb-body {
+            padding: 1.5rem;
+        }
+
+        .onb-footer {
+            flex-direction: column-reverse; /* Ignorer en bas */
+            gap: 12px;
+            align-items: stretch !important; /* Pleine largeur */
+        }
+
+        .onb-footer .d-flex {
+             width: 100%;
+             display: flex;
+             gap: 12px;
+        }
+        
+        .onb-footer .d-flex .btn {
+            flex: 1; /* Prev et Next prennent 50% chacun */
+        }
+
+        .onb-skip {
+            width: 100%;
+        }
+    }
+    /* ================= SUCCESS POPUP ================= */
+.success-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 7, 18, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100001;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* État visible */
+.success-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Card */
+.success-card {
+  background: #ffffff;
+  width: min(500px, 90vw);
+  padding: 3rem 2.5rem;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Animation d’entrée */
+.success-overlay.is-visible .success-card {
+  transform: scale(1) translateY(0);
+}
+
+/* Icone */
+.success-icon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.5rem;
+
+  background: #fff5ec; /* light orange */
+  color: #f47a1f;      /* orange */
+  border-radius: 28px; /* Squircle */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 2.5rem;
+  transform: rotate(-10deg);
+  animation: success-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Titre */
+.success-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e1e4b;
+}
+
+/* Texte */
+.success-card p {
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: #6b7280;
+  max-width: 400px;
+}
+
+/* Info Box */
+.success-info-box {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.success-info-icon {
+    font-size: 1.5rem;
+    color: #f47a1f;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+
+.success-info-text {
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.success-info-text strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* Animation icône */
+@keyframes success-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(-10deg);
+    opacity: 1;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .success-card {
+    padding: 2rem 1.5rem;
+    border-radius: 24px;
+  }
+  .success-card h2 {
+    font-size: 1.75rem;
+  }
+}
+
+
+
 </style>
 
-<main>
+<main class="bg-light">
     <!-- HERO -->
     <section class="hero">
         <div class="container hero-content py-5" data-animate>
@@ -139,7 +496,7 @@
         </div>
     </section>
     <section class="">
-        <div class="container py">
+        <div class="container py-5 mb-5">
             <!-- Stepper -->
             <ol class="stepper" role="list" aria-label="<?php echo get_phrase('Steps'); ?>">
                 <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
@@ -164,9 +521,9 @@
                     <div class="grid-2 mt-4">
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Name") ?> <span class="req">*</span></span>
-                            <input id="profileName" type="text" placeholder="<?php echo get_phrase('full_name'); ?>"
+                            <input id="profileName" type="text" placeholder="<?php echo get_phrase('Name'); ?>"
                                    class="form-control shadow-none rounded-end text-capitalize" name="name" required
-                                   data-msg="<?php echo get_phrase("Please enter your full name") ?>" data-error-class="u-has-error"
+                                   data-msg="<?php echo get_phrase("Please enter your name") ?>" data-error-class="u-has-error"
                                    data-success-class="u-has-success" aria-required="true" autocomplete="name">
                             <div class="error" data-for="profileName"></div>
                         </label>
@@ -502,11 +859,38 @@
             </form>
         </div>
     </section>
+    <!-- Overlay -->
+    <?php include 'partials/onboarding_community.php'; ?>
+    
+    <!--success overlay-->
+<div id="successOverlay" class="success-overlay" aria-hidden="true">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h2><?php echo get_phrase("Request_sent") ?>!</h2>
+            <p><?php echo get_phrase("Your_profile_and_your_community_have_been_successfully_created_on_Wayo.") ?></p>
+
+            <div class="success-info-box">
+                <div class="success-info-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div class="success-info-text">
+                    <?php echo get_phrase("You_will_receive_a_validation_email_within_a_maximum_of") ?> <strong><?php echo get_phrase("24 hours.") ?></strong> <?php echo get_phrase("to confirm your registration.") ?>
+                </div>
+            </div>
+
+            <button id="successBtn" type="button" class="btn btn-primary-custom w-100"><?php echo get_phrase("I_understand") ?></button>
+        </div>
+    </div>
+    
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <!-- Aperçu simple via jQuery (tu peux le garder si tu veux un preview rapide) -->
+
 <script>
     $(document).ready(function() {
         function setupUploader(inputId, previewId) {
@@ -758,13 +1142,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCurrencyUI() {
         if (!taxResSelect) return;
         const sel  = taxResSelect.value || '';
-        const code = sel === 'MA' ? 'MAD' : sel === 'UAE' ? 'AED' : 'EUR';
+        const code = sel === 'UAE' ? 'AED' : sel === 'EUR' ? 'EUR' : 'MAD';
 
         if (currencyHint)   currencyHint.textContent = code;
         if (currencyCodeEl) currencyCodeEl.value     = code;
 
         if (priceInput && !priceInput.disabled) {
-            priceInput.placeholder = `<?php echo get_phrase("price"); ?> (${code})`;
+            priceInput.placeholder = `<?php echo get_phrase("Price"); ?> (${code})`;
         }
     }
 
@@ -1122,11 +1506,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (data.status) {
-                toastr?.success(data.message);
+                // toastr?.success(data.message);
                 $('#resetBtn')?.click();
-                setTimeout(() => {
-                    location.href = '<?= site_url('/home/communities'); ?>';
-                }, 2000);
+                // Show success popup instead of auto-redirect
+                const overlay = document.getElementById('successOverlay');
+                if (overlay) overlay.classList.add('is-visible');
             } else {
                 toastr?.error(data.message || 'Error');
             }
@@ -1142,5 +1526,19 @@ document.addEventListener('DOMContentLoaded', function() {
     applyPriceRules();
     updateCurrencyUI();
     goTo(0);
+
+    // Success button redirect
+    const successBtn = document.getElementById('successBtn');
+    if (successBtn) {
+        successBtn.addEventListener('click', () => {
+             location.href = '<?= site_url('/home/communities'); ?>';
+        });
+    }
+
+    // Move success overlay to body to prevent z-index/clipping issues
+    const successOverlay = document.getElementById('successOverlay');
+    if (successOverlay) {
+        document.body.appendChild(successOverlay);
+    }
 });
 </script>
