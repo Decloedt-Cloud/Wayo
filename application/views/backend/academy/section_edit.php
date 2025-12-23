@@ -119,7 +119,7 @@
     
     <div class="section-info">
         <i class="fas fa-book"></i>
-        <span><?php echo get_phrase('course'); ?>: <strong><?php echo $course_details['title']; ?></strong></span>
+        <span><?php echo get_phrase('course'); ?>: <strong><?php echo html_escape($course_details['title']); ?></strong></span>
     </div>
     
     <div class="form-group">
@@ -129,7 +129,7 @@
         </label>
         <div class="input-icon-wrapper">
             <i class="fas fa-heading"></i>
-            <input class="form-control" type="text" name="title" id="title" value="<?php echo $section_details['title']; ?>" placeholder="<?php echo get_phrase('enter_section_title'); ?>" required autofocus>
+            <input class="form-control" type="text" name="title" id="title" value="<?php echo html_escape($section_details['title']); ?>" placeholder="<?php echo get_phrase('enter_section_title'); ?>" required autofocus>
         </div>
         <small class="text-muted"><?php echo get_phrase('provide_a_section_name'); ?></small>
     </div>

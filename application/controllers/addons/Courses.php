@@ -118,17 +118,17 @@ class Courses extends CI_Controller {
     // Purify HTML
     $clean = $this->purifier->purify($html);
     
-    // Add lazy loading to images
+    // Add lazy loading to images that don't already have a loading attribute
     $clean = preg_replace(
-      '/<img((?!loading=)[^>]*)>/i', 
-      '<img$1 loading="lazy">', 
+      '/<img(?![^>]*\sloading=)([^>]*)>/i',
+      '<img$1 loading="lazy">',
       $clean
     );
     
-    // Add lazy loading to iframes (videos)
+    // Add lazy loading to iframes (videos) that don't already have a loading attribute
     $clean = preg_replace(
-      '/<iframe((?!loading=)[^>]*)>/i', 
-      '<iframe$1 loading="lazy">', 
+      '/<iframe(?![^>]*\sloading=)([^>]*)>/i',
+      '<iframe$1 loading="lazy">',
       $clean
     );
     
@@ -719,7 +719,7 @@ class Courses extends CI_Controller {
       $file_path = $upload_path . $upload_data['file_name'];
       
       // Compress and resize image
-      $this->compressImage($file_path, $upload_data['image_type']);
+      $this->compressImage($file_path, $upload_data['file_type']);
       
       $file_url = base_url($upload_dir . $upload_data['file_name']);
       
@@ -745,8 +745,18 @@ class Courses extends CI_Controller {
   private function compressImage($file_path, $image_type) {
     if (!file_exists($file_path)) return;
     
+    // Check if GD library and getimagesize function are available
+    if (!function_exists('imagecreatetruecolor') || !function_exists('getimagesize')) {
+      log_message('debug', 'GD library or getimagesize not available, skipping image compression');
+      return;
+    }
+    
     // Get image info
     list($width, $height) = getimagesize($file_path);
+    if ($width === false || $height === false) {
+      log_message('debug', 'Failed to get image dimensions, skipping compression');
+      return;
+    }
     
     // Max dimensions
     $max_width = 1920;

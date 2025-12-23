@@ -2051,8 +2051,8 @@ public function get_unread_messages_count($wayo_user_id)//user_model
  
     $sql = "
         SELECT COUNT(*) AS count
-        FROM humhub.message m
-        JOIN humhub.user_message um ON um.message_id = m.id
+        FROM humhub_local.message m
+        JOIN humhub_local.user_message um ON um.message_id = m.id
         WHERE um.user_id = ?
           AND (m.updated_at > um.last_viewed OR um.last_viewed IS NULL)
           AND m.updated_by != ?

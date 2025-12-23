@@ -218,7 +218,7 @@
                             <div class="section-info">
                                 <i class="fas fa-folder section-icon"></i>
                                 <span class="section-label"><?php echo get_phrase('section'); ?> <?php echo $section_counter; ?>:</span>
-                                <span class="section-name" id="section-name-<?php echo $section['id']; ?>" ondblclick="event.stopPropagation(); startEditSection(<?php echo $section['id']; ?>)"><?php echo $section['title']; ?></span>
+                                <span class="section-name" id="section-name-<?php echo $section['id']; ?>" ondblclick="event.stopPropagation(); startEditSection(<?php echo $section['id']; ?>)"><?php echo html_escape($section['title']); ?></span>
                                 <input type="text" class="section-name-input" id="section-input-<?php echo $section['id']; ?>" value="<?php echo htmlspecialchars($section['title']); ?>" style="display: none;" onkeydown="handleSectionEditKeydown(event, <?php echo $section['id']; ?>)" onblur="saveSectionName(<?php echo $section['id']; ?>)">
                             </div>
                             <div class="section-actions">
@@ -248,7 +248,7 @@
                                 <div class="lesson-info" onclick="<?php echo $lesson['lesson_type'] == 'quiz' ? 'openQuizPreview('.$lesson['id'].', '.$section['id'].', \''.addslashes($lesson['title']).'\')' : 'openLessonPreview('.$lesson['id'].', '.$section['id'].', \''.addslashes($lesson['title']).'\')'; ?>">
                                     <i class="fas <?php echo $lesson['lesson_type'] == 'quiz' ? 'fa-circle-question' : 'fa-file-lines'; ?> lesson-icon"></i>
                                     <span class="lesson-label"><?php echo $lesson['lesson_type'] == 'quiz' ? get_phrase('quiz') : get_phrase('lesson'); ?> <?php echo $lesson_counter; ?>:</span>
-                                    <span class="lesson-name"><?php echo $lesson['title']; ?></span>
+                                    <span class="lesson-name"><?php echo html_escape($lesson['title']); ?></span>
                                 </div>
                                 <div class="lesson-actions">
                                     <button type="button" class="btn-icon btn-delete-lesson" onclick="event.stopPropagation(); confirmDelete('<?php echo site_url('addons/courses/lessons/'.$course['id'].'/delete/'.$lesson['id']); ?>')" title="<?php echo get_phrase('delete'); ?>">

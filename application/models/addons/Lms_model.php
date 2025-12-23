@@ -452,7 +452,7 @@ class Lms_model extends CI_Model
         
         $data['title'] = html_escape($this->input->post('title'));
         $data['course_id'] = $course_id;
-        $data['orders'] = ($max_order !== null) ? $max_order + 1 : 0;
+        $data['orders'] = ($max_order !== null) ? $max_order + 1 : 1;
         $this->db->insert('course_section', $data);
         $section_id = $this->db->insert_id();
 

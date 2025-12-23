@@ -85,7 +85,7 @@
                                                     <label class="form-label fw-medium" for="course_title">
                                                         <?php echo get_phrase('Course title'); ?> <span class="text-danger">*</span>
                                                     </label>
-                                                    <input type="text" value="<?php echo $course['title']; ?>" class="form-control form-control-lg border-0 bg-light" id="course_title" name="title" placeholder="<?php echo get_phrase('Enter an engaging course title'); ?>" required>
+                                                    <input type="text" value="<?php echo html_escape($course['title']); ?>" class="form-control form-control-lg border-0 bg-light" id="course_title" name="title" placeholder="<?php echo get_phrase('Enter an engaging course title'); ?>" required>
                                                     <div class="form-text text-secondary small mt-2">
                                                         <?php echo get_phrase('A compelling title helps attract more students'); ?>
                                                     </div>
