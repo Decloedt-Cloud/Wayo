@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<!-- CSRF Token -->
+<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" id="csrf_token">
 <!-- start page title -->
 <div class="col-xl-12">
     <div class="header-card">
@@ -106,26 +108,42 @@ function getExportUrl(type) {
   var dateRange = $('#selectedValue').text();
   var selectedClass = $('#class_id_invoice').val();
   var selectedStatus = $('#status_select').val();
-  // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
-  var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-  var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+  
+  var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+  var csrfHash = $('#csrf_token').val();
+  
+  if (!csrfHash) {
+    console.error('CSRF token not found');
+    return;
+  }
+  
+  var postData = {
+    type: type, 
+    dateRange: dateRange, 
+    selectedClass: selectedClass, 
+    selectedStatus: selectedStatus
+  };
+  postData[csrfName] = csrfHash;
+  
   $.ajax({
-    type : 'post',
+    type: 'POST',
     url: url,
-    data : {type : type, dateRange : dateRange, selectedClass : selectedClass, selectedStatus : selectedStatus , [csrfName]: csrfHash},
-    dataType: 'json', // Important pour que la réponse soit interprétée comme un JSON
-
-    success : function(response) {
-      if (type == 'csv') {
-        window.open(response.url, '_self');
-      }else{
-        window.open(response.url, '_blank');
+    data: postData,
+    dataType: 'json',
+    success: function(response) {
+      if (response && response.url) {
+        if (type == 'csv') {
+          window.open(response.url, '_self');
+        } else {
+          window.open(response.url, '_blank');
+        }
+        if (response.csrf && response.csrf.csrfHash) {
+          $('#csrf_token').val(response.csrf.csrfHash);
+        }
       }
-
-          // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-          var newCsrfName = response.csrf.csrfName;
-        var newCsrfHash = response.csrf.csrfHash;
-        $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+    },
+    error: function(xhr, status, error) {
+      console.error('Export error:', status, error);
     }
   });
 }

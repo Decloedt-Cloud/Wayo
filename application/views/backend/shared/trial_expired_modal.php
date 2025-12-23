@@ -9,6 +9,11 @@ $__is_member = ($__current_role === 'student' || $__current_role === 'member');
 $__is_mentor = ($__current_role === 'teacher' || $__current_role === 'mentor');
 $__trial_expired = false;
 
+// Utiliser la variable du contrôleur si disponible (priorité)
+if (isset($this->trial_expired) && $this->trial_expired === true) {
+    $__trial_expired = true;
+}
+
 if (in_array($__current_role, $__trial_roles, true)) {
     $__school_id = $this->session->userdata('active_school_id');
     if (!$__school_id) {
@@ -18,11 +23,21 @@ if (in_array($__current_role, $__trial_roles, true)) {
     if ($__school_id) {
         $__school = $this->db->get_where('schools', ['id' => $__school_id])->row_array();
         if ($__school) {
-            $__now       = time();
-            $__is_trial  = isset($__school['is_trial']) ? (int) $__school['is_trial'] : 0;
-            $__is_paid   = isset($__school['is_paid']) ? (int) $__school['is_paid'] : 0;
-            $__trial_end = isset($__school['trial_end']) ? (int) $__school['trial_end'] : 0;
+            $__now             = time();
+            $__is_trial        = isset($__school['is_trial']) ? (int) $__school['is_trial'] : 0;
+            $__is_paid         = isset($__school['is_paid']) ? (int) $__school['is_paid'] : 0;
+            $__trial_end       = isset($__school['trial_end']) ? (int) $__school['trial_end'] : 0;
+            $__subscription_end = isset($__school['subscription_end']) ? (int) $__school['subscription_end'] : 0;
+            
+            // Vérifier si l'essai de 14 jours est expiré
             if ($__is_trial === 1 && $__is_paid === 0 && $__trial_end > 0 && $__now > $__trial_end) {
+                $__trial_expired = true;
+            }
+            
+            // Vérifier si l'abonnement mensuel est expiré
+            // Si subscription_end existe et est passé, l'abonnement est expiré (peu importe is_paid)
+            // On vérifie seulement si l'école n'est pas en période d'essai (is_trial = 0)
+            if ($__is_trial === 0 && $__subscription_end > 0 && $__now > $__subscription_end) {
                 $__trial_expired = true;
             }
         }
@@ -30,6 +45,38 @@ if (in_array($__current_role, $__trial_roles, true)) {
 }
 
 $__community_payment_url = site_url('home/communities');
+
+// Try to point admins to the unpaid community invoice payment page when trial expired
+// Falls back to community list if none is found.
+// IMPORTANT: we only read existing invoices here to avoid duplicate creations.
+$__payment_url = $__community_payment_url;
+if ($__school_id && $__trial_expired) {
+    // Chercher d'abord une facture avec payment_type = subscription_admin
+    $this->db->order_by('id', 'DESC');
+    $this->db->where('school_id', $__school_id);
+    $this->db->where('payment_type', 'subscription_admin');
+    $this->db->where('status', 'unpaid');
+    $unpaid_invoice = $this->db->get('invoices')->row_array();
+
+    // Si aucune facture subscription_admin trouvée, chercher une autre facture impayée
+    if (empty($unpaid_invoice['id'])) {
+        $this->db->order_by('id', 'DESC');
+        $this->db->where('school_id', $__school_id);
+        $this->db->where('status', 'unpaid');
+        $other_invoice = $this->db->get('invoices')->row_array();
+        if (!empty($other_invoice['id'])) {
+            $unpaid_invoice = $other_invoice;
+        }
+    }
+    // Déterminer l'URL de paiement si une facture impayée existe
+    if (!empty($unpaid_invoice['id'])) {
+        if (isset($unpaid_invoice['payment_type']) && $unpaid_invoice['payment_type'] === 'subscription_admin') {
+            $__payment_url = site_url('admin/payment/subscription_admin/' . $unpaid_invoice['id']);
+        } else {
+            $__payment_url = site_url('student/payment/community/' . $unpaid_invoice['id']);
+        }
+    }
+}
 ?>
 
 <?php if ($__trial_expired): ?>
@@ -130,8 +177,14 @@ $__community_payment_url = site_url('home/communities');
         <h5 class="modal-title"><?php echo get_phrase('your_trial_has_ended'); ?></h5>
       </div>
       <div class="modal-body text-center">
-        <p><?php echo get_phrase('enjoy_a_14-day_free_trial.'); ?></p>
+        <p><?php // echo get_phrase('enjoy_a_14-day_free_trial.'); ?></p>
         <p class="mb-0"><strong><?php echo get_phrase('to_continue_using_your_community_you_need_to_activate_your_subscription.'); ?></strong></p>
+        <?php if ($__is_mentor): ?>
+        <div class="alert alert-warning mt-3 mb-0">
+          <i class="mdi mdi-information"></i>
+          <strong><?php echo get_phrase('note'); ?>:</strong> <?php echo get_phrase('as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.'); ?>
+        </div>
+        <?php endif; ?>
         <div class="trial-community-wrapper text-start">
           <label class="form-label mb-2">
             <?php echo get_phrase('community'); ?>
@@ -148,9 +201,14 @@ $__community_payment_url = site_url('home/communities');
           <?php echo get_phrase('logout'); ?>
         </button>
         <?php if (!$__is_member && !$__is_mentor): ?>
-        <a href="<?php echo $__community_payment_url; ?>" class="btn btn-primary" id="paymentPageBtn">
-          <?php echo get_phrase('go_to_payment_page'); ?>
-        </a>
+
+                                          <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
+         <button type="button"
+                 class="btn btn-primary"
+                 id="paymentPageBtn"
+                 data-payment-url="<?php echo $__payment_url; ?>">
+          <?php echo htmlspecialchars(get_phrase("go_to_payment_page")); ?>
+         </button>
         <?php endif; ?>
       </div>
     </div>
@@ -330,6 +388,32 @@ $__community_payment_url = site_url('home/communities');
 
     if (trialCommunityList) {
       populateTrialCommunityList();
+    }
+
+    // Redirection vers la page de paiement dédiée (communautés)
+    var paymentBtn = document.getElementById('paymentPageBtn');
+    if (paymentBtn) {
+      paymentBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var target = this.getAttribute('data-payment-url');
+        var communityUrl = "<?php echo $__community_payment_url; ?>";
+        console.log('Payment URL:', target);
+        console.log('Community URL:', communityUrl);
+        
+        if (target && target.length > 0 && target !== communityUrl && target.indexOf('admin/payment') !== -1) {
+          // Forcer la redirection vers la page de paiement admin
+          console.log('Redirecting to:', target);
+          window.location.href = target;
+        } else if (target && target.length > 0 && target !== communityUrl) {
+          // Autre type de facture
+          console.log('Redirecting to:', target);
+          window.location.href = target;
+        } else {
+          console.error('Invalid payment URL:', target);
+          alert("<?php echo get_phrase('payment_url_not_found') ?: 'URL de paiement non trouvée'; ?>");
+        }
+      });
     }
 
     function switchCommunityRole(schoolId, role) {

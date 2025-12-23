@@ -80,9 +80,9 @@
                         <b><?php echo get_phrase('student_fee'); ?></b> <br/>
                         <?php echo get_phrase('created_at').' : '.date('D, d-M-Y', $invoice_details['created_at']); ?>
                       </td>
-                      <td><?php echo currency($invoice_details['total_amount']); ?></td>
-                      <td><?php echo currency($invoice_details['paid_amount']); ?></td>
-                      <td class="text-end"><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></td>
+                      <td><?php echo $invoice_details['total_amount'].' '.$invoice_details['currency']; ?></td>
+                      <td><?php echo $invoice_details['paid_amount'].' '.$invoice_details['currency']; ?></td>
+                      <td class="text-end"><?php echo $invoice_details['total_amount'] - $invoice_details['paid_amount'].' '.$invoice_details['currency']; ?></td>
                     </tr>
                   </tbody>
                 </table>
@@ -102,9 +102,9 @@
             </div> <!-- end col -->
             <div class="col-sm-6">
               <div class="float-end mt-3 mt-sm-0">
-                <p><b><?php echo get_phrase('total_amount'); ?> :&nbsp;</b> <span class="float-end"><?php echo currency($invoice_details['total_amount']); ?></span></p>
-                <p><b><?php echo get_phrase('due_amount'); ?> : </b> <span class="float-end"><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></span></p>
-                <h3><?php echo currency($invoice_details['total_amount'] - $invoice_details['paid_amount']); ?></h3>
+                <p><b><?php echo get_phrase('total_amount'); ?> :&nbsp;</b> <span class="float-end"><?php echo $invoice_details['total_amount'].' '.$invoice_details['currency']; ?></span></p>
+                <p><b><?php echo get_phrase('due_amount'); ?> : </b> <span class="float-end"><?php echo $invoice_details['total_amount'] - $invoice_details['paid_amount'].' '.$invoice_details['currency']; ?></span></p>
+                <h3><?php echo $invoice_details['total_amount'] - $invoice_details['paid_amount'].' '.$invoice_details['currency']; ?></h3>
               </div>
               <div class="clearfix"></div>
             </div> <!-- end col -->

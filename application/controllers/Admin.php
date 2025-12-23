@@ -33,6 +33,7 @@ class Admin extends CI_Controller
 		$this->load->model('User_model', 'user_model');
 		$this->load->model('Settings_model', 'settings_model');
 		$this->load->model('Payment_model', 'payment_model');
+		$this->load->model('addons/Lms_model','lms_model');
 		$this->load->model('Email_model', 'email_model');
 		$this->load->model('Addon_model', 'addon_model');
 		$this->load->model('Frontend_model', 'frontend_model');
@@ -72,33 +73,137 @@ class Admin extends CI_Controller
 				}
 			}
 
-			// ---- Gestion de la période d’essai de 14 jours pour l’admin de la communauté ----
-			// On considère qu’une communauté est en essai si is_trial = 1 et is_paid = 0
+			// ---- Gestion de la période d'essai de 14 jours pour l'admin de la communauté ----
+			// On considère qu'une communauté est en essai si is_trial = 1 et is_paid = 0
 			// et que la date actuelle est supérieure à trial_end.
 			$trial_expired = false;
+			$subscription_expired = false;
 			if ($school) {
 				$now         = time();
 				$is_trial    = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
 				$is_paid     = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;
 				$trial_end   = isset($school['trial_end']) ? (int)$school['trial_end'] : 0;
+				$subscription_end = isset($school['subscription_end']) ? (int)$school['subscription_end'] : 0;
 
+				// DEBUG: Log pour vérifier les valeurs
+				log_message('debug', "Admin construct - school_id: $school_id, is_paid: $is_paid, subscription_end: $subscription_end, now: $now");
+				if ($subscription_end > 0) {
+					log_message('debug', "Admin construct - subscription_end date: " . date('Y-m-d H:i:s', $subscription_end) . ", now date: " . date('Y-m-d H:i:s', $now));
+				}
+				
+				// DEBUG TEMPORAIRE: Afficher les valeurs pour debug
+				if ($current_method == 'dashboard' && isset($_GET['debug_subscription'])) {
+					echo "<pre>DEBUG SUBSCRIPTION:\n";
+					echo "school_id: $school_id\n";
+					echo "is_trial: $is_trial\n";
+					echo "is_paid: $is_paid\n";
+					echo "subscription_end: $subscription_end (" . ($subscription_end > 0 ? date('Y-m-d H:i:s', $subscription_end) : 'NULL/0') . ")\n";
+					echo "now: $now (" . date('Y-m-d H:i:s', $now) . ")\n";
+					echo "now > subscription_end: " . ($now > $subscription_end ? 'YES' : 'NO') . "\n";
+					echo "subscription_expired will be: " . ($is_trial === 0 && $subscription_end > 0 && $now > $subscription_end ? 'YES' : 'NO') . "\n";
+					echo "</pre>";
+				}
+
+				// Vérifier si l'essai de 14 jours est expiré
 				if ($is_trial === 1 && $is_paid === 0 && $trial_end > 0 && $now > $trial_end) {
 					$trial_expired = true;
+					log_message('debug', "Admin construct - Trial expired detected");
+				}
+
+			// Vérifier si l'abonnement mensuel est expiré
+			// Si subscription_end existe et est passé, l'abonnement est expiré (peu importe is_paid)
+			// On vérifie seulement si l'école n'est pas en période d'essai (is_trial = 0)
+			// Car si is_trial = 1, on utilise trial_end pour la vérification
+			if ($is_trial === 0 && $subscription_end > 0 && $now > $subscription_end) {
+				$subscription_expired = true;
+				log_message('debug', "Admin construct - Subscription expired detected: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") < now (" . date('Y-m-d H:i:s', $now) . ")");
+			} elseif ($is_trial === 0 && $subscription_end > 0 && $now <= $subscription_end) {
+				// Log pour confirmer que l'abonnement est encore valide
+				log_message('debug', "Admin construct - Subscription still valid: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") >= now (" . date('Y-m-d H:i:s', $now) . ")");
+			}
+			}
+
+			// Créer automatiquement une facture si l'essai ou l'abonnement est expiré
+			if (($trial_expired || $subscription_expired) && $school_id) {
+				// Si l'abonnement est expiré, remettre is_paid à 0 pour refléter l'état bloqué
+				if ($subscription_expired && $is_paid === 1) {
+					log_message('debug', "Admin construct - Updating is_paid to 0 for expired subscription");
+					$this->db->where('id', $school_id);
+					$this->db->update('schools', [
+						'is_paid'     => 0,
+						'is_trial' => 1, 
+						'updated_at'  => time(),
+					]);
+					// Mettre à jour la variable locale aussi
+					$is_paid = 0;
+				}
+
+				// Déterminer la date de référence pour créer une nouvelle facture
+				// Pour l'essai expiré : utiliser trial_end
+				// Pour l'abonnement expiré : utiliser subscription_end
+				$reference_date = 0;
+				if ($subscription_expired && $subscription_end > 0) {
+					$reference_date = $subscription_end;
+				} elseif ($trial_expired && $trial_end > 0) {
+					$reference_date = $trial_end;
+				}
+
+				// Vérifier s'il existe déjà une facture impayée créée APRÈS l'expiration
+				$this->db->order_by('id', 'DESC');
+				$this->db->where('school_id', $school_id);
+				$this->db->where('payment_type', 'subscription_admin');
+				$this->db->where('status', 'unpaid');
+				if ($reference_date > 0) {
+					// Ne prendre que les factures créées après l'expiration
+					$this->db->where('created_at >=', $reference_date);
+				}
+				$existing_invoice = $this->db->get('invoices')->row_array();
+
+				if ($existing_invoice) {
+					// Une facture impayée existe déjà créée après l'expiration, on ne crée pas de doublon
+					log_message('debug', "Admin construct - Invoice already exists (ID: " . $existing_invoice['id'] . ") created after expiration");
+					// Si la facture n'a pas de payment_type, l'aligner pour éviter les doublons futurs
+					if (empty($existing_invoice['payment_type'])) {
+						$this->db->where('id', $existing_invoice['id']);
+						$this->db->update('invoices', ['payment_type' => 'subscription_admin']);
+					}
+				} else {
+					// Créer une nouvelle facture car aucune facture impayée n'existe après l'expiration
+					log_message('debug', "Admin construct - Creating new subscription_admin invoice for school_id: $school_id");
+					$school_name = isset($school['name']) ? $school['name'] : 'Community';
+					$invoice_data = [
+						'title' => $school_name . ' - Monthly Subscription',
+						'total_amount' => 790, // Montant par défaut, peut être ajusté
+						'payment_type' => 'subscription_admin',
+						'status' => 'unpaid',
+						'school_id' => $school_id,
+						'session' => active_session(),
+						'created_at' => time(), // Utiliser time() au lieu de strtotime pour avoir le timestamp exact
+						'student_id' => null // Pas de student_id pour les abonnements admin
+					];
+					$this->db->insert('invoices', $invoice_data);
+					$new_invoice_id = $this->db->insert_id();
+					log_message('debug', "Admin construct - New invoice created with ID: $new_invoice_id");
 				}
 			}
 
-			// Partage l’info avec les vues
-			$this->trial_expired = $trial_expired;
+			// Partage l'info avec les vues
+			$this->trial_expired = $trial_expired || $subscription_expired;
 			$this->school_data   = $school;
 
-			// Si l’essai est expiré et non payé, on limite les méthodes autorisées
-			if ($trial_expired) {
+			// Si l'essai ou l'abonnement est expiré, on bloque l'accès
+			if ($trial_expired || $subscription_expired) {
+               
 				// Laisser accès uniquement au dashboard, au logout et à la page de paiement (si définie)
-				$allowed_methods_trial = ['dashboard', 'logout', 'language', 'subscription', 'payment'];
+				$allowed_methods_trial = ['dashboard', 'logout', 'language', 'subscription', 'payment', 'payment_success'];
 
 				if (!in_array($current_method, $allowed_methods_trial)) {
-					// Rediriger vers le dashboard où un pop-up de paiement sera affiché
+                   
+					// Bloquer l'accès : rediriger vers le dashboard où un pop-up de paiement sera affiché
+					log_message('debug', "Admin construct - Access blocked for method '$current_method' (trial_expired: " . ($trial_expired ? 'true' : 'false') . ", subscription_expired: " . ($subscription_expired ? 'true' : 'false') . ")");
 					redirect(site_url('admin/dashboard'));
+				} else {
+					log_message('debug', "Admin construct - Access allowed for method '$current_method' (trial/subscription expired but method is in allowed list)");
 				}
 			}
 		}
@@ -588,7 +693,482 @@ class Admin extends CI_Controller
 		echo json_encode($csrf);
 	}
 
+    public function subscription_admin($param1 = "", $school_id = "")
+    {
+  
+     
+      if ($param1 == 'assigned') {
+          
+       // Stocker les données de l'inscription dans la session pour un accès ultérieur
 
+          $data['session'] = active_session();
+      
+            $this->session->set_userdata('enrolment_data', $data);
+  
+  
+          $num_rows_invoices = $this->db->get_where('invoices', array('payment_type' => 'subscription_admin','student_id' => $data['student_id']))->num_rows();
+          // print_r($num_rows_invoices);die;
+          if($num_rows_invoices == 0){
+              $name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
+              $data_invoice['title'] = $name." - Subscription " ;
+              $data_invoice['total_amount'] = "790";
+            //   $data_invoice['currency'] = $data['currency']; // ADD THIS LINE
+              $data_invoice['payment_type'] = "subscription_admin";
+              $data_invoice['status'] = "unpaid";
+              $data_invoice['school_id'] = $school_id;
+              $data_invoice['session'] = $data['session'];
+              $data_invoice['created_at'] = strtotime(date('d-M-Y'));
+              $this->db->insert('invoices', $data_invoice);
+              $invoice_id = $this->db->insert_id();
+          }else{
+            //   $invoice_id = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->row('id');
+          }
+  
+  
+        redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+  
+      //   $this->session->set_flashdata('flash_message', get_phrase('admission_request_has_been_updated'));
+      //   redirect(site_url('addons/courses'), 'refresh');
+      }
+    }
+  
+	public function payment($param1 = "",$invoice_id = ""){
+  
+        $page_data['page_title'] = 'payment_gateway';
+        $page_data['type'] = $param1;
+        
+        // L'invoice_id peut être dans $param1 ou $invoice_id selon la route
+        if (empty($invoice_id) && !empty($param1) && is_numeric($param1)) {
+            $invoice_id = $param1;
+        }
+        
+        // Vérifier que l'invoice_id est valide
+        if (empty($invoice_id) || !is_numeric($invoice_id)) {
+            show_error('Invalid invoice ID');
+            return;
+        }
+        
+        // Get invoice details by ID
+        $page_data['invoice_details'] = $this->crud_model->get_invoice_by_id($invoice_id);
+        
+        // Vérifier que la facture existe
+        if (empty($page_data['invoice_details'])) {
+            show_error('Invoice not found');
+            return;
+        }
+        // Pass invoice ID to view
+        $page_data['invoice_id'] = $invoice_id;
+
+        // ========== CHECK INVOICE STATUS ==========
+        // If invoice is paid, redirect or show a different view
+        if ($page_data['invoice_details']['status'] == 'paid') {
+            // Option 1: Redirect to a different page (e.g., invoice view page)
+            redirect('/Student/invoice');
+        }
+        
+        // Load user details based on invoice
+        // For subscription_admin invoices, use the logged-in admin user
+        $student_id = $page_data['invoice_details']['student_id'];
+        if (empty($student_id) && isset($page_data['invoice_details']['payment_type']) && $page_data['invoice_details']['payment_type'] === 'subscription_admin') {
+            // Use the logged-in admin user for subscription_admin invoices
+            $student_id = $this->session->userdata('user_id');
+        }
+        $page_data['user_details'] = $this->db->get_where('users', ['id' => $student_id])->row_array();
+
+        // Get school ID from invoice or session
+        $school_id = $page_data['invoice_details']['school_id'];
+        if (empty($school_id)) {
+            $school_id = $this->session->userdata('payment_school_id');
+        }
+        if (empty($school_id)) {
+            $school_id = $this->session->userdata('school_id');
+        }
+        $page_data['school'] = $this->db->get_where('schools', ['id' => $school_id])->row(); // Pass to view
+
+        
+        // Fetch invoice from database (alternative method)
+        $invoice = $this->db->get_where('invoices', ['id' => $this->uri->segment(4)])->row();
+        
+        // Set the total amount to pay and currency
+        $page_data['amount_to_pay'] = $page_data['invoice_details']['total_amount'];
+        $page_data['currency'] = $page_data['invoice_details']['currency'];
+
+        
+
+            // Load community name (from school table)
+            $school_id = $page_data['invoice_details']['school_id'];
+            $community = $this->db->get_where('schools', ['id' => $school_id])->row();
+            $page_data['community_name'] = $community ? $community->name : "";
+       
+        // ========== PAYMENT GATEWAY SETTINGS ==========
+
+        
+        // Get payment settings from database
+        $school_id = $page_data['invoice_details']['school_id'];
+        
+        // Query Stripe settings
+
+        $stripe_row = $this->db->get_where('payment_settings', [
+            'school_id' => 1,
+            'key' => 'stripe_settings'
+        ])->row();
+
+        $paypal_row = $this->db->get_where('payment_settings', [
+            'school_id' => 1,
+            'key' => 'paypal_settings'
+        ])->row();
+
+
+        // Handle JSON decoding - check if already decoded or needs decoding
+        if ($stripe_row && is_string($stripe_row->value)) {
+            $stripe = json_decode(trim($stripe_row->value));
+        } elseif ($stripe_row && is_object($stripe_row->value)) {
+            $stripe = $stripe_row->value;
+        } else {
+            $stripe = []; // Default empty array
+        }
+
+        if ($paypal_row && is_string($paypal_row->value)) {
+                $paypal = json_decode(trim($paypal_row->value));
+        } elseif ($paypal_row && is_object($paypal_row->value)) {
+                $paypal = $paypal_row->value;
+        } else {
+                $paypal = []; // Default empty array
+        }
+
+        // Convert to array if needed for consistent access
+        $stripe = is_object($stripe) ? [$stripe] : (array)$stripe;
+        $paypal = is_object($paypal) ? [$paypal] : (array)$paypal;
+
+
+        
+        // ========== STRIPE SETTINGS ==========
+        $stripe_test_mode = $stripe[0]->stripe_mode ?? 'on';
+        
+        if ($stripe_test_mode == 'on') {
+            $page_data['stripe_public_key'] = $stripe[0]->stripe_test_public_key ?? '';
+            $page_data['stripe_private_key'] = $stripe[0]->stripe_test_secret_key ?? '';
+        } else {
+            $page_data['stripe_public_key'] = $stripe[0]->stripe_live_public_key ?? '';
+            $page_data['stripe_private_key'] = $stripe[0]->stripe_live_secret_key ?? '';
+        }
+        
+        // Chaque mode de paiement a sa propre devise
+        $page_data['stripe_currency'] = $stripe[0]->stripe_currency ?? 'USD';
+        $page_data['stripe_enabled'] = !empty($page_data['stripe_private_key']) && !empty($page_data['stripe_public_key']);
+        
+        // ========== PAYPAL SETTINGS ==========
+        $page_data['paypal_mode'] = isset($paypal[0]->paypal_mode) ? $paypal[0]->paypal_mode : 'sandbox';
+        $page_data['paypal_client_id_sandbox'] = isset($paypal[0]->paypal_client_id_sandbox) ? $paypal[0]->paypal_client_id_sandbox : '';
+        $page_data['paypal_client_id_production'] = isset($paypal[0]->paypal_client_id_production) ? $paypal[0]->paypal_client_id_production : '';
+        // PayPal a sa propre devise configurée
+        $page_data['paypal_currency'] = isset($paypal[0]->paypal_currency) ? $paypal[0]->paypal_currency : 'USD';
+        
+        // Determine PayPal enabled status
+        if ($page_data['paypal_mode'] == 'sandbox') {
+            $page_data['paypal_enabled'] = !empty($page_data['paypal_client_id_sandbox']);
+        } else {
+            $page_data['paypal_enabled'] = !empty($page_data['paypal_client_id_production']);
+        }
+
+        // Load payment gateway view
+        $this->load->view('backend/payment_gateway/index', $page_data);
+}
+
+	public function payment_success($payment_method = "", $invoice_id = "", $amount_paid = "", $reference = "") {
+		// Vérifier l'authentification
+		if ($this->session->userdata('admin_login') != 1) {
+			redirect(site_url('login'), 'refresh');
+			return;
+		}
+
+		// Récupérer les détails de la facture
+		$invoice_details = $this->crud_model->get_invoice_by_id($invoice_id);
+		
+		if (empty($invoice_details)) {
+			log_message('error', "Tentative de paiement pour une facture inexistante: #{$invoice_id}");
+			$this->session->set_flashdata('error_message', get_phrase('invalid_invoice'));
+			redirect(site_url('admin/dashboard'), 'refresh');
+			return;
+		}
+
+		// ========== SÉCURITÉ: Vérifier que la facture n'est pas déjà payée ==========
+		if ($invoice_details['status'] === 'paid') {
+			log_message('warning', "Tentative de double paiement pour facture #{$invoice_id}");
+			$this->session->set_flashdata('error_message', get_phrase('invoice_already_paid'));
+			redirect(site_url('admin/dashboard'), 'refresh');
+			return;
+		}
+
+		// ========== SÉCURITÉ: Utiliser le montant de la BDD, pas celui du client ==========
+		$secure_amount = (float) $invoice_details['total_amount'];
+		$client_amount = (float) $amount_paid;
+		
+		// Tolérance de 0.01 pour les erreurs d'arrondi
+		if (!empty($amount_paid) && abs($secure_amount - $client_amount) > 0.01) {
+			log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}");
+			$this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
+			redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+			return;
+		}
+		
+		// Utiliser le montant sécurisé de la BDD
+		$amount_paid = $secure_amount;
+		$currency = $invoice_details['currency'] ?? 'USD';
+
+		$payment_status = false;
+		
+		// Traiter le paiement selon la méthode
+		if ($payment_method == 'stripe') {
+			$stripe_settings = get_payment_settings('stripe_settings', $invoice_details['school_id']);
+			$stripe = json_decode($stripe_settings);
+			$currency = $stripe[0]->stripe_currency ?? $currency;
+			
+			// Convertir en tableau si nécessaire
+			if (is_object($stripe)) {
+				$stripe = [$stripe];
+			} elseif (!is_array($stripe)) {
+				$stripe = [];
+			}
+			
+			$token_id = $this->input->post('stripeToken');
+			
+			// Vérifier que le token Stripe est présent
+			if (empty($token_id)) {
+				log_message('error', "Token Stripe manquant pour facture #{$invoice_id}");
+				$this->session->set_flashdata('error_message', get_phrase('payment_error'));
+				redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+				return;
+			}
+			
+			$stripe_test_mode = isset($stripe[0]) && isset($stripe[0]->stripe_mode) ? $stripe[0]->stripe_mode : 'on';
+			
+			if ($stripe_test_mode == 'on') {
+				$secret_key = isset($stripe[0]) ? ($stripe[0]->stripe_test_secret_key ?? '') : '';
+			} else {
+				$secret_key = isset($stripe[0]) ? ($stripe[0]->stripe_live_secret_key ?? '') : '';
+			}
+			
+			if (!empty($secret_key)) {
+				$payment_status = $this->payment_model->stripe_payment($token_id, $invoice_id, $amount_paid, $secret_key);
+			} else {
+				log_message('error', 'Stripe payment failed: missing secret key');
+			}
+			
+		} elseif ($payment_method == 'paypal') {
+			// ========== SÉCURITÉ: Valider le paiement PayPal côté serveur ==========
+			$paymentID = $this->input->post('paymentID');
+			$payerID = $this->input->post('payerID');
+			
+			if (empty($paymentID) || empty($payerID)) {
+				log_message('error', "PayPal: paymentID ou payerID manquant pour facture #{$invoice_id}");
+				$this->session->set_flashdata('error_message', get_phrase('payment_error'));
+				redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+				return;
+			}
+			
+			// Valider le paiement via l'API PayPal
+			$payment_status = $this->validate_paypal_payment($paymentID, $payerID, $amount_paid, $invoice_details['school_id']);
+			
+			if (!$payment_status) {
+				log_message('error', "PayPal: Validation échouée pour facture #{$invoice_id}, paymentID: {$paymentID}");
+				$this->session->set_flashdata('error_message', get_phrase('paypal_validation_failed'));
+				redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+				return;
+			}
+			
+			// Récupérer la devise PayPal depuis les paramètres
+			$paypal_settings = json_decode(get_payment_settings('paypal_settings', $invoice_details['school_id']));
+			$currency = $paypal_settings[0]->paypal_currency ?? $currency;
+			
+		} elseif ($payment_method == 'paystack') {
+			$this->load->model('addons/paystack_model');
+			$payment_status = $this->paystack_model->check_payment($reference);
+		}
+
+		// Si le paiement est réussi
+		if ($payment_status === true) {
+			// Préparer les données pour mettre à jour la facture
+			$data = [
+				'payment_method' => $payment_method,
+				'invoice_id' => $invoice_id,
+				'amount_paid' => $amount_paid
+			];
+
+			// Mettre à jour la facture
+			$this->db->where('id', $invoice_id);
+			$invoice_current = $this->db->get('invoices')->row_array();
+			$due_amount = $invoice_current['total_amount'] - ($invoice_current['paid_amount'] ?? 0);
+			
+			if ($due_amount <= $amount_paid) {
+				$updater = [
+					'status' => 'paid',
+					'payment_method' => $payment_method,
+					'paid_amount' => $amount_paid + ($invoice_current['paid_amount'] ?? 0),
+                    'currency' => $currency,
+					'updated_at' => strtotime(date('d-M-Y'))
+				];
+				$this->db->where('id', $invoice_id);
+				$this->db->update('invoices', $updater);
+
+				// Si c'est une facture subscription_admin, mettre à jour l'école
+				if (isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
+					$school_id = $invoice_details['school_id'];
+					
+					// Calculer la date de fin d'abonnement (1 mois à partir de maintenant)
+					$subscription_end = strtotime('+1 month');
+					
+					log_message('debug', "Admin payment_success - Updating school subscription: school_id=$school_id, subscription_end=" . date('Y-m-d H:i:s', $subscription_end));
+					
+					// Mettre à jour l'école
+					$school_updater = [
+						'is_paid' => 1,
+						'is_trial' => 0, // L'essai est terminé, maintenant c'est un abonnement payant
+						'subscription_end' => $subscription_end,
+						'updated_at' => time()
+					];
+					$this->db->where('id', $school_id);
+					$this->db->update('schools', $school_updater);
+
+					log_message('debug', "Admin payment_success - School updated successfully: is_paid=1, subscription_end=" . date('Y-m-d H:i:s', $subscription_end));
+
+					// Message de succès
+					$this->session->set_flashdata('flash_message', get_phrase('subscription_activated_successfully'));
+					
+					// Rediriger vers le dashboard
+					redirect(site_url('admin/dashboard'), 'refresh');
+					return;
+				}
+			}
+		}
+
+		// Si le paiement a échoué ou si ce n'est pas une facture subscription_admin
+		$this->session->set_flashdata('error_message', get_phrase('payment_failed') ?: 'Le paiement a échoué');
+		redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+	}
+
+	/**
+	 * ========== SÉCURITÉ: Validation PayPal côté serveur ==========
+	 * Vérifie auprès de l'API PayPal que le paiement est bien complété
+	 * et que le montant correspond à celui attendu
+	 */
+	private function validate_paypal_payment($paymentID, $payerID, $expected_amount, $school_id) {
+		try {
+			// Récupérer les paramètres PayPal
+			$paypal_settings = json_decode(get_payment_settings('paypal_settings', $school_id));
+			
+			if (empty($paypal_settings) || !isset($paypal_settings[0])) {
+				log_message('error', 'PayPal: Paramètres PayPal non configurés');
+				return false;
+			}
+			
+			$paypal = $paypal_settings[0];
+			$mode = $paypal->paypal_mode ?? 'sandbox';
+			
+			// Sélectionner le client_id et secret selon le mode
+			if ($mode === 'sandbox') {
+				$client_id = $paypal->paypal_sandbox_client_id ?? '';
+				$client_secret = $paypal->paypal_sandbox_secret_key ?? '';
+				$api_base = 'https://api.sandbox.paypal.com';
+			} else {
+				$client_id = $paypal->paypal_production_client_id ?? '';
+				$client_secret = $paypal->paypal_production_secret_key ?? '';
+				$api_base = 'https://api.paypal.com';
+			}
+			
+			if (empty($client_id) || empty($client_secret)) {
+				log_message('error', 'PayPal: Client ID ou Secret manquant');
+				return false;
+			}
+			
+			// Étape 1: Obtenir un access token
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $api_base . '/v1/oauth2/token');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
+			curl_setopt($ch, CURLOPT_USERPWD, $client_id . ':' . $client_secret);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [
+				'Accept: application/json',
+				'Accept-Language: en_US'
+			]);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+			
+			$response = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			
+			if ($http_code !== 200) {
+				log_message('error', 'PayPal: Échec obtention access token. HTTP Code: ' . $http_code);
+				return false;
+			}
+			
+			$token_data = json_decode($response, true);
+			if (empty($token_data['access_token'])) {
+				log_message('error', 'PayPal: Access token vide');
+				return false;
+			}
+			
+			$access_token = $token_data['access_token'];
+			
+			// Étape 2: Vérifier le paiement
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $api_base . '/v1/payments/payment/' . $paymentID);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $access_token
+			]);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+			
+			$response = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			
+			if ($http_code !== 200) {
+				log_message('error', 'PayPal: Échec vérification paiement. HTTP Code: ' . $http_code);
+				return false;
+			}
+			
+			$payment_data = json_decode($response, true);
+			
+			// Vérifier le statut du paiement
+			if (empty($payment_data['state']) || $payment_data['state'] !== 'approved') {
+				log_message('error', 'PayPal: Paiement non approuvé. État: ' . ($payment_data['state'] ?? 'inconnu'));
+				return false;
+			}
+			
+			// Vérifier le montant
+			if (!empty($payment_data['transactions'][0]['amount']['total'])) {
+				$paid_amount = (float) $payment_data['transactions'][0]['amount']['total'];
+				$expected = (float) $expected_amount;
+				
+				// Tolérance de 0.01 pour les erreurs d'arrondi
+				if (abs($paid_amount - $expected) > 0.01) {
+					log_message('error', "PayPal: ALERTE SÉCURITÉ - Montant incorrect! Attendu: {$expected}, Reçu: {$paid_amount}");
+					return false;
+				}
+			} else {
+				log_message('error', 'PayPal: Impossible de vérifier le montant du paiement');
+				return false;
+			}
+			
+			// Vérifier le payerID
+			if (!empty($payment_data['payer']['payer_info']['payer_id'])) {
+				if ($payment_data['payer']['payer_info']['payer_id'] !== $payerID) {
+					log_message('error', 'PayPal: PayerID ne correspond pas');
+					return false;
+				}
+			}
+			
+			log_message('info', "PayPal: Paiement #{$paymentID} validé avec succès pour {$paid_amount}");
+			return true;
+			
+		} catch (Exception $e) {
+			log_message('error', 'PayPal: Exception lors de la validation - ' . $e->getMessage());
+			return false;
+		}
+	}
 
 	//START CLASS secion
 	public function manage_class($param1 = '', $param2 = '', $param3 = '')
@@ -2383,9 +2963,19 @@ class Admin extends CI_Controller
     //RETURN EXPORT URL
     if ($param1 == 'url') {
       $type = htmlspecialchars($this->input->post('type'));
-      $date = explode('-', $this->input->post('dateRange'));
-      $date_from = strtotime($date[0] . ' 00:00:00');
-      $date_to = strtotime($date[1] . ' 23:59:59');
+      $dateRange = $this->input->post('dateRange');
+      
+      // Support both separators: ' — ' (em dash) and ' - ' (hyphen)
+      if (strpos($dateRange, ' — ') !== false) {
+        $date = explode(' — ', $dateRange);
+      } elseif (strpos($dateRange, ' - ') !== false) {
+        $date = explode(' - ', $dateRange);
+      } else {
+        $date = explode('-', $dateRange);
+      }
+      
+      $date_from = isset($date[0]) ? strtotime(trim($date[0]) . ' 00:00:00') : strtotime('first day of this month');
+      $date_to = isset($date[1]) ? strtotime(trim($date[1]) . ' 23:59:59') : strtotime('last day of this month');
       $selected_class = htmlspecialchars($this->input->post('selectedClass'));
       $selected_status = htmlspecialchars($this->input->post('selectedStatus'));
       // echo route('export/' . $type . '/' . $date_from . '/' . $date_to . '/' . $selected_class . '/' . $selected_status);

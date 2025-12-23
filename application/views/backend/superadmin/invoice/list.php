@@ -2,7 +2,7 @@
     <thead class="thead-dark">
         <tr>
             <th><i class="mdi mdi mdi-barcode thead-icon"></i><?php echo get_phrase('invoice_no'); ?></th>
-            <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('student'); ?></th>
+            <th><i class="mdi mdi-account-multiple-outline thead-icon"></i><?php echo get_phrase('community'); ?></th>
             <th class="d-none d-md-table-cell"><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('invoice_title'); ?></th>
             <th class="d-none d-md-table-cell"><i class="mdi mdi-currency-usd thead-icon"></i><?php echo get_phrase('total_amount'); ?></th>
             <th class="d-none d-md-table-cell"><i class="mdi mdi-check-circle-outline thead-icon"></i><?php echo get_phrase('paid_amount'); ?></th>
@@ -14,23 +14,24 @@
         </tr>
     </thead>
     <tbody>
-        <?php $invoices = $this->crud_model->get_invoice_by_date_range($date_from, $date_to, $selected_class, $selected_status)->result_array();
+        <?php $invoices = $this->crud_model->get_invoice_by_date_range_superadmin($date_from, $date_to, $selected_class, $selected_status)->result_array();
         foreach ($invoices as $invoice):
             $student_details = $this->user_model->get_student_details_by_id('student', $invoice['student_id']);
-            $class_details = $this->crud_model->get_class_details_by_id($invoice['class_id'])->row_array(); ?>
+            $class_details = $this->crud_model->get_class_details_by_id($invoice['class_id'])->row_array();
+            $community_details = $this->crud_model->get_community_details_by_id($invoice['school_id']);
+            ?>
             <tr>
                 <td> <?php echo sprintf('%08d', $invoice['id']); ?> </td>
                 <td>
-                    <?php echo $student_details['name']; ?> <br>
-                    <small> <strong><?php echo get_phrase('class'); ?> :</strong> <?php echo $class_details['name']; ?></small>
+                    <?php echo $community_details['name']; ?> <br>
                 </td>
                 <td class="d-none d-md-table-cell"> <?php echo $invoice['title']; ?> </td>
                 <td class="d-none d-md-table-cell">
-                    <?php echo currency($invoice['total_amount']); ?> <br>
+                    <?php echo $invoice['total_amount'].$invoice['currency']; ?> <br>
                     <small> <strong> <?php echo get_phrase('created_at'); ?> : </strong> <?php echo date('d-M-Y', $invoice['created_at']); ?> </small>
                 </td>
                 <td class="d-none d-md-table-cell">
-                    <?php echo currency($invoice['paid_amount']); ?> <br>
+                    <?php echo $invoice['paid_amount'].$invoice['currency']; ?> <br>
                     <small>
                         <strong> <?php echo get_phrase('payment_date'); ?> : </strong>
                         <?php if ($invoice['updated_at'] > 0): ?>

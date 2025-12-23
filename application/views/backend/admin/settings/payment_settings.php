@@ -403,7 +403,7 @@ function getCsrfToken() {
   });
 
   function checkPriceForParticulier(input) {
-    const userType = "<?php echo $type; ?>";
+    const userType = "<?php echo isset($type) ? $type : ''; ?>";
     const price = parseFloat(input.value) || 0;
     const warning = document.getElementById('price-warning');
 

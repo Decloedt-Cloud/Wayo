@@ -136,12 +136,28 @@ class Accountant extends CI_Controller {
     //RETURN EXPORT URL
     if ($param1 == 'url') {
       $type = htmlspecialchars($this->input->post('type'));
-      $date = explode('-', $this->input->post('dateRange'));
-      $date_from = strtotime($date[0].' 00:00:00');
-      $date_to   = strtotime($date[1].' 23:59:59');
+      $dateRange = $this->input->post('dateRange');
+      
+      // Support both separators: ' — ' (em dash) and ' - ' (hyphen)
+      if (strpos($dateRange, ' — ') !== false) {
+        $date = explode(' — ', $dateRange);
+      } elseif (strpos($dateRange, ' - ') !== false) {
+        $date = explode(' - ', $dateRange);
+      } else {
+        $date = explode('-', $dateRange);
+      }
+      
+      $date_from = isset($date[0]) ? strtotime(trim($date[0]).' 00:00:00') : strtotime('first day of this month');
+      $date_to = isset($date[1]) ? strtotime(trim($date[1]).' 23:59:59') : strtotime('last day of this month');
       $selected_class = htmlspecialchars($this->input->post('selectedClass'));
       $selected_status = htmlspecialchars($this->input->post('selectedStatus'));
-      echo route('export/'.$type.'/'.$date_from.'/'.$date_to.'/'.$selected_class.'/'.$selected_status);
+      
+      $export_url = route('export/'.$type.'/'.$date_from.'/'.$date_to.'/'.$selected_class.'/'.$selected_status);
+      $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+      );
+      echo json_encode(array('url' => $export_url, 'csrf' => $csrf));
     }
     // EXPORT AS PDF
     if($param1 == 'pdf' || $param1 == 'print') {

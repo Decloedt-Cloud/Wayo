@@ -1308,21 +1308,88 @@ class Crud_model extends CI_Model
 		$this->db->where('session', $this->active_session);
 		return $this->db->get('invoices');
 	}
-
-	public function get_invoice_by_student_id($user_id = "")
+	public function get_community_details_by_id($school_id = "")
 	{
-
-		// $this->db->where('session', $this->active_session);
-		// $this->db->where('student_id', $student_id);
-		// return $this->db->get('invoices');
+		return $this->db->get_where('schools', array('id' => $school_id))->row_array();
+	}
+	public function get_invoice_by_date_range_superadmin($date_from = "", $date_to = "", $selected_class = "", $selected_status = "")
+	{
+		if ($selected_class != "all") {
+			$this->db->where('class_id', $selected_class);
+		}
+		if ($selected_status != "all") {
+			$this->db->where('status', $selected_status);
+		}
+		$this->db->where('created_at >=', $date_from);
+		$this->db->where('created_at <=', $date_to);
+		// $this->db->where('school_id', $this->school_id);
+		$this->db->where('payment_type', 'subscription_admin');
+		$this->db->where('session', $this->active_session);
+		return $this->db->get('invoices');
+	}
+	public function get_invoice_by_student_id($user_id = "", $limit = null, $offset = null, $filter = 'all')
+	{
 		$this->db->select('invoices.*');
 		$this->db->from('invoices');
 		$this->db->join('students', 'students.user_id = invoices.student_id');
 		$this->db->where('students.code', $user_id);
+
+		// Apply filter conditions
+		$this->apply_invoice_filter($filter);
+
 		$this->db->group_by('invoices.id');
+		$this->db->order_by('invoices.created_at', 'DESC'); // Plus récentes en premier
+
+		if ($limit !== null) {
+			$this->db->limit($limit, $offset);
+		}
+
 		$query = $this->db->get();
 
+		// Debug removed
+
 		return $query;
+	}
+
+	/**
+	 * Apply filter conditions to invoice queries
+	 * @param string $filter - 'all', 'paid', 'pending', 'due'
+	 */
+	private function apply_invoice_filter($filter = 'all')
+	{
+		switch ($filter) {
+			case 'paid':
+				$this->db->where('LOWER(invoices.status)', 'paid');
+				break;
+			case 'pending':
+				$this->db->where('LOWER(invoices.status) !=', 'paid');
+				break;
+			case 'due':
+				// Handle cases where paid_amount might be NULL, empty, or contain non-numeric values
+				$this->db->where('invoices.total_amount > COALESCE(CAST(invoices.paid_amount AS DECIMAL(10,2)), 0)');
+				break;
+			case 'all':
+			default:
+				// No additional filter for 'all'
+				break;
+		}
+	}
+
+	/**
+	 * Count invoices for a student (for pagination)
+	 */
+	public function count_invoices_by_student($user_id = "", $filter = 'all')
+	{
+		$this->db->select('COUNT(DISTINCT invoices.id) as total');
+		$this->db->from('invoices');
+		$this->db->join('students', 'students.user_id = invoices.student_id');
+		$this->db->where('students.code', $user_id);
+
+		// Apply filter conditions
+		$this->apply_invoice_filter($filter);
+
+		$result = $this->db->get()->row();
+		return $result ? (int)$result->total : 0;
 	}
 
 	// This function will be triggered if parent logs in
@@ -1624,16 +1691,45 @@ class Crud_model extends CI_Model
 	{
 		$this->db->where('id', $data['invoice_id']);
 		$invoice_details = $this->db->get('invoices')->row_array();
-		$due_amount = $invoice_details['total_amount'] - $invoice_details['paid_amount'];
-		if ($due_amount == $data['amount_paid']) {
+		
+		// Récupérer le montant déjà payé (peut être NULL)
+		$already_paid = isset($invoice_details['paid_amount']) ? (float)$invoice_details['paid_amount'] : 0;
+		$invoice_total = (float)$invoice_details['total_amount'];
+		$due_amount = $invoice_total - $already_paid;
+		
+		// Si une conversion de devise a été appliquée, utiliser le montant original
+		// pour la comparaison (pas le montant converti)
+		$amount_to_compare = $data['amount_paid'];
+		if (isset($data['conversion_applied']) && $data['conversion_applied'] && isset($data['original_amount'])) {
+			$amount_to_compare = (float)$data['original_amount'];
+		}
+		
+		// Tolérance de 0.01 pour les erreurs d'arrondi
+		$is_full_payment = abs($due_amount - $amount_to_compare) < 0.01;
+		
+		log_message('debug', "Payment check: due_amount={$due_amount}, amount_to_compare={$amount_to_compare}, is_full_payment=" . ($is_full_payment ? 'true' : 'false'));
+		
+		if ($is_full_payment) {
 			$updater = array(
 				'status' => 'paid',
 				'payment_method' => $data['payment_method'],
-				'paid_amount' => $data['amount_paid'] + $invoice_details['paid_amount'],
+				'paid_amount' => $invoice_total, // Marquer comme totalement payé
 				'updated_at'  => strtotime(date('d-M-Y'))
 			);
+			
+			// Ajouter les infos de conversion FX si présentes
+			if (isset($data['conversion_applied']) && $data['conversion_applied']) {
+				$updater['payment_currency'] = isset($data['currency']) ? $data['currency'] : null;
+				$updater['payment_amount_converted'] = isset($data['amount_paid']) ? $data['amount_paid'] : null;
+				$updater['fx_rate'] = isset($data['fx_rate']) ? $data['fx_rate'] : null;
+				$updater['fx_rate_date'] = isset($data['fx_rate_date']) ? $data['fx_rate_date'] : null;
+				$updater['conversion_applied'] = 1;
+			}
+			
 			$this->db->where('id', $data['invoice_id']);
 			$this->db->update('invoices', $updater);
+			
+			log_message('info', "Invoice #{$data['invoice_id']} marked as paid");
 
 			// Récupérer les données de la session
 			$enrolment_data = $this->session->userdata('enrolment_data');
