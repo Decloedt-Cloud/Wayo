@@ -9,7 +9,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 *  http://support.creativeitem.com
 */
 
+// Include Composer autoloader for HTMLPurifier
+require_once FCPATH . 'vendor/autoload.php';
+
 class Courses extends CI_Controller {
+  
+  private $purifier;
+  
   public function __construct(){
 
     parent::__construct();
@@ -17,6 +23,9 @@ class Courses extends CI_Controller {
     $this->load->database();
     $this->load->library('session');
     $this->lmStudioUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    
+    // Initialize HTMLPurifier for XSS protection
+    $this->initHtmlPurifier();
 
     /*LOADING ALL THE MODELS HERE*/
     $this->load->model('Crud_model',     'crud_model');
@@ -39,6 +48,101 @@ class Courses extends CI_Controller {
       redirect(site_url('login'), 'refresh');
     }
   }
+  
+  /**
+   * Initialize HTMLPurifier with safe configuration
+   */
+  private function initHtmlPurifier() {
+    $config = HTMLPurifier_Config::createDefault();
+    
+    // Cache directory for HTMLPurifier
+    $cache_dir = FCPATH . 'uploads/cache/htmlpurifier';
+    if (!file_exists($cache_dir)) {
+      mkdir($cache_dir, 0755, true);
+    }
+    $config->set('Cache.SerializerPath', $cache_dir);
+    
+    // Allow safe HTML elements
+    $config->set('HTML.Allowed', 
+      'p,br,strong,b,em,i,u,s,strike,sub,sup,'.
+      'h1,h2,h3,h4,h5,h6,'.
+      'ul,ol,li,'.
+      'a[href|target|rel],'.
+      'img[src|alt|title|width|height|loading|class],'.
+      'table,thead,tbody,tfoot,tr,th,td[colspan|rowspan],'.
+      'blockquote,pre,code,'.
+      'div[class],span[class],'.
+      'iframe[src|width|height|frameborder|allowfullscreen|allow|class],'.
+      'video[src|controls|width|height],'.
+      'hr'
+    );
+    
+    // Allow data URIs for images (base64)
+    $config->set('URI.AllowedSchemes', array(
+      'http' => true,
+      'https' => true,
+      'data' => true,
+      'mailto' => true
+    ));
+    
+    // Allow target="_blank" for links
+    $config->set('Attr.AllowedFrameTargets', array('_blank', '_self'));
+    
+    // Allow YouTube, Vimeo, Loom embeds
+    $config->set('HTML.SafeIframe', true);
+    $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube\.com/embed/|player\.vimeo\.com/video/|www\.loom\.com/embed/|www\.dailymotion\.com/embed/)%');
+    
+    // Allow CSS classes
+    $config->set('Attr.AllowedClasses', array(
+      'table-responsive-wrapper', 'video-embed-container', 'embed-fallback', 'embed-blocked',
+      'ql-align-center', 'ql-align-right', 'ql-align-justify',
+      'ql-indent-1', 'ql-indent-2', 'ql-indent-3', 'ql-indent-4',
+      'ql-size-small', 'ql-size-large', 'ql-size-huge'
+    ));
+    
+    // Enable auto paragraphs
+    $config->set('AutoFormat.AutoParagraph', false);
+    
+    $this->purifier = new HTMLPurifier($config);
+  }
+  
+  /**
+   * Sanitize HTML content to prevent XSS
+   * Also adds lazy loading to images
+   */
+  public function sanitizeHtml($html) {
+    if (empty($html)) {
+      return '';
+    }
+    
+    // Purify HTML
+    $clean = $this->purifier->purify($html);
+    
+    // Add lazy loading to images that don't already have a loading attribute
+    $clean = preg_replace(
+      '/<img(?![^>]*\sloading=)([^>]*)>/i',
+      '<img$1 loading="lazy">',
+      $clean
+    );
+    
+    // Add lazy loading to iframes (videos) that don't already have a loading attribute
+    $clean = preg_replace(
+      '/<iframe(?![^>]*\sloading=)([^>]*)>/i',
+      '<iframe$1 loading="lazy">',
+      $clean
+    );
+    
+    // Wrap tables in responsive container
+    $clean = preg_replace(
+      '/<table([^>]*)>/i',
+      '<div class="table-responsive-wrapper"><table$1>',
+      $clean
+    );
+    $clean = str_replace('</table>', '</table></div>', $clean);
+    
+    return $clean;
+  }
+  
   //dashboard
   public function index($param1 = '', $param2 = ''){
    
@@ -142,7 +246,12 @@ class Courses extends CI_Controller {
     $page_data['course']          = $this->lms_model->get_course_by_id($course_id);
     $page_data['all_teachers']        = $this->user_model->get_all_teachers();
     $page_data['classes']         = $this->crud_model->get_classes();
-    $page_data['course_sections'] = $this->lms_model->get_section('course', $course_id)->result_array();
+    // Pagination des sections (10 par page)
+    $sections_per_page = 10;
+    $page_data['course_sections'] = $this->lms_model->get_sections_paginated($course_id, $sections_per_page, 0);
+    $page_data['total_sections'] = $this->lms_model->count_sections($course_id);
+    $page_data['total_pages'] = ceil($page_data['total_sections'] / $sections_per_page);
+    $page_data['sections_per_page'] = $sections_per_page;
     // $page_data['subjects']        = $this->db->get_where('subjects', array('class_id' => $page_data['course']['class_id']))->result_array();
     $page_data['first_lesson_id']  = $this->db->get_where('lesson', array('course_id' => $course_id))->row_array();
     // Relations : classes et enseignants du cours
@@ -186,6 +295,62 @@ class Courses extends CI_Controller {
     echo json_encode(array('status' => $response, 'csrf' => $csrf));
     }
     redirect(site_url('addons/courses/course_edit/'.$param1), 'refresh');
+  }
+
+  // AJAX: Add section
+  public function ajax_add_section($course_id) {
+    $this->student_access_denied();
+    $this->teacher_access($course_id);
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    $title = $this->input->post('title');
+    
+    if (empty($title)) {
+      echo json_encode(array('success' => false, 'message' => get_phrase('title_required'), 'csrf' => $csrf));
+      return;
+    }
+    
+    $this->lms_model->add_course_section($course_id);
+    
+    // Calculate new total pages
+    $total_sections = $this->lms_model->count_sections($course_id);
+    $total_pages = ceil($total_sections / 10);
+    
+    echo json_encode(array('success' => true, 'csrf' => $csrf, 'total_pages' => $total_pages));
+  }
+
+  // AJAX: Update section
+  public function ajax_update_section($section_id) {
+    $this->student_access_denied();
+    
+    // Get section to verify ownership
+    $section = $this->db->where('id', $section_id)->get('course_section')->row_array();
+    if (!$section) {
+      echo json_encode(array('success' => false, 'message' => get_phrase('section_not_found')));
+      return;
+    }
+    
+    $this->teacher_access($section['course_id']);
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    $title = $this->input->post('title');
+    
+    if (empty($title)) {
+      echo json_encode(array('success' => false, 'message' => get_phrase('title_required'), 'csrf' => $csrf));
+      return;
+    }
+    
+    $this->lms_model->edit_course_section($section_id);
+    
+    echo json_encode(array('success' => true, 'csrf' => $csrf));
   }
 
   public function quizes($course_id = "", $action = "", $quiz_id = "") {
@@ -256,24 +421,569 @@ class Courses extends CI_Controller {
       echo json_encode(array('duration' => $video_details['duration'], 'csrf' => $csrf));
   }
 
-  public function ajax_sort_section() {
-    $section_json = $this->input->post('itemJSON');
-    $this->lms_model->sort_section($section_json);
-      // Préparer le nouveau jeton CSRF
-      $csrf = array(
-                'csrfName' => $this->security->get_csrf_token_name(),
-                'csrfHash' => $this->security->get_csrf_hash(),
-              );
-          
-      // Renvoyer la réponse JSON avec le HTML mis à jour et le nouveau jeton CSRF
-      echo json_encode(array('csrf' => $csrf));
+  // Get lesson content for TipTap editor
+  public function get_lesson_content($lesson_id = "") {
+    if (empty($lesson_id)) {
+      echo json_encode(array('content' => '', 'error' => 'No lesson ID provided'));
+      return;
+    }
+
+    $lesson = $this->db->get_where('lesson', array('id' => $lesson_id))->row_array();
+
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if ($lesson) {
+      echo json_encode(array(
+        'content' => $lesson['summary'] ?? '',
+        'title' => $lesson['title'] ?? '',
+        'last_modified' => $lesson['last_modified'] ?? '',
+        'csrf' => $csrf
+      ));
+    } else {
+      echo json_encode(array('content' => '', 'error' => 'Lesson not found', 'csrf' => $csrf));
+    }
   }
 
+  // Get quiz content for editing
+  public function get_quiz_content($quiz_id) {
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
 
+    $quiz = $this->db->get_where('lesson', array('id' => $quiz_id, 'lesson_type' => 'quiz'))->row_array();
+    
+    if ($quiz) {
+      // Get questions for this quiz
+      $this->db->order_by('order', 'ASC');
+      $questions = $this->db->get_where('question', array('quiz_id' => $quiz_id))->result_array();
+      
+      echo json_encode(array(
+        'success' => true,
+        'title' => $quiz['title'],
+        'summary' => $quiz['summary'],
+        'last_modified' => $quiz['last_modified'] ?? '',
+        'questions' => $questions,
+        'csrf' => $csrf
+      ));
+    } else {
+      echo json_encode(array(
+        'success' => false,
+        'error' => 'Quiz not found',
+        'csrf' => $csrf
+      ));
+    }
+  }
+
+  // Save lesson content from TipTap editor
+  public function save_lesson($lesson_id = "") {
+    $this->student_access_denied();
+    
+    $title = $this->input->post('title');
+    $content = $this->input->post('content');
+    $section_id = $this->input->post('section_id');
+    $course_id = $this->input->post('course_id');
+    
+    // Verify teacher access if applicable
+    if (!empty($course_id)) {
+      $this->teacher_access($course_id);
+    }
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    if (empty($title)) {
+      echo json_encode(array(
+        'success' => false,
+        'message' => get_phrase('please_enter_lesson_title'),
+        'csrf' => $csrf
+      ));
+      return;
+    }
+    
+    // Set last_modified timestamp
+    $new_last_modified = strtotime(date('D, d-M-Y H:i:s'));
+    
+    // Sanitize HTML content with HTMLPurifier (XSS protection + lazy load)
+    $sanitized_content = $this->sanitizeHtml($content);
+    
+    // Prepare lesson data - use summary field for HTML content
+    $data = array(
+      'title' => html_escape($title),
+      'summary' => $sanitized_content, // Sanitized HTML content
+      'lesson_type' => 'text',
+      'attachment_type' => 'text',
+      'last_modified' => $new_last_modified
+    );
+    
+    if (empty($lesson_id)) {
+      // Create new lesson
+      $data['course_id'] = $course_id;
+      $data['section_id'] = $section_id;
+      $data['date_added'] = strtotime(date('D, d-M-Y'));
+      $data['duration'] = '00:00:00';
+      
+      $this->db->insert('lesson', $data);
+      $new_lesson_id = $this->db->insert_id();
+      
+      if ($new_lesson_id) {
+        echo json_encode(array(
+          'success' => true,
+          'message' => get_phrase('lesson_saved_successfully'),
+          'lesson_id' => $new_lesson_id,
+          'last_modified' => $new_last_modified,
+          'csrf' => $csrf
+        ));
+      } else {
+        echo json_encode(array(
+          'success' => false,
+          'message' => get_phrase('error_saving_lesson'),
+          'csrf' => $csrf
+        ));
+      }
+    } else {
+      // Update existing lesson
+      $this->db->where('id', $lesson_id);
+      $result = $this->db->update('lesson', $data);
+      
+      if ($result) {
+        echo json_encode(array(
+          'success' => true,
+          'message' => get_phrase('lesson_saved_successfully'),
+          'lesson_id' => $lesson_id,
+          'last_modified' => $new_last_modified,
+          'csrf' => $csrf
+        ));
+      } else {
+        echo json_encode(array(
+          'success' => false,
+          'message' => get_phrase('error_saving_lesson'),
+          'csrf' => $csrf
+        ));
+      }
+    }
+  }
+
+  // Save quiz from curriculum editor
+  public function save_quiz($quiz_id = "") {
+    $this->student_access_denied();
+
+    $title = $this->input->post('title');
+    $summary = $this->input->post('summary');
+    $section_id = $this->input->post('section_id');
+    $course_id = $this->input->post('course_id');
+    $questions_json = $this->input->post('questions');
+
+    // Verify teacher access if applicable
+    if (!empty($course_id)) {
+      $this->teacher_access($course_id);
+    }
+
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($title)) {
+      echo json_encode(array(
+        'success' => false,
+        'message' => get_phrase('please_enter_quiz_title'),
+        'csrf' => $csrf
+      ));
+      return;
+    }
+
+    // Set last_modified timestamp
+    $new_last_modified = strtotime(date('D, d-M-Y H:i:s'));
+
+    // Sanitize quiz summary/instructions
+    $sanitized_summary = $this->sanitizeHtml($summary);
+    
+    // Prepare quiz data
+    $data = array(
+      'title' => html_escape($title),
+      'summary' => $sanitized_summary,
+      'lesson_type' => 'quiz',
+      'last_modified' => $new_last_modified
+    );
+
+    $target_quiz_id = $quiz_id;
+
+    if (empty($quiz_id)) {
+      // Create new quiz
+      $data['course_id'] = $course_id;
+      $data['section_id'] = $section_id;
+      $data['date_added'] = strtotime(date('D, d-M-Y'));
+      $data['duration'] = '00:00:00';
+      $data['attachment_type'] = '';
+
+      $this->db->insert('lesson', $data);
+      $target_quiz_id = $this->db->insert_id();
+
+      if (!$target_quiz_id) {
+        echo json_encode(array(
+          'success' => false,
+          'message' => get_phrase('error_saving_quiz'),
+          'csrf' => $csrf
+        ));
+        return;
+      }
+    } else {
+      // Update existing quiz
+      $this->db->where('id', $quiz_id);
+      $this->db->update('lesson', $data);
+    }
+
+    // Save questions if provided
+    if (!empty($questions_json)) {
+      $questions = json_decode($questions_json, true);
+      
+      if (is_array($questions) && count($questions) > 0) {
+        // Delete existing questions for this quiz (for update)
+        if (!empty($quiz_id)) {
+          $this->db->where('quiz_id', $quiz_id);
+          $this->db->delete('question');
+        }
+        
+        // Insert new questions
+        $order = 0;
+        foreach ($questions as $q) {
+          $order++;
+          $question_data = array(
+            'quiz_id' => $target_quiz_id,
+            'title' => html_escape($q['question']),
+            'type' => 'mcq',
+            'number_of_options' => count($q['options']),
+            'options' => json_encode($q['options']),
+            'correct_answers' => json_encode($q['correct_answers']),
+            'order' => $order
+          );
+          $this->db->insert('question', $question_data);
+        }
+      }
+    }
+
+    echo json_encode(array(
+      'success' => true,
+      'message' => get_phrase('quiz_saved_successfully'),
+      'quiz_id' => $target_quiz_id,
+      'last_modified' => $new_last_modified,
+      'csrf' => $csrf
+    ));
+  }
+
+  // Upload image for Quill editor
+  public function upload_editor_image() {
+    $this->student_access_denied();
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    if (empty($_FILES['image']['name'])) {
+      echo json_encode(array(
+        'success' => false,
+        'message' => get_phrase('no_image_selected'),
+        'csrf' => $csrf
+      ));
+      return;
+    }
+    
+    // Create upload directory if not exists
+    $upload_dir = 'uploads/lesson_images/';
+    $upload_path = './uploads/lesson_images/';
+    
+    if (!file_exists($upload_path)) {
+      mkdir($upload_path, 0777, true);
+    }
+    
+    // Configure upload
+    $config = array(
+      'upload_path' => $upload_path,
+      'allowed_types' => 'gif|jpg|jpeg|png|webp|GIF|JPG|JPEG|PNG|WEBP',
+      'max_size' => 5120,
+      'encrypt_name' => true
+    );
+    
+    $this->load->library('upload');
+    $this->upload->initialize($config);
+    
+    if ($this->upload->do_upload('image')) {
+      $upload_data = $this->upload->data();
+      $file_path = $upload_path . $upload_data['file_name'];
+      
+      // Compress and resize image
+      $this->compressImage($file_path, $upload_data['file_type']);
+      
+      $file_url = base_url($upload_dir . $upload_data['file_name']);
+      
+      echo json_encode(array(
+        'success' => true,
+        'url' => $file_url,
+        'csrf' => $csrf
+      ));
+    } else {
+      echo json_encode(array(
+        'success' => false,
+        'message' => strip_tags($this->upload->display_errors()),
+        'csrf' => $csrf
+      ));
+    }
+  }
+  
+  /**
+   * Compress and resize image
+   * - Max width: 1920px
+   * - Quality: 80%
+   */
+  private function compressImage($file_path, $image_type) {
+    if (!file_exists($file_path)) return;
+    
+    // Check if GD library and getimagesize function are available
+    if (!function_exists('imagecreatetruecolor') || !function_exists('getimagesize')) {
+      log_message('debug', 'GD library or getimagesize not available, skipping image compression');
+      return;
+    }
+    
+    // Get image info
+    list($width, $height) = getimagesize($file_path);
+    if ($width === false || $height === false) {
+      log_message('debug', 'Failed to get image dimensions, skipping compression');
+      return;
+    }
+    
+    // Max dimensions
+    $max_width = 1920;
+    $max_height = 1080;
+    $quality = 80;
+    
+    // Calculate new dimensions if needed
+    $new_width = $width;
+    $new_height = $height;
+    
+    if ($width > $max_width) {
+      $ratio = $max_width / $width;
+      $new_width = $max_width;
+      $new_height = round($height * $ratio);
+    }
+    
+    if ($new_height > $max_height) {
+      $ratio = $max_height / $new_height;
+      $new_height = $max_height;
+      $new_width = round($new_width * $ratio);
+    }
+    
+    // Create image resource based on type
+    switch (strtolower($image_type)) {
+      case 'image/jpeg':
+      case 'image/jpg':
+        $source = imagecreatefromjpeg($file_path);
+        break;
+      case 'image/png':
+        $source = imagecreatefrompng($file_path);
+        break;
+      case 'image/gif':
+        $source = imagecreatefromgif($file_path);
+        break;
+      case 'image/webp':
+        if (function_exists('imagecreatefromwebp')) {
+          $source = imagecreatefromwebp($file_path);
+        } else {
+          return; // WebP not supported
+        }
+        break;
+      default:
+        return; // Unsupported format
+    }
+    
+    if (!$source) return;
+    
+    // Create new image with new dimensions
+    $destination = imagecreatetruecolor($new_width, $new_height);
+    
+    // Preserve transparency for PNG and GIF
+    if (in_array(strtolower($image_type), ['image/png', 'image/gif'])) {
+      imagealphablending($destination, false);
+      imagesavealpha($destination, true);
+      $transparent = imagecolorallocatealpha($destination, 255, 255, 255, 127);
+      imagefilledrectangle($destination, 0, 0, $new_width, $new_height, $transparent);
+    }
+    
+    // Resize
+    imagecopyresampled($destination, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+    
+    // Save compressed image
+    switch (strtolower($image_type)) {
+      case 'image/jpeg':
+      case 'image/jpg':
+        imagejpeg($destination, $file_path, $quality);
+        break;
+      case 'image/png':
+        // PNG quality is 0-9 (0 = no compression, 9 = max compression)
+        $png_quality = round((100 - $quality) / 10);
+        imagepng($destination, $file_path, $png_quality);
+        break;
+      case 'image/gif':
+        imagegif($destination, $file_path);
+        break;
+      case 'image/webp':
+        if (function_exists('imagewebp')) {
+          imagewebp($destination, $file_path, $quality);
+        }
+        break;
+    }
+    
+    // Free memory
+    imagedestroy($source);
+    imagedestroy($destination);
+  }
+  
+  // Upload attachment for Quill editor
+  public function upload_editor_attachment() {
+    $this->student_access_denied();
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    if (empty($_FILES['file']['name'])) {
+      echo json_encode(array(
+        'success' => false,
+        'message' => get_phrase('no_file_selected'),
+        'csrf' => $csrf
+      ));
+      return;
+    }
+    
+    // Create upload directory if not exists
+    $upload_dir = 'uploads/lesson_attachments/';
+    $upload_path = './uploads/lesson_attachments/';
+    
+    if (!file_exists($upload_path)) {
+      mkdir($upload_path, 0777, true);
+    }
+    
+    // Configure upload
+    $config = array(
+      'upload_path' => $upload_path,
+      'allowed_types' => 'pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|PDF|DOC|DOCX|XLS|XLSX|PPT|PPTX|ZIP|RAR|TXT',
+      'max_size' => 10240,
+      'encrypt_name' => true
+    );
+    
+    $this->load->library('upload');
+    $this->upload->initialize($config);
+    
+    if ($this->upload->do_upload('file')) {
+      $upload_data = $this->upload->data();
+      $file_url = base_url($upload_dir . $upload_data['file_name']);
+      $original_name = $upload_data['orig_name'];
+      
+      echo json_encode(array(
+        'success' => true,
+        'url' => $file_url,
+        'name' => $original_name,
+        'csrf' => $csrf
+      ));
+    } else {
+      echo json_encode(array(
+        'success' => false,
+        'message' => strip_tags($this->upload->display_errors()),
+        'csrf' => $csrf
+      ));
+    }
+  }
+
+  public function ajax_sort_section() {
+    $section_json = $this->input->post('itemJSON');
+    $start_order = (int) $this->input->post('startOrder') ?: 1;
+    
+    if (!empty($section_json)) {
+      $this->lms_model->sort_section($section_json, $start_order);
+      $success = true;
+    } else {
+      $success = false;
+    }
+    
+    // Préparer le nouveau jeton CSRF
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+          
+    // Renvoyer la réponse JSON
+    echo json_encode(array('success' => $success, 'startOrder' => $start_order, 'csrf' => $csrf));
+  }
+
+  // Move section to a specific position
+  public function ajax_move_section() {
+    $this->student_access_denied();
+    
+    $section_id = (int) $this->input->post('section_id');
+    $target_position = (int) $this->input->post('target_position');
+    $course_id = (int) $this->input->post('course_id');
+    
+    $csrf = array(
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    );
+    
+    if (!$section_id || !$target_position || !$course_id) {
+      echo json_encode(array('success' => false, 'message' => get_phrase('invalid_parameters'), 'csrf' => $csrf));
+      return;
+    }
+    
+    $this->teacher_access($course_id);
+    
+    $result = $this->lms_model->move_section_to_position($section_id, $target_position, $course_id);
+    
+    echo json_encode(array('success' => $result, 'csrf' => $csrf));
+  }
 
   public function ajax_get_section($course_id){
     $page_data['course_sections'] = $this->lms_model->get_section('course', $course_id)->result_array();
     return $this->load->view('backend/academy/ajax_get_section', $page_data);
+  }
+
+  // Pagination des sections du curriculum
+  public function ajax_get_sections_paginated($course_id) {
+    $page = (int) $this->input->get('page') ?: 1;
+    $limit = 10;
+    $offset = ($page - 1) * $limit;
+    
+    $sections = $this->lms_model->get_sections_paginated($course_id, $limit, $offset);
+    $total_sections = $this->lms_model->count_sections($course_id);
+    $total_pages = ceil($total_sections / $limit);
+    
+    // Charger les leçons pour chaque section
+    foreach ($sections as &$section) {
+      $section['lessons'] = $this->lms_model->get_lessons('section', $section['id'])->result_array();
+    }
+    
+    // Calculer le numéro de départ des sections pour cette page
+    $start_number = $offset + 1;
+    
+    $response = array(
+      'status' => true,
+      'sections' => $sections,
+      'current_page' => $page,
+      'total_pages' => $total_pages,
+      'total_sections' => $total_sections,
+      'start_number' => $start_number,
+      'csrf' => array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash()
+      )
+    );
+    
+    echo json_encode($response);
   }
 
   public function ajax_sort_lesson() {
@@ -520,10 +1230,10 @@ public function get_csrf_token() {
       'csrfHash' => $this->security->get_csrf_hash()
   );
 
-  // Return JSON response
+  // Return JSON response with 'csrf' wrapper for compatibility
   $this->output
       ->set_content_type('application/json')
-      ->set_output(json_encode($csrf));
+      ->set_output(json_encode(array('success' => true, 'csrf' => $csrf)));
 }
 
 public function generate_questions_from_pdf()
@@ -596,7 +1306,7 @@ public function generate_questions_from_pdf()
     $config = array(
       'upload_path'   => $upload_path,
       'allowed_types' => 'pdf',
-      'max_size'      => 3000,
+      'max_size'      => 10240,
       'encrypt_name'  => true
     );
     $this->upload->initialize($config);

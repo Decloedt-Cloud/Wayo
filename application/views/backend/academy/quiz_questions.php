@@ -38,7 +38,7 @@ $questions = $this->lms_model->get_quiz_questions($param1)->result_array();
                                             <div class="card-body">
                                                 <div class="media">
                                                     <div class="media-body">
-                                                        <h5 class="mb-1 mt-0"><?php echo $question['title']; ?>
+                                                        <h5 class="mb-1 mt-0"><?php echo html_escape($question['title']); ?>
                                                             <span id="<?php echo 'widgets-of-'.$question['id']; ?>" class="widgets-of-quiz-question">
                                                                 <a href="javascript::" class="alignToTitle float-end ms-1 text-secondary" onclick="deleteQuizQuestionAndReloadModal('<?php echo $param1; ?>', '<?php echo $question['id']; ?>')" data-dismiss="modal"><i class="dripicons-cross"></i></a>
                                                                 <a href="javascript::" class="alignToTitle float-end text-secondary" onclick="showAjaxModal('<?php echo site_url('modal/popup/academy/question_edit/'.$question['id'].'/'.$param1); ?>', '<?php echo get_phrase('update_quiz_question'); ?>')" data-dismiss="modal"><i class="dripicons-document-edit"></i></a>

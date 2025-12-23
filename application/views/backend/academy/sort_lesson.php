@@ -21,7 +21,7 @@ $lessons = $this->lms_model->get_lessons('section', $section_details['id'])->res
                                         <div class="card-body">
                                             <div class="media">
                                                 <div class="media-body">
-                                                    <h5 class="mb-1 mt-0"><?php echo $lesson['title']; ?></h5>
+                                                    <h5 class="mb-1 mt-0"><?php echo html_escape($lesson['title']); ?></h5>
                                                 </div> <!-- end media-body -->
                                             </div> <!-- end media -->
                                         </div> <!-- end card-body -->
