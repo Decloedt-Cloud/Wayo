@@ -363,7 +363,7 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
 
   .nav-link,
   .noti-icon {
-    color: #ff8a3d !important; /* orange Wayo */
+    color: #6c757d !important; /* orange Wayo */
   }
 
   .navbar-custom.topnav-navbar {

@@ -207,6 +207,19 @@ class Lms_model extends CI_Model
         }
     }
 
+    // Pagination des sections
+    public function get_sections_paginated($course_id, $limit = 10, $offset = 0)
+    {
+        $this->db->order_by("orders", "asc");
+        $this->db->limit($limit, $offset);
+        return $this->db->get_where('course_section', array('course_id' => $course_id))->result_array();
+    }
+
+    public function count_sections($course_id)
+    {
+        return $this->db->where('course_id', $course_id)->count_all_results('course_section');
+    }
+
     public function course_activity($course_id)
     {
         $course = $this->db->get_where('course', array('id' => $course_id))->row_array();
@@ -432,8 +445,14 @@ class Lms_model extends CI_Model
 
     public function add_course_section($course_id)
     {
+        // Get max order for this course
+        $this->db->select_max('orders');
+        $this->db->where('course_id', $course_id);
+        $max_order = $this->db->get('course_section')->row()->orders;
+        
         $data['title'] = html_escape($this->input->post('title'));
         $data['course_id'] = $course_id;
+        $data['orders'] = ($max_order !== null) ? $max_order + 1 : 0;
         $this->db->insert('course_section', $data);
         $section_id = $this->db->insert_id();
 
@@ -808,15 +827,75 @@ class Lms_model extends CI_Model
         return json_encode($response);
     }
 
-    public function sort_section($section_json)
+    public function sort_section($section_json, $start_order = 1)
     {
         $sections = json_decode($section_json);
+        
+        if (!is_array($sections) || empty($sections)) {
+            return false;
+        }
+        
         foreach ($sections as $key => $value) {
-            $updater = array(
-                'orders' => $key + 1
-            );
-            $this->db->where('id', $value);
-            $this->db->update('course_section', $updater);
+            $section_id = (int) $value; // Ensure integer
+            $new_order = $start_order + $key; // Use start_order instead of key + 1
+            
+            $this->db->where('id', $section_id);
+            $this->db->update('course_section', array('orders' => $new_order));
+        }
+        
+        return true;
+    }
+    
+    // Move a section to a specific position
+    public function move_section_to_position($section_id, $target_position, $course_id)
+    {
+        // Get current section info
+        $section = $this->db->where('id', $section_id)->get('course_section')->row();
+        if (!$section) {
+            return false;
+        }
+        
+        $current_order = (int) $section->orders;
+        $target_order = (int) $target_position;
+        
+        if ($current_order === $target_order) {
+            return true; // Already in position
+        }
+        
+        $this->db->trans_begin();
+        
+        try {
+            if ($target_order < $current_order) {
+                // Moving up: increment orders of sections between target and current
+                $this->db->set('orders', 'orders + 1', false);
+                $this->db->where('course_id', $course_id);
+                $this->db->where('orders >=', $target_order);
+                $this->db->where('orders <', $current_order);
+                $this->db->update('course_section');
+            } else {
+                // Moving down: decrement orders of sections between current and target
+                $this->db->set('orders', 'orders - 1', false);
+                $this->db->where('course_id', $course_id);
+                $this->db->where('orders >', $current_order);
+                $this->db->where('orders <=', $target_order);
+                $this->db->update('course_section');
+            }
+            
+            // Set the section to target position
+            $this->db->where('id', $section_id);
+            $this->db->update('course_section', array('orders' => $target_order));
+            
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                return false;
+            }
+            
+            $this->db->trans_commit();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            return false;
         }
     }
 

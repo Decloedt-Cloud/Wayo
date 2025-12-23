@@ -1695,8 +1695,8 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
             return;
         }
 
-        if (file.size > 20 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_20mb'); ?>');
+        if (file.size > 10 * 1024 * 1024) {
+            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 
@@ -1764,8 +1764,8 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
             return;
         }
 
-        if (file.size > 20 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_20mb'); ?>');
+        if (file.size > 10 * 1024 * 1024) {
+            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 

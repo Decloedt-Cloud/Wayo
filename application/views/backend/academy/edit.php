@@ -1,13 +1,5 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/editCourse.css">
 
-<div class="col-xl-12">
-    <div class="header-card">
-        <div class="header-content">
-            <h4 class="page-title d-inline-block"><i class="mdi mdi-apple-keyboard-command title_icon"></i> <?php echo get_phrase('edit_course'); ?></h4>
-        </div> <!-- end card body-->
-    </div> <!-- end card -->
-</div><!-- end col-->
-
 
 <div class="row">
     <div class="col-xl-12">
@@ -16,7 +8,7 @@
 
                 <div class="header-title-wrapper mb-4">
                     <div class="header-title-content">
-                        <h4 class="header-title"><?= get_phrase('course_editing_form') ?></h4>
+                        <h4 class="header-title"><?= get_phrase('edit_course') ?></h4>
                     </div>
                     <div class="header-container d-flex justify-content-between align-items-center mb-2">
                         <a href="<?= site_url('addons/lessons/play/' . slugify($course['title']) . '/' . $course['id'] . '/' . $first_lesson_id['id']) ?>"
