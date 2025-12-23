@@ -1,0 +1,1 @@
+UPDATE formation_preprod.menus SET student_access = '1' WHERE (id = '33');
