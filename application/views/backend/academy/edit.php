@@ -85,7 +85,7 @@
                                                     <label class="form-label fw-medium" for="course_title">
                                                         <?php echo get_phrase('Course title'); ?> <span class="text-danger">*</span>
                                                     </label>
-                                                    <input type="text" value="<?php echo html_escape($course['title']); ?>" class="form-control form-control-lg border-0 bg-light" id="course_title" name="title" placeholder="<?php echo get_phrase('Enter an engaging course title'); ?>" required>
+                                                    <input type="text" value="<?php echo html_escape($course['title']); ?>" class="form-control form-control-lg border-0 bg-light main-form-field" id="course_title" name="title" placeholder="<?php echo get_phrase('Enter an engaging course title'); ?>" required>
                                                     <div class="form-text text-secondary small mt-2">
                                                         <?php echo get_phrase('A compelling title helps attract more students'); ?>
                                                     </div>
@@ -143,7 +143,7 @@
                                                     <label class="form-label fw-medium" for="class_id">
                                                         <?php echo get_phrase('Class'); ?> <span class="text-danger">*</span>
                                                     </label>
-                                                    <select class="form-select form-select-lg " name="class_id[]" id="class_id_add_cours" multiple required>
+                                                    <select class="form-select form-select-lg main-form-field" name="class_id[]" id="class_id_add_cours" multiple required>
                                                         <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                                         <?php foreach ($classes->result_array() as $class): ?>
                                                             <option value="<?php echo $class['id']; ?>"
@@ -161,7 +161,7 @@
                                                         <label class="form-label fw-medium" for="user_id">
                                                             <?php echo get_phrase('Instructor'); ?> <span class="text-danger">*</span>
                                                         </label>
-                                                        <select class="form-select form-select-lg border-0 bg-light" name="user_id[]" id="user_id" multiple required>
+                                                        <select class="form-select form-select-lg border-0 bg-light main-form-field" name="user_id[]" id="user_id" multiple required>
                                                             <option value="" disabled><?php echo get_phrase('select_a_teacher'); ?></option>
                                                             <?php foreach ($all_teachers->result_array() as $teacher): ?>
                                                                 <option value="<?php echo $teacher['id']; ?>"
@@ -287,7 +287,7 @@
                                                         <?php echo get_phrase('Please review all information before submitting. Your course details will be updated.'); ?>
                                                     </p>
 
-                                                    <button type="button" class="btn btn-success px-5 py-2 fw-medium" onclick="checkRequiredFields()">
+                                                    <button type="button" class="btn btn-success px-5 py-2 fw-medium" id="update-course-button">
                                                         <?php echo get_phrase('Update course'); ?>
                                                     </button>
                                                 </div>
@@ -478,29 +478,84 @@ Navigation to the next form tab. **/
             }
         });
     }
-    // Form validation function
-    function checkRequiredFields() {
-        var isValid = true;
-        $('form.required-form').find('input, select, textarea').each(function() {
-            if ($(this).prop('required') && $(this).val() === '') {
-                isValid = false;
-                $(this).addClass('is-invalid');
-
-                // Switch to the tab containing the first invalid field
-                if (isValid === false) {
-                    var tabId = $(this).closest('.tab-pane').attr('id');
-                    $('.nav-link[href="#' + tabId + '"]').tab('show');
-                    return false;
+    // Form validation function for EDIT page - renamed to avoid conflict with create.php
+    function validateAndSubmitEditForm() {
+            var isValid = true;
+            var firstInvalidField = null;
+            
+            // Check only required fields with class 'main-form-field' (exclude curriculum modal fields)
+            $('form.required-form').find('.main-form-field[required]').each(function() {
+                if ($(this).prop('required')) {
+                    var $field = $(this);
+                    var value = $field.val();
+                    var isEmpty = false;
+                    
+                    // For Select2 fields
+                    if ($field.hasClass('select2-hidden-accessible') && $.fn.select2) {
+                        try {
+                            if ($field.is('select[multiple]')) {
+                                value = $field.select2('val');
+                                isEmpty = !value || value.length === 0;
+                            } else {
+                                value = $field.select2('val');
+                                isEmpty = !value || value === '';
+                            }
+                        } catch (select2Error) {
+                            // Fallback to regular validation
+                            if ($field.is('select[multiple]')) {
+                                isEmpty = !value || value.length === 0;
+                            } else if ($field.is('select')) {
+                                isEmpty = !value || value === '';
+                            } else {
+                                isEmpty = !value || value === '';
+                            }
+                        }
+                    } else {
+                        // Regular fields
+                        if ($field.is('select[multiple]')) {
+                            isEmpty = !value || value.length === 0;
+                        } else if ($field.is('select')) {
+                            isEmpty = !value || value === '';
+                        } else {
+                            isEmpty = !value || value === '';
+                        }
+                    }
+                    
+                    if (isEmpty) {
+                        isValid = false;
+                        $field.addClass('is-invalid');
+                        
+                        if (!firstInvalidField) {
+                            firstInvalidField = $field;
+                        }
+                    } else {
+                        $field.removeClass('is-invalid');
+                    }
                 }
-            } else {
-                $(this).removeClass('is-invalid');
+            });
+            
+            // Switch to tab with first invalid field
+            if (firstInvalidField) {
+                var tabId = firstInvalidField.closest('.tab-pane').attr('id');
+                if (tabId) {
+                    $('.nav-link[href="#' + tabId + '"]').tab('show');
+                }
             }
-        });
-
-        if (isValid) {
-            $('form.required-form').submit();
-        } else {
-            toastr.error('<?php echo get_phrase("Please fill all required fields"); ?>');
-        }
+            
+            if (isValid) {
+                $('form.required-form').submit();
+            } else {
+                toastr.error('<?php echo get_phrase("Please fill all required fields"); ?>');
+            }
     }
+    
+    // Attach event to update button
+    $(document).ready(function() {
+        $('#update-course-button').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            validateAndSubmitEditForm();
+            return false;
+        });
+    });
 </script>

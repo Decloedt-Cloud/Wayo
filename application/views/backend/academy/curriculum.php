@@ -846,6 +846,11 @@ function imageHandler() {
                 if (data.success) {
                     quill.insertEmbed(range.index, 'image', data.url);
                     quill.setSelection(range.index + 1);
+                    
+                    // Update hidden input and trigger autosave
+                    document.getElementById('lessonContent').value = quill.root.innerHTML;
+                    AutoSaveManager.setLessonDirty(true);
+                    
                     toastr.success('<?php echo addslashes(get_phrase('image_uploaded_successfully')); ?>');
                 } else {
                     toastr.error(data.message || '<?php echo addslashes(get_phrase('error_uploading_image')); ?>');
@@ -950,6 +955,10 @@ function insertVideo() {
     quill.insertEmbed(range.index, 'video', embedUrl);
     quill.setSelection(range.index + 1);
     
+    // Update hidden input and trigger autosave
+    document.getElementById('lessonContent').value = quill.root.innerHTML;
+    AutoSaveManager.setLessonDirty(true);
+    
     closeVideoModal();
     toastr.success('<?php echo addslashes(get_phrase('video_inserted')); ?>');
 }
@@ -994,10 +1003,15 @@ function attachmentHandler() {
                 }
                 
                 if (data.success) {
-                    // Insert a link to the attachment
-                    const linkText = '📎 ' + data.name;
+                    // Insert a link to the attachment (without icon)
+                    const linkText = data.name;
                     quill.insertText(range.index, linkText, 'link', data.url);
                     quill.setSelection(range.index + linkText.length);
+                    
+                    // Update hidden input and trigger autosave
+                    document.getElementById('lessonContent').value = quill.root.innerHTML;
+                    AutoSaveManager.setLessonDirty(true);
+                    
                     toastr.success('<?php echo addslashes(get_phrase('file_uploaded_successfully')); ?>');
                 } else {
                     toastr.error(data.message || '<?php echo addslashes(get_phrase('error_uploading_file')); ?>');
