@@ -318,13 +318,13 @@ const CalendarApp = {
                 this.initCalendar();
               }
             } catch (e) {
-              this.showNotification('error', 'No community yet.');
+              this.showNotification('error', '⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated.');
               // Initialize calendar to avoid breaking UI
               this.initCalendar();
             }
           },
           error: () => {
-            this.showNotification('error', 'Failed to load communities');
+            this.showNotification('error', '⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated.');
             // Initialize calendar to avoid breaking UI
             this.initCalendar();
           }
@@ -493,18 +493,28 @@ const CalendarApp = {
                     successCallback(events);
                     csrfHash = data.csrf.csrfHash;
                 } else {
-                    this.showNotification('error', data.message || 'Failed to load events');
+                    let errorMessage = data.message || 'Failed to load events';
+                    // Customize error messages for student without class
+                    if (errorMessage.includes('Not enrolled in any school') || errorMessage.includes('No student associated with this user')) {
+                        errorMessage = '⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated.';
+                    }
+                    this.showNotification('error', errorMessage);
                     failureCallback();
                 }
             } catch (e) {
                 console.error('Error parsing response:', e, response);
-                this.showNotification('error', 'No community yet.');
+                this.showNotification('error', '⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated.');
                 failureCallback();
             }
         },
         error: (xhr) => {
             console.error('AJAX error:', xhr.status, xhr.statusText);
-            this.showNotification('error', xhr.status === 403 ? 'Access denied' : 'Failed to load events');
+            let errorMessage = xhr.status === 403 ? 'Access denied' : 'Failed to load events';
+            // Customize error message for student without class
+            if (errorMessage === 'Failed to load events') {
+                errorMessage = '⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated.';
+            }
+            this.showNotification('error', errorMessage);
             failureCallback();
         },
         complete: () => {
