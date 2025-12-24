@@ -69,7 +69,8 @@
 
                 <a class="btn btn-outline-wayo mt-auto" 
                    href="<?php echo base_url('home/community_details/' . $c['id']); ?>">
-                  <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?>
+                  <!-- <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?> -->
+                   <?php echo get_phrase('Details'); ?>
                 </a>
               </div>
             </div>

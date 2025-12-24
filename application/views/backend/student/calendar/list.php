@@ -318,13 +318,13 @@ const CalendarApp = {
                 this.initCalendar();
               }
             } catch (e) {
-              this.showNotification('error', 'No community yet.');
+              this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
               // Initialize calendar to avoid breaking UI
               this.initCalendar();
             }
           },
           error: () => {
-            this.showNotification('error', 'Failed to load communities');
+            this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
             // Initialize calendar to avoid breaking UI
             this.initCalendar();
           }
@@ -493,18 +493,28 @@ const CalendarApp = {
                     successCallback(events);
                     csrfHash = data.csrf.csrfHash;
                 } else {
-                    this.showNotification('error', data.message || 'Failed to load events');
+                    let errorMessage = data.message || '<?php echo get_phrase("Failed to load events"); ?>';
+                    // Customize error messages for student without class
+                    if (errorMessage.includes('Not enrolled in any school') || errorMessage.includes('No student associated with this user')) {
+                        errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>';
+                    }
+                    this.showNotification('error', errorMessage);
                     failureCallback();
                 }
             } catch (e) {
                 console.error('Error parsing response:', e, response);
-                this.showNotification('error', 'No community yet.');
+                this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
                 failureCallback();
             }
         },
         error: (xhr) => {
             console.error('AJAX error:', xhr.status, xhr.statusText);
-            this.showNotification('error', xhr.status === 403 ? 'Access denied' : 'Failed to load events');
+            let errorMessage = xhr.status === 403 ? '<?php echo get_phrase("Access denied"); ?>' : '<?php echo get_phrase("Failed to load events"); ?>';
+            // Customize error message for student without class
+            if (errorMessage === '<?php echo get_phrase("Failed to load events"); ?>') {
+                errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>';
+            }
+            this.showNotification('error', errorMessage);
             failureCallback();
         },
         complete: () => {
@@ -552,7 +562,7 @@ const CalendarApp = {
   showEventDetails(eventId, occurrenceDate) {
     // Validate inputs
     if (!eventId || !occurrenceDate) {
-        this.showNotification('error', 'No event or occurrence date selected');
+        this.showNotification('error', '<?php echo get_phrase("No event or occurrence date selected"); ?>');
         return;
     }
 
@@ -666,7 +676,7 @@ const CalendarApp = {
                                     csrfHash = schoolData.csrf?.csrfHash || csrfHash;
                                 }
                             } catch (e) {
-                                this.showNotification('error', 'Error parsing school data');
+                                this.showNotification('error', '<?php echo get_phrase("Error parsing school data"); ?>');
                             }
                         },
                     });
@@ -786,7 +796,7 @@ const CalendarApp = {
                     this.stopPolling();
                 }
             } catch (e) {
-                this.showNotification('error', 'Invalid server response');
+                this.showNotification('error', '<?php echo get_phrase("Invalid server response"); ?>');
             }
         },
         error: (xhr) => {
@@ -1046,7 +1056,7 @@ const CalendarApp = {
     const occurrenceDate = $('#currentOccurrenceDate').val();
     
     if (!eventId || !occurrenceDate) {
-        this.showNotification('error', 'No event or occurrence date selected');
+        this.showNotification('error', '<?php echo get_phrase("No event or occurrence date selected"); ?>');
         return;
     }
 
@@ -1089,14 +1099,14 @@ const CalendarApp = {
                             }
                             isExpired = new Date() - endDateTime > 24 * 60 * 60 * 1000;
                         } catch (e) {
-                            this.showNotification('error', 'Invalid event date or time format');
+                            this.showNotification('error', '<?php echo get_phrase("Invalid event date or time format"); ?>');
                             $('#joinMeetingBtn').show();
                             return;
                         }
                     }
 
                     if (isExpired) {
-                         this.showNotification('error', 'Event occurrence is expired');
+                         this.showNotification('error', '<?php echo get_phrase("Event occurrence is expired"); ?>');
                         $('#joinMeetingBtn').show();
                         return;
                     }
@@ -1165,18 +1175,18 @@ const CalendarApp = {
                                          $('#joinMeetingBtn').show();
                                     }
                                 } catch (e) {
-                                    this.showNotification('error', 'Invalid server response');
+                                    this.showNotification('error', '<?php echo get_phrase("Invalid server response"); ?>');
                                      $('#joinMeetingBtn').show();
                                 }
                             },
                             error: (xhr) => {
-                                this.showNotification('error', 'Error starting meeting. Please check server connectivity.');
+                                this.showNotification('error', '<?php echo get_phrase("Error starting meeting. Please check server connectivity."); ?>');
                                  $('#joinMeetingBtn').show();
                             }
                         });
                     } else if (buttonText === '<?php echo get_phrase('Join Meeting'); ?>') {
                         if (!occurrenceData.meeting_id) {
-                            this.showNotification('error', 'No meeting ID available for joining');
+                            this.showNotification('error', '<?php echo get_phrase("No meeting ID available for joining"); ?>');
                              $('#joinMeetingBtn').show();
                             return;
                         }
@@ -1209,7 +1219,7 @@ const CalendarApp = {
                                         }
                                         this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
                                     } else {
-                                        this.showNotification('error', state.message || 'Meeting is not active');
+                                        this.showNotification('error', state.message || '<?php echo get_phrase("Meeting is not active"); ?>');
                                         $('#joinMeetingBtn').show();
                                         return;
                                     }
@@ -1255,7 +1265,7 @@ const CalendarApp = {
                     $('#joinMeetingBtn').show(); 
                 }
             } catch (e) {
-                this.showNotification('error', 'Invalid server response');
+                this.showNotification('error', '<?php echo get_phrase("Invalid server response"); ?>');
                 $('#joinMeetingBtn').show(); 
             }
         },
