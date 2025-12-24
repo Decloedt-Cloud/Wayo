@@ -3376,5 +3376,14 @@
     "clear_formatting": "Effacer la mise en forme",
     "order_saved": "Ordre enregistré",
     "error_saving_order": "Erreur lors de l'enregistrement de l'ordre",
-    "outline": "Plan"
+    "outline": "Plan",
+    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Votre calendrier est vide<br>Pour voir les événements, rejoignez une classe ou attendez que votre inscription soit validée.",
+    "failed_to_load_events": "Échec du chargement des événements",
+    "no_event_or_occurrence_date_selected": "Aucun événement ou date d'occurrence sélectionné",
+    "error_parsing_school_data": "Erreur lors de l'analyse des données de l'école",
+    "invalid_event_date_or_time_format": "Format de date ou d'heure de l'événement invalide",
+    "event_occurrence_is_expired": "L'occurrence de l'événement est expirée",
+    "error_starting_meeting._please_check_server_connectivity.": "Erreur lors du démarrage de la réunion. Veuillez vérifier la connectivité au serveur.",
+    "no_meeting_id_available_for_joining": "Aucun ID de réunion disponible pour rejoindre",
+    "meeting_is_not_active": "La réunion n'est pas active"
 }

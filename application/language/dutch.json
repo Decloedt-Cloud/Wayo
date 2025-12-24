@@ -3534,5 +3534,14 @@
     "attach_file": "Bestand bijvoegen",
     "clear_formatting": "Opmaak wissen",
     "order_saved": "Volgorde opgeslagen",
-    "error_saving_order": "Fout bij opslaan van volgorde"
+    "error_saving_order": "Fout bij opslaan van volgorde",
+    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Je kalender is leeg<br>Om evenementen te zien, meld je aan voor een les of wacht tot je inschrijving is gevalideerd.",
+    "failed_to_load_events": "Gebeurtenissen laden mislukt",
+    "no_event_or_occurrence_date_selected": "Geen evenement of datum van uitvoering geselecteerd",
+    "error_parsing_school_data": "Fout bij het verwerken van schoolgegevens",
+    "invalid_event_date_or_time_format": "Ongeldig formaat voor datum of tijd van het evenement",
+    "event_occurrence_is_expired": "De uitvoering van het evenement is verlopen",
+    "error_starting_meeting._please_check_server_connectivity.": "Fout bij het starten van de vergadering. Controleer de serververbinding.",
+    "no_meeting_id_available_for_joining": "Geen meeting-ID beschikbaar om deel te nemen",
+    "meeting_is_not_active": "De vergadering is niet actief"
 }
