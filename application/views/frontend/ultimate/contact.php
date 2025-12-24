@@ -1,4 +1,5 @@
- <style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+  <style>
  .glass {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -122,6 +123,118 @@
       border-radius: 10px;
       border: none;
     }
+
+    /* === NOUVEAU STYLE UNIFIÉ === */
+    .unified-phone-wrapper {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        background: #fff;
+        transition: all 0.3s ease;
+        /* overflow: hidden; REMOVED to allow dropdown */
+        height: 58px; 
+    }
+
+    /* Effet focus global sur le wrapper */
+    .unified-phone-wrapper:focus-within {
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    /* Style quand invalide */
+    .unified-phone-wrapper.is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    /* Style du selecteur pays à l'intérieur */
+    .unified-phone-wrapper .country-select-wrapper {
+        width: 110px; 
+        border-right: 1px solid #eee;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        position: relative;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .unified-phone-wrapper .form-select {
+        display: none; /* Hide native select if any */
+    }
+
+    /* Custom Dropdown Styles */
+    .custom-select-trigger {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1rem;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: none;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 4px;
+        width: 100%; /* Match wrapper width */
+        min-width: 80px;
+    }
+
+    .custom-options.open {
+        display: block;
+    }
+
+    .custom-option {
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: background 0.2s;
+    }
+
+    .custom-option:hover {
+        background-color: #fff2ea;
+        color: #ff6b35;
+    }
+
+    .custom-option.selected {
+        background-color: #fff2ea;
+        font-weight: bold;
+    }
+    
+    .flag-icon {
+        font-size: 1.2em;
+        line-height: 1em;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Style de l'input téléphone à l'intérieur */
+    .unified-phone-wrapper .form-floating {
+        flex-grow: 1;
+    }
+
+    .unified-phone-wrapper .form-control {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        height: 56px; /* slightly less to fit inside */
+    }
+    
+    .unified-phone-wrapper .form-control:focus {
+        box-shadow: none !important;
+    }
   </style>
  
  
@@ -183,13 +296,13 @@
               </div>
             </div>
  
-            <!-- Téléphone avec sélecteur de pays -->
+            <!-- Téléphone avec sélecteur de pays UNIFIÉ -->
             <div class="col-12 col-md-6">
-              <div class="phone-wrapper">
+              <div class="unified-phone-wrapper">
                 <div class="country-select-wrapper">
                    <?php include 'partials/countrySelect.php'; ?>
                 </div>
-                <div class="form-floating flex-grow-1">
+                <div class="form-floating">
                   <input type="tel" class="form-control shadow-none" id="phoneInput"
                          name="phone" placeholder="501548923">
                   <label for="phoneInput"><?php echo get_phrase("phone") ?>*</label>
@@ -300,47 +413,155 @@ if (contactForm) {
  
   // === Crée un div d’erreur sous chaque input ===
   contactForm.querySelectorAll('input, textarea').forEach(input => {
+    // On ignore le select-trigger car c'est pas un input de saisie
+    if (input.id === 'countrySelect') return;
+
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-danger small mt-1 d-none';
-    input.parentNode.appendChild(errorDiv);
+    errorDiv.className = 'error-message text-danger small d-none';
+    errorDiv.style.fontSize = '0.75rem';
+    errorDiv.style.marginTop = '2px';
+    
+    // On l'ajoute à la colonne parente pour éviter d'être bloqué par les wrappers flex/floating
+    const container = input.closest('.col-12, .col-md-6');
+    if (container) {
+        container.appendChild(errorDiv);
+    } else {
+        input.parentNode.appendChild(errorDiv);
+    }
  
     input.addEventListener('input', () => {
       input.classList.remove('is-invalid', 'is-valid');
       errorDiv.classList.add('d-none');
+      
+      // Si c'est le téléphone, on retire aussi la classe du wrapper
+      if (input.id === 'phoneInput') {
+          input.closest('.unified-phone-wrapper')?.classList.remove('is-invalid');
+      }
     });
   });
  
-  // === GESTION DU CODE PAYS AUTOMATIQUE ===
+  // === GESTION DU CODE PAYS CUSTOM ET AUTOMATIQUE ===
 const phoneInput = document.getElementById('phoneInput');
-const countrySelect = document.getElementById('countrySelect');
- 
-// Quand on choisit un pays → insérer le code une seule fois (sans espace)
-countrySelect.addEventListener('change', () => {
-  const code = countrySelect.value;
-  const current = phoneInput.value.trim();
- 
-  // Si le code n'est pas encore présent au début → on le met
-  if (!current.startsWith(code)) {
-    phoneInput.value = code;
-  }
+// Custom Dropdown Elements
+const countryInput = document.getElementById('countrySelect'); // Hidden input
+const countryTrigger = document.getElementById('countryTrigger');
+const countryOptions = document.getElementById('countryOptions');
+const selectedFlag = document.getElementById('selectedFlag');
+const options = document.querySelectorAll('.custom-option');
+
+let previousCode = countryInput.value; 
+
+// Toggle Dropdown
+countryTrigger.addEventListener('click', (e) => {
+    e.stopPropagation(); // Stop bubbling
+    countryOptions.classList.toggle('open');
 });
- 
-// S'assurer que le code du pays est présent au chargement
+
+// Close when clicking outside
+document.addEventListener('click', () => {
+    countryOptions.classList.remove('open');
+});
+
+// Select Option Logic
+options.forEach(option => {
+    option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const value = this.getAttribute('data-value');
+        const flag = this.getAttribute('data-flag');
+
+        // Update UI
+        selectedFlag.className = `flag-icon flag-icon-${flag}`;
+        countryInput.value = value;
+        
+        // Update selection state
+        options.forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+
+        countryOptions.classList.remove('open');
+
+        // Trigger logic to update phone input
+        updatePhoneCode();
+    });
+});
+
+// Fonction pour mettre à jour le code (Logic preserved)
+function updatePhoneCode() {
+  const newCode = countryInput.value;
+  let currentVal = phoneInput.value;
+
+  if (currentVal.startsWith(previousCode)) {
+    phoneInput.value = newCode + currentVal.substring(previousCode.length);
+  } 
+  else if (!currentVal.trim() || !currentVal.startsWith('+')) {
+    phoneInput.value = newCode;
+  }
+  else {
+     phoneInput.value = newCode + currentVal.replace(/^\+\d+\s*/, '');
+  }
+  
+  previousCode = newCode; 
+}
+
+// Init
 window.addEventListener('DOMContentLoaded', () => {
-  const code = countrySelect.value;
-  if (!phoneInput.value.trim()) {
-    phoneInput.value = code;
-  }
+    if (!phoneInput.value.trim()) {
+        phoneInput.value = countryInput.value;
+    }
+    previousCode = countryInput.value;
+    
+    // Set initial flag based on value
+    const initialOpt = document.querySelector(`.custom-option[data-value="${countryInput.value}"]`);
+    if(initialOpt) {
+       const flag = initialOpt.getAttribute('data-flag'); 
+       selectedFlag.className = `flag-icon flag-icon-${flag}`;
+    }
 });
- 
-// Empêcher la suppression du code pays
+
+// === LOGIQUE DE PROTECTION DU CODE PAYS "FIXÉ" ===
+
+// 1. Empêcher de placer le curseur dans la zone du code
+['click', 'focus', 'keyup', 'keydown'].forEach(evt => {
+    phoneInput.addEventListener(evt, (e) => {
+        const code = countryInput.value;
+        // Si on essaie de sélectionner ou cliquer avant la fin du code
+        if (phoneInput.selectionStart < code.length) {
+            e.preventDefault();
+            phoneInput.setSelectionRange(code.length, code.length);
+        }
+    });
+});
+
+// 2. Bloquer la suppression du code (Backspace / Delete)
+phoneInput.addEventListener('keydown', (e) => {
+    const code = countryInput.value;
+    // Si on appuie sur Backspace et qu'on est collé au code
+    if (e.key === 'Backspace' && phoneInput.selectionStart <= code.length) {
+         e.preventDefault();
+    }
+    // Si on appuie sur Delete et qu'on est avant le code (théoriquement bloqué par le point 1, mais sécurité)
+    if (e.key === 'Delete' && phoneInput.selectionStart < code.length) {
+         e.preventDefault();
+    }
+});
+
+// 3. Restauration ultime si le code est altéré (ex: copier/coller brutal)
 phoneInput.addEventListener('input', () => {
-  const code = countrySelect.value;
-  if (!phoneInput.value.startsWith(code)) {
-    // Retirer tout caractère avant + et réécrire correctement
-    const cleaned = phoneInput.value.replace(/^\+?[0-9]*/, '');
-    phoneInput.value = code + cleaned;
-  }
+    const code = countryInput.value;
+    if (!phoneInput.value.startsWith(code)) {
+         // On essaie de préserver ce qui suit
+         const raw = phoneInput.value.replace(code, '').replace(/^\+/, ''); 
+         phoneInput.value = code + raw;
+    }
+});
+
+contactForm.addEventListener('reset', () => {
+    setTimeout(() => {
+        // Reset to default (MA)
+        countryInput.value = "+212";
+        selectedFlag.className = "flag-icon flag-icon-ma";
+        phoneInput.value = "+212";
+        previousCode = "+212";
+    }, 10);
 });
  
   // === Validation du formulaire ===
@@ -360,16 +581,29 @@ phoneInput.addEventListener('input', () => {
     const phoneRegex = /^\+[0-9]{10,15}$/;
  
     function setError(input, message) {
-      const err = input.parentNode.querySelector('.error-message');
+      // Trouver l'error-message dans le container parent (col-...)
+      const container = input.closest('.col-12, .col-md-6');
+      const err = container.querySelector('.error-message');
+      
       input.classList.add('is-invalid');
+      if (input.id === 'phoneInput') {
+          input.closest('.unified-phone-wrapper')?.classList.add('is-invalid');
+      }
+
       err.textContent = message;
       err.classList.remove('d-none');
       isValid = false;
     }
  
     function clearError(input) {
-      const err = input.parentNode.querySelector('.error-message');
+      const container = input.closest('.col-12, .col-md-6');
+      const err = container.querySelector('.error-message');
+      
       input.classList.remove('is-invalid');
+      if (input.id === 'phoneInput') {
+          input.closest('.unified-phone-wrapper')?.classList.remove('is-invalid');
+      }
+
       input.classList.add('is-valid');
       err.classList.add('d-none');
     }
@@ -426,7 +660,7 @@ fetch(contactForm.action, {
     contactForm.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
  
     // Remettre le code pays par défaut après reset
-    phoneInput.value = countrySelect.value + ' ';
+    phoneInput.value = countryInput.value + ' ';
     setTimeout(() => alertS.classList.add('d-none'), 4000);
   } else {
     errorS.innerText = data.message || 'Failed to send your message.';
