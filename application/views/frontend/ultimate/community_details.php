@@ -98,7 +98,10 @@ foreach ($classes as $key => $class) {
 
                 <li class="list-inline-item me-3"><i class="fa-solid fa-lock-open text-wayo me-1"></i><?php echo get_phrase("Public") ?></li>
               <?php } ?>
-              <li class="list-inline-item me-3"><i class="fa-solid fa-bullhorn text-wayo me-1"></i><?php echo $school['category'] ?></li>
+              <li class="list-inline-item me-3">
+                <i class="fa-solid fa-bullhorn text-wayo me-1"></i>
+                <?php echo get_phrase($school['category']); ?>
+              </li>
               <li class="list-inline-item me-3"><i class="fa-solid fa-ticket text-wayo me-1"></i>
                 <?php
                 if ((float)$school['price'] > 0) {
@@ -159,7 +162,7 @@ foreach ($classes as $key => $class) {
                               }
                               if (!empty($class['cycle'])) echo ' ' . $class['cycle'];
                             } else {
-                              echo "Gratuit";
+                              echo get_phrase('free');
                             }
                             ?>
                           </span>
