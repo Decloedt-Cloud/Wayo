@@ -3487,5 +3487,14 @@
     "cars": "Cars",
     "pets": "Pets",
     "travel": "Travel",
-    "other_": "Other "
+    "other_": "Other ",
+    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ your calendar is empty<br>to see events, join a class or wait for your registration to be validated.",
+    "failed_to_load_events": "Failed to load events",
+    "no_event_or_occurrence_date_selected": "No event or occurrence date selected",
+    "error_parsing_school_data": "Error parsing school data",
+    "invalid_event_date_or_time_format": "Invalid event date or time format",
+    "event_occurrence_is_expired": "Event occurrence is expired",
+    "error_starting_meeting._please_check_server_connectivity.": "Error starting meeting. please check server connectivity.",
+    "no_meeting_id_available_for_joining": "No meeting id available for joining",
+    "meeting_is_not_active": "Meeting is not active"
 }
