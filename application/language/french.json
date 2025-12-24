@@ -3376,5 +3376,8 @@
     "clear_formatting": "Effacer la mise en forme",
     "order_saved": "Ordre enregistré",
     "error_saving_order": "Erreur lors de l'enregistrement de l'ordre",
-    "outline": "Plan"
+    "outline": "Plan",
+    "no_sections_yet": "Aucune section pour le moment",
+    "retake_quiz": "Reprendre le quiz",
+    "file_too_large_max_10mb": "Fichier trop volumineux (max 10 Mo)"
 }

@@ -3387,7 +3387,6 @@
     "section_title": "Section title",
     "drag_to_reorder": "Drag to reorder",
     "move_to_position": "Move to position",
-    "loading": "Loading",
     "insert_link": "Insert link",
     "insert": "Insert",
     "insert_image": "Insert image",
@@ -3470,5 +3469,8 @@
     "clear_formatting": "Clear formatting",
     "order_saved": "Order saved",
     "error_saving_order": "Error saving order",
-    "outline": "Outline"
+    "outline": "Outline",
+    "no_sections_yet": "No sections yet",
+    "retake_quiz": "Retake quiz",
+    "file_too_large_max_10mb": "File too large max 10mb"
 }

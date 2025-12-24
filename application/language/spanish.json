@@ -3324,5 +3324,8 @@
     "attach_file": "Adjuntar archivo",
     "clear_formatting": "Borrar formato",
     "order_saved": "Orden guardado",
-    "error_saving_order": "Error al guardar el orden"
+    "error_saving_order": "Error al guardar el orden",
+    "no_sections_yet": "Aún no hay secciones",
+    "retake_quiz": "Volver a realizar el cuestionario",
+    "file_too_large_max_10mb": "Archivo demasiado grande (máx. 10 MB)"
 }

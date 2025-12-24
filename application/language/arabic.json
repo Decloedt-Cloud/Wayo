@@ -3287,5 +3287,8 @@
     "attach_file": "إرفاق ملف",
     "clear_formatting": "مسح التنسيق",
     "order_saved": "تم حفظ الترتيب",
-    "error_saving_order": "خطأ أثناء حفظ الترتيب"
+    "error_saving_order": "خطأ أثناء حفظ الترتيب",
+    "no_sections_yet": "لا توجد أقسام بعد",
+    "retake_quiz": "إعادة الاختبار",
+    "file_too_large_max_10mb": "الملف كبير جدًا (الحد الأقصى 10 ميجابايت)"
 }

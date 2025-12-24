@@ -3534,5 +3534,8 @@
     "attach_file": "Bestand bijvoegen",
     "clear_formatting": "Opmaak wissen",
     "order_saved": "Volgorde opgeslagen",
-    "error_saving_order": "Fout bij opslaan van volgorde"
+    "error_saving_order": "Fout bij opslaan van volgorde",
+    "no_sections_yet": "Nog geen secties",
+    "retake_quiz": "Quiz opnieuw doen",
+    "file_too_large_max_10mb": "Bestand te groot (max. 10 MB)"
 }

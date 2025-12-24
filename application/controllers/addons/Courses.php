@@ -253,7 +253,17 @@ class Courses extends CI_Controller {
     $page_data['total_pages'] = ceil($page_data['total_sections'] / $sections_per_page);
     $page_data['sections_per_page'] = $sections_per_page;
     // $page_data['subjects']        = $this->db->get_where('subjects', array('class_id' => $page_data['course']['class_id']))->result_array();
-    $page_data['first_lesson_id']  = $this->db->get_where('lesson', array('course_id' => $course_id))->row_array();
+    // Trouver la première leçon qui n'est pas un quiz
+    $this->db->order_by('order', 'ASC');
+    $this->db->where('course_id', $course_id);
+    $this->db->where("LOWER(lesson_type) !=", 'quiz');
+    $first_non_quiz_lesson = $this->db->get('lesson')->row_array();
+    
+    // Si aucune leçon non-quiz trouvée, prendre la première leçon disponible
+    if (empty($first_non_quiz_lesson)) {
+        $first_non_quiz_lesson = $this->db->get_where('lesson', array('course_id' => $course_id))->row_array();
+    }
+    $page_data['first_lesson_id'] = $first_non_quiz_lesson;
     // Relations : classes et enseignants du cours
     $page_data['course_classes'] = $this->lms_model->get_classes_by_course($course_id);
     $page_data['course_teachers'] = $this->lms_model->get_teachers_by_course($course_id);
