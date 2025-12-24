@@ -3287,5 +3287,14 @@
     "attach_file": "إرفاق ملف",
     "clear_formatting": "مسح التنسيق",
     "order_saved": "تم حفظ الترتيب",
-    "error_saving_order": "خطأ أثناء حفظ الترتيب"
+    "error_saving_order": "خطأ أثناء حفظ الترتيب",
+    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ تقويمك فارغ<br>لرؤية الأحداث، انضم إلى فصل دراسي أو انتظر حتى يتم التحقق من تسجيلك.",
+    "failed_to_load_events": "فشل تحميل الأحداث",
+    "no_event_or_occurrence_date_selected": "لم يتم تحديد أي حدث أو تاريخ حدوث",
+    "error_parsing_school_data": "خطأ في تحليل بيانات المدرسة",
+    "invalid_event_date_or_time_format": "صيغة تاريخ أو وقت الحدث غير صالحة",
+    "event_occurrence_is_expired": "انتهت صلاحية حدوث الحدث",
+    "error_starting_meeting._please_check_server_connectivity.": "خطأ في بدء الاجتماع. يرجى التحقق من اتصال الخادم.",
+    "no_meeting_id_available_for_joining": "لا يوجد معرف اجتماع متاح للانضمام",
+    "meeting_is_not_active": "الاجتماع غير نشط"
 }
