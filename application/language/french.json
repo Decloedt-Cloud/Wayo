@@ -3377,6 +3377,9 @@
     "order_saved": "Ordre enregistré",
     "error_saving_order": "Erreur lors de l'enregistrement de l'ordre",
     "outline": "Plan",
+    "no_sections_yet": "Aucune section pour le moment",
+    "retake_quiz": "Reprendre le quiz",
+    "file_too_large_max_10mb": "Fichier trop volumineux (max 10 Mo)",
     "business": "Affaires",
     "health_&_fitness": "Santé & forme",
     "personal_development": "Développement personnel",
@@ -3395,7 +3398,6 @@
     "pets": "Animaux",
     "travel": "Voyage",
     "other_": "Autre",
-    
     "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Votre calendrier est vide<br>Pour voir les événements, rejoignez une classe ou attendez que votre inscription soit validée.",
     "failed_to_load_events": "Échec du chargement des événements",
     "no_event_or_occurrence_date_selected": "Aucun événement ou date d'occurrence sélectionné",

@@ -99,14 +99,23 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     border: 1px solid #D9D9D9;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 12px 0;
+    padding: 12px 15px;
     margin-bottom: 20px;
     text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 #quiz-header strong {
     color: #000;
     font-size: 1.1rem;
     font-weight: 700;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+#quiz-body {
+    overflow: hidden;
+    max-width: 100%;
 }
 .quiz-card {
     background-color: transparent !important;
@@ -119,6 +128,18 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     border-radius: 15px !important;
     background-color: #fff !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.question-body {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+.question-body .card-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .quiz-button:disabled {
     background: #4a4a4a;
@@ -202,7 +223,7 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     margin-top: 20px;
 }
 .start-exam-btn {
-    background: #FC7B30;
+    background: #6366f1;
     border: none;
     padding: 6px 6px;
     font-size: 1rem;
@@ -211,7 +232,24 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     transition: all 0.3s ease;
 }
 .start-exam-btn:hover {
-    background: #ee7626;
+    background:rgba(99, 101, 241, 0.85);
+    transform: scale(1.05);
+}
+.retake-quiz-btn {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+.retake-quiz-btn:hover {
+    background: rgba(99, 101, 241, 0.85);
+    color: #fff;
     transform: scale(1.05);
 }
 .confirmation-container {
@@ -351,6 +389,11 @@ function getStarted(questionNumber) {
     startTimer(questionNumber);
 }
 
+// Refaire le quiz
+function retakeQuiz() {
+    window.location.reload();
+}
+
 // Gérer le clic sur le bouton "Check Result"
 function check_result() {
     fetch('/quiz/results?lesson_id=<?php echo $lesson_details['id']; ?>', {
@@ -377,6 +420,9 @@ function check_result() {
                 <h5><?php echo get_phrase('your_quiz_results'); ?></h5>
                 <p>Score: ${data.score}%</p>
                 <p>Correct Answers: ${data.correct_answers} / ${data.total_questions}</p>
+                <button type="button" class="btn retake-quiz-btn mt-3" onclick="retakeQuiz()">
+                    <i class="fas fa-redo-alt me-2"></i><?php echo get_phrase('retake_quiz'); ?>
+                </button>
             </div>
         `;
     })
