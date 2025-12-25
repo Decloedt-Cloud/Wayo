@@ -793,7 +793,7 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 
 .difficulty-badge.mixed {
     background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    color: #6366f1;
+    color: #4f46e5;
 }
 
 .difficulty-option.active .difficulty-badge.easy {

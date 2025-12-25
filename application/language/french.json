@@ -3404,5 +3404,7 @@
     "event_occurrence_is_expired": "L'occurrence de l'événement est expirée",
     "error_starting_meeting._please_check_server_connectivity.": "Erreur lors du démarrage de la réunion. Veuillez vérifier la connectivité au serveur.",
     "no_meeting_id_available_for_joining": "Aucun ID de réunion disponible pour rejoindre",
-    "meeting_is_not_active": "La réunion n'est pas active"
+    "meeting_is_not_active": "La réunion n'est pas active",
+    "no_sections_yet": "Aucune section pour le moment",
+    "add_first_section": "Ajouter une première section"
 }
