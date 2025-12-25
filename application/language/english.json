@@ -3499,5 +3499,7 @@
     "event_occurrence_is_expired": "Event occurrence is expired",
     "error_starting_meeting._please_check_server_connectivity.": "Error starting meeting. please check server connectivity.",
     "no_meeting_id_available_for_joining": "No meeting id available for joining",
-    "meeting_is_not_active": "Meeting is not active"
+    "meeting_is_not_active": "Meeting is not active",
+    "no_sections_yet": "No sections yet",
+    "add_first_section": "Add first section"
 }
