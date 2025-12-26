@@ -127,7 +127,7 @@ foreach ($classes as $key => $class) {
             <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
              <?php
-              $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
+              $currencies = isset($settings_school['system_currency']) ? $settings_school['system_currency'] : 'USD';
               ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
@@ -153,10 +153,9 @@ foreach ($classes as $key => $class) {
                           <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
                           <span class="badge rounded-pill border text-brand fw-bold price-badge">
                             <?php
-                            $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
                             if (isset($class['price']) && $class['price'] > 0) {
                               $class_price_ttc = isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price'];
-                              echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                              echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) && !empty($class['currency']) ? $class['currency'] : $currencies);
                               if ($vat_rate > 0) {
                                 echo " <small class='text-muted'>(TTC)</small>";
                               }
