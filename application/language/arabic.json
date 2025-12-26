@@ -3288,6 +3288,9 @@
     "clear_formatting": "مسح التنسيق",
     "order_saved": "تم حفظ الترتيب",
     "error_saving_order": "خطأ أثناء حفظ الترتيب",
+    "no_sections_yet": "لا توجد أقسام بعد",
+    "retake_quiz": "إعادة الاختبار",
+    "file_too_large_max_10mb": "الملف كبير جدًا (الحد الأقصى 10 ميجابايت)",
     "business": "الأعمال",
     "health_&_fitness": "الصحة واللياقة",
     "personal_development": "التطوير الشخصي",
@@ -3314,5 +3317,7 @@
     "event_occurrence_is_expired": "انتهت صلاحية حدوث الحدث",
     "error_starting_meeting._please_check_server_connectivity.": "خطأ في بدء الاجتماع. يرجى التحقق من اتصال الخادم.",
     "no_meeting_id_available_for_joining": "لا يوجد معرف اجتماع متاح للانضمام",
-    "meeting_is_not_active": "الاجتماع غير نشط"
+    "meeting_is_not_active": "الاجتماع غير نشط",
+    "no_sections_yet": "لا توجد أقسام بعد",
+    "add_first_section": "إضافة القسم الأول"
 }

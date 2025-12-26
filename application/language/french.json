@@ -3352,6 +3352,9 @@
     "order_saved": "Ordre enregistré",
     "error_saving_order": "Erreur lors de l'enregistrement de l'ordre",
     "outline": "Plan",
+    "no_sections_yet": "Aucune section pour le moment",
+    "retake_quiz": "Reprendre le quiz",
+    "file_too_large_max_10mb": "Fichier trop volumineux (max 10 Mo)",
     "business": "Affaires",
     "health_&_fitness": "Santé & forme",
     "personal_development": "Développement personnel",
@@ -3398,5 +3401,7 @@
     "transparent_commission_at_publication._scheduled_payouts.": "Transparent commission at publication. scheduled payouts.",
     "available_for_certain_courses_(noted_on_the_course_page).": "Available for certain courses (noted on the course page).",
     "security_standards_&_certified_providers._encrypted_connections.": "Security standards & certified providers. encrypted connections.",
-    "chrome,_edge,_firefox,_safari_(latest_versions).": "Chrome, edge, firefox, safari (latest versions)."
+    "chrome,_edge,_firefox,_safari_(latest_versions).": "Chrome, edge, firefox, safari (latest versions).",
+    "no_sections_yet": "Aucune section pour le moment",
+    "add_first_section": "Ajouter une première section"
 }

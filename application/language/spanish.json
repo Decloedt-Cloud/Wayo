@@ -3325,6 +3325,9 @@
     "clear_formatting": "Borrar formato",
     "order_saved": "Orden guardado",
     "error_saving_order": "Error al guardar el orden",
+    "no_sections_yet": "Aún no hay secciones",
+    "retake_quiz": "Volver a realizar el cuestionario",
+    "file_too_large_max_10mb": "Archivo demasiado grande (máx. 10 MB)",
     "business": "Negocios",
     "health_&_fitness": "Salud y fitness",
     "personal_development": "Desarrollo personal",
@@ -3351,5 +3354,7 @@
     "event_occurrence_is_expired": "La ocurrencia del evento ha expirado",
     "error_starting_meeting._please_check_server_connectivity.": "Error al iniciar la reunión. Por favor, verifica la conexión con el servidor.",
     "no_meeting_id_available_for_joining": "No hay ID de reunión disponible para unirse",
-    "meeting_is_not_active": "La reunión no está activa"
+    "meeting_is_not_active": "La reunión no está activa",
+    "no_sections_yet": "No hay secciones aún",
+    "add_first_section": "Añadir la primera sección"
 }

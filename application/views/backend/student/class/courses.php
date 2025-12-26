@@ -42,7 +42,19 @@
 
                             $progress_value = course_progress($course['id']);
                             $lessons = $this->lms_model->get_lessons('course', $course['id']);
-                            $first_lesson = $lessons->row('id');
+                            // Trouver la première leçon qui n'est pas un quiz
+                            $first_lesson = null;
+                            foreach ($lessons->result_array() as $lesson) {
+                                if (strtolower($lesson['lesson_type']) != 'quiz') {
+                                    $first_lesson = $lesson['id'];
+                                    break;
+                                }
+                            }
+                            // Si aucune leçon non-quiz trouvée, prendre la première disponible
+                            if ($first_lesson === null && $lessons->num_rows() > 0) {
+                                $lessons->data_seek(0);
+                                $first_lesson = $lessons->row('id');
+                            }
 
                             if (file_exists('uploads/course_thumbnail/' . $course['thumbnail'])) {
                                 $course_thumbnail = base_url('uploads/course_thumbnail/' . $course['thumbnail']);

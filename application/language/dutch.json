@@ -3369,6 +3369,16 @@
     "music": "Muziek",
     "e-commerce": "E-commerce",
     "sales_&_marketing": "Verkoop & Marketing",
+    "no_sections_yet": "Nog geen secties",
+    "retake_quiz": "Quiz opnieuw doen",
+    "file_too_large_max_10mb": "Bestand te groot (max. 10 MB)",
+    "business": "Geschäft",
+    "health_&_fitness": "Gesundheit & Fitness",
+    "personal_development": "Persönliche Entwicklung",
+    "arts_&_crafts": "Kunst & Handwerk",
+    "music": "Musik",
+    "e-commerce": "E-Commerce",
+    "sales_&_marketing": "Vertrieb & Marketing",
     "tech": "Technologie",
     "spirituality": "Spiritualiteit",
     "beauty_&_fashion": "Schoonheid & Mode",
@@ -3388,6 +3398,7 @@
     "event_occurrence_is_expired": "De uitvoering van het evenement is verlopen",
     "error_starting_meeting._please_check_server_connectivity.": "Fout bij het starten van de vergadering. Controleer de serververbinding.",
     "no_meeting_id_available_for_joining": "Geen meeting-ID beschikbaar om deel te nemen",
-    "meeting_is_not_active": "De vergadering is niet actief"
-
+    "meeting_is_not_active": "De vergadering is niet actief",
+    "no_sections_yet": "Nog geen secties",
+    "add_first_section": "Voeg eerste sectie toe"
 }
