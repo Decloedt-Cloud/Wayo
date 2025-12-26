@@ -54,7 +54,7 @@
                   $cat_formated = $this->frontend_model->get_category_formated($category['name']);
                   ?>
                   <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>">
-                    <?php echo $category['name']; ?>
+                    <?php echo get_phrase($category['name']); ?>
                   </option>
                 <?php endforeach; ?>
               </select>
