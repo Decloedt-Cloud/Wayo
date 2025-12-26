@@ -62,7 +62,7 @@
                     <?php if (($c['access'] ?? 0) == 1): ?>
                       <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Private'); ?></span>
                     <?php else: ?>
-                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Free access'); ?></span>
+                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('public'); ?></span>
                     <?php endif; ?>
                   </li>
                 </ul>
