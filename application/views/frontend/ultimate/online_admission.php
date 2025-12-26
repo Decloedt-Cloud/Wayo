@@ -960,7 +960,7 @@
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
                         <button type="submit" id="submitBtnSchool"
-                                class="btn btn btn-success text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
+                                class="btn btn btn-primary text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
                         <button type="reset" id="resetBtn" style="display: none;"></button>
                     </div>
                 </section>
