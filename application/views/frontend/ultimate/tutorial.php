@@ -127,7 +127,6 @@
           <p><?php echo get_phrase("Publish your community, promote it, and track your metrics.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-regular fa-paper-plane"></i> <strong><?php echo get_phrase("Publishing & sharing") ?></strong> : <?php echo get_phrase("social networks, email, QR") ?></li>
-            <li><i class="fa-regular fa-message"></i> <strong>Collecte d’avis</strong> : <?php echo get_phrase("enable feedback") ?></li>
             <li><i class="fa-solid fa-chart-line"></i> <strong><?php echo get_phrase("Tracking") ?></strong> : <?php echo get_phrase("views, completions, revenue (dashboard)") ?></li>
           </ul>
           <div class="obi-cta">
