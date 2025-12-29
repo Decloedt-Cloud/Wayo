@@ -65,15 +65,25 @@
         <!-- Colonne Droite: Vidéo locale -->
         <div class="col-lg-6 col-xl-6">
           <figure class="yt-card" aria-label="Vidéo de présentation">
+            <?php
+            $user_lang = get_user_language();
+            if ($user_lang === 'french') {
+                $video_src = 'V5 Wayo Promo Video francais.mp4';
+            } elseif ($user_lang === 'arabic') {
+                $video_src = 'v2_Wayo_Academy_Promo_Video.mp4';
+            } else {
+                $video_src = 'Final En Wayo Promo Video anglais.mp4';
+            }
+            ?>
             <div class="ratio ratio-16x9 yt-desktop">
               <video autoplay muted loop playsinline controls>
-                <source src="<?php echo base_url('uploads/videos/v2_Wayo_Academy_Promo_Video.mp4'); ?>" type="video/mp4">
+                <source src="<?php echo base_url('uploads/videos/' . $video_src); ?>" type="video/mp4">
                 Votre navigateur ne supporte pas la lecture vidéo.
               </video>
             </div>
             <div class="ratio ratio-9x16 yt-mobile">
               <video autoplay muted loop playsinline controls>
-                <source src="<?php echo base_url('uploads/videos/v2_Wayo_Academy_Promo_Video.mp4'); ?>" type="video/mp4">
+                <source src="<?php echo base_url('uploads/videos/' . $video_src); ?>" type="video/mp4">
                 Votre navigateur ne supporte pas la lecture vidéo.
               </video>
             </div>
