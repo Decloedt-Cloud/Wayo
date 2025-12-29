@@ -1,5 +1,5 @@
 <!-- ========== MAIN ========== -->
-<main class="main-content" id="content" role="main">
+<main class="main-content" id="content" role="main"<?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
 
   <!-- Hero Section avec Bootstrap Grid -->
   <section id="hero" class="hero">
@@ -129,9 +129,9 @@
                     </div>
 
                     <ul class="feature-list">
-                        <li><?php echo get_phrase('Too many separate tools, loss of time and errors.'); ?></li>
-                        <li><?php echo get_phrase('Scattered data, no clear visibility.'); ?></li>
-                        <li><?php echo get_phrase('Manual processes, zero automation.'); ?></li>
+                        <li> <?php echo get_phrase('Too many separate tools, loss of time and errors.'); ?></li>
+                        <li> <?php echo get_phrase('Scattered data, no clear visibility.'); ?></li>
+                        <li> <?php echo get_phrase('Manual processes, zero automation.'); ?></li>
                     </ul>
                 </div>
             </div>
