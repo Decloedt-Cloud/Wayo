@@ -2505,6 +2505,8 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			]);
 		}
 
+		$user_language = get_user_language();
+		
 		// Préparer les données de l'utilisateur
 		$data = [
 			'name' => html_entity_decode(htmlspecialchars($this->input->post('first_name') . ' ' . $this->input->post('last_name'))),
@@ -2513,6 +2515,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			'password' => sha1($this->input->post('password-student')),
 			'role' => 'student',
 			'status' => 1,
+			'language' => $user_language,
 			'school_id' => null, // Ajustez selon votre logique
 			'watch_history' => '[]'
 		];
@@ -2539,7 +2542,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 				'newPasswordConfirm' => $plainPassword
 			],
 			'profile' => [
-				'language' => 'fr',
+				'language' => $user_language == 'arabic' ? 'ar' : ($user_language == 'french' ? 'fr' : ($user_language == 'spanish' ? 'es' : ($user_language == 'dutch' ? 'nl' : 'en-US'))),
 				'firstname' => $firstname,
 				'lastname' => $lastname,
 				'title' => $data['role']
