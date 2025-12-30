@@ -3402,6 +3402,10 @@
     "available_for_certain_courses_(noted_on_the_course_page).": "Available for certain courses (noted on the course page).",
     "security_standards_&_certified_providers._encrypted_connections.": "Security standards & certified providers. encrypted connections.",
     "chrome,_edge,_firefox,_safari_(latest_versions).": "Chrome, edge, firefox, safari (latest versions).",
-    "no_sections_yet": "Aucune section pour le moment",
-    "add_first_section": "Ajouter une première section"
+    "add_first_section": "Ajouter une première section",
+    "french": "Français",
+    "arabic": "Arabe",
+    "dutch": "Néerlandais",
+    "english": "Anglais",
+    "spanish": "Espagnol"
 }

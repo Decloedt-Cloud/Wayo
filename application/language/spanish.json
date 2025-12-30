@@ -3356,5 +3356,10 @@
     "no_meeting_id_available_for_joining": "No hay ID de reunión disponible para unirse",
     "meeting_is_not_active": "La reunión no está activa",
     "add_first_section": "Añadir la primera sección",
-    "comunidades": "Comunidades"
+    "comunidades": "Comunidades",
+    "spanish": "Español",
+    "arabic": "Árabe",
+    "dutch": "Neerlandés",
+    "english": "Inglés",
+    "french": "Francés"
 }

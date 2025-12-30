@@ -3319,5 +3319,9 @@
     "no_meeting_id_available_for_joining": "لا يوجد معرف اجتماع متاح للانضمام",
     "meeting_is_not_active": "الاجتماع غير نشط",
     "add_first_section": "إضافة القسم الأول",
-    "0_communities_found_for_search": "0 communities found for search"
+    "arabic": "العربية",
+    "dutch": "الهولندية",
+    "english": "الإنجليزية",
+    "french": "الفرنسية",
+    "spanish": "الإسبانية"
 }
