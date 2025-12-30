@@ -9,11 +9,11 @@
   </section>
   <!-- ===== CTA ===== -->
   <?php if (!$this->session->userdata('user_id')): ?>
-    <section class="py-4 bg-light">
+    <section class="py-4 bg-light" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container">
         <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
           <div class="me-md-3">
-            <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket me-2"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
+            <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket <?php echo (get_user_language() === 'arabic') ? 'ms-2' : 'me-2'; ?>"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
             <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
           </div>
           <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
@@ -21,9 +21,9 @@
       </div>
     </section>
   <?php endif; ?>
-  <form id="searchForm" class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get">
+  <form id="searchForm" class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
-    <section class="py-4 bg-light border-top">
+    <section class="py-4 bg-light border-top" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container">
         <div class="row g-3 align-items-center">
           <!-- Recherche (pill + icône) -->
