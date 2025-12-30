@@ -1,6 +1,6 @@
 
   <!-- ===== PAGE BODY ===== -->
-<main class="tutorial-body">
+<main class="tutorial-body" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <div class="row align-items-center">
       
@@ -12,7 +12,7 @@
           </h1>
 
           <p>
-            <?php echo get_phrase("This video guide") ?> (<strong>10&nbsp;<?php echo get_phrase(" minutes") ?></strong>) <?php echo get_phrase("Guides you step by step to publish and monetize your knowledge to thousands of learners. ") ?>
+            <?php echo get_phrase("This video guide") ?>obi-kicker <?php echo get_phrase("Guides you step by step to publish and monetize your knowledge to thousands of learners. ") ?>
           </p>
 
           <ul class="tuto-list list-group">
@@ -50,11 +50,10 @@
 </main>
 
   <!-- ============== COMMENT ÇA MARCHE — Processus (Style Stepper) ============== -->
-  <section id="comment-ca-marche" class="obi">
+  <section id="comment-ca-marche" class="obi" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="obi-shell">
       <header class="obi-head">
-        <span class="obi-kicker"><?php echo get_phrase("Process ") ?></span>
-        <h2><?php echo get_phrase("How does it work?") ?></h2>
+        <span class="obi-kicker"><?php echo get_phrase("How does it work?") ?></span>
         <p><?php echo get_phrase("Follow these 4 steps to create your profile, set up your community, add your classes, and launch your offer.") ?></p>
       </header>
 

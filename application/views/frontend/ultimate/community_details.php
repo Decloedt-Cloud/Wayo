@@ -41,7 +41,7 @@ foreach ($classes as $key => $class) {
 ?>
 
 <!-- ===== HERO ===== -->
-<section class="py-5 border-bottom hero-grad text-center">
+<section class="py-5 border-bottom hero-grad text-center" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <h1 class="display-5 fw-bold mb-2"><?php echo $school["name"] ?></h1>
     <p class="lead mb-0"><?php echo get_phrase("The No. 1 community to learn, practice, and network!") ?></p>
@@ -49,7 +49,7 @@ foreach ($classes as $key => $class) {
 </section>
 
 <!-- ===== STATS BAR ===== -->
-<section class="py-2 bg-wayo text-white text-uppercase fw-semibold small">
+<section class="py-2 bg-wayo text-white text-uppercase fw-semibold small" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <div class="d-flex justify-content-center gap-5">
       <div><strong class="d-block fs-5"><?php echo $school["course_students_count"] ?></strong><span><?php echo get_phrase("Members") ?></span></div>
@@ -61,7 +61,7 @@ foreach ($classes as $key => $class) {
 
 <!-- ===== HIGHLIGHT ===== -->
 <?php if (!$this->session->userdata('user_id')): ?>
-  <section class="py-4 bg-white border-top border-bottom">
+  <section class="py-4 bg-white border-top border-bottom" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container">
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <div class="fs-1">🤝</div>
@@ -75,7 +75,7 @@ foreach ($classes as $key => $class) {
 <?php endif; ?>
 
 <!-- ===== MAIN GRID ===== -->
-<main class="py-5">
+<main class="py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <div class="row g-4">
       <!-- Main card -->

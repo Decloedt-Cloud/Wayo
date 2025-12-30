@@ -1,5 +1,5 @@
 <!-- Zone des cartes -->
-    <div id="cardsGrid" class="row g-4">
+    <div id="cardsGrid" class="row g-4" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <?php 
       $schools_array = [];
       if (!empty($schools)) {
@@ -56,7 +56,7 @@
                       ])->num_rows();
                       echo $classes_count;
                     ?>
-                    classes
+                    <?php echo get_phrase('classes'); ?>
                   </li>
                   <li class="list-inline-item">
                     <?php if (($c['access'] ?? 0) == 1): ?>

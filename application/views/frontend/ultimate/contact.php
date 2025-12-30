@@ -239,7 +239,7 @@
  
  
 <!-- ========== HERO ========== -->
-<section class="contact-hero position-relative text-center">
+<section class="contact-hero position-relative text-center" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="hero-overlay"></div>
   <div class="container position-relative hero-inner">
     <h1 class="fw-extrabold text-dark"><?php echo get_phrase("Contact_Us") ?></h1>
@@ -250,7 +250,7 @@
 </section>
  
 <?php $this->load->view('frontend/alert_view'); ?>
-<main class="container py-5">
+<main class="container py-5" >
       <div class="row g-4 align-items-stretch">
       <div class="col-12 col-lg-7">
         <form id="contact_send" class="glass p-3 p-md-4 needs-validation" action="<?php echo site_url('home/contact/send'); ?>" method="post" enctype="multipart/form-data" novalidate>
@@ -261,10 +261,10 @@
          
           <div class="row g-3">
             <!-- Prénom -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6" >
               <div class="form-floating">
                 <input type="text" class="form-control shadow-none" id="firstName"
-                       placeholder="Prénom" name="first_name" required>
+                       placeholder="Prénom" name="first_name" required >
                 <label for="firstName"><?php echo get_phrase('First name'); ?>*</label>
               </div>
             </div>
