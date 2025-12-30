@@ -658,13 +658,14 @@
                         </div>
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
+                            <?php $active_lang = get_user_language(); ?>
                             <select id="communityLang" name="communityLang" required aria-required="true"
                                     data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
-                                <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
-                                <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
-                                <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
-                                <option value="arabe"><?php echo get_phrase("Arabic_(AR)") ?></option>
-                                <option value="spanish"><?php echo get_phrase("Spanish_(ES)") ?></option>
+                                <option value="french" <?php if($active_lang == 'french') echo 'selected'; ?>><?php echo get_phrase("French_(FR)") ?></option>
+                                <option value="english" <?php if($active_lang == 'english') echo 'selected'; ?>><?php echo get_phrase("Anglais_(EN)") ?></option>
+                                <option value="deutsch" <?php if($active_lang == 'dutch') echo 'selected'; ?>><?php echo get_phrase("Allemand_(DE)") ?></option>
+                                <option value="arabe" <?php if($active_lang == 'arabic') echo 'selected'; ?>><?php echo get_phrase("Arabic_(AR)") ?></option>
+                                <option value="spanish" <?php if($active_lang == 'spanish') echo 'selected'; ?>><?php echo get_phrase("Spanish_(ES)") ?></option>
                             </select>
                             <div class="error" data-for="communityLang"></div>
                         </label>
