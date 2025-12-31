@@ -377,6 +377,46 @@ class Lms_model extends CI_Model
         // $data['subject_id'] = $this->input->post('subject_id');
         $data['description'] = $this->input->post('description');
         $data['outcomes'] = $this->input->post('outcomes');
+        
+        // Traitement des prérequis (tags)
+        $prerequisites_json = $this->input->post('prerequisites');
+        if (!empty($prerequisites_json)) {
+            // Nettoyer et valider le JSON
+            $prerequisites_array = json_decode($prerequisites_json, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($prerequisites_array)) {
+                // Nettoyer chaque tag (supprimer les espaces, éviter les doublons)
+                $cleaned_tags = array_map('trim', $prerequisites_array);
+                $cleaned_tags = array_filter($cleaned_tags); // Supprimer les tags vides
+                $cleaned_tags = array_unique($cleaned_tags); // Supprimer les doublons
+                
+                if (!empty($cleaned_tags)) {
+                    $data['prerequisites'] = json_encode($cleaned_tags, JSON_UNESCAPED_UNICODE);
+                } else {
+                    $data['prerequisites'] = null;
+                }
+            } else {
+                $data['prerequisites'] = null;
+            }
+        } else {
+            $data['prerequisites'] = null;
+        }
+        
+        // Traitement du champ d'activité
+        $field_of_activity = $this->input->post('field_of_activity');
+        if (!empty($field_of_activity)) {
+            $data['field_of_activity'] = html_escape($field_of_activity);
+        } else {
+            $data['field_of_activity'] = null;
+        }
+
+        // Traitement du style du cours
+        $course_style = $this->input->post('course_style');
+        if (!empty($course_style)) {
+            $data['course_style'] = html_escape($course_style);
+        } else {
+            $data['course_style'] = null;
+        }
+        
         $data['course_overview_provider'] = $this->input->post('course_overview_provider');
         $data['course_overview_url'] = $this->input->post('course_overview_url');
         $data['thumbnail'] = rand() . '.jpg';
@@ -423,6 +463,46 @@ class Lms_model extends CI_Model
         // $data['subject_id'] = $this->input->post('subject_id');
         $data['description'] = $this->input->post('description');
         $data['outcomes'] = $this->input->post('outcomes');
+        
+        // Traitement des prérequis (tags)
+        $prerequisites_json = $this->input->post('prerequisites');
+        if (!empty($prerequisites_json)) {
+            // Nettoyer et valider le JSON
+            $prerequisites_array = json_decode($prerequisites_json, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($prerequisites_array)) {
+                // Nettoyer chaque tag (supprimer les espaces, éviter les doublons)
+                $cleaned_tags = array_map('trim', $prerequisites_array);
+                $cleaned_tags = array_filter($cleaned_tags); // Supprimer les tags vides
+                $cleaned_tags = array_unique($cleaned_tags); // Supprimer les doublons
+                
+                if (!empty($cleaned_tags)) {
+                    $data['prerequisites'] = json_encode($cleaned_tags, JSON_UNESCAPED_UNICODE);
+                } else {
+                    $data['prerequisites'] = null;
+                }
+            } else {
+                $data['prerequisites'] = null;
+            }
+        } else {
+            $data['prerequisites'] = null;
+        }
+        
+        // Traitement du champ d'activité
+        $field_of_activity = $this->input->post('field_of_activity');
+        if (!empty($field_of_activity)) {
+            $data['field_of_activity'] = html_escape($field_of_activity);
+        } else {
+            $data['field_of_activity'] = null;
+        }
+
+        // Traitement du style du cours
+        $course_style = $this->input->post('course_style');
+        if (!empty($course_style)) {
+            $data['course_style'] = html_escape($course_style);
+        } else {
+            $data['course_style'] = null;
+        }
+        
         $data['course_overview_provider'] = $this->input->post('course_overview_provider');
         $data['course_overview_url'] = $this->input->post('course_overview_url');
         $data['last_modified'] = strtotime(date('d M Y'));

@@ -753,7 +753,7 @@ setupResizeListener() {
                     }
                 } catch (e) {
                     console.error('Error parsing response:', e);
-                    this.showNotification('error', 'Failed to parse events');
+                    this.showNotification('error', "Failed to parse events");
                     failureCallback();
                 }
             },
@@ -774,7 +774,7 @@ setupResizeListener() {
       url: '<?php echo site_url('teacher/get_user_school'); ?>',
       type: 'GET',
       data: { [csrfName]: csrfHash },
-      error: () => { this.showNotification('error', 'Failed to load school'); }
+      error: () => { this.showNotification('error', "Failed to load school"); }
     });
   },
 
@@ -795,7 +795,7 @@ setupResizeListener() {
             this.showNotification('error', data.message);
           }
       },
-      error: () => { this.showNotification('error', 'Failed to load school'); }
+      error: () => { this.showNotification('error', "Failed to load school"); }
     });
   },
 
@@ -865,7 +865,7 @@ cacheMeetingState(meetingId, participantCount, isRunning) {
 showEventDetails(eventId, occurrenceDate) {
     $('#eventId').val(String(eventId)); // Ensure eventId is set as a string
     if (!eventId || !occurrenceDate) {
-        this.showNotification('error', 'No event or occurrence date selected');
+        this.showNotification('error', "No event or occurrence date selected");
         return;
     }
 
@@ -955,7 +955,7 @@ showEventDetails(eventId, occurrenceDate) {
                                     csrfHash = data.csrf.csrfHash;
                                 }
                             } catch (e) {
-                                this.showNotification('error', 'Error parsing school data');
+                                this.showNotification('error', "Error parsing school data");
                             }
                         },
                     });
@@ -1028,7 +1028,7 @@ showEventDetails(eventId, occurrenceDate) {
                                     csrfHash = data.csrf.csrfHash;
                                 }
                             } catch (e) {
-                                this.showNotification('error', 'Error parsing school data');
+                                this.showNotification('error', "Error parsing school data");
                             }
                         },
                     });
@@ -1195,7 +1195,7 @@ showEventDetails(eventId, occurrenceDate) {
                 }
         },
         error: () => {
-            this.showNotification('error', 'Failed to load event');
+            this.showNotification('error', "Failed to load event");
             this.stopPolling();
         }
     });
@@ -1316,7 +1316,7 @@ stopPolling() {
       const st = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
       const et = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
       if (et <= st) {
-        this.showNotification('error', 'End time must be after start time');
+        this.showNotification('error', "End time must be after start time");
         form.find('[name="end_time"]').addClass('is-invalid');
         isValid = false;
       } else form.find('[name="end_time"]').removeClass('is-invalid');
@@ -1369,7 +1369,7 @@ stopPolling() {
         const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
         if (startDate && endDate && endDate < startDate) {
-          CalendarApp.showNotification('error', 'End date must be on or after start date');
+          CalendarApp.showNotification('error', "End date must be on or after start date");
           $('#createeventEndDate').val('');
         }
       });
@@ -1458,7 +1458,7 @@ stopPolling() {
                             csrfHash = schoolData.csrf.csrfHash;
                         }
                     } catch (e) {
-                        this.showNotification('error', 'Error parsing school data');
+                        this.showNotification('error', "Error parsing school data");
                     }
                 },
           });
@@ -1593,7 +1593,7 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
     $('#createEventForm').on('submit', (e) => {
       e.preventDefault();
       if (!this.validateForm('createEventForm')) {
-        this.showNotification('error', 'Please fill all required fields');
+        this.showNotification('error', "Please fill all required fields");
         return;
       }
       const formData = {
@@ -1636,7 +1636,7 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
             }
             csrfHash = data.csrf.csrfHash;
         },
-        error: () => { this.showNotification('error', 'Failed to create event'); }
+        error: () => { this.showNotification('error', "Failed to create event"); }
       });
     });
 
@@ -1681,14 +1681,14 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
         }
         csrfHash = data.csrf.csrfHash;
     },
-    error: () => { this.showNotification('error', 'Failed to update event'); }
+    error: () => { this.showNotification('error', "Failed to update event"); }
   });
 });
 
     $('#deleteevent').on('click', () => {
   const eventId = $('#eventId').val();
   if (!eventId) {
-    this.showNotification('error', 'No event selected');
+    this.showNotification('error', "No event selected");
     return;
   }
 
@@ -1719,7 +1719,7 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
         },
         error: (xhr) => {
           console.error('Delete event AJAX error:', xhr.status, xhr.statusText);
-          this.showNotification('error', 'Failed to delete event');
+          this.showNotification('error', "Failed to delete event");
         }
       });
     }
@@ -1917,7 +1917,7 @@ startMeeting() {
     const occurrenceDate = $('#currentOccurrenceDate').val();
     
     if (!eventId || !occurrenceDate) {
-        this.showNotification('error', 'No event or occurrence date selected');
+        this.showNotification('error', "No event or occurrence date selected");
         return;
     }
 
@@ -1961,19 +1961,19 @@ startMeeting() {
                             }
                             isExpired = new Date() - endDateTime > 24 * 60 * 60 * 1000;
                         } catch (e) {
-                            this.showNotification('error', 'Invalid event date or time format');
+                            this.showNotification('error', "Invalid event date or time format");
                             $('#joinMeetingBtn').show();
                             return;
                         }
                     }
 
                     if (isExpired) {
-                        this.showNotification('error', 'Event occurrence is expired');
+                        this.showNotification('error', "Event occurrence is expired");
                         return;
                         $('#joinMeetingBtn').show();
                     }
                     if (event.visio != 1) {
-                        this.showNotification('error', 'This event does not support video conferencing');
+                        this.showNotification('error', "This event does not support video conferencing");
                         $('#joinMeetingBtn').show();
                         return;
                     }
@@ -2019,7 +2019,7 @@ startMeeting() {
                                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                                             $('#joinMeetingBtn').hide();
                                         } else {
-                                            this.showNotification('success', 'Starting meeting...');
+                                            this.showNotification('success', "Starting meeting...");
                                             const checkWindowClosed = setInterval(() => {
                                                 if (newWindow.closed) {
                                                     clearInterval(checkWindowClosed);
@@ -2038,12 +2038,12 @@ startMeeting() {
                                         $('#joinMeetingBtn').show();
                                     }
                                 } catch (e) {
-                                    this.showNotification('error', 'Invalid server response');
+                                    this.showNotification('error', "Invalid server response");
                                     $('#joinMeetingBtn').show();
                                 }
                             },
                             error: (xhr) => {
-                                this.showNotification('error', 'Error starting meeting. Please check server connectivity.');
+                                this.showNotification('error', "Error starting meeting. Please check server connectivity.");
                                 $('#joinMeetingBtn').show();
                             }
                         });
@@ -2100,10 +2100,10 @@ startMeeting() {
                         const joinUrl = '<?php echo site_url('bigbluebutton/join_meeting'); ?>/' + encodeURIComponent(occurrenceData.meeting_id);
                         const newWindow = window.open(joinUrl, '_blank');
                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                            this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
+                            this.showNotification('warning', "Unable to open meeting. Please allow pop-ups for this site or click <a href=\"" + joinUrl + "\" target=\"_blank\">here</a> to join.", 5000);
                             $('#joinMeetingBtn').show();
                         } else {
-                            this.showNotification('success', 'Joining meeting...');
+                            this.showNotification('success', "Joining meeting...");
                             this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
                             const checkWindowClosed = setInterval(() => {
                                 if (newWindow.closed) {
@@ -2125,12 +2125,12 @@ startMeeting() {
                     $('#joinMeetingBtn').show(); 
                 }
             } catch (e) {
-                this.showNotification('error', 'Invalid server response');
+                this.showNotification('error', "Invalid server response");
                 $('#joinMeetingBtn').show(); 
             }
         },
         error: (xhr) => {
-            this.showNotification('error', 'Failed to load event');
+            this.showNotification('error', "Failed to load event");
             $('#joinMeetingBtn').show(); 
         }
     });
@@ -2686,7 +2686,7 @@ refreshUsersDropdown(schoolId, participants, callback) {
                     }
                 }
             } catch (e) {
-                CalendarApp.showNotification('error', 'Error parsing school data');
+                CalendarApp.showNotification('error', "Error parsing school data");
                 if (typeof callback === 'function') {
                     callback();
                 }
