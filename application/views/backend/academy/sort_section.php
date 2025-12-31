@@ -19,7 +19,7 @@
                                             <div class="card-body">
                                                 <div class="media">
                                                     <div class="media-body">
-                                                        <h5 class="mb-1 mt-0"><?php echo $section['title']; ?></h5>
+                                                        <h5 class="mb-1 mt-0"><?php echo html_escape($section['title']); ?></h5>
                                                     </div> <!-- end media-body -->
                                                 </div> <!-- end media -->
                                             </div> <!-- end card-body -->

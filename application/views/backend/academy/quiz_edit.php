@@ -8,13 +8,13 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
         
     <div class="form-group mb-2">
         <label for="title"><?php echo get_phrase('quiz_title'); ?><span class="required"> * </span></label>
-        <input class="form-control" type="text" name="title" id="title" value="<?php echo $quiz_details['title']; ?>" required>
+        <input class="form-control" type="text" name="title" id="title" value="<?php echo html_escape($quiz_details['title']); ?>" required>
     </div>
     <div class="form-group mb-2">
         <label for="section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
         <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($sections as $section): ?>
-                <option value="<?php echo $section['id']; ?>" <?php if ($quiz_details['section_id'] == $section['id']): ?>selected<?php endif; ?>><?php echo $section['title']; ?></option>
+                <option value="<?php echo $section['id']; ?>" <?php if ($quiz_details['section_id'] == $section['id']): ?>selected<?php endif; ?>><?php echo html_escape($section['title']); ?></option>
             <?php endforeach; ?>
         </select>
     </div>

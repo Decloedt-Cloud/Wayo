@@ -793,7 +793,7 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 
 .difficulty-badge.mixed {
     background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    color: #6366f1;
+    color: #4f46e5;
 }
 
 .difficulty-option.active .difficulty-badge.easy {
@@ -1695,8 +1695,8 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
             return;
         }
 
-        if (file.size > 20 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_20mb'); ?>');
+        if (file.size > 10 * 1024 * 1024) {
+            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 
@@ -1764,8 +1764,8 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
             return;
         }
 
-        if (file.size > 20 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_20mb'); ?>');
+        if (file.size > 10 * 1024 * 1024) {
+            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 

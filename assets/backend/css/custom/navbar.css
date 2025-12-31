@@ -132,7 +132,7 @@ body[dir="rtl"] .website-button:hover .arrow-animate {
   user-select: none;
 }
 .nav-item {
-  background-color: #212121 !important;
+  background-color: #4f46e5 !important;
 }
 body[dir="rtl"] .navbar-custom.topnav-navbar {
   direction: rtl;
@@ -363,7 +363,7 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
 
   .nav-link,
   .noti-icon {
-    color: #ff8a3d !important; /* orange Wayo */
+    color: #ffffff !important; /* orange Wayo */
   }
 
   .navbar-custom.topnav-navbar {

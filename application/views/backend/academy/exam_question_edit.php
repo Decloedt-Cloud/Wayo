@@ -18,7 +18,7 @@
     <input type="hidden" name="question_type" value="mcq">
     <div class="form-group mb-2">
         <label for="title"><?php echo get_phrase('question_title'); ?></label>
-        <input class="form-control" type="text" name="title" id="title" value="<?php echo $question_details['title']; ?>" required>
+        <input class="form-control" type="text" name="title" id="title" value="<?php echo html_escape($question_details['title']); ?>" required>
     </div>
     <div class="form-group mb-2" id="multiple_choice_question">
         <label for="number_of_options"><?php echo get_phrase('number_of_options'); ?></label>

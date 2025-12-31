@@ -10,7 +10,7 @@
         <label for="section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
         <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($course_sections as $section): ?>
-                <option value="<?php echo $section['id']; ?>"><?php echo $section['title']; ?></option>
+                <option value="<?php echo $section['id']; ?>"><?php echo html_escape($section['title']); ?></option>
             <?php endforeach; ?>
         </select>
     </div>

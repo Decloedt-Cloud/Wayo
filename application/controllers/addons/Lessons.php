@@ -43,14 +43,37 @@ class Lessons extends CI_Controller {
         if ($sections->num_rows() > 0) {
             $page_data['sections'] = $sections->result_array();
             if ($lesson_id == "") {
-                $default_section = $sections->row_array();
-                $page_data['section_id'] = $default_section['id'];
-                $lessons = $this->lms_model->get_lessons('section', $default_section['id']);
-                if ($lessons->num_rows() > 0) {
-                    $default_lesson = $lessons->row_array();
+                // Chercher la première leçon qui n'est pas un quiz
+                $default_lesson = null;
+                $default_section_id = null;
+                
+                foreach ($page_data['sections'] as $section) {
+                    $lessons = $this->lms_model->get_lessons('section', $section['id'])->result_array();
+                    foreach ($lessons as $lesson) {
+                        // Sélectionner la première leçon qui n'est pas un quiz (comparaison insensible à la casse)
+                        if (strtolower($lesson['lesson_type']) != 'quiz') {
+                            $default_lesson = $lesson;
+                            $default_section_id = $section['id'];
+                            break 2; // Sortir des deux boucles
+                        }
+                    }
+                }
+                
+                // Si aucune leçon non-quiz n'est trouvée, prendre la première leçon disponible
+                if ($default_lesson === null) {
+                    $first_section = $sections->row_array();
+                    $lessons = $this->lms_model->get_lessons('section', $first_section['id']);
+                    if ($lessons->num_rows() > 0) {
+                        $default_lesson = $lessons->row_array();
+                        $default_section_id = $first_section['id'];
+                    }
+                }
+                
+                if ($default_lesson !== null) {
                     $lesson_id = $default_lesson['id'];
-                    $page_data['lesson_id']  = $default_lesson['id'];
-                }else {
+                    $page_data['lesson_id'] = $default_lesson['id'];
+                    $page_data['section_id'] = $default_section_id;
+                } else {
                     $page_data['page_name'] = 'empty';
                     $page_data['page_title'] = get_phrase('no_lesson_found');
                     $page_data['page_body'] = get_phrase('no_lesson_found');
@@ -127,9 +150,17 @@ class Lessons extends CI_Controller {
         $this->db->insert('quiz_responses', $response_data);
     }
 
+    // Récupérer les informations du cours pour le bouton "Refaire le quiz"
+    $lesson_details = $this->db->get_where('lesson', array('id' => $quiz_id))->row_array();
+    $course_id = $lesson_details['course_id'];
+    $course_details = $this->lms_model->get_course_by_id($course_id);
+    
     $page_data['submitted_quiz_info']   = $submitted_quiz_info;
     $page_data['total_correct_answers'] = $total_correct_answers;
     $page_data['total_questions'] = count($quiz_questions);
+    $page_data['quiz_id'] = $quiz_id;
+    $page_data['course_id'] = $course_id;
+    $page_data['course_slug'] = slugify($course_details['title']);
     $this->load->view('lessons/quiz_result', $page_data);
 }
     public function check_result() {
@@ -177,9 +208,17 @@ class Lessons extends CI_Controller {
                     array_push($submitted_quiz_info, $container);
                 }
 
+                // Récupérer les informations du cours pour le bouton "Refaire le quiz"
+                $lesson_details = $this->db->get_where('lesson', array('id' => $quiz_id))->row_array();
+                $course_id = $lesson_details['course_id'];
+                $course_details = $this->lms_model->get_course_by_id($course_id);
+                
                 $page_data['submitted_quiz_info']   = $submitted_quiz_info;
                 $page_data['total_correct_answers'] = $total_correct_answers;
                 $page_data['total_questions'] = count($quiz_questions);
+                $page_data['quiz_id'] = $quiz_id;
+                $page_data['course_id'] = $course_id;
+                $page_data['course_slug'] = slugify($course_details['title']);
                 $this->load->view('lessons/quiz_result', $page_data);
     }
     public function check_result_pop_up() {
@@ -256,6 +295,37 @@ class Lessons extends CI_Controller {
 		echo json_encode(array('status' => $response_html, 'csrf' => $csrf));
     }
 
+
+    // Pagination AJAX des sections pour le sidebar
+    public function ajax_get_sections_paginated($course_id) {
+        $page = (int) $this->input->get('page') ?: 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+        
+        $sections = $this->lms_model->get_sections_paginated($course_id, $limit, $offset);
+        $total_sections = $this->lms_model->count_sections($course_id);
+        $total_pages = ceil($total_sections / $limit);
+        
+        // Charger les leçons pour chaque section
+        foreach ($sections as &$section) {
+            $section['lessons'] = $this->lms_model->get_lessons('section', $section['id'])->result_array();
+        }
+        
+        // Calculer le numéro de départ des sections pour cette page
+        $start_number = $offset + 1;
+        
+        $response = array(
+            'status' => true,
+            'sections' => $sections,
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+            'total_sections' => $total_sections,
+            'start_number' => $start_number
+        );
+        
+        header('Content-Type: application/json');
+        echo json_encode($response);
+    }
 
     public function afficher_fichier($nom_fichier)
     {

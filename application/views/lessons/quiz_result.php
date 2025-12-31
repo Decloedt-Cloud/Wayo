@@ -8,10 +8,33 @@
                     <?php echo get_phrase('you_got') . ' ' . $total_correct_answers . ' ' . get_phrase('out_of') . ' ' . $total_questions . ' ' . get_phrase('correct'); ?>
                     .
                 </p>
+                <button type="button" class="btn retake-quiz-btn mt-3" onclick="window.location.href='<?php echo site_url('addons/lessons/play/'.$course_slug.'/'.$course_id.'/'.$quiz_id); ?>';">
+                    <i class="fas fa-redo-alt me-2"></i><?php echo get_phrase('retake_quiz'); ?>
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.retake-quiz-btn {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+.retake-quiz-btn:hover {
+    background: rgba(99, 101, 241, 0.85);
+    color: #fff;
+    transform: scale(1.05);
+}
+</style>
 
 <?php foreach ($submitted_quiz_info as $each):
     $question_details = $this->lms_model->get_quiz_question_by_id($each['question_id'])->row_array();
