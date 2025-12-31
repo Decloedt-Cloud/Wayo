@@ -2186,7 +2186,7 @@
     "add_your_first_classes:_live,_replay,_files.": "Add your first classes: live, replay, files.",
     "invite_members,_manage_roles,_and_subscription_plans.": "Invite members, manage roles, and subscription plans.",
     "track_engagement,_revenue,_and_feedback_from_the_mentor_dashboard.": "Track engagement, revenue, and feedback from the mentor dashboard.",
-    "dynamic_communities_+_quality_classes_=_learning_that_takes_off!": "Dynamic communities + quality classes = learning that takes off!",
+    "dynamic_communities_+_quality_classes_=_learning_that_takes_off!": "Dynamic communities + quality classes = learning that takes off",
     "search_for_a_community…": "Search for a community…",
     "all_categories": "All categories",
     "language_": "Language ",
@@ -2377,7 +2377,7 @@
     "teams_&_schools": "Teams & schools",
     "custom_quote": "Custom quote",
     "private_training,_group_access,_reporting_&_certificates.": "Private training, group access, reporting & certificates.",
-    "faq_—_frequently_asked_questions": "Faq — frequently asked questions",
+    "faq_—_frequently_asked_questions": "FAQ — frequently asked questions",
     "help": "Help",
     "what_is_wayo_academy_?": "What is Wayo ?",
     "moroccan_e-learning_&_mentoring_platform_connecting_experts_and_learners_through_practical_learning_paths": "Moroccan e-learning & mentoring platform connecting experts and learners through practical learning paths",
@@ -3047,7 +3047,7 @@
     "this_email_already_exists_as_teacher_in_this_school": "This email already exists as teacher in this school",
     "no_classes_assigned_yet": "No classes assigned yet",
     "a_single_platform._zero_hassle": "A single platform. zero hassle",
-    "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "Wayo academy brings together everything needed to create, sell, and run your training courses without stress.",
+    "wayo_academy_brings_together_everything_needed_to_create,_sell,_and_run_your_training_courses_without_stress.": "Wayo brings together everything needed to create, sell, and run your training courses without stress.",
     "too_many_separate_tools,_loss_of_time_and_errors.": "Too many separate tools, loss of time and errors.",
     "scattered_data,_no_clear_visibility.": "Scattered data, no clear visibility.",
     "manual_processes,_zero_automation.": "Manual processes, zero automation.",
@@ -3625,6 +3625,5 @@
     "invalid_event_date_or_time_format": "Invalid event date or time format",
     "event_occurrence_is_expired": "Event occurrence is expired",
     "error_starting_meeting._please_check_server_connectivity.": "Error starting meeting. please check server connectivity.",
-    "no_meeting_id_available_for_joining": "No meeting id available for joining",
-    "meeting_is_not_active": "Meeting is not active"
+    "no_meeting_id_available_for_joining": "No meeting id available for joining"
 }

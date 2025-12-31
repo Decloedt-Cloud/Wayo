@@ -5,7 +5,7 @@
         class="dropdown-item notify-item"
     >
         <span class="<?php if(get_user_language() == $language): ?>badge badge-secondary-lighten<?php endif; ?>">
-            <?php echo ucfirst($language); ?>
+            <?php echo ucfirst(get_phrase($language)); ?>
         </span>
     </a>
 <?php endforeach; ?>

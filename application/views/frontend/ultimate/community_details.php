@@ -41,7 +41,7 @@ foreach ($classes as $key => $class) {
 ?>
 
 <!-- ===== HERO ===== -->
-<section class="py-5 border-bottom hero-grad text-center">
+<section class="py-5 border-bottom hero-grad text-center" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <h1 class="display-5 fw-bold mb-2"><?php echo $school["name"] ?></h1>
     <p class="lead mb-0"><?php echo get_phrase("The No. 1 community to learn, practice, and network!") ?></p>
@@ -49,7 +49,7 @@ foreach ($classes as $key => $class) {
 </section>
 
 <!-- ===== STATS BAR ===== -->
-<section class="py-2 bg-wayo text-white text-uppercase fw-semibold small">
+<section class="py-2 bg-wayo text-white text-uppercase fw-semibold small" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <div class="d-flex justify-content-center gap-5">
       <div><strong class="d-block fs-5"><?php echo $school["course_students_count"] ?></strong><span><?php echo get_phrase("Members") ?></span></div>
@@ -61,7 +61,7 @@ foreach ($classes as $key => $class) {
 
 <!-- ===== HIGHLIGHT ===== -->
 <?php if (!$this->session->userdata('user_id')): ?>
-  <section class="py-4 bg-white border-top border-bottom">
+  <section class="py-4 bg-white border-top border-bottom" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container">
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <div class="fs-1">🤝</div>
@@ -75,7 +75,7 @@ foreach ($classes as $key => $class) {
 <?php endif; ?>
 
 <!-- ===== MAIN GRID ===== -->
-<main class="py-5">
+<main class="py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="container">
     <div class="row g-4">
       <!-- Main card -->
@@ -127,7 +127,7 @@ foreach ($classes as $key => $class) {
             <h3 class="h6 fw-bold mb-3"><?php echo get_phrase("Class schedule") ?></h3>
             <!-- CLASSES GRID -->
              <?php
-              $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
+              $currencies = isset($settings_school['system_currency']) ? $settings_school['system_currency'] : 'USD';
               ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
@@ -153,10 +153,9 @@ foreach ($classes as $key => $class) {
                           <h4 class="h6 m-0 fw-bold"><?php echo htmlspecialchars($class['name']); ?></h4>
                           <span class="badge rounded-pill border text-brand fw-bold price-badge">
                             <?php
-                            $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); 
                             if (isset($class['price']) && $class['price'] > 0) {
                               $class_price_ttc = isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price'];
-                              echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) ? $class['currency'] : 'DH');
+                              echo number_format($class_price_ttc, 2) . ' ' . (isset($class['currency']) && !empty($class['currency']) ? $class['currency'] : $currencies);
                               if ($vat_rate > 0) {
                                 echo " <small class='text-muted'>(TTC)</small>";
                               }

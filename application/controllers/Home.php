@@ -624,7 +624,7 @@ function community_details($school_id = '')
     $languages = $this->settings_model->get_all_languages(); // <-- Utilise settings_model ici
     $current_language = function_exists('get_user_language') ? get_user_language() : 'english';
     foreach ($languages as $language) {
-        echo '<a class="dropdown-item'.($current_language == $language ? ' active' : '').'" href="#" onclick="setGuestLanguage(\''.$language.'\')">'.ucfirst($language).'</a>';
+        echo '<a class="dropdown-item'.($current_language == $language ? ' active' : '').'" href="#" onclick="setGuestLanguage(\''.$language.'\')">' . ucfirst(get_phrase($language)) . '</a>';
     }
 	}
 
