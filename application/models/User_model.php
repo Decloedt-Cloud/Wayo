@@ -215,6 +215,10 @@ class User_model extends CI_Model
 	// SCHOOL CRUD SECTION STARTS
 	public function create_school()
 	{
+		// Période d'essai : 14 jours gratuits
+		$now = time();
+		$trial_days = 14;
+		
 		// $data['school_id'] = html_escape($this->input->post('school_id'));
 		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['phone'] = html_escape($this->input->post('phone'));
@@ -224,6 +228,12 @@ class User_model extends CI_Model
 		$data['access'] = html_escape($this->input->post('access'));
 		$data['category'] = html_escape($this->input->post('category'));
 		$data['status'] = 1;
+		// Champs liés à l'abonnement / période d'essai
+		$data['trial_start'] = $now;
+		$data['trial_end'] = $now + (60 * 60 * 24 * $trial_days);
+		$data['is_trial'] = 1;
+		$data['is_paid'] = 0;
+		$data['subscription_status'] = 'trialing';
 		// $data['role'] = 'admin';
 		// $data['watch_history'] = '[]';
 

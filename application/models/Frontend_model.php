@@ -797,6 +797,10 @@ class Frontend_model extends CI_Model
         $country_code = strtoupper(substr($tax_residence_input, 0, 2));
     }
 
+    // Période d'essai : 14 jours gratuits
+    $now = time();
+    $trial_days = 14;
+    
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
         'country' => $country_code, // Code pays ISO-2 pour la fiscalité
@@ -809,7 +813,13 @@ class Frontend_model extends CI_Model
         'description' => htmlspecialchars($this->input->post('school_description')),
         'access' => $access,
         'category' => htmlspecialchars($this->input->post('category')),
-        'price' => htmlspecialchars($this->input->post('price'))
+        'price' => htmlspecialchars($this->input->post('price')),
+        // Champs liés à l'abonnement / période d'essai
+        'trial_start' => $now,
+        'trial_end' => $now + (60 * 60 * 24 * $trial_days),
+        'is_trial' => 1,
+        'is_paid' => 0,
+        'subscription_status' => 'trialing'
     ];
 
     // Insert school
@@ -838,7 +848,6 @@ class Frontend_model extends CI_Model
         'system_currency' => htmlspecialchars($this->input->post('currency')),
         'currency_position' => 'left',
         'language' => 'english',
-        'Tax_residence' => $tax_residence_input, // Rétro-compatibilité
         'type' => htmlspecialchars($this->input->post('i_am')),
         'vat_enabled' => 1, // TVA activée par défaut
         'vat_rate' => $rate

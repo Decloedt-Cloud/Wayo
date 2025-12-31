@@ -34,12 +34,10 @@
 		$vat_applicable = (isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1) 
 		                || (isset($settings_school['vat']) && (int)$settings_school['vat'] === 1);
 		
-		// PRIORITÉ: schools.country > settings_school.Tax_residence (fallback)
+		// Utiliser country depuis schools table (source unique de vérité)
 		$tax_residence = null;
 		if (!empty($school_data['country'])) {
 			$tax_residence = strtoupper($school_data['country']); // MA, AE, FR...
-		} elseif (!empty($settings_school['Tax_residence'])) {
-			$tax_residence = $settings_school['Tax_residence']; // Fallback ancien système
 		}
 		
 		// IMPORTANT: Pour les paiements subscription_admin (abonnement communauté), 

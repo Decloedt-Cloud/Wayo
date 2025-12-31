@@ -891,6 +891,7 @@ function community_details($school_id = '')
 			'trial_end'   => $now + (60 * 60 * 24 * $trial_days),
 			'is_trial'    => 1,
 			'is_paid'     => 0,
+			'subscription_status' => 'trialing',
 		];
 
 		$this->db->insert('schools', $school_data);
@@ -937,7 +938,6 @@ function community_details($school_id = '')
 			'system_currency' => ($country_code === 'AE' || $country_code === 'UAE') ? 'AED' : 'MAD',
 			'currency_position' => 'left',
 			'language' => 'french',
-			'Tax_residence' => $this->input->post('Tax_residence'), // Rétro-compatibilité (à supprimer après migration)
 			'type' => $this->input->post('i_am'),
 			'vat_enabled' => 1, // TVA activée par défaut
 			'vat_rate' => $rate

@@ -18,12 +18,10 @@ $class_details = !empty($invoice_details['class_id'])
 $vat_applicable = (isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1) 
                 || (isset($settings_school['vat']) && (int)$settings_school['vat'] === 1);
 
-// Tax residence - prioritize schools.country over settings_school.Tax_residence
+// Utiliser country depuis schools table (source unique de vérité)
 $tax_residence = null;
 if (!empty($school['country'])) {
     $tax_residence = strtoupper($school['country']);
-} elseif (!empty($settings_school['Tax_residence'])) {
-    $tax_residence = $settings_school['Tax_residence'];
 }
 
 // FX Data (needed for correct calculation)

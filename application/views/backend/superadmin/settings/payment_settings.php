@@ -181,7 +181,11 @@
                 </select>
               </div>
             </div>
-            <input type="hidden" name="tax_residence"  id="tax_residence"  value="<?php echo $result['Tax_residence']; ?>">
+            <?php 
+            // Utiliser country depuis schools table (source unique de vérité)
+            $school_country = $this->db->get_where('schools', array('id' => school_id()))->row('country');
+            ?>
+            <input type="hidden" name="tax_residence"  id="tax_residence"  value="<?php echo $school_country ?? ''; ?>">
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
               <div class="col-md-9">

@@ -506,7 +506,11 @@ $vat_enabled = isset($result['vat']) && $result['vat'] == 1;
                 <i class="fas fa-percent"></i>
             </div>
             <div class="stat-content">
-                <h4><?php echo $vat_enabled ? ($result['Tax_residence'] == 'MA' ? '20%' : ($result['Tax_residence'] == 'UAE' ? '5%' : '--')) : get_phrase('Disabled'); ?></h4>
+                <?php 
+                // Utiliser country depuis school_data (source unique de vérité)
+                $tax_country = $school_data['country'] ?? '';
+                ?>
+                <h4><?php echo $vat_enabled ? ($tax_country == 'MA' ? '20%' : (in_array($tax_country, ['UAE', 'AE']) ? '5%' : '--')) : get_phrase('Disabled'); ?></h4>
                 <p><?php echo get_phrase('VAT Rate'); ?></p>
             </div>
         </div>
@@ -594,7 +598,7 @@ $vat_enabled = isset($result['vat']) && $result['vat'] == 1;
             <div class="card-body-custom">
                 <form method="POST" class="systemvatAjaxForm" action="<?php echo route('payment_settings/vat'); ?>" id="vat_settings">
                     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-                    <input type="hidden" name="tax_residence" id="tax_residence" value="<?php echo $result['Tax_residence']; ?>">
+                    <input type="hidden" name="tax_residence" id="tax_residence" value="<?php echo $school_data['country'] ?? ''; ?>">
 
                     <div class="form-group-modern">
                         <label><?php echo get_phrase('VAT Applicable'); ?></label>
