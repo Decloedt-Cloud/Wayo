@@ -205,6 +205,63 @@ class FxRates_model extends CI_Model {
     }
 
     /**
+     * Get conversion rate between two currencies
+     * 
+     * @param string $from Source currency code (e.g., 'MAD')
+     * @param string $to Target currency code (e.g., 'AED')
+     * @return float Conversion rate, or fallback rate if not available
+     */
+    public function get_conversion_rate($from, $to)
+    {
+        $from = strtoupper($from);
+        $to = strtoupper($to);
+        
+        // If same currency, no conversion needed
+        if ($from === $to) {
+            return 1.0;
+        }
+        
+        // Get latest rates
+        $latest = $this->get_latest('USD');
+        
+        if ($latest) {
+            $from_col = strtolower($from);
+            $to_col = strtolower($to);
+            
+            // Check if both currencies exist in the record
+            if (isset($latest[$from_col]) && isset($latest[$to_col]) && 
+                (float)$latest[$from_col] > 0 && (float)$latest[$to_col] > 0) {
+                
+                // Convert via USD base: rate = to_rate / from_rate
+                $rate = (float)$latest[$to_col] / (float)$latest[$from_col];
+                log_message('debug', "FxRates_model::get_conversion_rate: {$from} -> {$to} = {$rate}");
+                return round($rate, 6);
+            }
+        }
+        
+        // Fallback rates if database rates not available
+        $fallback_rates = [
+            'MAD_AED' => 0.37,   // 1 MAD ≈ 0.37 AED
+            'AED_MAD' => 2.70,   // 1 AED ≈ 2.70 MAD
+            'MAD_USD' => 0.10,   // 1 MAD ≈ 0.10 USD
+            'USD_MAD' => 10.0,   // 1 USD ≈ 10 MAD
+            'MAD_EUR' => 0.09,   // 1 MAD ≈ 0.09 EUR
+            'EUR_MAD' => 11.0,   // 1 EUR ≈ 11 MAD
+            'USD_AED' => 3.67,   // 1 USD ≈ 3.67 AED
+            'AED_USD' => 0.27,   // 1 AED ≈ 0.27 USD
+        ];
+        
+        $key = "{$from}_{$to}";
+        if (isset($fallback_rates[$key])) {
+            log_message('debug', "FxRates_model::get_conversion_rate: Using fallback for {$key}: " . $fallback_rates[$key]);
+            return $fallback_rates[$key];
+        }
+        
+        log_message('debug', "FxRates_model::get_conversion_rate: No rate found for {$from} -> {$to}");
+        return 1.0;
+    }
+
+    /**
      * Format rate record for API response
      * 
      * @param array $record Database record
@@ -217,15 +274,21 @@ class FxRates_model extends CI_Model {
             return null;
         }
 
+        // Fonction helper pour éviter les valeurs nulles/zéro
+        $safe_float = function($value) {
+            $float_val = (float) $value;
+            return $float_val > 0 ? $float_val : null; // Retourner null si <= 0
+        };
+
         $response = [
             'base' => $record['base_code'],
             'date' => $record['rate_date'],
             'rates' => [
-                'USD' => (float) $record['usd'],
-                'EUR' => (float) $record['eur'],
-                'MAD' => (float) $record['mad'],
-                'AED' => (float) $record['aed'],
-                'GBP' => (float) ($record['gbp'] ?? 0)
+                'USD' => $safe_float($record['usd']),
+                'EUR' => $safe_float($record['eur']),
+                'MAD' => $safe_float($record['mad']),
+                'AED' => $safe_float($record['aed']),
+                'GBP' => $safe_float($record['gbp'] ?? 0)
             ],
             'stale' => ($record['status'] !== 'ok'),
             'source' => $record['source']

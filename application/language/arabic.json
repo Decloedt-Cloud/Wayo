@@ -3196,5 +3196,7 @@
     "error_processing_pdf": "خطأ في معالجة ملف PDF",
     "file_not_found": "الملف غير موجود",
     "document_contains_insufficient_text_for_ai_chat": "المستند يحتوي على نص غير كافٍ لدردشة الذكاء الاصطناعي",
-    "insufficient_text": "نص غير كافٍ"
+    "insufficient_text": "نص غير كافٍ",
+    "base_price": "السعر الأساسي"
+
 }

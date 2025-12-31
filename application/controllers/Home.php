@@ -863,8 +863,20 @@ function community_details($school_id = '')
 		$now        = time();
 		$trial_days = 14;
 
+		// Normaliser le country code depuis le formulaire Tax_residence
+		$tax_residence_input = $this->input->post('Tax_residence');
+		$country_code = null;
+		if ($tax_residence_input === 'MA' || strtoupper($tax_residence_input) === 'MAROC') {
+			$country_code = 'MA';
+		} elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
+			$country_code = 'AE';
+		} elseif (!empty($tax_residence_input)) {
+			$country_code = strtoupper(substr($tax_residence_input, 0, 2));
+		}
+
 		$school_data = [
 			'name'        => htmlspecialchars($school_name),
+			'country'     => $country_code, // Code pays ISO-2 pour la fiscalité
 			'Rue'         => htmlspecialchars($this->input->post('street')),
 			'Numero'      => htmlspecialchars($this->input->post('number')),
 			'Ville'       => htmlspecialchars($this->input->post('city')),
@@ -874,7 +886,7 @@ function community_details($school_id = '')
 			'access'      => $access,
 			'category'    => htmlspecialchars($this->input->post('category')),
 			'price'       => $price,
-			// Champs liés à l’abonnement / période d’essai
+			// Champs liés à l'abonnement / période d'essai
 			'trial_start' => $now,
 			'trial_end'   => $now + (60 * 60 * 24 * $trial_days),
 			'is_trial'    => 1,
@@ -919,15 +931,16 @@ function community_details($school_id = '')
 			]
 		]);
 
-		$rate = $this->input->post('Tax_residence') === 'MA' ? 20 : 5;
+		$rate = $country_code === 'MA' ? 20 : 5;
 		$this->db->insert('settings_school', [
 			'school_id' => $school_id,
-			'system_currency' => $this->input->post('Tax_residence') === 'UAE' ? 'AED' : 'MAD',
+			'system_currency' => ($country_code === 'AE' || $country_code === 'UAE') ? 'AED' : 'MAD',
 			'currency_position' => 'left',
 			'language' => 'french',
-			'Tax_residence' => $this->input->post('Tax_residence'),
+			'Tax_residence' => $this->input->post('Tax_residence'), // Rétro-compatibilité (à supprimer après migration)
 			'type' => $this->input->post('i_am'),
-			'vat_rat' => $rate
+			'vat_enabled' => 1, // TVA activée par défaut
+			'vat_rate' => $rate
 		]);
 
 		$spaceData = [

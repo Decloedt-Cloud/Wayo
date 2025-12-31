@@ -41,6 +41,27 @@ class Modal extends CI_Controller {
 		$page_data['param3']		=	$param3;
 		$page_data['param4']		=	$param4;
 		$page_data['param5']		=	$param5;
+		
+		// Special handling for billing_entity
+		if ($folder_name == 'billing_entity') {
+			$this->load->library('BillingEntityService', null, 'billingEntityService');
+			$this->load->model('BillingEntity_model', 'billing_entity_model');
+			
+			if (($page_name == 'edit' || $page_name == 'credentials') && !empty($param1)) {
+				// Load entity data
+				$entity = $this->billing_entity_model->get_by_id($param1);
+				if ($entity) {
+					// Get mappings
+					$mappings = $this->db->get_where('billing_entity_mappings', ['billing_entity_id' => $param1])->result_array();
+					$entity['mappings'] = array_column($mappings, 'tax_residence_code');
+				}
+				$page_data['entity'] = $entity;
+			}
+			
+			$this->load->view('backend/superadmin/billing_entities/' . $page_name . '.php', $page_data);
+			return;
+		}
+		
 		if($folder_name == 'academy'){
 			$this->load->view( 'backend/'.$folder_name.'/'.$page_name.'.php' ,$page_data);
 		}else{

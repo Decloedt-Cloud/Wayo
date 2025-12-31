@@ -582,11 +582,36 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     <?php endif; ?>
                 </td>
                 <td>
-                    <?php if (!empty($inv['payment_method'])):
+                    <?php 
+                    // Déterminer la méthode de paiement
+                    $method_display = '';
+                    $method_class = '';
+                    
+                    if (!empty($inv['payment_method'])) {
                         $m = strtolower($inv['payment_method']);
-                        $mc = (strpos($m,'stripe')!==false)?'stripe':((strpos($m,'paypal')!==false)?'paypal':((strpos($m,'bank')!==false)?'bank':''));
-                    ?>
-                    <span class="ai-method <?php echo $mc; ?>"><i class="mdi mdi-credit-card"></i> <?php echo ucfirst($inv['payment_method']); ?></span>
+                        $method_display = ucfirst($inv['payment_method']);
+                        $method_class = (strpos($m,'stripe')!==false)?'stripe':((strpos($m,'paypal')!==false)?'paypal':((strpos($m,'bank')!==false)?'bank':''));
+                    } elseif ($is_paid && (float)$inv['paid_amount'] > 0) {
+                        // Pour les factures payées sans méthode enregistrée, déduire la méthode
+                        // Vérifier si c'est un paiement avec conversion FX (souvent Stripe)
+                        if ($fx || !empty($inv['stripe_payment_intent_id'])) {
+                            $method_display = 'Stripe';
+                            $method_class = 'stripe';
+                        } elseif (!empty($inv['paypal_payment_id'])) {
+                            $method_display = 'PayPal';
+                            $method_class = 'paypal';
+                        } else {
+                            // Défaut: Stripe si payé (méthode la plus courante)
+                            $method_display = 'Stripe';
+                            $method_class = 'stripe';
+                        }
+                    }
+                    
+                    if ($method_display): ?>
+                    <span class="ai-method <?php echo $method_class; ?>">
+                        <i class="mdi <?php echo $method_class === 'stripe' ? 'mdi-credit-card' : ($method_class === 'paypal' ? 'mdi-paypal' : 'mdi-bank'); ?>"></i> 
+                        <?php echo $method_display; ?>
+                    </span>
                     <?php else: ?>—<?php endif; ?>
                 </td>
                 <td>

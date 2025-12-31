@@ -3233,5 +3233,6 @@
     "error_processing_pdf": "Error al procesar el PDF",
     "file_not_found": "Archivo no encontrado",
     "document_contains_insufficient_text_for_ai_chat": "El documento contiene texto insuficiente para el chat IA",
-    "insufficient_text": "Texto insuficiente"
+    "insufficient_text": "Texto insuficiente",
+    "base_price": "Precio base"
 }

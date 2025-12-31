@@ -171,16 +171,28 @@ class Settings_model extends CI_Model
     }
     
     // ----------------- Settings school -----------------
-    $data_settings_school['Tax_residence'] = htmlspecialchars_decode($this->input->post('tax_residence'));
+    $tax_residence_input = htmlspecialchars_decode($this->input->post('tax_residence'));
+    $data_settings_school['Tax_residence'] = $tax_residence_input; // Rétro-compatibilité
     $data_settings_school['type'] = htmlspecialchars_decode($this->input->post('i_am'));
     $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('vat_number'));
 
+    // Normaliser le country code
+    $country_code = null;
+    if ($tax_residence_input === 'MA') {
+        $country_code = 'MA';
+    } elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
+        $country_code = 'AE';
+    }
  
-      // Validation Tax Residence
-    if (!in_array($data_settings_school['Tax_residence'], ['MA', 'UAE'])) {
-        log_message('error', 'Invalid Tax Residence value: ' . $data_settings_school['Tax_residence']);
+    // Validation Tax Residence
+    if (!in_array($tax_residence_input, ['MA', 'UAE'])) {
+        log_message('error', 'Invalid Tax Residence value: ' . $tax_residence_input);
         return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
     }
+    
+    // Mettre à jour country dans schools (source unique de vérité)
+    $this->db->where('id', $schoolId);
+    $this->db->update('schools', ['country' => $country_code]);
 
     // Gestion de la suppression du document
     if ($this->input->post('delete_tax_document') == '1') {
@@ -414,8 +426,8 @@ class Settings_model extends CI_Model
   public function update_system_vat()
   {
     
-    $data['vat'] = htmlspecialchars($this->input->post('vat_applicable'));
-    $data['vat_rat'] = htmlspecialchars($this->input->post('vat_rate'));
+    $data['vat_enabled'] = htmlspecialchars($this->input->post('vat_applicable'));
+    $data['vat_rate'] = htmlspecialchars($this->input->post('vat_rate'));
    
     $user_id =  $this->session->userdata('user_id');
     if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){

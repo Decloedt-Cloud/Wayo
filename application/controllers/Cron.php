@@ -45,7 +45,7 @@ class Cron extends CI_Controller {
         $expected_token = $this->config->item('fxrates_cron_token');
         
         if (empty($expected_token) || $expected_token === 'change-this-cron-token') {
-            log_message('warning', 'Cron: Using default cron token - please configure FXRATES_CRON_TOKEN');
+            log_message('debug', 'Cron: Using default cron token - please configure FXRATES_CRON_TOKEN');
         }
 
         if (empty($token) || $token !== $expected_token) {
@@ -311,6 +311,200 @@ class Cron extends CI_Controller {
     }
 
     /**
+     * Generate renewal invoices for expired subscriptions
+     *
+     * CLI: php index.php cron subscription_generate_invoices
+     * HTTP: GET /cron/subscription_generate_invoices?cron_token=xxx
+     */
+    public function subscription_generate_invoices()
+    {
+        // Verify access
+        if (!$this->verifyCronAccess()) {
+            return;
+        }
+
+        log_message('info', 'Cron::subscription_generate_invoices - Starting renewal invoice generation');
+
+        $start_time = microtime(true);
+
+        try {
+            $this->load->library('SubscriptionService', null, 'subscriptionService');
+
+            // Get all schools that need renewal invoices
+            $schools_needing_invoices = $this->get_schools_needing_invoices();
+
+            $processed = 0;
+            $errors = 0;
+
+            foreach ($schools_needing_invoices as $school) {
+                $result = $this->subscriptionService->ensureRenewalInvoice($school['id']);
+
+                if ($result['success']) {
+                    $processed++;
+                    log_message('info', "Generated renewal invoice for school #{$school['id']}: " . $result['message']);
+                } else {
+                    $errors++;
+                    log_message('error', "Failed to generate renewal invoice for school #{$school['id']}: " . $result['message']);
+                }
+            }
+
+            $execution_time = round(microtime(true) - $start_time, 3);
+
+            $this->outputResult([
+                'success' => true,
+                'message' => "Invoice generation completed in {$execution_time}s. Processed: {$processed}, Errors: {$errors}",
+                'processed' => $processed,
+                'errors' => $errors,
+                'execution_time' => $execution_time . 's'
+            ]);
+
+        } catch (Exception $e) {
+            log_message('error', 'Cron::subscription_generate_invoices - Exception: ' . $e->getMessage());
+            $this->outputResult([
+                'success' => false,
+                'message' => 'Exception: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Check subscription health and status
+     *
+     * CLI: php index.php cron subscription_health
+     * HTTP: GET /cron/subscription_health?cron_token=xxx
+     */
+    public function subscription_health()
+    {
+        // Verify access
+        if (!$this->verifyCronAccess()) {
+            return;
+        }
+
+        try {
+            $this->load->library('SubscriptionService', null, 'subscriptionService');
+            $this->load->model('Crud_model', 'crud_model');
+
+            // Get all schools
+            $schools = $this->crud_model->get_schools()->result_array();
+
+            $stats = [
+                'total_schools' => count($schools),
+                'trialing' => 0,
+                'active' => 0,
+                'past_due' => 0,
+                'suspended' => 0,
+                'canceled' => 0,
+                'needs_invoice' => 0
+            ];
+
+            foreach ($schools as $school) {
+                $status = $this->subscriptionService->getSubscriptionStatus($school['id']);
+                $stats[$status['status']]++;
+
+                if ($this->subscriptionService->needsRenewalInvoice($school['id'])) {
+                    $stats['needs_invoice']++;
+                }
+            }
+
+            $health_status = 'healthy';
+            if ($stats['suspended'] > 0) {
+                $health_status = 'warning';
+            }
+            if ($stats['needs_invoice'] > $stats['total_schools'] * 0.1) { // More than 10% need invoices
+                $health_status = 'critical';
+            }
+
+            $this->outputResult([
+                'success' => true,
+                'message' => "Subscription health: {$health_status}",
+                'details' => $stats
+            ], $health_status === 'critical' ? 500 : 200);
+
+        } catch (Exception $e) {
+            log_message('error', 'Cron::subscription_health - Exception: ' . $e->getMessage());
+            $this->outputResult([
+                'success' => false,
+                'message' => 'Exception: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get schools that need renewal invoices
+     */
+    private function get_schools_needing_invoices()
+    {
+        $this->load->service('SubscriptionService', 'subscriptionService');
+        $this->load->model('Crud_model', 'crud_model');
+
+        $schools = $this->crud_model->get_schools()->result_array();
+        $schools_needing_invoices = [];
+
+        foreach ($schools as $school) {
+            if ($this->subscriptionService->needsRenewalInvoice($school['id'])) {
+                $schools_needing_invoices[] = $school;
+            }
+        }
+
+        return $schools_needing_invoices;
+    }
+
+    /**
+     * Run subscription system maintenance
+     *
+     * CLI: php index.php cron subscription_maintenance
+     * HTTP: GET /cron/subscription_maintenance?cron_token=xxx
+     */
+    public function subscription_maintenance()
+    {
+        // Verify access
+        if (!$this->verifyCronAccess()) {
+            return;
+        }
+
+        log_message('info', 'Cron::subscription_maintenance - Starting maintenance');
+
+        $start_time = microtime(true);
+
+        try {
+            $this->load->library('SubscriptionMaintenanceService', null, 'maintenanceService');
+
+            // Run maintenance
+            $results = $this->maintenanceService->runMaintenance();
+
+            $execution_time = round(microtime(true) - $start_time, 3);
+
+            $message = "Maintenance completed in {$execution_time}s. " .
+                      "Found: {$results['issues_found']}, Fixed: {$results['issues_fixed']}, " .
+                      "Schools: {$results['schools_processed']}";
+
+            if (!empty($results['errors'])) {
+                $message .= ". Errors: " . implode(', ', $results['errors']);
+                log_message('error', 'Cron::subscription_maintenance - ' . $message);
+                $this->outputResult([
+                    'success' => false,
+                    'message' => $message,
+                    'details' => $results
+                ], 500);
+            } else {
+                log_message('info', 'Cron::subscription_maintenance - ' . $message);
+                $this->outputResult([
+                    'success' => true,
+                    'message' => $message,
+                    'details' => $results
+                ]);
+            }
+
+        } catch (Exception $e) {
+            log_message('error', 'Cron::subscription_maintenance - Exception: ' . $e->getMessage());
+            $this->outputResult([
+                'success' => false,
+                'message' => 'Exception: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Default index - show available cron jobs
      */
     public function index()
@@ -322,13 +516,18 @@ class Cron extends CI_Controller {
 
         $this->outputResult([
             'success' => true,
-            'message' => 'Available FX Rates cron jobs',
+            'message' => 'Available cron jobs',
             'details' => [
+                // FX Rates jobs
                 'fx_fetch_daily' => 'Fetch and store daily FX rates',
                 'fx_health' => 'Check FX rates service health',
                 'fx_cleanup' => 'Delete old FX rate records',
                 'fx_clear_cache' => 'Clear FX rates cache',
-                'fx_test_api' => 'Test API connection'
+                'fx_test_api' => 'Test API connection',
+                // Subscription jobs
+                'subscription_generate_invoices' => 'Generate renewal invoices for expired subscriptions',
+                'subscription_health' => 'Check subscription system health',
+                'subscription_maintenance' => 'Run automatic subscription system maintenance'
             ]
         ]);
     }

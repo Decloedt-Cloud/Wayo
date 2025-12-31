@@ -14,9 +14,17 @@ $class_details = !empty($invoice_details['class_id'])
     ? $this->crud_model->get_class_details_by_id($invoice_details['class_id'])->row_array() 
     : null;
 
-// VAT Calculation
-  $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-$tax_residence = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+// VAT Calculation - Support both old 'vat' and new 'vat_enabled' column names
+$vat_applicable = (isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1) 
+                || (isset($settings_school['vat']) && (int)$settings_school['vat'] === 1);
+
+// Tax residence - prioritize schools.country over settings_school.Tax_residence
+$tax_residence = null;
+if (!empty($school['country'])) {
+    $tax_residence = strtoupper($school['country']);
+} elseif (!empty($settings_school['Tax_residence'])) {
+    $tax_residence = $settings_school['Tax_residence'];
+}
 
 // FX Data (needed for correct calculation)
 $conversion_applied = isset($invoice_details['conversion_applied']) && $invoice_details['conversion_applied'] == 1;
@@ -673,7 +681,22 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
                 </div>
                 <div class="inv-meta-card">
                     <div class="inv-meta-label"><?php echo get_phrase('method'); ?></div>
-                    <div class="inv-meta-value"><?php echo !empty($invoice_details['payment_method']) ? ucfirst($invoice_details['payment_method']) : '—'; ?></div>
+                    <div class="inv-meta-value">
+                        <?php 
+                        if (!empty($invoice_details['payment_method'])) {
+                            echo ucfirst($invoice_details['payment_method']);
+                        } elseif ($is_paid && (float)$invoice_details['paid_amount'] > 0) {
+                            // Déduire la méthode pour les anciennes factures payées
+                            if (!empty($invoice_details['stripe_payment_intent_id']) || $conversion_applied) {
+                                echo 'Stripe';
+                            } else {
+                                echo 'Stripe'; // Default
+                            }
+                        } else {
+                            echo '—';
+                        }
+                        ?>
+                    </div>
                 </div>
                 <div class="inv-meta-card highlight">
                     <div class="inv-meta-label"><?php echo get_phrase('total'); ?></div>
@@ -776,7 +799,17 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
                     </div>
                     <div class="inv-info-card-row">
                         <span><?php echo get_phrase('method'); ?>:</span>
-                        <span><?php echo ucfirst($invoice_details['payment_method']); ?></span>
+                        <span>
+                            <?php 
+                            if (!empty($invoice_details['payment_method'])) {
+                                echo ucfirst($invoice_details['payment_method']);
+                            } elseif (!empty($invoice_details['stripe_payment_intent_id']) || $conversion_applied) {
+                                echo 'Stripe';
+                            } else {
+                                echo 'Stripe'; // Default for paid invoices
+                            }
+                            ?>
+                        </span>
                     </div>
                     <?php if ($payment_date): ?>
                     <div class="inv-info-card-row">

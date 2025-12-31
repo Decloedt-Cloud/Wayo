@@ -3443,5 +3443,6 @@
     "error_processing_pdf": "Fout bij verwerken PDF",
     "file_not_found": "Bestand niet gevonden",
     "document_contains_insufficient_text_for_ai_chat": "Document bevat onvoldoende tekst voor AI-chat",
-    "insufficient_text": "Onvoldoende tekst"
+    "insufficient_text": "Onvoldoende tekst",
+    "base_price": "Basisprijs"
 }
