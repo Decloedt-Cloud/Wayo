@@ -48,32 +48,53 @@ $__community_payment_url = site_url('home/communities');
 
 // Try to point admins to the unpaid community invoice payment page when trial expired
 // Falls back to community list if none is found.
-// IMPORTANT: we only read existing invoices here to avoid duplicate creations.
+// For subscription expired admins, ensure a renewal invoice exists
 $__payment_url = $__community_payment_url;
 if ($__school_id && $__trial_expired) {
-    // Chercher d'abord une facture avec payment_type = subscription_admin
-    $this->db->order_by('id', 'DESC');
-    $this->db->where('school_id', $__school_id);
-    $this->db->where('payment_type', 'subscription_admin');
-    $this->db->where('status', 'unpaid');
-    $unpaid_invoice = $this->db->get('invoices')->row_array();
+    // For admins with subscription issues, ensure renewal invoice exists
+    if (isset($__current_role) && $__current_role === 'admin') {
+        // Load subscription service if available
+        if (!isset($this->subscriptionService) && method_exists($this, 'load') && method_exists($this->load, 'library')) {
+            $this->load->library('SubscriptionService', null, 'subscriptionService');
+        }
 
-    // Si aucune facture subscription_admin trouvée, chercher une autre facture impayée
-    if (empty($unpaid_invoice['id'])) {
-        $this->db->order_by('id', 'DESC');
-        $this->db->where('school_id', $__school_id);
-        $this->db->where('status', 'unpaid');
-        $other_invoice = $this->db->get('invoices')->row_array();
-        if (!empty($other_invoice['id'])) {
-            $unpaid_invoice = $other_invoice;
+        // Ensure renewal invoice exists using the new service
+        if (isset($this->subscriptionService) && method_exists($this->subscriptionService, 'ensureRenewalInvoice')) {
+            $invoice_result = $this->subscriptionService->ensureRenewalInvoice($__school_id);
+            if ($invoice_result['success']) {
+                $__payment_url = site_url('admin/payment/subscription_admin/' . $invoice_result['invoice_id']);
+            }
         }
     }
-    // Déterminer l'URL de paiement si une facture impayée existe
-    if (!empty($unpaid_invoice['id'])) {
-        if (isset($unpaid_invoice['payment_type']) && $unpaid_invoice['payment_type'] === 'subscription_admin') {
-            $__payment_url = site_url('admin/payment/subscription_admin/' . $unpaid_invoice['id']);
-        } else {
-            $__payment_url = site_url('student/payment/community/' . $unpaid_invoice['id']);
+
+    // Fallback: search for existing unpaid invoices if service method failed or not available
+    if ($__payment_url === $__community_payment_url) {
+        // Chercher d'abord une facture avec payment_type = subscription_admin
+        $this->db->order_by('id', 'DESC');
+        $this->db->where('school_id', $__school_id);
+        $this->db->where('payment_type', 'subscription_admin');
+        $this->db->where('status', 'unpaid');
+        $this->db->where('status !=', 'cancelled'); // Don't consider cancelled invoices
+        $unpaid_invoice = $this->db->get('invoices')->row_array();
+
+        // Si aucune facture subscription_admin trouvée, chercher une autre facture impayée
+        if (empty($unpaid_invoice['id'])) {
+            $this->db->order_by('id', 'DESC');
+            $this->db->where('school_id', $__school_id);
+            $this->db->where('status', 'unpaid');
+            $other_invoice = $this->db->get('invoices')->row_array();
+            if (!empty($other_invoice['id'])) {
+                $unpaid_invoice = $other_invoice;
+            }
+        }
+
+        // Déterminer l'URL de paiement si une facture impayée existe
+        if (!empty($unpaid_invoice['id'])) {
+            if (isset($unpaid_invoice['payment_type']) && $unpaid_invoice['payment_type'] === 'subscription_admin') {
+                $__payment_url = site_url('admin/payment/subscription_admin/' . $unpaid_invoice['id']);
+            } else {
+                $__payment_url = site_url('student/payment/community/' . $unpaid_invoice['id']);
+            }
         }
     }
 }

@@ -476,8 +476,8 @@ class FxRatesService {
         $from = strtoupper($from);
         $to = strtoupper($to);
 
-        if (!isset($rates[$from]) || !isset($rates[$to])) {
-            log_message('error', "FxRatesService::convert - Currency not found: {$from} or {$to}");
+        if (!isset($rates[$from]) || !isset($rates[$to]) || $rates[$from] === null || $rates[$to] === null) {
+            log_message('error', "FxRatesService::convert - Currency not available or zero rate: {$from} ({$rates[$from]}) or {$to} ({$rates[$to]})");
             return false;
         }
 

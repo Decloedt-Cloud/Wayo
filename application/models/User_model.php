@@ -215,6 +215,10 @@ class User_model extends CI_Model
 	// SCHOOL CRUD SECTION STARTS
 	public function create_school()
 	{
+		// Période d'essai : 14 jours gratuits
+		$now = time();
+		$trial_days = 14;
+		
 		// $data['school_id'] = html_escape($this->input->post('school_id'));
 		$data['name'] = html_entity_decode(html_escape($this->input->post('name')));
 		$data['phone'] = html_escape($this->input->post('phone'));
@@ -224,6 +228,12 @@ class User_model extends CI_Model
 		$data['access'] = html_escape($this->input->post('access'));
 		$data['category'] = html_escape($this->input->post('category'));
 		$data['status'] = 1;
+		// Champs liés à l'abonnement / période d'essai
+		$data['trial_start'] = $now;
+		$data['trial_end'] = $now + (60 * 60 * 24 * $trial_days);
+		$data['is_trial'] = 1;
+		$data['is_paid'] = 0;
+		$data['subscription_status'] = 'trialing';
 		// $data['role'] = 'admin';
 		// $data['watch_history'] = '[]';
 
@@ -1605,22 +1615,36 @@ class User_model extends CI_Model
 			);
 			$enrol_data = $this->db->get_where('enrols', $checker)->row_array();
 			$student_details = $this->db->get_where('students', array('user_id' => $id))->row_array();
-			$enrol_data['code'] = $student_details['code'];
-			$enrol_data['user_id'] = $student_details['user_id'];
+
+			if ($student_details) {
+				$enrol_data['code'] = $student_details['code'];
+				$enrol_data['user_id'] = $student_details['user_id'];
+			} else {
+				// Handle case where student details are not found
+				log_message('error', "User_model: Student details not found for user_id: {$id}");
+				return null;
+			}
 
 			$user_details = $this->db->get_where('users', array('id' => $student_details['user_id']))->row_array();
-			$enrol_data['name'] = $user_details['name'];
-			$enrol_data['email'] = $user_details['email'];
-			$enrol_data['role'] = $user_details['role'];
-			$enrol_data['address'] = $user_details['address'];
-			$enrol_data['Rue'] = $user_details['Rue'];
-			$enrol_data['Numero'] = $user_details['Numero'];
-			$enrol_data['Ville'] = $user_details['Ville'];
-			$enrol_data['Codepostal'] = $user_details['Codepostal'];
-			$enrol_data['num_vat'] = $user_details['num_vat'];
-			$enrol_data['phone'] = $user_details['phone'];
-			$enrol_data['birthday'] = $user_details['birthday'];
-			$enrol_data['gender'] = $user_details['gender'];
+
+			if ($user_details) {
+				$enrol_data['name'] = $user_details['name'];
+				$enrol_data['email'] = $user_details['email'];
+				$enrol_data['role'] = $user_details['role'];
+				$enrol_data['address'] = $user_details['address'];
+				$enrol_data['Rue'] = $user_details['Rue'];
+				$enrol_data['Numero'] = $user_details['Numero'];
+				$enrol_data['Ville'] = $user_details['Ville'];
+				$enrol_data['Codepostal'] = $user_details['Codepostal'];
+				$enrol_data['num_vat'] = $user_details['num_vat'];
+				$enrol_data['phone'] = $user_details['phone'];
+				$enrol_data['birthday'] = $user_details['birthday'];
+				$enrol_data['gender'] = $user_details['gender'];
+			} else {
+				// Handle case where user details are not found
+				log_message('error', "User_model: User details not found for student user_id: {$student_details['user_id']}");
+				return null;
+			}
 
 			$class_id = isset($enrol_data['class_id']) ? $enrol_data['class_id'] : null;
 			$class_details = $class_id ? $this->crud_model->get_class_details_by_id($class_id)->row_array() : null;

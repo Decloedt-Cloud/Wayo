@@ -60,7 +60,7 @@ class FxRates extends CI_Controller {
         $expected_token = $this->config->item('fxrates_api_token');
         
         if (empty($expected_token) || $expected_token === 'change-this-token-in-production') {
-            log_message('warning', 'FxRates API: Using default token - please configure FXRATES_API_TOKEN');
+            log_message('debug', 'FxRates API: Using default token - please configure FXRATES_API_TOKEN');
         }
 
         if (empty($token) || $token !== $expected_token) {

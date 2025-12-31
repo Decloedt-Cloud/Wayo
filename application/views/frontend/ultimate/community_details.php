@@ -8,14 +8,15 @@
 $settings_school = $this->settings_model->get_settings_school_data($school_id);
 
 $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-$tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+// Utiliser country depuis schools table (source unique de vérité)
+$tax_residence = isset($school['country']) ? $school['country'] : null;
 
 $vat_rate = 0; // en pourcentage
 if ($vat_applicable) {
     if ($tax_residence === 'MA') {
         // 1 - Communauté au Maroc  => 20% de TVA
         $vat_rate = 20;
-    } elseif ($tax_residence === 'UAE') {
+    } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
         // 2 - Communauté aux EAU => 5% de TVA
         $vat_rate = 5;
     }

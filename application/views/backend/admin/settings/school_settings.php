@@ -128,14 +128,20 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                     <div class="form-group row mb-3">
                         <label class="col-md-3 col-form-label" for="tax_residence"><?php echo get_phrase("Pays_de_résidence_fiscale") ?><span class="required"> * </span></label>
                         <div class="col-md-9">
+                            <?php 
+                            // Utiliser country depuis schools table (source unique de vérité)
+                            $tax_residence = $school_data['country'] ?? '';
+                            // Mapper AE vers UAE pour la compatibilité de l'interface
+                            if ($tax_residence === 'AE') $tax_residence = 'UAE';
+                            ?>
                             <select name="tax_residence" id="tax_residence" class="form-control" required onchange="handleTaxResidenceChange(this.value)">
                                 <option value=""><?php echo get_phrase("Sélectionnez_un_pays") ?></option>
-                                <option value="MA" <?php if ($settings_school['Tax_residence'] == 'MA'): ?> selected <?php endif; ?>><?php echo get_phrase("Morocco") ?></option>
-                                <option value="UAE" <?php if ($settings_school['Tax_residence'] == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
+                                <option value="MA" <?php if ($tax_residence == 'MA'): ?> selected <?php endif; ?>><?php echo get_phrase("Morocco") ?></option>
+                                <option value="UAE" <?php if ($tax_residence == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
                             </select>
                         </div>
                     </div>
-                    <div id="document_upload" style="display: <?php echo ($settings_school['Tax_residence'] == 'MA' || $settings_school['Tax_residence'] == 'UAE') ? 'block' : 'none'; ?>;">
+                    <div id="document_upload" style="display: <?php echo ($tax_residence == 'MA' || $tax_residence == 'UAE') ? 'block' : 'none'; ?>;">
                         <div class="form-group row mb-3">
                             <label class="col-md-3 col-form-label" for="tax_document">
                                 <i class="mdi mdi-file-document-outline"></i> <?php echo get_phrase("Document_justificatif") ?><span class="required"> * </span>
@@ -184,9 +190,9 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                                     <div id="document-upload-section" style="display: none;">
                                         <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
                                         <small id="document_hint" class="form-text text-muted mt-1">
-                                            <?php if ($settings_school['Tax_residence'] == 'MA'): ?>
+                                            <?php if ($tax_residence == 'MA'): ?>
                                                 <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
-                                            <?php elseif ($settings_school['Tax_residence'] == 'UAE'): ?>
+                                            <?php elseif ($tax_residence == 'UAE'): ?>
                                                 <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
                                             <?php endif; ?>
                                         </small>
@@ -202,9 +208,9 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                                     <div id="document-upload-section">
                                         <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
                                         <small id="document_hint" class="form-text text-muted mt-1">
-                                            <?php if ($settings_school['Tax_residence'] == 'MA'): ?>
+                                            <?php if ($tax_residence == 'MA'): ?>
                                                 <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
-                                            <?php elseif ($settings_school['Tax_residence'] == 'UAE'): ?>
+                                            <?php elseif ($tax_residence == 'UAE'): ?>
                                                 <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
                                             <?php endif; ?>
                                         </small>

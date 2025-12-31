@@ -3197,6 +3197,7 @@
     "file_not_found": "الملف غير موجود",
     "document_contains_insufficient_text_for_ai_chat": "المستند يحتوي على نص غير كافٍ لدردشة الذكاء الاصطناعي",
     "insufficient_text": "نص غير كافٍ",
+    "base_price": "السعر الأساسي",
     "lesson_title": "عنوان الدرس",
     "to_save": "حفظ",
     "instructions_optional": "تعليمات (اختيارية)",

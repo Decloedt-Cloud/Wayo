@@ -448,6 +448,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_expire' = The number in seconds the token should expire.
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
+|
 */
 $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = 'CSRF';
@@ -581,7 +582,9 @@ $config['csrf_exclude_uris'] = array(
     'home/get_communities_by_role',
     'home/check_community_name_exists',
     'api/fx/.*',
-    'cron/fx_.*'
+    'cron/fx_.*',
+    'StripeWebhook',
+    'StripeWebhook/index'
 );
  
 /*
@@ -648,6 +651,7 @@ $config['rewrite_short_tags'] = FALSE;
 |
 | Comma-separated:  '10.0.1.200,192.168.5.0/24'
 | Array:        array('10.0.1.200', '192.168.5.0/24')
+|
 */
 $config['proxy_ips'] = '';
 
@@ -691,4 +695,11 @@ $config['EXCHANGE_RATE_API_KEY'] = 'be04c41a7f57bbb46fdfe5eb';
 $config['FXRATES_API_TOKEN'] = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';
 
 // Token pour le cron (générer: openssl rand -hex 32)
-$config['FXRATES_CRON_TOKEN'] = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';  
+$config['FXRATES_CRON_TOKEN'] = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';
+
+/*
+|--------------------------------------------------------------------------
+| STRIPE CONFIGURATION
+|--------------------------------------------------------------------------
+*/
+$config['stripe_webhook_secret'] = 'whsec_VnScco8R89uCZm29wa3X7xXm43zuAduU'; // REMPLACER PAR VOTRE CLÉ SECRÈTE STRIPE PREPROD

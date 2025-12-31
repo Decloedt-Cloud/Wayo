@@ -4,7 +4,68 @@
   $stripe = json_decode(get_payment_settings('stripe_settings',1));
   $school_data = $this->settings_model->get_current_school_data();
   $settings_school = $this->settings_model->get_current_settings_school_data();
+  
+  // Charger les billing entities
+  $CI =& get_instance();
+  $CI->load->library('BillingEntityService', null, 'billingEntityService');
+  $billing_entities = $CI->billingEntityService->get_all_active();
 ?>
+
+<!-- Billing Entities & Payment Methods Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="main-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+            <div class="card-body text-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="m-0 text-white"><i class="fas fa-building mr-2"></i><?php echo get_phrase('Billing Architecture'); ?></h4>
+                        <p class="mb-0 mt-1" style="opacity: 0.9;"><?php echo get_phrase('Manage billing entities and payment methods by country/region'); ?></p>
+                    </div>
+                    <div>
+                        <a href="<?php echo site_url('superadmin/billing_entities'); ?>" class="btn btn-light mr-2">
+                            <i class="fas fa-building mr-1"></i> <?php echo get_phrase('Billing Entities'); ?>
+                        </a>
+                        <a href="<?php echo site_url('superadmin/payment_methods'); ?>" class="btn btn-outline-light">
+                            <i class="fas fa-credit-card mr-1"></i> <?php echo get_phrase('Payment Methods'); ?>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Entities Overview -->
+                <div class="row mt-3">
+                    <?php if (!empty($billing_entities)): ?>
+                        <?php foreach ($billing_entities as $entity): ?>
+                        <div class="col-md-4 mb-2">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.15);">
+                                <div class="d-flex align-items-center">
+                                    <span style="font-size: 28px; margin-right: 12px;"><?php echo $entity['country_flag'] ?? '🏳️'; ?></span>
+                                    <div>
+                                        <strong><?php echo htmlspecialchars($entity['name']); ?></strong>
+                                        <div style="font-size: 12px; opacity: 0.9;">
+                                            TVA <?php echo $entity['vat_rate']; ?>% • <?php echo $entity['currency_code']; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="col-12">
+                            <div class="alert alert-warning mb-0" style="background: rgba(255,255,255,0.2); border: none; color: white;">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <?php echo get_phrase('No billing entities configured.'); ?>
+                                <a href="<?php echo site_url('superadmin/billing_entities'); ?>" class="text-white" style="text-decoration: underline;">
+                                    <?php echo get_phrase('Configure now'); ?>
+                                </a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     <div class="mb-3">
@@ -120,7 +181,11 @@
                 </select>
               </div>
             </div>
-            <input type="hidden" name="tax_residence"  id="tax_residence"  value="<?php echo $result['Tax_residence']; ?>">
+            <?php 
+            // Utiliser country depuis schools table (source unique de vérité)
+            $school_country = $this->db->get_where('schools', array('id' => school_id()))->row('country');
+            ?>
+            <input type="hidden" name="tax_residence"  id="tax_residence"  value="<?php echo $school_country ?? ''; ?>">
             <div class="form-group row mb-3">
               <label class="col-md-3 col-form-label" for="currency_position"> <?php echo get_phrase('currency_position') ;?><span class="required"> * </span> </label>
               <div class="col-md-9">
@@ -145,161 +210,8 @@
     </div> <!-- end card -->
   </div>
 
-  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="mb-3">
-    <div class="main-card">
-        <div class="card-body">
-        <h4 class="header-title"><?php echo get_phrase('paypal_settings') ;?></h4>
-        <form method="POST" class="col-12 paypalAjaxForm" action="<?php echo route('payment_settings/paypal') ;?>" id = "paypal_settings">
-          <!-- Champ caché pour le jeton CSRF -->
-          <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-
-          <div class="col-12">
-            <div class="form-group row mb-3">
-              <label class="col-md-3 col-form-label" for="paypal_active"> <?php echo get_phrase('active') ;?> </label>
-              <div class="col-md-9">
-                <select class="form-control" name="paypal_active" id="paypal_active">
-                  <option value="yes" <?php if ($paypal[0]->paypal_active == 'yes'): ?> selected <?php endif; ?>><?php echo get_phrase('yes') ;?></option>
-                  <option value="no" <?php if ($paypal[0]->paypal_active == 'no'): ?> selected <?php endif; ?>><?php echo get_phrase('no') ;?></option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group row mb-3">
-              <label class="col-md-3 col-form-label" for="paypal_currency"> <?php echo get_phrase('paypal_currency') ;?> <span class="required"> * </span></label>
-              <div class="col-md-9">
-                <select class="form-control"  id = "paypal_currency" name="paypal_currency" required>
-                  <option value=""><?php echo get_phrase('select_paypal_currency'); ?></option>
-                  <?php
-                  $currencies = $this->settings_model->get_paypal_supported_currencies();
-                  foreach ($currencies as $currency):?>
-                  <option value="<?php echo $currency['code'];?>"
-                    <?php if ($paypal[0]->paypal_currency == $currency['code'])echo 'selected';?>> <?php echo $currency['code'];?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="paypal_mode"><?php echo get_phrase('mode') ;?></label>
-            <div class="col-md-9">
-              <select class="form-control" name="paypal_mode" id="paypal_mode">
-                <option value="sandbox" <?php if ($paypal[0]->paypal_mode == 'sandbox'): ?> selected <?php endif; ?>><?php echo get_phrase('sandbox') ;?></option>
-                <option value="production" <?php if ($paypal[0]->paypal_mode == 'production'): ?> selected <?php endif; ?>><?php echo get_phrase('production') ;?></option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="paypal_client_id_sandbox"> <?php echo get_phrase('client_id_(sandbox)') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="paypal_client_id_sandbox" name="paypal_client_id_sandbox" class="form-control"  value="<?php echo $paypal[0]->paypal_client_id_sandbox; ?>" required>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="paypal_client_id_production"> <?php echo get_phrase('client_id_(production)') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="paypal_client_id_production" name="paypal_client_id_production" class="form-control"  value="<?php echo $paypal[0]->paypal_client_id_production;?>" required>
-            </div>
-          </div>
-          <div class="row justify-content-md-center">
-              <div class="form-group col-md-4">
-                <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"  onclick="updatePaypalInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_paypal_settings') ;?></button>
-              </div>
-          </div>
-        </div>
-      </form>
-
-    </div> <!-- end card body-->
-  </div> <!-- end card -->
-  </div>
-</div>
-  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    
-    <div class="mb-3">
-    <div class="main-card">
-        <div class="card-body">
-        <h4 class="header-title"><?php echo get_phrase('stripe_settings') ;?></h4>
-        <form method="POST" class="col-12 stripeAjaxForm" action="<?php echo route('payment_settings/stripe') ;?>" id = "stripe_settings">
-          <!-- Champ caché pour le jeton CSRF -->
-         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-          <div class="col-12">
-            <div class="form-group row mb-3">
-              <label class="col-md-3 col-form-label" for="stripe_active"> <?php echo get_phrase('active') ;?></label>
-              <div class="col-md-9">
-                <select class="form-control" name="stripe_active" id="stripe_active">
-                  <option value="yes" <?php if ($stripe[0]->stripe_active == 'yes'): ?> selected <?php endif; ?>><?php echo get_phrase('yes') ;?></option>
-                  <option value="no" <?php if ($stripe[0]->stripe_active == 'no'): ?> selected <?php endif; ?>><?php echo get_phrase('no') ;?></option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group row mb-3">
-              <label class="col-md-3 col-form-label" for="stripe_currency"> <?php echo get_phrase('stripe_currency') ;?><span class="required"> * </span></label>
-              <div class="col-md-9">
-                <select class="form-control"  id = "stripe_currency" name="stripe_currency" required>
-                  <option value=""><?php echo get_phrase('select_stripe_currency'); ?></option>
-                  <?php
-                  $currencies = $this->settings_model->get_stripe_supported_currencies();
-                  foreach ($currencies as $currency):?>
-                  <option value="<?php echo $currency['code'];?>"
-                    <?php if ($stripe[0]->stripe_currency == $currency['code'])echo 'selected';?>> <?php echo $currency['code'];?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="stripe_mode"><?php echo get_phrase('test_mode') ;?></label>
-            <div class="col-md-9">
-              <select class="form-control" name="stripe_mode" id="stripe_mode">
-                <option value="on" <?php if ($stripe[0]->stripe_mode == 'on'): ?> selected <?php endif; ?>><?php echo get_phrase('on') ;?></option>
-                <option value="off" <?php if ($stripe[0]->stripe_mode == 'off'): ?> selected <?php endif; ?>><?php echo get_phrase('off') ;?></option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="stripe_test_secret_key"> <?php echo get_phrase('test_secret_key') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="stripe_test_secret_key" name="stripe_test_secret_key" class="form-control"  value="<?php echo $stripe[0]->stripe_test_secret_key;?>" required>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="stripe_test_public_key"> <?php echo get_phrase('test_public_key') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="stripe_test_public_key" name="stripe_test_public_key" class="form-control"  value="<?php echo $stripe[0]->stripe_test_public_key;?>" required>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="stripe_live_secret_key"> <?php echo get_phrase('live_secret_key') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="stripe_live_secret_key" name="stripe_live_secret_key" class="form-control"  value="<?php echo $stripe[0]->stripe_live_secret_key;?>" required>
-            </div>
-          </div>
-
-          <div class="form-group row mb-3">
-            <label class="col-md-3 col-form-label" for="stripe_live_public_key"> <?php echo get_phrase('live_public_key') ;?><span class="required"> * </span></label>
-            <div class="col-md-9">
-              <input type="text" id="stripe_live_public_key" name="stripe_live_public_key" class="form-control"  value="<?php echo $stripe[0]->stripe_live_public_key;?>" required>
-            </div>
-          </div>
-           <div class="row justify-content-md-center">
-            <div class="form-group col-md-4">
-              <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit" onclick="updateStripeInfo()"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_stripe_settings') ;?></button>
-            </div>
-           </div>         
-          
-        </div>
-      </form>
-    </div> <!-- end card body-->
-  </div> <!-- end card -->
-  </div>
+  <!-- PayPal and Stripe settings are now managed per billing entity -->
+  <!-- Access via: Billing Entities > API Keys -->
   </div>
   <?php if(addon_status('payumoney') == 1): ?>
     <?php include 'payumoney_settings.php'; ?>
