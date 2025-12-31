@@ -129,8 +129,15 @@ class Invoice_model extends CI_Model {
     /**
      * Mark invoice as paid and update school subscription
      * Uses transaction to ensure consistency
+     * 
+     * @param int $invoice_id
+     * @param string|null $payment_reference
+     * @param string|null $payment_method
+     * @param float|null $amount_paid
+     * @param array|null $fx_data Currency conversion data (payment_currency, payment_amount_converted, fx_rate, fx_rate_date)
+     * @return array
      */
-    public function markInvoicePaid($invoice_id, $payment_reference = null, $payment_method = null, $amount_paid = null)
+    public function markInvoicePaid($invoice_id, $payment_reference = null, $payment_method = null, $amount_paid = null, $fx_data = null)
     {
         $this->db->trans_start();
         
@@ -175,6 +182,39 @@ class Invoice_model extends CI_Model {
                     $invoice_update['payment_reference'] = $payment_reference;
                 }
                 // Pour PayPal, on pourrait stocker dans un champ dédié si nécessaire
+            }
+            
+            // ========== FX CONVERSION DATA ==========
+            // Store currency conversion information if payment was made in different currency
+            if (!empty($fx_data) && is_array($fx_data)) {
+                // Conversion applied flag
+                if (isset($fx_data['conversion_applied']) && $fx_data['conversion_applied']) {
+                    $invoice_update['conversion_applied'] = 1;
+                    
+                    // Payment currency (the currency actually charged to customer)
+                    if (!empty($fx_data['payment_currency'])) {
+                        $invoice_update['payment_currency'] = $fx_data['payment_currency'];
+                    }
+                    
+                    // Amount in payment currency (converted amount charged)
+                    if (isset($fx_data['payment_amount_converted'])) {
+                        $invoice_update['payment_amount_converted'] = $fx_data['payment_amount_converted'];
+                    }
+                    
+                    // Exchange rate used
+                    if (isset($fx_data['fx_rate'])) {
+                        $invoice_update['fx_rate'] = $fx_data['fx_rate'];
+                    }
+                    
+                    // Date of exchange rate
+                    if (!empty($fx_data['fx_rate_date'])) {
+                        $invoice_update['fx_rate_date'] = $fx_data['fx_rate_date'];
+                    }
+                    
+                    log_message('info', "Invoice_model: FX conversion stored for invoice #{$invoice_id} - " .
+                        "Payment: {$fx_data['payment_amount_converted']} {$fx_data['payment_currency']}, " .
+                        "Rate: {$fx_data['fx_rate']}, Date: {$fx_data['fx_rate_date']}");
+                }
             }
             
             $this->db->where('id', $invoice_id);

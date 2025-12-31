@@ -1687,15 +1687,30 @@ class Admin extends CI_Controller
 						$payment_info['reference'] = $reference;
 					}
 
+					// ========== FX CONVERSION DATA ==========
+					// Préparer les données de conversion pour les stocker dans la facture
+					$fx_data = null;
+					if ($conversion_info !== null) {
+						$fx_data = [
+							'conversion_applied' => true,
+							'payment_currency' => $conversion_info['original_currency'] ?? $currency,
+							'payment_amount_converted' => $conversion_info['original_amount'] ?? $amount_paid,
+							'fx_rate' => $conversion_info['fx_rate'] ?? $conversion_info['exchange_rate'] ?? null,
+							'fx_rate_date' => isset($conversion_info['conversion_date']) ? date('Y-m-d', strtotime($conversion_info['conversion_date'])) : date('Y-m-d')
+						];
+						log_message('info', "Admin payment_success: FX data prepared for invoice #{$invoice_id} - " . json_encode($fx_data));
+					}
+
 					// VAT information is already stored in invoice during creation
 					// No additional processing needed for VAT-configured subscriptions
 
-					// Appel avec les paramètres corrects (reference, method, amount)
+					// Appel avec les paramètres corrects (reference, method, amount, fx_data)
 					$payment_result = $this->invoice_model->markInvoicePaid(
 						$invoice_id, 
 						$payment_info['reference'] ?? null,
 						$payment_info['method'] ?? $payment_method,
-						$payment_info['amount_paid'] ?? $final_amount_paid
+						$payment_info['amount_paid'] ?? $final_amount_paid,
+						$fx_data
 					);
 
 					if ($payment_result['success']) {
