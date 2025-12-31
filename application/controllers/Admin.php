@@ -1475,6 +1475,14 @@ class Admin extends CI_Controller
 					log_message('error', "Échec conversion AED → MAD pour UAE (Facture #{$invoice_id})");
 				}
 			}
+			// Exception pour le Maroc (MA) : On paie toujours en MAD, même si Stripe est configuré en EUR/USD
+			elseif (($tax_residence === 'MA' || $tax_residence === 'Morocco') && $invoice_currency === 'MAD') {
+				// On force la devise de paiement à MAD pour éviter une conversion inutile
+				// qui échouerait car le frontend envoie le montant en MAD
+				$payment_currency = 'MAD';
+				$converted_amount = $secure_amount;
+				log_message('info', "Maroc détecté : Validation en MAD forcée (Stripe configuré en " . ($stripe[0]->stripe_currency ?? 'inconnu') . ")");
+			}
 			// Vérifier si conversion nécessaire (même si TVA configurée)
 			// Si devises différentes, on DOIT convertir pour valider le montant
 			elseif ($payment_currency !== $invoice_currency && !empty($client_amount)) {
