@@ -34,7 +34,7 @@
         <ul style="padding-left:1.2rem;margin-bottom:0;">
           <li class="mb-2">
             <?php echo get_phrase("You_can_close_this_guide_at_any_time_button"); ?>
-            <strong>✕</strong> <?php echo get_phrase("or_Esc"); ?>
+            <strong>✕</strong> <?php echo get_phrase("or_Esc"); ?>)
           </li>
           <li>
             <?php echo get_phrase("Proceed_with"); ?>

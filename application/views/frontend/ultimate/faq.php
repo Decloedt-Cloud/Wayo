@@ -1,4 +1,4 @@
-<main id="main" tabindex="-1">
+<main id="main" tabindex="-1" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- HERO -->
     <section class="hero mt-5">
       <div class="container hero-wrap reveal">
@@ -38,7 +38,7 @@
     <!-- POUR QUI -->
     <section id="pour-qui" class="bg-section-secondary" aria-label="Public visé">
       <div class="container reveal">
-        <div class="sec-title">
+        <div class="sec-title" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
           <h3><?php echo get_phrase("Who is Wayo for?") ?></h3>
           <span class="pill"><?php echo get_phrase("General") ?></span>
         </div>
@@ -217,7 +217,7 @@
             </p>
             </div>
             <p><?php echo get_phrase("Purchase course by course, access depending on format (on-demand, live, coaching).") ?></p>
-            <a class="btn-login" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Discover our communities") ?></a>
+            <a class="btn-login " href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Discover our communities") ?></a>
           </div>
           <div class="price" style="border-color:rgba(255,122,46,.45)">
             <h4><?php echo get_phrase("Mentor — Publishing") ?></h4>

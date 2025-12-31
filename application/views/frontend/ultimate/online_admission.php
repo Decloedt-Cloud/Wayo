@@ -1,7 +1,7 @@
 <?php if (get_common_settings('recaptcha_status')): ?>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <?php endif; ?>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
 <?php
 ?>
 
@@ -127,6 +127,109 @@
         background: #fff7e6;
         border: 1px solid #ffe0a3;
         color: #7a4d00;
+    }
+     /* === NOUVEAU STYLE UNIFIÉ POUR TÉLÉPHONE === */
+    .unified-phone-wrapper {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid #ECEEF3;
+        border-radius: 12px;
+        background: #f7f8fb;
+        transition: all 0.3s ease;
+        height: 52px; 
+        /* overflow: hidden; Removed to allow dropdown visibility */
+        position: relative;
+    }
+
+    .unified-phone-wrapper:focus-within {
+        border-color: #ff6b35;
+        background: #fff;
+    }
+
+    .unified-phone-wrapper.is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .unified-phone-wrapper .country-select-wrapper {
+        width: 80px; 
+        border-right: 1px solid #ECEEF3;
+        background-color: rgba(0,0,0,0.02);
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .custom-select-trigger {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.75rem;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: auto;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 9999;
+        display: none;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 4px;
+        min-width: 80px;
+    }
+
+    .custom-options.open {
+        display: block;
+    }
+
+    .custom-option {
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: background 0.2s;
+    }
+
+    .custom-option:hover {
+        background-color: #fff2ea;
+        color: #ff6b35;
+    }
+
+    .custom-option.selected {
+        background-color: #fff2ea;
+        font-weight: bold;
+    }
+
+    .flag-icon {
+        font-size: 1.1em;
+        line-height: 1em;
+        border-radius: 3px;
+    }
+
+    .unified-phone-wrapper .form-control {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        height: 100% !important;
+        padding: 10px 14px !important;
+        font-size: 1rem;
+    }
+
+    .unified-phone-wrapper .form-control:focus {
+        box-shadow: none !important;
+        background-color: #fff !important;
+    }
+
+    /* Ajustement pour coller au style de la page online_admission */
+    .unified-phone-wrapper {
+        margin-top: 0;
     }
 
     /* onording popup */
@@ -539,15 +642,20 @@
                     </div>
 
                     <div class="grid-2">
-                        <label class="field">
+                        <div class="field">
                             <span class="field-label"><?php echo get_phrase("Phone") ?> <span class="req">*</span></span>
-                            <input id="profilePhone" type="tel" pattern="\+?\d{1,3}\s?(\d{1,4}\s?){4}" placeholder="+212 600 00 00 00"
-                                   class="form-control rounded-end shadow-none" name="phone"
-                                   data-msg="<?php echo get_phrase("Please enter a valid phone number") ?>"
-                                   data-error-class="u-has-error" data-success-class="u-has-success"
-                                   required aria-required="true" autocomplete="tel">
+                            <div class="unified-phone-wrapper">
+                                <div class="country-select-wrapper">
+                                   <?php include 'partials/countrySelect.php'; ?>
+                                </div>
+                                <input id="profilePhone" type="tel"
+                                       class="form-control shadow-none" name="phone"
+                                       data-msg="<?php echo get_phrase("Please enter a valid phone number") ?>"
+                                       data-error-class="u-has-error" data-success-class="u-has-success"
+                                       required aria-required="true" autocomplete="tel">
+                            </div>
                             <div class="error" data-for="profilePhone"></div>
-                        </label>
+                        </div>
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
                             <select id="communityLang" name="communityLang" required aria-required="true"
@@ -634,7 +742,7 @@
                                             <option value=""><?php echo get_phrase('select_a_category'); ?></option>
                                             <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
                                             <?php foreach ($categories as $categorie): ?>
-                                                <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
+                                                <option value="<?php echo $categorie['name']; ?>"><?php echo get_phrase($categorie['name']); ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                         <div class="error" data-for="communityCat"></div>
@@ -852,7 +960,7 @@
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
                         <button type="submit" id="submitBtnSchool"
-                                class="btn btn btn-success text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
+                                class="btn btn btn-primary text-uppercase submit-button"><?php echo get_phrase('Submit'); ?></button>
                         <button type="reset" id="resetBtn" style="display: none;"></button>
                     </div>
                 </section>
@@ -1165,6 +1273,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function setInvalid(el, msg) {
         if (!el) return;
         el.classList.add('is-invalid');
+        // Handle phone wrapper
+        if (el.id === 'profilePhone') {
+            el.closest('.unified-phone-wrapper')?.classList.add('is-invalid');
+        }
         const err = $(`.error[data-for="${el.id}"]`);
         if (err) {
             err.textContent = msg || el.dataset.msg || '';
@@ -1175,6 +1287,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function clearInvalid(el) {
         if (!el) return;
         el.classList.remove('is-invalid');
+         // Handle phone wrapper
+        if (el.id === 'profilePhone') {
+            el.closest('.unified-phone-wrapper')?.classList.remove('is-invalid');
+        }
         const err = $(`.error[data-for="${el.id}"]`);
         if (err) {
             err.textContent = '';
@@ -1519,6 +1635,116 @@ document.addEventListener('DOMContentLoaded', function() {
             toastr?.error('An error occurred.');
         });
     });
+     // ========================
+    // GESTION DU CODE PAYS CUSTOM ET AUTOMATIQUE
+    // ========================
+    const phoneInput = $('#profilePhone');
+    const countryInput = $('#countrySelect'); // Hidden input
+    const countryTrigger = $('#countryTrigger');
+    const countryOptions = $('#countryOptions');
+    const selectedFlag = $('#selectedFlag');
+    const options = $$('.custom-option');
+
+    let previousCode = countryInput ? countryInput.value : '+212'; 
+
+    if (countryTrigger) {
+        // Toggle Dropdown
+        countryTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            countryOptions.classList.toggle('open');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', () => {
+            countryOptions.classList.remove('open');
+        });
+
+        // Select Option Logic
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const value = this.getAttribute('data-value');
+                const flag = this.getAttribute('data-flag');
+
+                // Update UI
+                selectedFlag.className = `flag-icon flag-icon-${flag}`;
+                countryInput.value = value;
+
+                // Update selection state
+                options.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+
+                countryOptions.classList.remove('open');
+
+                // Trigger logic to update phone input
+                updatePhoneCode();
+            });
+        });
+    }
+
+    function updatePhoneCode() {
+        if (!phoneInput || !countryInput) return;
+        const newCode = countryInput.value;
+        let currentVal = phoneInput.value;
+
+        if (currentVal.startsWith(previousCode)) {
+            phoneInput.value = newCode + currentVal.substring(previousCode.length);
+        } 
+        else if (!currentVal.trim() || !currentVal.startsWith('+')) {
+            phoneInput.value = newCode;
+        }
+        else {
+            phoneInput.value = newCode + currentVal.replace(/^\+\d+\s*/, '');
+        }
+
+        previousCode = newCode; 
+        updateContinueButton();
+    }
+
+    // Init phone code
+    if (phoneInput && countryInput) {
+        if (!phoneInput.value.trim()) {
+            phoneInput.value = countryInput.value;
+        }
+        previousCode = countryInput.value;
+
+        const initialOpt = document.querySelector(`.custom-option[data-value="${countryInput.value}"]`);
+        if(initialOpt && selectedFlag) {
+           const flag = initialOpt.getAttribute('data-flag'); 
+           selectedFlag.className = `flag-icon flag-icon-${flag}`;
+        }
+    }
+
+    // Protection logic
+    if (phoneInput && countryInput) {
+        ['click', 'focus', 'keyup', 'keydown'].forEach(evt => {
+            phoneInput.addEventListener(evt, (e) => {
+                const code = countryInput.value;
+                if (phoneInput.selectionStart < code.length) {
+                    e.preventDefault();
+                    phoneInput.setSelectionRange(code.length, code.length);
+                }
+            });
+        });
+
+        phoneInput.addEventListener('keydown', (e) => {
+            const code = countryInput.value;
+            if (e.key === 'Backspace' && phoneInput.selectionStart <= code.length) {
+                 e.preventDefault();
+            }
+            if (e.key === 'Delete' && phoneInput.selectionStart < code.length) {
+                 e.preventDefault();
+            }
+        });
+
+        phoneInput.addEventListener('input', () => {
+            const code = countryInput.value;
+            if (!phoneInput.value.startsWith(code)) {
+                 const raw = phoneInput.value.replace(code, '').replace(/^\+/, ''); 
+                 phoneInput.value = code + raw;
+            }
+        });
+    }
 
     // ========================
     // Init

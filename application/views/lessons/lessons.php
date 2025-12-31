@@ -1,4 +1,16 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/custom/navbar.css">
+<style>
+/* Gestion globale des textes longs */
+.lesson-container, #lesson-container {
+    overflow-x: hidden;
+}
+.course_container h5 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+</style>
 <?php
 $course_details = $this->lms_model->get_course_by_id($course_id);
 ?>
@@ -7,7 +19,7 @@ $course_details = $this->lms_model->get_course_by_id($course_id);
     <!-- Top bar -->
     <div class="row align-items-center">
         <div class="col-lg-9  ">
-            <h5>
+            <h5 title="<?php echo htmlspecialchars($course_details['title']); ?>">
                 <img src="<?php echo $this->settings_model->get_logo_light(); ?>" alt="" height="40">
                 <?php echo get_phrase('online_course'); ?> |
                 <?php echo $course_details['title']; ?>

@@ -70,9 +70,9 @@
 
 
 
-  <main>
+  <main >
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container hero-content py-5" data-animate>
         <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Wayo Academy, much more than a learning platform.") ?></h1>
        
@@ -93,7 +93,7 @@
     </section>
 
     <!-- MISSION & VALEURS -->
-    <section id="mission" class="py-5">
+    <section id="mission" class="py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container">
         <header class="text-center mission mb-4" data-animate>
           <h2 class="h2 mb-2"><?php echo get_phrase("Our Mission") ?></h2>
@@ -138,7 +138,7 @@
     </section>
 
     <!-- HISTOIRE -->
-     <section class="section-timeline py-5" id="histoire">
+     <section class="section-timeline py-5" id="histoire" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <div class="container">
           <div class="text-center histoire mb-5">
             <h2 class="social-media-main-text">
@@ -443,7 +443,7 @@
    
 
     <!-- OÙ NOUS TROUVER -->
-    <section id="contact" class="contact py-5">
+    <section id="contact" class="contact py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container">
         <header class="text-center mb-4" data-animate>
           <h2 class="h2 mb-2"><?php echo get_phrase("Where to find us?") ?></h2>
@@ -475,9 +475,6 @@
                 <li class="d-grid" style="grid-template-columns:22px 1fr; gap:8px;">
                   <span>📞</span><a class="fw-semibold" href="tel:+971501548923" style="color:var(--accent)"><?php echo get_phrase("+971 50 154 8923") ?></a>
                 </li>
-                <li class="d-grid" style="grid-template-columns:22px 1fr; gap:8px;">
-                  <span>🌐</span><a class="fw-semibold" href="https://moscaling.ae/" target="_blank" rel="noopener" style="color:var(--accent)">moscaling.ae</a>
-                </li>
               </ul>
               <div class="mt-3 d-grid gap-2">
                 <p class="m-0"><?php echo get_phrase("Need a demo? Write to us and we’ll schedule a slot.") ?></p>
@@ -490,7 +487,7 @@
     </section>
 
     <!-- CTA FINAL -->
-    <section id="cta" class="py-5 bg-alt">
+    <section id="cta" class="py-5 bg-alt" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container" data-animate>
         <div class="text-center">
           <h2 class="h2 mb-2 p-cta"><?php echo get_phrase("Ready to join the community?") ?></h2>

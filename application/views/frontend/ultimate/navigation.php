@@ -901,7 +901,7 @@ $system_name = get_frontend_settings('website_title');
                                     <i class="mdi mdi-earth me-1"></i> <!-- ton icône globe -->
                                     <button class="btn btn-lang" id="langToggle" aria-label="Language">
                                         <span>🌐</span>
-                                        <span class="lang-code"><?php echo ucfirst(get_user_language()); ?></span>
+                                        <span class="lang-code"><?php echo ucfirst(get_phrase(get_user_language())); ?></span>
                                     </button>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
@@ -922,7 +922,7 @@ $system_name = get_frontend_settings('website_title');
                                     <i class="mdi mdi-earth me-1"></i> <!-- ton icône globe -->
                                     <button class="btn btn-lang" id="langToggle" aria-label="Language" style="cursor:pointer !important;">
                                         <span>🌐</span>
-                                        <span class="lang-code"><?php echo ucfirst(get_user_language()); ?></span>
+                                        <span class="lang-code"><?php echo ucfirst(get_phrase(get_user_language())); ?></span>
                                     </button>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
@@ -1018,7 +1018,7 @@ $system_name = get_frontend_settings('website_title');
                                 style="width:100%">
                                 <button class="btn  w-100 d-flex align-items-center justify-content-center gap-2" id="langToggleMobile" aria-label="Language" style="cursor:pointer !important;">
                                     <span>🌐</span>
-                                    <span class="lang-code"><?php echo ucfirst(get_user_language()); ?></span>
+                                    <span class="lang-code"><?php echo ucfirst(get_phrase(get_user_language())); ?></span>
                                 </button>
                             </a>
                             <div class="dropdown-menu dropdown-menu-animated w-100">
@@ -1039,7 +1039,7 @@ $system_name = get_frontend_settings('website_title');
                                 style="width:100%" ;>
                                 <button class="btn  w-100 d-flex align-items-center justify-content-center gap-2" id="langToggleMobileGuest" aria-label="Language" style="cursor:pointer !important;">
                                     <span>🌐</span>
-                                    <span class="lang-code"><?php echo ucfirst(get_user_language()); ?></span>
+                                    <span class="lang-code"><?php echo ucfirst(get_phrase(get_user_language())); ?></span>
                                 </button>
                             </a>
                             <div class="dropdown-menu dropdown-menu-animated w-100">

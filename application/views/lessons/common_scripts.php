@@ -63,16 +63,18 @@ $(document).ready(function() {
   }
 });
 var counter = 0;
-player.on('canplay', event => {
-  if (counter == 0) {
-    if (currentProgress == 1) {
-      document.querySelector('#player').currentTime = 0;
-    }else{
-      document.querySelector('#player').currentTime = currentProgress;
+if (typeof player !== 'undefined' && player && typeof player.on === 'function') {
+  player.on('canplay', event => {
+    if (counter == 0) {
+      if (currentProgress == 1) {
+        document.querySelector('#player').currentTime = 0;
+      }else{
+        document.querySelector('#player').currentTime = currentProgress;
+      }
     }
-  }
-  counter++;
-});
+    counter++;
+  });
+}
 
 function getCurrentTime() {
   var lesson_id = '<?php echo $lesson_id; ?>';
@@ -213,7 +215,7 @@ function updateTimer() {
         clearInterval(timerInterval);
         
         // Si ce n'est pas la dernière question, passer à la question suivante
-        if (currentQuestion < <?php echo count($quiz_questions->result_array()); ?>) {
+        if (currentQuestion < <?php echo isset($quiz_questions) && $quiz_questions ? count($quiz_questions->result_array()) : 0; ?>) {
            currentQuestion++; 
           showNextQuestion(currentQuestion); // Passe automatiquement à la question suivante
         } else {

@@ -27,7 +27,7 @@
                 </div>
 
                 <script src="<?php echo base_url();?>assets/global/plyr/plyr.js"></script>
-                <script>const player = new Plyr('#player');</script>
+                <script>if (typeof player === 'undefined') { var player = new Plyr('#player'); }</script>
                 <!------------- PLYR.IO ------------>
 
                 <!-- If the video is vimeo video -->
@@ -41,7 +41,7 @@
                 </div>
 
                 <script src="<?php echo base_url();?>assets/global/plyr/plyr.js"></script>
-                <script>const player = new Plyr('#player');</script>
+                <script>if (typeof player === 'undefined') { var player = new Plyr('#player'); }</script>
                 <!------------- PLYR.IO ------------>
                 <?php elseif (strtolower($provider) == 'mydevice'):; ?>
                    <link rel="stylesheet" href="<?php echo base_url();?>assets/global/plyr/plyr.css">
@@ -62,7 +62,7 @@
                 </video>
 
                 <script src="<?php echo base_url();?>assets/global/plyr/plyr.js"></script>
-                <script>const player = new Plyr('#player');</script>
+                <script>if (typeof player === 'undefined') { var player = new Plyr('#player'); }</script>
                 <!------------- PLYR.IO ------------>
             <?php endif; ?>
         <?php elseif ($lesson_details['lesson_type'] == 'quiz'): ?>
@@ -72,86 +72,7 @@
         <?php else: ?>
        
 
-                <!-- Section d'affichage du fichier -->
-                <!-- <div class="mt-4"> -->
-                    <!-- <h3>Preview:</h3> -->
-                    <?php 
-                    // $file_path = base_url().'uploads/lesson_files/'.$lesson_details['attachment']; 
-                    // $file_extension = pathinfo($lesson_details['attachment'], PATHINFO_EXTENSION);
 
-                    // Affichage en fonction du type de fichier
-                    //if (in_array($file_extension, ['pdf'])): ?>
-                        <!-- <iframe src="<?php // echo $file_path; ?>" style="width: 100%; height: 500px; border: none;"></iframe> -->
-                    <?php //elseif (in_array($file_extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
-                        <!-- <img src="<?php // echo $file_path; ?>" alt="Preview" style="max-width: 100%; height: auto;"> -->
-                    <?php // elseif (in_array($file_extension, ['mp4', 'webm', 'ogg'])): ?>
-                        <!-- <video controls style="width: 100%; height: auto;">
-                            <source src="<?php // echo $file_path; ?>" type="video/<?php // echo $file_extension; ?>">
-                            Votre navigateur ne supporte pas la lecture vidéo.
-                        </video> -->
-                    <?php // elseif (in_array($file_extension, ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'])): ?>
-                        <!-- Utiliser Google Drive Viewer pour ces formats -->
-                        <!-- <iframe src="https://docs.google.com/gview?url=<?php echo $file_path; ?>&embedded=true"  -->
-                                <!-- style="width: 100%; height: 500px;" frameborder="0"></iframe> -->
-                    <?php // else: ?>
-                        <!-- <p>Ce type de fichier ne peut pas être affiché. Vous pouvez le <a href="<?php // echo $file_path; ?>" download>télécharger ici</a>.</p> -->
-                    <?php // endif; ?>
-                <!-- </div> -->
-                 <!-- Section d'affichage du fichier -->
-                <div class="mt-4">
-                    <h3>Preview:</h3>
-                    <?php 
-                    $file_path = base_url() . 'uploads/lesson_files/' . $lesson_details['attachment']. '?v=' . time(); 
-                    $file_extension = strtolower(pathinfo($lesson_details['attachment'], PATHINFO_EXTENSION));
-
-                    // Détection du type de fichier
-                    switch ($file_extension):
-                        case 'pdf': 
-                            // Affichage pour les PDF
-                    ?>
-                        <object data="<?php echo $file_path; ?>" type="application/pdf" width="100%" height="500">
-                            <p>Votre navigateur ne supporte pas les PDF intégrés. <a href="<?php echo $file_path; ?>" target="_blank">Téléchargez le fichier PDF ici</a>.</p>
-                        </object>
-                    <?php 
-                        break;
-                        case 'jpg': case 'jpeg': case 'png': case 'gif':
-                            // Affichage pour les images
-                    ?>
-                        <div style="text-align: center;">
-                            <img src="<?php echo $file_path; ?>" alt="Preview" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);">
-                        </div>
-                    <?php 
-                        break;
-                        case 'mp4': case 'webm': case 'ogg':
-                            // Affichage pour les vidéos
-                    ?>
-                        <video controls style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);">
-                            <source src="<?php echo $file_path; ?>" type="video/<?php echo $file_extension; ?>">
-                            Votre navigateur ne supporte pas la lecture vidéo. <a href="<?php echo $file_path; ?>" download>Téléchargez la vidéo ici</a>.
-                        </video>
-                    <?php 
-                        break;
-                        case 'doc': case 'docx': case 'xls': case 'xlsx': case 'ppt': case 'pptx':
-                            // Affichage pour les documents bureautiques via Google Viewer
-                    ?>
-                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=<?php echo urlencode($file_path); ?>" style="width: 100%; height: 500px; border: none;"></iframe>
-
-
-
-                 <?php 
-                        break;
-                        default:
-                            // Affichage pour les types de fichiers non pris en charge
-                    ?>
-                        <p>Prévisualisation indisponible pour ce type de fichier. <a href="<?php echo $file_path; ?>" download>Téléchargez le fichier ici</a>.</p>
-                    <?php endswitch; ?>
-                </div>
-
-                <div class="mt-5">
-                    <a href="<?php echo base_url().'uploads/lesson_files/'.$lesson_details['attachment']; ?>" class="btn btn-download text-white" download>
-                        <i class="fa fa-download font-size-24"></i> <?php echo get_phrase('download').' : '.$lesson_details['title']; ?>
-                    </a>
-                </div>
 
 
         <?php endif; ?>
@@ -160,9 +81,9 @@
     <div class="margin-m" id = "lesson-summary">
         <div class="card-instruction">
             <div class="card-body-instruction">
-                <strong class="card-title"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('instruction') : get_phrase("note"); ?>:</strong>
+                <strong class="card-title"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('instruction') : ''; ?></strong>
                 <?php if ($lesson_details['summary'] == ""): ?>
-                    <p class="card-text"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('no_instruction_found') : get_phrase("no_summary_found"); ?></p>
+                    <p class="card-text"><?php echo $lesson_details['lesson_type'] == 'quiz' ? get_phrase('no_instruction_found') : ''; ?></p>
                 <?php else: ?>
                     <p class="card-text"><?php echo $lesson_details['summary']; ?></p>
                 <?php endif; ?>
@@ -175,32 +96,33 @@
     .card-title {
         font-size: 1.1rem !important;
         font-weight: 700 !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
     .card {
         padding: 0px 0px;
         border-radius: 15px;
-    }
-    .btn-download {
-        background: #FC7B30 !important;
-        /* background: #667eea !important; */
-        color: #ffffff !important;
-        border-radius: 8px;
-        padding: 5px 19px;
-        font-size: 1rem;
-        transition: background-color 0.3s ease;
-    }
-    .btn-download:hover {
-        background-color: #ee7626 !important;
-        color: #ffffff !important;
+        overflow: hidden;
     }
     .card-instruction {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
         border-radius: 15px;
+        overflow: hidden;
     }
     .card-body-instruction {
         padding: 20px 25px !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
-
+    .card-body-instruction p {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    #video_player_area {
+        overflow: hidden;
+    }
 </style>

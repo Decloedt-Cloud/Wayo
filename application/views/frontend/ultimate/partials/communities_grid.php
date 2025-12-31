@@ -1,5 +1,5 @@
 <!-- Zone des cartes -->
-    <div id="cardsGrid" class="row g-4">
+    <div id="cardsGrid" class="row g-4" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <?php 
       $schools_array = [];
       if (!empty($schools)) {
@@ -56,20 +56,21 @@
                       ])->num_rows();
                       echo $classes_count;
                     ?>
-                    classes
+                    <?php echo get_phrase('classes'); ?>
                   </li>
                   <li class="list-inline-item">
                     <?php if (($c['access'] ?? 0) == 1): ?>
                       <span class="badge rounded-pill text-bg-wayo-secondaire"><?php echo get_phrase('Private'); ?></span>
                     <?php else: ?>
-                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('Free access'); ?></span>
+                      <span class="badge rounded-pill text-bg-wayo"><?php echo get_phrase('public'); ?></span>
                     <?php endif; ?>
                   </li>
                 </ul>
 
                 <a class="btn btn-outline-wayo mt-auto" 
                    href="<?php echo base_url('home/community_details/' . $c['id']); ?>">
-                  <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?>
+                  <!-- <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?> -->
+                   <?php echo get_phrase('Details'); ?>
                 </a>
               </div>
             </div>
