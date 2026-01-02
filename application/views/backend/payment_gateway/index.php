@@ -478,12 +478,64 @@
 									
 												<div class="form-group">
 													<label for="email"><?php echo get_phrase('Email address'); ?></label>
-													<div class="info-box"><?php echo $user_details['email']; ?></div>
+													<div class="info-box">
+														<?php 
+															if (!empty($user_details['email'])) {
+																echo $user_details['email']; 
+															} elseif (!empty($invoice_details['student_id'])) {
+																$ci =& get_instance();
+																$stu_id = $invoice_details['student_id'];
+																$usr_email = 'N/A';
+																
+																// 1. Try finding student by ID
+																$stu = $ci->db->get_where('students', ['id' => $stu_id])->row_array();
+																if ($stu) {
+																	$usr = $ci->db->get_where('users', ['id' => $stu['user_id']])->row_array();
+																	$usr_email = $usr ? $usr['email'] : 'N/A';
+																} else {
+																	// 2. Fallback: Check if $stu_id is actually a user_id (Data Inconsistency Fix)
+																	$usr_direct = $ci->db->get_where('users', ['id' => $stu_id])->row_array();
+																	if ($usr_direct) {
+																		$usr_email = $usr_direct['email'];
+																	}
+																}
+																echo $usr_email;
+															} else {
+																echo 'N/A';
+															}
+														?>
+													</div>
 												</div>
 
 												<div class="form-group">
 													<label for="card-holder"><?php echo get_phrase('Name on card'); ?></label>
-													<div class="info-box"><?php echo $user_details['name']; ?></div>
+													<div class="info-box">
+														<?php 
+															if (!empty($user_details['name'])) {
+																echo $user_details['name']; 
+															} elseif (!empty($invoice_details['student_id'])) {
+																$ci =& get_instance();
+																$stu_id = $invoice_details['student_id'];
+																$usr_name = 'N/A';
+																
+																// 1. Try finding student by ID
+																$stu = $ci->db->get_where('students', ['id' => $stu_id])->row_array();
+																if ($stu) {
+																	$usr = $ci->db->get_where('users', ['id' => $stu['user_id']])->row_array();
+																	$usr_name = $usr ? $usr['name'] : 'N/A';
+																} else {
+																	// 2. Fallback: Check if $stu_id is actually a user_id
+																	$usr_direct = $ci->db->get_where('users', ['id' => $stu_id])->row_array();
+																	if ($usr_direct) {
+																		$usr_name = $usr_direct['name'];
+																	}
+																}
+																echo $usr_name;
+															} else {
+																echo 'N/A';
+															}
+														?>
+													</div>
 												</div>
 
 												<label>

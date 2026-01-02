@@ -1904,8 +1904,18 @@ class Student extends CI_Controller {
             }
             
             // Load student details based on invoice
-            $student_id = $page_data['invoice_details']['student_id'];
-            $page_data['user_details'] = $this->db->get_where('users', ['id' => $student_id])->row_array();
+            $invoice_student_id = $page_data['invoice_details']['student_id'];
+            $student_record = $this->db->get_where('students', ['id' => $invoice_student_id])->row_array();
+            
+            if ($student_record) {
+                // Correct: Use the user_id linked to the student
+                $real_user_id = $student_record['user_id'];
+                $page_data['user_details'] = $this->db->get_where('users', ['id' => $real_user_id])->row_array();
+            } else {
+                // Fallback (should not happen if data integrity is good)
+                $page_data['user_details'] = [];
+                log_message('error', 'Payment: Student record not found for ID ' . $invoice_student_id);
+            }
 
             // Get school ID from session and fetch school details
             $school_id = $this->session->userdata('payment_school_id'); 

@@ -477,7 +477,16 @@ function community_details($school_id = '')
     $school_id = urldecode($school_id);
     $page_data['school'] = $this->user_model->get_school_details($school_id);
     $page_data['school_id'] = $page_data['school']['id'];
-    $page_data['student_id'] = $this->session->userdata('user_id');
+    // Fix: Authenticated user ID is different from Student ID
+    $user_id = $this->session->userdata('user_id');
+    $student_id = 0;
+    if ($user_id) {
+        $student = $this->db->get_where('students', array('user_id' => $user_id))->row_array();
+        if ($student) {
+            $student_id = $student['id'];
+        }
+    }
+    $page_data['student_id'] = $student_id;
   	$page_data['settings_data'] = $this->db->get_where('settings_school', array('school_id ' =>$page_data['school_id'] ))->row_array();
     // passe la valeur deux façons : dans school et comme variable indépendante
     $page_data['course_students_count'] = $this->user_model->get_community_students_count($page_data['school']['id']);

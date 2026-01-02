@@ -1329,26 +1329,46 @@ class Crud_model extends CI_Model
 	}
 	public function get_invoice_by_student_id($user_id = "", $limit = null, $offset = null, $filter = 'all')
 	{
+		// 1. Resolve IDs (Student ID and User ID)
+		// $user_id param here is typically the 'code' from students table
+		$student_id_to_check = [];
+		
+		// Try finding student by code
+		$student = $this->db->get_where('students', ['code' => $user_id])->row_array();
+		
+		if ($student) {
+			$student_id_to_check[] = $student['id'];        // Correct Student ID (e.g. 280)
+			$student_id_to_check[] = $student['user_id'];   // User ID (e.g. 666) - in case invoice was saved with this
+		} else {
+			// Fallback: maybe the param passed IS directly an ID (rare but possible in some calls)
+			$student_id_to_check[] = $user_id;
+		}
+		
+		$student_id_to_check = array_unique(array_filter($student_id_to_check));
+		
+		if (empty($student_id_to_check)) {
+			return $this->db->get_where('invoices', ['id' => 0]); // Return empty result
+		}
+
+		// 2. Build Query
 		$this->db->select('invoices.*');
 		$this->db->from('invoices');
-		$this->db->join('students', 'students.user_id = invoices.student_id');
-		$this->db->where('students.code', $user_id);
+		
+		// Use group logic for OR condition
+		$this->db->group_start();
+		$this->db->where_in('invoices.student_id', $student_id_to_check);
+		$this->db->group_end();
 
 		// Apply filter conditions
 		$this->apply_invoice_filter($filter);
 
-		$this->db->group_by('invoices.id');
 		$this->db->order_by('invoices.created_at', 'DESC'); // Plus récentes en premier
 
 		if ($limit !== null) {
 			$this->db->limit($limit, $offset);
 		}
 
-		$query = $this->db->get();
-
-		// Debug removed
-
-		return $query;
+		return $this->db->get();
 	}
 
 	/**
@@ -1380,10 +1400,29 @@ class Crud_model extends CI_Model
 	 */
 	public function count_invoices_by_student($user_id = "", $filter = 'all')
 	{
+		// 1. Resolve IDs (Student ID and User ID)
+		$student_id_to_check = [];
+		$student = $this->db->get_where('students', ['code' => $user_id])->row_array();
+		
+		if ($student) {
+			$student_id_to_check[] = $student['id'];
+			$student_id_to_check[] = $student['user_id'];
+		} else {
+			$student_id_to_check[] = $user_id;
+		}
+		
+		$student_id_to_check = array_unique(array_filter($student_id_to_check));
+		
+		if (empty($student_id_to_check)) {
+			return 0;
+		}
+
 		$this->db->select('COUNT(DISTINCT invoices.id) as total');
 		$this->db->from('invoices');
-		$this->db->join('students', 'students.user_id = invoices.student_id');
-		$this->db->where('students.code', $user_id);
+		
+		$this->db->group_start();
+		$this->db->where_in('invoices.student_id', $student_id_to_check);
+		$this->db->group_end();
 
 		// Apply filter conditions
 		$this->apply_invoice_filter($filter);
