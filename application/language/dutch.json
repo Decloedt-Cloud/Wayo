@@ -3271,6 +3271,7 @@
     "file_not_found": "Bestand niet gevonden",
     "document_contains_insufficient_text_for_ai_chat": "Document bevat onvoldoende tekst voor AI-chat",
     "insufficient_text": "Onvoldoende tekst",
+    "base_price": "Basisprijs",
     "lesson_title": "Les titel",
     "to_save": "Opslaan",
     "instructions_optional": "Instructies (optioneel)",

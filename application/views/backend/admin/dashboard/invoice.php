@@ -21,7 +21,8 @@ $date_to   = strtotime(date('Y-m-t')." 23:59:59");
             <td>
                 <?php
                     $student_details = $this->user_model->get_student_details_by_id('student', $invoice['student_id']);
-                 echo  $student_details['name'] ; ?>
+                    echo !empty($student_details) ? $student_details['name'] : 'N/A'; 
+                ?>
             </td>
             <td>
                 <?php

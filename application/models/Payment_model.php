@@ -19,7 +19,17 @@ class Payment_model extends CI_Model {
         $this->output->set_header('Pragma: no-cache');
     }
 
-    public function stripe_payment($token_id = "", $invoice_id = "", $amount_paid = "", $stripe_secret_key = "") {
+    /**
+     * Effectuer un paiement Stripe
+     * 
+     * @param string $token_id Token Stripe
+     * @param string $invoice_id ID de la facture
+     * @param string $amount_paid Montant à payer
+     * @param string $stripe_secret_key Clé secrète Stripe
+     * @param string|null $target_currency Devise à utiliser (si null, utilise la config BDD)
+     * @return bool
+     */
+    public function stripe_payment($token_id = "", $invoice_id = "", $amount_paid = "", $stripe_secret_key = "", $target_currency = null) {
         // ========== SÉCURITÉ: Validation des entrées ==========
         if (empty($token_id) || empty($invoice_id) || empty($amount_paid) || empty($stripe_secret_key)) {
             log_message('error', 'Stripe: Paramètres manquants pour le paiement');
@@ -33,8 +43,15 @@ class Payment_model extends CI_Model {
             return false;
         }
         
-        $stripe_settings = json_decode(get_payment_settings('stripe_settings', $invoice_details['school_id']));
-        $stripe_currency = $stripe_settings[0]->stripe_currency ?? 'USD';
+        // Utiliser la devise passée en paramètre OU lire depuis la config
+        if (!empty($target_currency)) {
+            $stripe_currency = strtoupper($target_currency);
+            log_message('info', "Stripe: Devise forcée via paramètre: {$stripe_currency}");
+        } else {
+            $stripe_settings = json_decode(get_payment_settings('stripe_settings', $invoice_details['school_id']));
+            $stripe_currency = $stripe_settings[0]->stripe_currency ?? 'USD';
+            log_message('debug', "Stripe: Devise depuis config BDD: {$stripe_currency}");
+        }
         
         $user_id = $this->session->userdata('user_id'); 
         $user = $this->db->get_where('users', ['id' => $user_id])->row_array();

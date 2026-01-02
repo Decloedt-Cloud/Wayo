@@ -16,7 +16,8 @@ $class_details = !empty($invoice_details['class_id'])
 
 // VAT Calculation
   $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-$tax_residence = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+// Utiliser country depuis schools table (source unique de vérité)
+$tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
 
 // FX Data (needed for correct calculation)
 $conversion_applied = isset($invoice_details['conversion_applied']) && $invoice_details['conversion_applied'] == 1;

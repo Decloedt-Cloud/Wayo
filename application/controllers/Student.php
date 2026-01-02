@@ -900,14 +900,15 @@ class Student extends CI_Controller {
 		if($num_rows_invoices == 0){
 			// Calculer la TVA pour les classes
 			$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
-			$vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-			$tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+			$school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
+			$vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
+			$tax_residence  = isset($school['country']) ? $school['country'] : null;
 			
 			$vat_rate = 0;
 			if ($vat_applicable) {
 				if ($tax_residence === 'MA') {
 					$vat_rate = 20;
-				} elseif ($tax_residence === 'UAE') {
+				} elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
 					$vat_rate = 5;
 				}
 			}
@@ -1001,14 +1002,15 @@ class Student extends CI_Controller {
         if (!$existing_invoice) {
             // 🔹 4. Calculer la TVA
             $settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
-            $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-            $tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
+            $school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
+            $vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
+            $tax_residence  = isset($school['country']) ? $school['country'] : null;
             
             $vat_rate = 0;
             if ($vat_applicable) {
                 if ($tax_residence === 'MA') {
                     $vat_rate = 20;
-                } elseif ($tax_residence === 'UAE') {
+                } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
                     $vat_rate = 5;
                 }
             }
@@ -1667,7 +1669,7 @@ class Student extends CI_Controller {
         
         // Vérifier que la facture n'est pas déjà payée
         if ($details['status'] === 'paid') {
-            log_message('warning', "Tentative de double paiement pour facture #{$invoice_id}");
+            log_message('error', "Tentative de double paiement pour facture #{$invoice_id}");
             $this->session->set_flashdata('error_message', get_phrase('invoice_already_paid'));
             redirect(route('invoice'), 'refresh');
             return;
@@ -1709,7 +1711,7 @@ class Student extends CI_Controller {
                     $difference_percent = abs($server_converted - $client_amount) / $server_converted * 100;
                     
                     if ($difference_percent > 5) { // Plus de 5% de différence = suspect
-                        log_message('warning', "Conversion FX suspecte! Facture #{$invoice_id} - Serveur: {$server_converted}, Client: {$client_amount}, Diff: {$difference_percent}%");
+                        log_message('error', "Conversion FX suspecte! Facture #{$invoice_id} - Serveur: {$server_converted}, Client: {$client_amount}, Diff: {$difference_percent}%");
                         // Utiliser le montant calculé par le serveur pour plus de sécurité
                         $amount_paid = round($server_converted, 2);
                     } else {
@@ -1717,7 +1719,7 @@ class Student extends CI_Controller {
                     }
                 } else {
                     // Si impossible de recalculer, utiliser le montant client avec warning
-                    log_message('warning', "Impossible de vérifier la conversion FX pour facture #{$invoice_id}");
+                    log_message('debug', "Impossible de vérifier la conversion FX pour facture #{$invoice_id}");
                     $amount_paid = $client_amount;
                 }
             } catch (Exception $e) {
@@ -2080,7 +2082,7 @@ class Student extends CI_Controller {
                         log_message('info', "Payment FX Conversion: Invoice {$invoice_id} - Original: {$original_amount} {$invoice_currency}, Stripe: {$page_data['stripe_converted_amount']} {$stripe_currency}, PayPal: {$page_data['paypal_converted_amount']} {$paypal_currency}");
                         
                     } else {
-                        log_message('warning', "Payment: No FX rates available for conversion - Invoice {$invoice_id}");
+                        log_message('debug', "Payment: No FX rates available for conversion - Invoice {$invoice_id}");
                     }
                 } catch (Exception $e) {
                     log_message('error', 'Payment FX Conversion error: ' . $e->getMessage());

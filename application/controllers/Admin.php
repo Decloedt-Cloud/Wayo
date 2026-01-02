@@ -33,12 +33,19 @@ class Admin extends CI_Controller
 		$this->load->model('User_model', 'user_model');
 		$this->load->model('Settings_model', 'settings_model');
 		$this->load->model('Payment_model', 'payment_model');
+		$this->load->model('Invoice_model', 'invoice_model'); // Pre-load for performance
 		$this->load->model('addons/Lms_model','lms_model');
 		$this->load->model('Email_model', 'email_model');
 		$this->load->model('Addon_model', 'addon_model');
 		$this->load->model('Frontend_model', 'frontend_model');
 		$this->load->model('Driver_model', 'driver_model');
 		$this->load->model('Room_model','room_model');
+
+		// Load subscription service
+		$this->load->library('SubscriptionService', null, 'subscriptionService');
+
+		// Load Morocco B2B service
+		$this->load->library('MoroccoB2BService', null, 'moroccoService');
 
 		/*cache control*/
 		$this->output->set_header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
@@ -73,141 +80,442 @@ class Admin extends CI_Controller
 				}
 			}
 
-			// ---- Gestion de la période d'essai de 14 jours pour l'admin de la communauté ----
-			// On considère qu'une communauté est en essai si is_trial = 1 et is_paid = 0
-			// et que la date actuelle est supérieure à trial_end.
-			$trial_expired = false;
-			$subscription_expired = false;
-			if ($school) {
-				$now         = time();
-				$is_trial    = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
-				$is_paid     = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;
-				$trial_end   = isset($school['trial_end']) ? (int)$school['trial_end'] : 0;
-				$subscription_end = isset($school['subscription_end']) ? (int)$school['subscription_end'] : 0;
+			// Check subscription status using the new service
+			$subscription_status = $this->subscriptionService->getSubscriptionStatus($school_id);
 
-				// DEBUG: Log pour vérifier les valeurs
-				log_message('debug', "Admin construct - school_id: $school_id, is_paid: $is_paid, subscription_end: $subscription_end, now: $now");
-				if ($subscription_end > 0) {
-					log_message('debug', "Admin construct - subscription_end date: " . date('Y-m-d H:i:s', $subscription_end) . ", now date: " . date('Y-m-d H:i:s', $now));
-				}
-				
-				// DEBUG TEMPORAIRE: Afficher les valeurs pour debug
-				if ($current_method == 'dashboard' && isset($_GET['debug_subscription'])) {
-					echo "<pre>DEBUG SUBSCRIPTION:\n";
-					echo "school_id: $school_id\n";
-					echo "is_trial: $is_trial\n";
-					echo "is_paid: $is_paid\n";
-					echo "subscription_end: $subscription_end (" . ($subscription_end > 0 ? date('Y-m-d H:i:s', $subscription_end) : 'NULL/0') . ")\n";
-					echo "now: $now (" . date('Y-m-d H:i:s', $now) . ")\n";
-					echo "now > subscription_end: " . ($now > $subscription_end ? 'YES' : 'NO') . "\n";
-					echo "subscription_expired will be: " . ($is_trial === 0 && $subscription_end > 0 && $now > $subscription_end ? 'YES' : 'NO') . "\n";
-					echo "</pre>";
-				}
-
-				// Vérifier si l'essai de 14 jours est expiré
-				if ($is_trial === 1 && $is_paid === 0 && $trial_end > 0 && $now > $trial_end) {
-					$trial_expired = true;
-					log_message('debug', "Admin construct - Trial expired detected");
-				}
-
-			// Vérifier si l'abonnement mensuel est expiré
-			// Si subscription_end existe et est passé, l'abonnement est expiré (peu importe is_paid)
-			// On vérifie seulement si l'école n'est pas en période d'essai (is_trial = 0)
-			// Car si is_trial = 1, on utilise trial_end pour la vérification
-			if ($is_trial === 0 && $subscription_end > 0 && $now > $subscription_end) {
-				$subscription_expired = true;
-				log_message('debug', "Admin construct - Subscription expired detected: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") < now (" . date('Y-m-d H:i:s', $now) . ")");
-			} elseif ($is_trial === 0 && $subscription_end > 0 && $now <= $subscription_end) {
-				// Log pour confirmer que l'abonnement est encore valide
-				log_message('debug', "Admin construct - Subscription still valid: subscription_end (" . date('Y-m-d H:i:s', $subscription_end) . ") >= now (" . date('Y-m-d H:i:s', $now) . ")");
-			}
-			}
-
-			// Créer automatiquement une facture si l'essai ou l'abonnement est expiré
-			if (($trial_expired || $subscription_expired) && $school_id) {
-				// Si l'abonnement est expiré, remettre is_paid à 0 pour refléter l'état bloqué
-				if ($subscription_expired && $is_paid === 1) {
-					log_message('debug', "Admin construct - Updating is_paid to 0 for expired subscription");
-					$this->db->where('id', $school_id);
-					$this->db->update('schools', [
-						'is_paid'     => 0,
-						'is_trial' => 1, 
-						'updated_at'  => time(),
-					]);
-					// Mettre à jour la variable locale aussi
-					$is_paid = 0;
-				}
-
-				// Déterminer la date de référence pour créer une nouvelle facture
-				// Pour l'essai expiré : utiliser trial_end
-				// Pour l'abonnement expiré : utiliser subscription_end
-				$reference_date = 0;
-				if ($subscription_expired && $subscription_end > 0) {
-					$reference_date = $subscription_end;
-				} elseif ($trial_expired && $trial_end > 0) {
-					$reference_date = $trial_end;
-				}
-
-				// Vérifier s'il existe déjà une facture impayée créée APRÈS l'expiration
-				$this->db->order_by('id', 'DESC');
-				$this->db->where('school_id', $school_id);
-				$this->db->where('payment_type', 'subscription_admin');
-				$this->db->where('status', 'unpaid');
-				if ($reference_date > 0) {
-					// Ne prendre que les factures créées après l'expiration
-					$this->db->where('created_at >=', $reference_date);
-				}
-				$existing_invoice = $this->db->get('invoices')->row_array();
-
-				if ($existing_invoice) {
-					// Une facture impayée existe déjà créée après l'expiration, on ne crée pas de doublon
-					log_message('debug', "Admin construct - Invoice already exists (ID: " . $existing_invoice['id'] . ") created after expiration");
-					// Si la facture n'a pas de payment_type, l'aligner pour éviter les doublons futurs
-					if (empty($existing_invoice['payment_type'])) {
-						$this->db->where('id', $existing_invoice['id']);
-						$this->db->update('invoices', ['payment_type' => 'subscription_admin']);
-					}
-				} else {
-					// Créer une nouvelle facture car aucune facture impayée n'existe après l'expiration
-					log_message('debug', "Admin construct - Creating new subscription_admin invoice for school_id: $school_id");
-					$school_name = isset($school['name']) ? $school['name'] : 'Community';
-					$invoice_data = [
-						'title' => $school_name . ' - Monthly Subscription',
-						'total_amount' => 790, // Montant par défaut, peut être ajusté
-						'payment_type' => 'subscription_admin',
-						'status' => 'unpaid',
-						'school_id' => $school_id,
-						'session' => active_session(),
-						'created_at' => time(), // Utiliser time() au lieu de strtotime pour avoir le timestamp exact
-						'student_id' => null // Pas de student_id pour les abonnements admin
-					];
-					$this->db->insert('invoices', $invoice_data);
-					$new_invoice_id = $this->db->insert_id();
-					log_message('debug', "Admin construct - New invoice created with ID: $new_invoice_id");
-				}
-			}
 
 			// Partage l'info avec les vues
-			$this->trial_expired = $trial_expired || $subscription_expired;
+			$this->trial_expired = !$subscription_status['is_access_allowed'];
 			$this->school_data   = $school;
 
-			// Si l'essai ou l'abonnement est expiré, on bloque l'accès
-			if ($trial_expired || $subscription_expired) {
-               
-				// Laisser accès uniquement au dashboard, au logout et à la page de paiement (si définie)
+			// Handle access control based on subscription status
+			if (!$subscription_status['is_access_allowed']) {
 				$allowed_methods_trial = ['dashboard', 'logout', 'language', 'subscription', 'payment', 'payment_success'];
 
 				if (!in_array($current_method, $allowed_methods_trial)) {
-                   
-					// Bloquer l'accès : rediriger vers le dashboard où un pop-up de paiement sera affiché
-					log_message('debug', "Admin construct - Access blocked for method '$current_method' (trial_expired: " . ($trial_expired ? 'true' : 'false') . ", subscription_expired: " . ($subscription_expired ? 'true' : 'false') . ")");
+					log_message('debug', "Admin construct - Access blocked for method '$current_method' (subscription status: {$subscription_status['status']})");
 					redirect(site_url('admin/dashboard'));
 				} else {
-					log_message('debug', "Admin construct - Access allowed for method '$current_method' (trial/subscription expired but method is in allowed list)");
+					log_message('debug', "Admin construct - Access allowed for method '$current_method' (subscription expired but method is in allowed list)");
+				}
+			}
+
+			// Auto-generate renewal invoice if needed (only if accessing billing-related pages)
+			// EXCLUDE payment routes to prevent duplicate invoice creation during payment flow
+			$excluded_payment_methods = ['payment', 'payment_success', 'subscription_admin'];
+			
+			if (!$subscription_status['is_access_allowed'] &&
+				in_array($current_method, ['dashboard', 'subscription']) &&
+				!in_array($current_method, $excluded_payment_methods)) {
+
+				// Vérifier s'il y a une facture subscription_admin (paid ou unpaid) récente
+				// Pour éviter de créer des doublons quand il y a déjà une facture active
+				$recent_invoice = $this->db->query("
+					SELECT id, status, created_at
+					FROM invoices
+					WHERE school_id = ?
+					AND payment_type = 'subscription_admin'
+					AND created_at > UNIX_TIMESTAMP() - 3600  -- 1 heure (factures récentes)
+					ORDER BY created_at DESC
+					LIMIT 1
+				", [$school_id])->row_array();
+
+				if (empty($recent_invoice)) {
+					// Use the pre-loaded idempotent invoice model
+					$invoice_result = $this->invoice_model->ensureSubscriptionInvoice($school_id);
+
+					if ($invoice_result['success']) {
+						// Only log when invoice is actually created (reduce log noise)
+						if (!$invoice_result['existing']) {
+							log_message('info', "Invoice created for school #{$school_id}, ID: {$invoice_result['invoice_id']}");
+						}
+					} else {
+						log_message('error', "Failed to ensure invoice for school #{$school_id}: " . $invoice_result['message']);
+					}
+				} else {
+					log_message('debug', "Constructeur: Facture récente détectée (#{$recent_invoice['id']}, status: {$recent_invoice['status']}), pas de création de nouvelle facture pour school #{$school_id}");
 				}
 			}
 		}
 	}
+
+	/**
+	 * Détecter le pays de l'utilisateur via IP
+	 *
+	 * @return string Code pays (MA, FR, US, etc.) ou 'UNKNOWN'
+	 */
+	private function detect_user_country() {
+		// Récupérer l'IP de l'utilisateur
+		$user_ip = $this->input->ip_address();
+
+		// Pour les connexions locales, essayer de détecter via headers
+		if ($user_ip === '127.0.0.1' || $user_ip === '::1') {
+			// Essayer Cloudflare header
+			$cf_country = $this->input->server('HTTP_CF_IPCOUNTRY');
+			if (!empty($cf_country)) {
+				return strtoupper($cf_country);
+			}
+
+			// Essayer autres headers
+			$forwarded_country = $this->input->server('HTTP_X_FORWARDED_COUNTRY');
+			if (!empty($forwarded_country)) {
+				return strtoupper($forwarded_country);
+			}
+
+			// Par défaut pour développement local
+			return 'MA'; // Maroc par défaut pour les tests
+		}
+
+		// Pour les vraies IPs, utiliser un service de géolocalisation
+		// Ici nous simulons avec une logique simple (à remplacer par un vrai service)
+		try {
+			// Utiliser ipinfo.io ou similaire (service gratuit)
+			$geo_url = "http://ip-api.com/json/{$user_ip}";
+			$context = stream_context_create([
+				'http' => [
+					'timeout' => 2, // Timeout court
+					'user_agent' => 'SchoolManagement/1.0'
+				]
+			]);
+
+			$geo_data = @file_get_contents($geo_url, false, $context);
+			if ($geo_data) {
+				$geo = json_decode($geo_data, true);
+				if ($geo && isset($geo['countryCode']) && $geo['status'] === 'success') {
+					return strtoupper($geo['countryCode']);
+				}
+			}
+		} catch (Exception $e) {
+			log_message('debug', 'Erreur géolocalisation IP: ' . $e->getMessage());
+		}
+
+		// Fallback: retourner UNKNOWN
+		return 'UNKNOWN';
+	}
+
+	/**
+	 * Déterminer la devise appropriée selon le pays
+	 *
+	 * @param string $country_code Code pays (MA, FR, US, etc.)
+	 * @param string $default_currency Devise par défaut si pays inconnu
+	 * @return string Code devise (MAD, EUR, USD, etc.)
+	 */
+	private function get_currency_by_country($country_code, $default_currency = 'MAD') {
+		// Mapping pays -> devise avec priorité au MAD pour les pays africains/musulmans
+		$country_currency_map = [
+			// Afrique du Nord (priorité MAD)
+			'MA' => 'MAD',  // Maroc - DEVise de base
+			'TN' => 'MAD',  // Tunisie - Converti vers MAD
+			'DZ' => 'MAD',  // Algérie - Converti vers MAD
+			'EG' => 'MAD',  // Égypte - Converti vers MAD
+			'LY' => 'MAD',  // Libye - Converti vers MAD
+			'MR' => 'MAD',  // Mauritanie - Converti vers MAD
+
+			// Moyen-Orient (priorité MAD pour la région)
+			'AE' => 'MAD',  // Émirats Arabes Unis - Converti vers MAD
+			'SA' => 'SAR',  // Arabie Saoudite (garder SAR pour compatibilité)
+			'QA' => 'MAD',  // Qatar - Converti vers MAD
+			'BH' => 'MAD',  // Bahreïn - Converti vers MAD
+			'KW' => 'MAD',  // Koweït - Converti vers MAD
+			'OM' => 'MAD',  // Oman - Converti vers MAD
+			'JO' => 'MAD',  // Jordanie - Converti vers MAD
+			'LB' => 'MAD',  // Liban - Converti vers MAD
+			'SY' => 'MAD',  // Syrie - Converti vers MAD
+			'IQ' => 'MAD',  // Irak - Converti vers MAD
+
+			// Afrique subsaharienne
+			'NG' => 'MAD',  // Nigeria - Converti vers MAD
+			'ZA' => 'MAD',  // Afrique du Sud - Converti vers MAD
+			'KE' => 'MAD',  // Kenya - Converti vers MAD
+			'GH' => 'MAD',  // Ghana - Converti vers MAD
+			'SN' => 'MAD',  // Sénégal - Converti vers MAD
+			'CI' => 'MAD',  // Côte d'Ivoire - Converti vers MAD
+
+			// Europe (EUR pour l'Europe)
+			'FR' => 'EUR',  // France
+			'DE' => 'EUR',  // Allemagne
+			'IT' => 'EUR',  // Italie
+			'ES' => 'EUR',  // Espagne
+			'GB' => 'GBP',  // Royaume-Uni
+			'CH' => 'CHF',  // Suisse
+			'BE' => 'EUR',  // Belgique
+			'NL' => 'EUR',  // Pays-Bas
+			'PT' => 'EUR',  // Portugal
+			'AT' => 'EUR',  // Autriche
+			'SE' => 'EUR',  // Suède
+			'NO' => 'EUR',  // Norvège
+			'DK' => 'EUR',  // Danemark
+			'FI' => 'EUR',  // Finlande
+			'IE' => 'EUR',  // Irlande
+			'PL' => 'EUR',  // Pologne
+			'CZ' => 'EUR',  // République Tchèque
+			'HU' => 'EUR',  // Hongrie
+			'RO' => 'EUR',  // Roumanie
+			'BG' => 'EUR',  // Bulgarie
+			'HR' => 'EUR',  // Croatie
+			'SI' => 'EUR',  // Slovénie
+			'SK' => 'EUR',  // Slovaquie
+			'EE' => 'EUR',  // Estonie
+			'LV' => 'EUR',  // Lettonie
+			'LT' => 'EUR',  // Lituanie
+
+			// Amérique
+			'US' => 'USD',  // États-Unis
+			'CA' => 'CAD',  // Canada
+			'BR' => 'BRL',  // Brésil
+			'MX' => 'MXN',  // Mexique
+			'AR' => 'ARS',  // Argentine
+			'CL' => 'CLP',  // Chili
+			'CO' => 'COP',  // Colombie
+			'PE' => 'PEN',  // Pérou
+
+			// Asie
+			'JP' => 'JPY',  // Japon
+			'CN' => 'CNY',  // Chine
+			'IN' => 'INR',  // Inde
+			'KR' => 'KRW',  // Corée du Sud
+			'TH' => 'THB',  // Thaïlande
+			'SG' => 'SGD',  // Singapour
+			'MY' => 'MYR',  // Malaisie
+			'ID' => 'IDR',  // Indonésie
+			'PH' => 'PHP',  // Philippines
+			'VN' => 'VND',  // Vietnam
+			'HK' => 'HKD',  // Hong Kong
+			'TW' => 'TWD',  // Taïwan
+
+			// Océanie
+			'AU' => 'AUD',  // Australie
+			'NZ' => 'NZD',  // Nouvelle-Zélande
+		];
+
+		// Retourner la devise du pays ou MAD par défaut (au lieu d'EUR)
+		return isset($country_currency_map[$country_code]) ? $country_currency_map[$country_code] : $default_currency;
+	}
+
+	/**
+	 * Obtenir la devise de base du système (MAD par défaut)
+	 *
+	 * @return string Code devise
+	 */
+	private function get_system_base_currency() {
+		return 'MAD'; // Devise de base du système - MAD au lieu d'EUR
+	}
+
+	/**
+	 * Obtenir la devise configurée pour Stripe
+	 *
+	 * @param int $school_id ID de l'école
+	 * @return string Code devise Stripe (USD, EUR, MAD, etc.)
+	 */
+	private function get_stripe_currency($school_id = 1) {
+		try {
+			$stripe_row = $this->db->get_where('payment_settings', [
+				'school_id' => $school_id,
+				'key' => 'stripe_settings'
+			])->row();
+
+			if ($stripe_row) {
+				$stripe_settings = json_decode($stripe_row->value, true);
+				if (is_array($stripe_settings) && isset($stripe_settings[0]['stripe_currency'])) {
+					return strtoupper($stripe_settings[0]['stripe_currency']);
+				}
+			}
+		} catch (Exception $e) {
+			log_message('error', 'Erreur lors de la récupération de la devise Stripe: ' . $e->getMessage());
+		}
+
+		return 'USD'; // Devise par défaut si non configurée
+	}
+
+	/**
+	 * Obtenir le taux de conversion entre deux devises
+	 *
+	 * @param string $from Devise source (ex: 'MAD')
+	 * @param string $to Devise cible (ex: 'AED')
+	 * @return float Taux de conversion
+	 */
+	private function get_conversion_rate($from, $to) {
+		$from = strtoupper($from);
+		$to = strtoupper($to);
+		
+		// Si même devise, pas de conversion
+		if ($from === $to) {
+			return 1.0;
+		}
+
+		try {
+			// Essayer d'utiliser FxRatesService si disponible
+			$this->load->library('FxRatesService', null, 'fxrates_service');
+			
+			// Obtenir les taux du jour
+			$rates_data = $this->fxrates_service->getTodayRates();
+			
+			if (!empty($rates_data['rates'])) {
+				$rates = $rates_data['rates'];
+				
+				// Vérifier que les deux devises sont disponibles
+				if (isset($rates[$from]) && isset($rates[$to]) && $rates[$from] > 0) {
+					// Conversion via USD (base)
+					// from -> USD -> to
+					$rate = $rates[$to] / $rates[$from];
+					log_message('debug', "get_conversion_rate: {$from} -> {$to} = {$rate}");
+					return $rate;
+				}
+			}
+		} catch (Exception $e) {
+			log_message('error', 'get_conversion_rate - Erreur FxRatesService: ' . $e->getMessage());
+		}
+
+		// Taux de fallback statiques si l'API n'est pas disponible
+		$fallback_rates = [
+			'MAD_AED' => 0.37,  // 1 MAD ≈ 0.37 AED
+			'AED_MAD' => 2.70,  // 1 AED ≈ 2.70 MAD
+			'MAD_USD' => 0.10,  // 1 MAD ≈ 0.10 USD
+			'USD_MAD' => 10.0,  // 1 USD ≈ 10 MAD
+			'MAD_EUR' => 0.09,  // 1 MAD ≈ 0.09 EUR
+			'EUR_MAD' => 11.0,  // 1 EUR ≈ 11 MAD
+		];
+
+		$key = "{$from}_{$to}";
+		if (isset($fallback_rates[$key])) {
+			log_message('debug', "get_conversion_rate: Using fallback rate for {$key}: " . $fallback_rates[$key]);
+			return $fallback_rates[$key];
+		}
+
+		// Si aucun taux disponible, retourner 1 (pas de conversion)
+		log_message('debug', "get_conversion_rate: No rate found for {$from} -> {$to}, returning 1.0");
+		return 1.0;
+	}
+
+	/**
+	 * Convertir un montant MAD vers la devise Stripe
+	 *
+	 * @param float $montant_mad Montant en MAD
+	 * @param string $devise_stripe Devise cible (USD, EUR, etc.)
+	 * @return array ['montant_converti', 'taux_change', 'devise']
+	 */
+	private function convertir_mad_vers_stripe($montant_mad, $devise_stripe) {
+		// Si même devise, pas de conversion
+		if (strtoupper($devise_stripe) === 'MAD') {
+			return [
+				'montant_converti' => $montant_mad,
+				'taux_change' => 1.0,
+				'devise' => 'MAD'
+			];
+		}
+
+		// Récupérer les taux depuis fx_rates_daily
+		$latest_rates = $this->db->order_by('rate_date', 'desc')->limit(1)->get('fx_rates_daily')->row();
+		if ($latest_rates) {
+			$rates_data = json_decode($latest_rates->raw_json, true);
+			if (isset($rates_data['rates']['MAD']) && isset($rates_data['rates'][$devise_stripe])) {
+				$mad_rate = $rates_data['rates']['MAD']; // Taux MAD vs USD
+				$target_rate = $rates_data['rates'][$devise_stripe]; // Taux devise cible vs USD
+
+				// Conversion : MAD vers devise cible via USD comme base
+				// amount_in_usd = montant_mad / mad_rate
+				// amount_in_target = amount_in_usd * target_rate
+				$amount_in_usd = $montant_mad / $mad_rate;
+				$montant_converti = $amount_in_usd * $target_rate;
+
+				// Taux d'échange affiché : combien d'unités devise cible = 1 MAD
+				$taux_change = round($montant_converti / $montant_mad, 6);
+
+				log_message('info', "Conversion MAD → {$devise_stripe} via fx_rates_daily: {$montant_mad} MAD = {$montant_converti} {$devise_stripe} (MAD:{$mad_rate}, {$devise_stripe}:{$target_rate})");
+
+				return [
+					'montant_converti' => round($montant_converti, 2),
+					'taux_change' => $taux_change,
+					'devise' => $devise_stripe
+				];
+			}
+		}
+
+		// ❌ AUCUN TAUX FIXE - utiliser FxRatesService comme fallback
+		log_message('debug', "fx_rates_daily vide ou incomplet - utilisation de FxRatesService");
+		$this->load->library('FxRatesService', null, 'fxService');
+		$montant_converti = $this->fxService->convert($montant_mad, 'MAD', $devise_stripe);
+
+		if ($montant_converti === false) {
+			log_message('error', "Impossible de convertir {$montant_mad} MAD vers {$devise_stripe}");
+			return [
+				'montant_converti' => $montant_mad, // Retourner le montant original
+				'taux_change' => 1.0, // Taux neutre
+				'devise' => $devise_stripe
+			];
+		}
+
+		$taux_change = round($montant_converti / $montant_mad, 6);
+
+		log_message('info', "Conversion MAD → {$devise_stripe} via FxRatesService: {$montant_mad} MAD = {$montant_converti} {$devise_stripe}");
+
+		return [
+			'montant_converti' => round($montant_converti, 2),
+			'taux_change' => $taux_change,
+			'devise' => $devise_stripe
+		];
+
+		// Fallback vers FxRatesService si les taux ne sont pas disponibles
+		log_message('debug', "Taux non trouvés dans fx_rates_daily pour MAD → {$devise_stripe}, utilisation de FxRatesService");
+		$this->load->library('FxRatesService', null, 'fxService');
+		$montant_converti = $this->fxService->convert($montant_mad, 'MAD', $devise_stripe);
+
+		if ($montant_converti === false || $montant_converti <= 0) {
+			log_message('error', "Échec conversion MAD → {$devise_stripe}: {$montant_mad} MAD");
+			return [
+				'montant_converti' => $montant_mad,
+				'taux_change' => 1.0,
+				'devise' => 'MAD'
+			];
+		}
+
+		$taux_change = round($montant_converti / $montant_mad, 6);
+
+		return [
+			'montant_converti' => round($montant_converti, 2),
+			'taux_change' => $taux_change,
+			'devise' => $devise_stripe
+		];
+	}
+
+	/**
+	 * Récupérer les devises disponibles selon les gateways configurés
+	 *
+	 * @param int $school_id ID de l'école
+	 * @param string $original_currency Devise originale de la facture
+	 * @return array Liste des devises disponibles
+	 */
+	private function get_available_gateway_currencies($school_id, $original_currency = 'EUR') {
+		$available_currencies = [$original_currency]; // Toujours inclure la devise originale
+
+		// Vérifier Stripe
+		$stripe_settings = get_payment_settings('stripe_settings', $school_id);
+		if (!empty($stripe_settings)) {
+			$stripe = json_decode($stripe_settings);
+			if (isset($stripe[0]->stripe_currency)) {
+				$available_currencies[] = $stripe[0]->stripe_currency;
+			}
+		}
+
+		// Vérifier PayPal
+		$paypal_settings = get_payment_settings('paypal_settings', $school_id);
+		if (!empty($paypal_settings)) {
+			$paypal = json_decode($paypal_settings);
+			if (isset($paypal[0]->paypal_currency)) {
+				$available_currencies[] = $paypal[0]->paypal_currency;
+			}
+		}
+
+		// Paystack est toujours NGN
+		$paystack_settings = get_payment_settings('paystack_settings', $school_id);
+		if (!empty($paystack_settings)) {
+			$available_currencies[] = 'NGN';
+		}
+
+		// Retirer les doublons et retourner
+		return array_unique($available_currencies);
+	}
+
 	//dashboard
 	public function index()
 	{
@@ -672,7 +980,36 @@ class Admin extends CI_Controller
 				show_error('Impossible de générer l’URL SSO HumHub.');
 			}
 			
-			// 5) Passer à la vue
+			// 5) Ensure renewal invoice exists if subscription is expired (for modal display)
+			// MAIS: Vérifier d'abord s'il n'y a pas déjà une facture paid récente
+			// pour éviter de créer une nouvelle facture immédiatement après paiement
+			$school_id = $this->session->userdata('school_id');
+			if ($school_id) {
+				$subscription_status = $this->subscriptionService->getSubscriptionStatus($school_id);
+				
+				// Vérifier s'il y a une facture subscription_admin paid dans les dernières 5 minutes
+				// Si oui, ne pas créer de nouvelle facture (c'est probablement un paiement récent)
+				$recent_paid_invoice = $this->db->query("
+					SELECT id, paid_at 
+					FROM invoices 
+					WHERE school_id = ? 
+					AND payment_type = 'subscription_admin' 
+					AND status = 'paid'
+					AND paid_at > UNIX_TIMESTAMP() - 300  -- 5 minutes
+					ORDER BY paid_at DESC 
+					LIMIT 1
+				", [$school_id])->row_array();
+				
+				if (!$subscription_status['is_access_allowed'] && empty($recent_paid_invoice)) {
+					// Seulement créer une facture si l'accès n'est pas autorisé ET 
+					// qu'il n'y a pas de paiement récent (pour éviter les doublons)
+					$this->subscriptionService->ensureRenewalInvoice($school_id);
+				} elseif (!empty($recent_paid_invoice)) {
+					log_message('debug', "Dashboard: Facture paid récente détectée (#{$recent_paid_invoice['id']}), pas de création de nouvelle facture");
+				}
+			}
+
+			// 6) Passer à la vue
 			$page_data = [
 				'folder_name' => 'dashboard',
 				'page_title'  => 'Dashboard',
@@ -706,22 +1043,18 @@ class Admin extends CI_Controller
             $this->session->set_userdata('enrolment_data', $data);
   
   
-          $num_rows_invoices = $this->db->get_where('invoices', array('payment_type' => 'subscription_admin','student_id' => $data['student_id']))->num_rows();
-          // print_r($num_rows_invoices);die;
-          if($num_rows_invoices == 0){
-              $name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
-              $data_invoice['title'] = $name." - Subscription " ;
-              $data_invoice['total_amount'] = "790";
-            //   $data_invoice['currency'] = $data['currency']; // ADD THIS LINE
-              $data_invoice['payment_type'] = "subscription_admin";
-              $data_invoice['status'] = "unpaid";
-              $data_invoice['school_id'] = $school_id;
-              $data_invoice['session'] = $data['session'];
-              $data_invoice['created_at'] = strtotime(date('d-M-Y'));
-              $this->db->insert('invoices', $data_invoice);
-              $invoice_id = $this->db->insert_id();
-          }else{
-            //   $invoice_id = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->row('id');
+          // Use idempotent invoice creation to prevent duplicates
+          $this->load->model('Invoice_model', 'invoice_model');
+          $invoice_result = $this->invoice_model->ensureSubscriptionInvoice($school_id);
+          
+          if ($invoice_result['success']) {
+              $invoice_id = $invoice_result['invoice_id'];
+              log_message('info', "subscription_admin: Invoice " . ($invoice_result['existing'] ? 'exists' : 'created') . " #{$invoice_id} for school #{$school_id}");
+          } else {
+              log_message('error', "subscription_admin: Failed to create invoice for school #{$school_id}: " . $invoice_result['message']);
+              $this->session->set_flashdata('error_message', get_phrase('failed_to_create_invoice'));
+              redirect(site_url('admin/dashboard'), 'refresh');
+              return;
           }
   
   
@@ -733,28 +1066,136 @@ class Admin extends CI_Controller
     }
   
 	public function payment($param1 = "",$invoice_id = ""){
-  
+
         $page_data['page_title'] = 'payment_gateway';
         $page_data['type'] = $param1;
-        
+
         // L'invoice_id peut être dans $param1 ou $invoice_id selon la route
         if (empty($invoice_id) && !empty($param1) && is_numeric($param1)) {
             $invoice_id = $param1;
         }
-        
+
         // Vérifier que l'invoice_id est valide
         if (empty($invoice_id) || !is_numeric($invoice_id)) {
             show_error('Invalid invoice ID');
             return;
         }
-        
+
         // Get invoice details by ID
         $page_data['invoice_details'] = $this->crud_model->get_invoice_by_id($invoice_id);
-        
+
         // Vérifier que la facture existe
         if (empty($page_data['invoice_details'])) {
             show_error('Invoice not found');
             return;
+        }
+
+        // ========== SYSTÈME ADAPTATIF SELON COUNTRY ==========
+        // Récupérer le pays de l'école (source unique de vérité pour la fiscalité)
+        $school = $this->db->get_where('schools', ['id' => $page_data['invoice_details']['school_id']])->row_array();
+        $tax_residence = isset($school['country']) ? $school['country'] : null;
+
+        // PRIX DE BASE : Toujours MAD stocké en base (790 MAD)
+        $prix_base_mad = (float) $page_data['invoice_details']['total_amount']; // Toujours en MAD
+        $original_currency = $page_data['invoice_details']['currency']; // Devrait être MAD
+
+        // Affichage utilisateur : MAD ou AED selon country
+        if ($tax_residence === 'UAE') {
+            // Pour UAE : convertir MAD → AED pour l'affichage
+            $conversion_rate = $this->get_conversion_rate('MAD', 'AED');
+            $prix_affiche = round($prix_base_mad * $conversion_rate, 2);
+            $devise_affiche = 'AED';
+            $page_data['conversion_info'] = [
+                'from_currency' => 'MAD',
+                'to_currency' => 'AED',
+                'rate' => $conversion_rate,
+                'original_amount' => $prix_base_mad
+            ];
+        } else {
+            // Pour autres pays : afficher en MAD
+            $prix_affiche = $prix_base_mad;
+            $devise_affiche = 'MAD';
+        }
+
+        $page_data['prix_affiche_mad'] = $prix_base_mad; // Toujours garder le MAD de référence
+        $page_data['prix_affiche'] = $prix_affiche; // Prix affiché (MAD ou AED)
+        $page_data['devise_affiche'] = $devise_affiche;
+        $page_data['tax_residence'] = $tax_residence;
+
+        // ========== CALCUL DES MONTANTS POUR LA VUE ==========
+        // Récupérer le taux de TVA selon country
+        $vat_rate = 0;
+        if ($tax_residence === 'MA') {
+            $vat_rate = 20;
+        } elseif ($tax_residence === 'UAE') {
+            $vat_rate = 5;
+        }
+
+        // Calculer les montants dans la devise d'affichage
+        if ($tax_residence === 'UAE') {
+            // Pour UAE : calculs en AED
+            $sub_total = round($prix_affiche / (1 + $vat_rate / 100), 2);
+            $vat_amount = round($sub_total * $vat_rate / 100, 2);
+            $grand_total = $prix_affiche; // Prix affiché est TTC en AED
+        } else {
+            // Pour autres pays : calculs en MAD
+            $sub_total = round($prix_base_mad / (1 + $vat_rate / 100), 2);
+            $vat_amount = round($sub_total * $vat_rate / 100, 2);
+            $grand_total = $prix_base_mad;
+        }
+
+        // Passer les montants à la vue (dans la devise d'affichage)
+        $page_data['sub_total'] = $sub_total;
+        $page_data['vat_rate'] = $vat_rate;
+        $page_data['vat_amount'] = $vat_amount;
+        $page_data['grand_total'] = $grand_total;
+
+        // Variables originales pour référence (toujours en MAD)
+        $page_data['original_sub_total'] = round($prix_base_mad / (1 + $vat_rate / 100), 2);
+        $page_data['original_vat_amount'] = round($page_data['original_sub_total'] * $vat_rate / 100, 2);
+        $page_data['original_grand_total'] = $prix_base_mad;
+        $page_data['original_currency'] = 'MAD';
+
+        // Pour paiement Stripe : Conversion si nécessaire
+        $converted_amount = $prix_base_mad; // Par défaut = prix MAD
+        $payment_currency = 'MAD'; // Par défaut
+        $conversion_info = null;
+
+        // ========== CONVERSION POUR STRIPE ==========
+        // Conversion pour TOUS les types de paiement (subscription_admin, cours, etc.)
+        if ($page_data['invoice_details']['payment_type'] === 'subscription_admin') {
+            // Pour les abonnements admin : utiliser la configuration SUPERADMIN
+            $gateway_school_id = 1; // Toujours utiliser la configuration du superadmin
+            log_message('debug', "Conversion pour abonnement admin - utilisation config superadmin");
+        } else {
+            // Pour les autres paiements : utiliser la configuration de l'école du paiement
+            $gateway_school_id = $page_data['invoice_details']['school_id'];
+            log_message('debug', "Conversion pour paiement normal - utilisation config school_id: {$gateway_school_id}");
+        }
+
+        // 1. Obtenir la devise configurée dans Stripe
+        $stripe_currency = $this->get_stripe_currency($gateway_school_id);
+        log_message('debug', "Devise Stripe configurée: {$stripe_currency}");
+
+        // 2. Convertir MAD → devise Stripe si nécessaire
+        $conversion_stripe = $this->convertir_mad_vers_stripe($prix_base_mad, $stripe_currency);
+
+        // 3. Préparer les données pour Stripe
+        $converted_amount = $conversion_stripe['montant_converti'];
+        $payment_currency = $conversion_stripe['devise'];
+
+        // 4. Informations de conversion (pour traçabilité)
+        if ($payment_currency !== 'MAD') {
+            $conversion_info = [
+                'prix_base_mad' => $prix_base_mad,
+                'montant_stripe' => $converted_amount,
+                'devise_stripe' => $payment_currency,
+                'taux_change' => $conversion_stripe['taux_change'],
+                'conversion_date' => date('Y-m-d H:i:s')
+            ];
+            log_message('info', "Conversion préparée: {$prix_base_mad} MAD → {$converted_amount} {$payment_currency}");
+        } else {
+            log_message('debug', "Pas de conversion nécessaire - Stripe configuré en MAD");
         }
         // Pass invoice ID to view
         $page_data['invoice_id'] = $invoice_id;
@@ -789,11 +1230,75 @@ class Admin extends CI_Controller
         // Fetch invoice from database (alternative method)
         $invoice = $this->db->get_where('invoices', ['id' => $this->uri->segment(4)])->row();
         
-        // Set the total amount to pay and currency
-        $page_data['amount_to_pay'] = $page_data['invoice_details']['total_amount'];
-        $page_data['currency'] = $page_data['invoice_details']['currency'];
+        // ========== DONNÉES POUR LA VUE ==========
+        // Toujours afficher le prix en MAD pour l'utilisateur
+        $page_data['amount_to_pay'] = $prix_base_mad; // Toujours MAD pour l'affichage
+        $page_data['currency'] = 'MAD'; // Toujours MAD affiché
 
-        
+        // Informations pour Stripe (montant converti)
+        $page_data['stripe_amount'] = $converted_amount; // Montant envoyé à Stripe
+        $page_data['stripe_currency'] = $payment_currency; // Devise Stripe
+
+        // Informations de conversion pour traçabilité
+        $page_data['conversion_info'] = $conversion_info;
+        $page_data['prix_base_mad'] = $prix_base_mad; // Prix de référence
+
+        // Informations géolocalisation (pour info seulement)
+        $user_country = $this->detect_user_country();
+        $page_data['geolocation_info'] = [
+            'user_country' => $user_country,
+            'stripe_currency' => $payment_currency,
+            'prix_affiche' => $prix_base_mad . ' MAD'
+        ];
+
+        // ========== DONNÉES DE CONVERSION POUR LA VUE ==========
+        // Ces variables sont nécessaires pour que la vue calcule correctement les montants convertis
+
+        // Récupérer les devises des gateways (pour déterminer si conversion nécessaire)
+        // $gateway_school_id est déjà défini plus haut selon le type de paiement
+        $stripe_currency = $this->get_stripe_currency($gateway_school_id);
+        $paypal_settings = get_payment_settings('paypal_settings', $gateway_school_id);
+        $paypal_config = json_decode($paypal_settings);
+        $paypal_currency = isset($paypal_config[0]->paypal_currency) ? $paypal_config[0]->paypal_currency : 'USD';
+
+        // Déterminer si une conversion est nécessaire
+        $conversion_needed = ($payment_currency !== 'MAD');
+        $stripe_needs_conversion = ($stripe_currency !== 'MAD');
+        $paypal_needs_conversion = ($paypal_currency !== 'MAD');
+
+        // Passer les flags de conversion à la vue
+        $page_data['conversion_needed'] = $conversion_needed;
+        $page_data['stripe_needs_conversion'] = $stripe_needs_conversion;
+        $page_data['paypal_needs_conversion'] = $paypal_needs_conversion;
+        $page_data['fx_stale_flag'] = false; // Taux pas périmé
+
+        // Passer les devises des gateways à la vue
+        $page_data['stripe_currency'] = $stripe_currency;
+        $page_data['paypal_currency'] = $paypal_currency;
+
+        // Taux de change Stripe (pour la vue)
+        $page_data['stripe_fx_rate_val'] = $conversion_stripe['taux_change'];
+
+        // Montants convertis Stripe (pour la vue - calculés correctement)
+        $page_data['stripe_sub_total_converted'] = round($prix_base_mad * $conversion_stripe['taux_change'], 2);
+        $page_data['stripe_vat_amount_converted'] = round(($prix_base_mad * $vat_rate / 100) * $conversion_stripe['taux_change'], 2);
+
+        // Montant total converti Stripe (pour la vue)
+        $page_data['stripe_converted_amount'] = $conversion_stripe['montant_converti'];
+
+        // Conversion PayPal (utilise la même logique que plus bas)
+        $conversion_paypal = $this->convertir_mad_vers_stripe($prix_base_mad, $paypal_currency);
+
+        // Taux de change PayPal (pour la vue)
+        $page_data['paypal_fx_rate_val'] = $conversion_paypal['taux_change'];
+
+        // Montants convertis PayPal (pour la vue - calculés correctement)
+        $page_data['paypal_sub_total_converted'] = round($prix_base_mad * $conversion_paypal['taux_change'], 2);
+        $page_data['paypal_vat_amount_converted'] = round(($prix_base_mad * $vat_rate / 100) * $conversion_paypal['taux_change'], 2);
+
+        // Montant total converti PayPal (pour la vue)
+        $page_data['paypal_converted_amount'] = $conversion_paypal['montant_converti'];
+
 
             // Load community name (from school table)
             $school_id = $page_data['invoice_details']['school_id'];
@@ -802,19 +1307,24 @@ class Admin extends CI_Controller
        
         // ========== PAYMENT GATEWAY SETTINGS ==========
 
-        
-        // Get payment settings from database
-        $school_id = $page_data['invoice_details']['school_id'];
-        
-        // Query Stripe settings
+        // Pour les abonnements admin, utiliser TOUJOURS la configuration du superadmin
+        $payment_school_id = $page_data['invoice_details']['school_id'];
+        if ($page_data['invoice_details']['payment_type'] === 'subscription_admin') {
+            $payment_school_id = 1; // Configuration superadmin pour les abonnements
+            log_message('debug', "Utilisation configuration superadmin pour abonnement admin (school_id: {$page_data['invoice_details']['school_id']} -> 1)");
+        }
 
+        // Get payment settings from database
+        $school_id = $payment_school_id;
+
+        // Query Stripe settings
         $stripe_row = $this->db->get_where('payment_settings', [
-            'school_id' => 1,
+            'school_id' => $school_id,
             'key' => 'stripe_settings'
         ])->row();
 
         $paypal_row = $this->db->get_where('payment_settings', [
-            'school_id' => 1,
+            'school_id' => $school_id,
             'key' => 'paypal_settings'
         ])->row();
 
@@ -894,7 +1404,7 @@ class Admin extends CI_Controller
 
 		// ========== SÉCURITÉ: Vérifier que la facture n'est pas déjà payée ==========
 		if ($invoice_details['status'] === 'paid') {
-			log_message('warning', "Tentative de double paiement pour facture #{$invoice_id}");
+			log_message('error', "Tentative de double paiement pour facture #{$invoice_id}");
 			$this->session->set_flashdata('error_message', get_phrase('invoice_already_paid'));
 			redirect(site_url('admin/dashboard'), 'refresh');
 			return;
@@ -903,26 +1413,151 @@ class Admin extends CI_Controller
 		// ========== SÉCURITÉ: Utiliser le montant de la BDD, pas celui du client ==========
 		$secure_amount = (float) $invoice_details['total_amount'];
 		$client_amount = (float) $amount_paid;
+		$invoice_currency = $invoice_details['currency'] ?? 'USD';
+
+		// ========== CONVERSIONS DE DEVISE POUR SUBSCRIPTIONS ==========
+		$converted_amount = $secure_amount;
+		$payment_currency = $invoice_currency;
+		$conversion_info = null;
+
+		// Check if community has VAT configuration (country in schools table)
+		$school = $this->db->get_where('schools', ['id' => $invoice_details['school_id']])->row_array();
+		$has_vat_config = !empty($school['country']);
+
+		// Déterminer l'ID de l'école pour la configuration de la passerelle de paiement
+		// Pour les abonnements, on utilise TOUJOURS la configuration du Superadmin (ID 1)
+		$gateway_school_id = $invoice_details['school_id'];
+		if ($invoice_details['payment_type'] === 'subscription_admin') {
+			$gateway_school_id = 1;
+		}
+
+		if ($invoice_details['payment_type'] === 'subscription_admin') {
+			// Charger le service de taux de change
+			$this->load->library('FxRatesService', null, 'fxService');
+
+			// Déterminer la devise du paiement selon la méthode AVANT de décider de la conversion
+			if ($payment_method == 'stripe') {
+				$stripe_settings = get_payment_settings('stripe_settings', $gateway_school_id);
+				$stripe = json_decode($stripe_settings);
+				$payment_currency = $stripe[0]->stripe_currency ?? $invoice_currency;
+			} elseif ($payment_method == 'paypal') {
+				$paypal_settings = json_decode(get_payment_settings('paypal_settings', $gateway_school_id));
+				$payment_currency = $paypal_settings[0]->paypal_currency ?? $invoice_currency;
+			} elseif ($payment_method == 'paystack') {
+				$payment_currency = 'NGN'; // Paystack est principalement pour NGN
+			}
+
+			// ========== DÉTECTION CONVERSION UAE (MAD → AED côté client) ==========
+			// Pour UAE, le frontend convertit MAD → AED pour l'affichage/paiement
+			// Mais Stripe peut être configuré en MAD. On doit détecter cette situation.
+			$tax_residence = $school['country'] ?? '';
+			$client_sent_currency = $this->input->post('currency') ?? $payment_currency;
+			
+			// Pour UAE : le client envoie un montant en AED (converti depuis MAD par le frontend)
+			// On doit convertir ce montant AED vers MAD pour valider contre la facture
+			if (($tax_residence === 'UAE' || $tax_residence === 'AE') && $has_vat_config) {
+				// UAE avec TVA configurée : le montant client est en AED, la facture est en MAD
+				// Convertir AED → MAD pour vérification
+				$converted_to_mad = $this->fxService->convert($client_amount, 'AED', 'MAD');
+				
+				if ($converted_to_mad !== false) {
+					$conversion_info = [
+						'original_amount' => $client_amount,
+						'original_currency' => 'AED',
+						'converted_amount' => $converted_to_mad,
+						'invoice_currency' => 'MAD',
+						'fx_rate' => round($client_amount / $converted_to_mad, 6),
+						'fx_rate_date' => date('Y-m-d')
+					];
+					$converted_amount = $converted_to_mad;
+					log_message('info', "UAE Conversion: {$client_amount} AED → {$converted_amount} MAD (Facture #{$invoice_id})");
+				} else {
+					log_message('error', "Échec conversion AED → MAD pour UAE (Facture #{$invoice_id})");
+				}
+			}
+			// Exception pour le Maroc (MA) : On paie toujours en MAD, même si Stripe est configuré en EUR/USD
+			elseif (($tax_residence === 'MA' || $tax_residence === 'Morocco') && $invoice_currency === 'MAD') {
+				// On force la devise de paiement à MAD pour éviter une conversion inutile
+				// qui échouerait car le frontend envoie le montant en MAD
+				$payment_currency = 'MAD';
+				$converted_amount = $secure_amount;
+				log_message('info', "Maroc détecté : Validation en MAD forcée (Stripe configuré en " . ($stripe[0]->stripe_currency ?? 'inconnu') . ")");
+			}
+			// Vérifier si conversion nécessaire (même si TVA configurée)
+			// Si devises différentes, on DOIT convertir pour valider le montant
+			elseif ($payment_currency !== $invoice_currency && !empty($client_amount)) {
+				$converted_amount = $this->fxService->convert($client_amount, $payment_currency, $invoice_currency);
+
+				if ($converted_amount === false) {
+					log_message('error', "Échec de conversion devise: {$payment_currency} → {$invoice_currency} pour facture #{$invoice_id}");
+					$this->session->set_flashdata('error_message', get_phrase('currency_conversion_failed'));
+					redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+					return;
+				}
+
+				$conversion_info = [
+					'original_amount' => $client_amount,
+					'original_currency' => $payment_currency,
+					'converted_amount' => $converted_amount,
+					'invoice_currency' => $invoice_currency,
+					'exchange_rate' => round($client_amount / $converted_amount, 6),
+					'conversion_date' => date('Y-m-d H:i:s')
+				];
+
+				log_message('info', "Conversion devise appliquée (TVA ou pas): {$client_amount} {$payment_currency} → {$converted_amount} {$invoice_currency} (Facture #{$invoice_id})");
+			} elseif ($has_vat_config) {
+				// Cas TVA configurée ET même devise (non UAE): pas de conversion, montant fixe
+				$converted_amount = $secure_amount; // Utiliser directement le montant BDD (montant TTC fixe)
+				$payment_currency = $invoice_currency; // Rester en devise de la facture
+				log_message('info', "VAT-configured subscription (Same Currency) - No conversion applied, fixed TTC amount: {$converted_amount} {$invoice_currency} (Invoice #{$invoice_id})");
+			} else {
+				// Cas normal (pas de TVA, même devise)
+				// Conversion implicite (1:1)
+			}
+		}
+
+		// Tolérance pour les vérifications de montant
+		// Pour abonnements avec TVA configurée: tolérance stricte
+		// Pour autres abonnements: 10% de tolérance
+		// Pour autres paiements: 1% de tolérance
+		if ($invoice_details['payment_type'] === 'subscription_admin' && $has_vat_config) {
+			$tolerance = 0.02; // 2% pour abonnements avec TVA (tient compte des variations de taux FX)
+		} elseif ($invoice_details['payment_type'] === 'subscription_admin') {
+			$tolerance = 0.10; // 10% pour autres abonnements
+		} else {
+			$tolerance = 0.01; // 1% pour autres paiements
+		}
+
+		// Vérifier la cohérence des montants
+		// Si une conversion a été effectuée, comparer avec le montant converti
+		$amount_to_verify = $secure_amount;
+		$client_to_verify = $client_amount;
 		
-		// Tolérance de 0.01 pour les erreurs d'arrondi
-		if (!empty($amount_paid) && abs($secure_amount - $client_amount) > 0.01) {
-			log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}");
+		if ($conversion_info !== null) {
+			// Conversion effectuée: vérifier que le montant converti correspond au montant BDD
+			// $converted_amount est le montant client converti vers la devise de la facture
+			$amount_to_verify = $secure_amount;
+			$client_to_verify = $converted_amount;
+			log_message('debug', "Vérification montant avec conversion: BDD={$secure_amount} {$invoice_currency}, Client={$client_amount} {$payment_currency} → Converti={$converted_amount} {$invoice_currency}");
+		}
+		
+		if (!empty($amount_paid) && abs($amount_to_verify - $client_to_verify) > ($amount_to_verify * $tolerance)) {
+			log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$amount_to_verify}, Montant client: {$client_to_verify}, Tolérance: {$tolerance}");
 			$this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
 			redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
 			return;
 		}
-		
-		// Utiliser le montant sécurisé de la BDD
-		$amount_paid = $secure_amount;
-		$currency = $invoice_details['currency'] ?? 'USD';
+
+		// Utiliser le montant converti si conversion appliquée, sinon montant sécurisé
+		$final_amount_paid = $converted_amount;
+		$currency = $invoice_currency;
 
 		$payment_status = false;
 		
 		// Traiter le paiement selon la méthode
 		if ($payment_method == 'stripe') {
-			$stripe_settings = get_payment_settings('stripe_settings', $invoice_details['school_id']);
+			$stripe_settings = get_payment_settings('stripe_settings', $gateway_school_id);
 			$stripe = json_decode($stripe_settings);
-			$currency = $stripe[0]->stripe_currency ?? $currency;
 			
 			// Convertir en tableau si nécessaire
 			if (is_object($stripe)) {
@@ -930,6 +1565,9 @@ class Admin extends CI_Controller
 			} elseif (!is_array($stripe)) {
 				$stripe = [];
 			}
+			
+			$stripe_currency = $stripe[0]->stripe_currency ?? $currency;
+			$currency = $stripe_currency;
 			
 			$token_id = $this->input->post('stripeToken');
 			
@@ -950,7 +1588,29 @@ class Admin extends CI_Controller
 			}
 			
 			if (!empty($secret_key)) {
-				$payment_status = $this->payment_model->stripe_payment($token_id, $invoice_id, $amount_paid, $secret_key);
+				// ========== DÉTERMINATION DEVISE & MONTANT SELON COUNTRY ==========
+				$tax_residence = $school['country'] ?? '';
+				$final_stripe_currency = $stripe_currency; // Par défaut, utiliser la config
+				$stripe_amount = $amount_paid;
+				
+				// UAE : DOIT payer en AED - le montant $amount_paid est déjà en AED (converti par frontend)
+				if ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+					$final_stripe_currency = 'AED';
+					$stripe_amount = $amount_paid; // Montant AED du frontend
+					log_message('info', "Stripe UAE: Envoi {$stripe_amount} AED à Stripe (country: {$tax_residence})");
+				}
+				// MA : DOIT payer en MAD - utiliser le montant original de la facture
+				elseif ($tax_residence === 'MA') {
+					$final_stripe_currency = 'MAD';
+					$stripe_amount = $secure_amount; // Montant MAD de la facture
+					log_message('info', "Stripe MA: Envoi {$stripe_amount} MAD à Stripe (country: {$tax_residence})");
+				}
+				// Autres cas : utiliser la config
+				else {
+					log_message('debug', "Stripe: country non spécifié, utilisation config: {$stripe_currency}");
+				}
+				
+				$payment_status = $this->payment_model->stripe_payment($token_id, $invoice_id, $stripe_amount, $secret_key, $final_stripe_currency);
 			} else {
 				log_message('error', 'Stripe payment failed: missing secret key');
 			}
@@ -967,8 +1627,19 @@ class Admin extends CI_Controller
 				return;
 			}
 			
+			// Récupérer la devise PayPal depuis les paramètres
+			$paypal_settings = json_decode(get_payment_settings('paypal_settings', $gateway_school_id));
+			$paypal_currency = $paypal_settings[0]->paypal_currency ?? $currency;
+			
+			// Pour UAE avec PayPal en MAD: utiliser le montant de la facture (MAD)
+			$paypal_amount = $amount_paid;
+			if ($conversion_info !== null && $paypal_currency === 'MAD') {
+				$paypal_amount = $secure_amount;
+				log_message('info', "PayPal UAE: Utilisation montant MAD {$paypal_amount} au lieu de AED {$amount_paid}");
+			}
+			
 			// Valider le paiement via l'API PayPal
-			$payment_status = $this->validate_paypal_payment($paymentID, $payerID, $amount_paid, $invoice_details['school_id']);
+			$payment_status = $this->validate_paypal_payment($paymentID, $payerID, $paypal_amount, $gateway_school_id);
 			
 			if (!$payment_status) {
 				log_message('error', "PayPal: Validation échouée pour facture #{$invoice_id}, paymentID: {$paymentID}");
@@ -977,9 +1648,7 @@ class Admin extends CI_Controller
 				return;
 			}
 			
-			// Récupérer la devise PayPal depuis les paramètres
-			$paypal_settings = json_decode(get_payment_settings('paypal_settings', $invoice_details['school_id']));
-			$currency = $paypal_settings[0]->paypal_currency ?? $currency;
+			$currency = $paypal_currency;
 			
 		} elseif ($payment_method == 'paystack') {
 			$this->load->model('addons/paystack_model');
@@ -1000,42 +1669,87 @@ class Admin extends CI_Controller
 			$invoice_current = $this->db->get('invoices')->row_array();
 			$due_amount = $invoice_current['total_amount'] - ($invoice_current['paid_amount'] ?? 0);
 			
-			if ($due_amount <= $amount_paid) {
-				$updater = [
-					'status' => 'paid',
-					'payment_method' => $payment_method,
-					'paid_amount' => $amount_paid + ($invoice_current['paid_amount'] ?? 0),
-                    'currency' => $currency,
-					'updated_at' => strtotime(date('d-M-Y'))
-				];
-				$this->db->where('id', $invoice_id);
-				$this->db->update('invoices', $updater);
-
-				// Si c'est une facture subscription_admin, mettre à jour l'école
+			// Pour UAE avec conversion: utiliser le montant converti pour la comparaison
+			$amount_for_comparison = ($conversion_info !== null) ? $converted_amount : $amount_paid;
+			
+			if ($due_amount <= $amount_for_comparison) {
+				// Si c'est une facture subscription_admin, utiliser la méthode transactionnelle
+				// qui gère tout: mise à jour facture + école + annulation autres factures
 				if (isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
-					$school_id = $invoice_details['school_id'];
-					
-					// Calculer la date de fin d'abonnement (1 mois à partir de maintenant)
-					$subscription_end = strtotime('+1 month');
-					
-					log_message('debug', "Admin payment_success - Updating school subscription: school_id=$school_id, subscription_end=" . date('Y-m-d H:i:s', $subscription_end));
-					
-					// Mettre à jour l'école
-					$school_updater = [
-						'is_paid' => 1,
-						'is_trial' => 0, // L'essai est terminé, maintenant c'est un abonnement payant
-						'subscription_end' => $subscription_end,
-						'updated_at' => time()
+						// Préparer les informations de paiement avec conversion
+					$payment_info = [
+						'reference' => null,
+						'method' => $payment_method,
+						'amount_paid' => $final_amount_paid,
+						'currency' => $currency,
+						'original_amount' => $conversion_info['original_amount'] ?? $final_amount_paid,
+						'original_currency' => $conversion_info['original_currency'] ?? $currency,
+						'exchange_rate' => $conversion_info['exchange_rate'] ?? null,
+						'conversion_date' => $conversion_info['conversion_date'] ?? null
 					];
-					$this->db->where('id', $school_id);
-					$this->db->update('schools', $school_updater);
 
-					log_message('debug', "Admin payment_success - School updated successfully: is_paid=1, subscription_end=" . date('Y-m-d H:i:s', $subscription_end));
+					// Définir la référence selon la méthode de paiement
+					if ($payment_method == 'stripe') {
+						$payment_info['reference'] = $token_id ?? null;
+					} elseif ($payment_method == 'paystack' && !empty($reference)) {
+						$payment_info['reference'] = $reference;
+					}
 
-					// Message de succès
-					$this->session->set_flashdata('flash_message', get_phrase('subscription_activated_successfully'));
+					// ========== FX CONVERSION DATA ==========
+					// Préparer les données de conversion pour les stocker dans la facture
+					$fx_data = null;
+					if ($conversion_info !== null) {
+						$fx_data = [
+							'conversion_applied' => true,
+							'payment_currency' => $conversion_info['original_currency'] ?? $currency,
+							'payment_amount_converted' => $conversion_info['original_amount'] ?? $amount_paid,
+							'fx_rate' => $conversion_info['fx_rate'] ?? $conversion_info['exchange_rate'] ?? null,
+							'fx_rate_date' => isset($conversion_info['conversion_date']) ? date('Y-m-d', strtotime($conversion_info['conversion_date'])) : date('Y-m-d')
+						];
+						log_message('info', "Admin payment_success: FX data prepared for invoice #{$invoice_id} - " . json_encode($fx_data));
+					}
+
+					// VAT information is already stored in invoice during creation
+					// No additional processing needed for VAT-configured subscriptions
+
+					// Appel avec les paramètres corrects (reference, method, amount, fx_data)
+					$payment_result = $this->invoice_model->markInvoicePaid(
+						$invoice_id, 
+						$payment_info['reference'] ?? null,
+						$payment_info['method'] ?? $payment_method,
+						$payment_info['amount_paid'] ?? $final_amount_paid,
+						$fx_data
+					);
+
+					if ($payment_result['success']) {
+						// Clear school cache to ensure fresh data on next load
+						$this->invoice_model->clearSchoolCache($invoice_details['school_id']);
+
+						log_message('info', "Subscription payment processed - Invoice #{$invoice_id} paid, school #{$invoice_details['school_id']} activated");
+						$this->session->set_flashdata('flash_message', get_phrase('payment_successful_subscription_activated'));
+					} else {
+						log_message('error', "Subscription payment failed - Invoice #{$invoice_id}: " . $payment_result['message']);
+						$this->session->set_flashdata('error_message', get_phrase('payment_processing_error'));
+						redirect(site_url('admin/payment/' . $invoice_id), 'refresh');
+						return;
+					}
+
+					// Redirect to dashboard
+					redirect(site_url('admin/dashboard'), 'refresh');
+					return;
+				} else {
+					// Pour les autres types de factures (class_enrol, etc.)
+					$updater = [
+						'status' => 'paid',
+						'payment_method' => $payment_method,
+						'paid_amount' => $amount_paid + ($invoice_current['paid_amount'] ?? 0),
+						'currency' => $currency,
+						'updated_at' => strtotime(date('d-M-Y'))
+					];
+					$this->db->where('id', $invoice_id);
+					$this->db->update('invoices', $updater);
 					
-					// Rediriger vers le dashboard
+					$this->session->set_flashdata('flash_message', get_phrase('payment_successful'));
 					redirect(site_url('admin/dashboard'), 'refresh');
 					return;
 				}
@@ -5382,5 +6096,24 @@ public function get_school_data() {
             ]
         ]);
     }
-	
+
+    /**
+     * Récupère le taux de TVA depuis les paramètres système
+     * @return float Taux de TVA (par défaut 5%)
+     */
+    private function get_vat_rate() {
+        // Récupérer le taux de TVA depuis les paramètres système
+        $vat_rate = $this->db->get_where('settings_school', [
+            'school_id' => school_id(),
+            'type' => 'vat'
+        ])->row();
+
+        if ($vat_rate && isset($vat_rate->description)) {
+            return (float) $vat_rate->description;
+        }
+
+        // Valeur par défaut si non configuré
+        return 5.0;
+    }
+
 }

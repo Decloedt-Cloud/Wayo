@@ -786,8 +786,24 @@ class Frontend_model extends CI_Model
     }
   
     
+    // Normaliser le country code depuis le formulaire Tax_residence
+    $tax_residence_input = htmlspecialchars($this->input->post('Tax_residence'));
+    $country_code = null;
+    if ($tax_residence_input === 'MA') {
+        $country_code = 'MA';
+    } elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
+        $country_code = 'AE';
+    } elseif (!empty($tax_residence_input)) {
+        $country_code = strtoupper(substr($tax_residence_input, 0, 2));
+    }
+
+    // Période d'essai : 14 jours gratuits
+    $now = time();
+    $trial_days = 14;
+    
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
+        'country' => $country_code, // Code pays ISO-2 pour la fiscalité
         'Rue' => htmlspecialchars($this->input->post('street')),
         'Numero' => htmlspecialchars($this->input->post('number')),
         'Ville' => htmlspecialchars($this->input->post('city')),
@@ -797,7 +813,13 @@ class Frontend_model extends CI_Model
         'description' => htmlspecialchars($this->input->post('school_description')),
         'access' => $access,
         'category' => htmlspecialchars($this->input->post('category')),
-        'price' => htmlspecialchars($this->input->post('price'))
+        'price' => htmlspecialchars($this->input->post('price')),
+        // Champs liés à l'abonnement / période d'essai
+        'trial_start' => $now,
+        'trial_end' => $now + (60 * 60 * 24 * $trial_days),
+        'is_trial' => 1,
+        'is_paid' => 0,
+        'subscription_status' => 'trialing'
     ];
 
     // Insert school
@@ -818,20 +840,17 @@ class Frontend_model extends CI_Model
         ]
     ];
     $this->db->insert_batch('payment_settings', $payment_settings);
-    if(htmlspecialchars($this->input->post('Tax_residence')) == 'MA'){
-        $rate = 20;
-    } else {
-         $rate = 5;
-    }
+    $rate = ($country_code === 'MA') ? 20 : 5;
+    
     // Insert school settings
     $settings_school = [
         'school_id' => $school_id,
         'system_currency' => htmlspecialchars($this->input->post('currency')),
         'currency_position' => 'left',
         'language' => 'english',
-        'Tax_residence' => htmlspecialchars($this->input->post('Tax_residence')),
         'type' => htmlspecialchars($this->input->post('i_am')),
-        'vat_rat' => $rate
+        'vat_enabled' => 1, // TVA activée par défaut
+        'vat_rate' => $rate
     ];
     $this->db->insert('settings_school', $settings_school);
 
