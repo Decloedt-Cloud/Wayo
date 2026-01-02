@@ -187,6 +187,7 @@
       const panes = qsa('.step-pane'),
       steps = qsa('.stepper .step-create-commaunaute'); // ✅ adapter ici
       let current = 0;
+      let lastEmail = '';
 
       function goTo(i) {
         panes.forEach(p => p.classList.remove('is-visible'));
@@ -239,6 +240,47 @@
       dd(s, '<?php echo get_phrase("Gmail") ?>', mail);
       dd(s, '<?php echo get_phrase("Date_of_birth") ?>', birth);
     }
+
+    // ===== Duplication email =====
+    function checkDuplication(type, value, input) {
+        if (!value.trim()) return;
+        if (type === 'email' && value === lastEmail) return;
+
+        if (type === 'email') lastEmail = value;
+
+        const formData = new FormData();
+        formData.append('type', type);
+        formData.append('value', value);
+        formData.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
+
+        fetch('<?= site_url('admission/check_duplication_ajax'); ?>', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            const errorEl = document.querySelector(`.error[data-for="${input.id}"]`);
+            if (!data.available) {
+                if (errorEl) {
+                    errorEl.textContent = data.message;
+                    errorEl.style.display = 'block';
+                }
+                input.classList.add('is-invalid');
+                input.setAttribute('data-duplicate', 'true');
+            } else {
+                if (errorEl) errorEl.style.display = 'none';
+                input.classList.remove('is-invalid');
+                input.removeAttribute('data-duplicate');
+            }
+        });
+    }
+
+    qs('#gmail')?.addEventListener('blur', () => {
+        checkDuplication('email', qs('#gmail').value, qs('#gmail'));
+    });
 
     // ===== Validation =====
     function setInvalid(el, msg) {
@@ -299,6 +341,13 @@
 
         if (!last.value.trim() || last.value.trim().length < 2) { ok = setInvalid(last, '<?php echo get_phrase("Name_required_(minimum_2_characters)."); ?>'); } else { clearInvalid(last); }
         if (!first.value.trim() || first.value.trim().length < 2) { ok = setInvalid(first, '<?php echo get_phrase("First_name_required_(minimum_2_characters)."); ?>'); } else { clearInvalid(first); }
+
+        // Blocage si doublon email
+        if (mail.getAttribute('data-duplicate') === 'true') {
+            toastr?.warning('<?= get_phrase("this_email_already_exist"); ?>');
+            return false;
+        }
+
         if (!isEmail(mail.value)) {
           ok = setInvalid(mail, '<?php echo get_phrase("Please_use_a_valid_email_address."); ?>');
         } else {
