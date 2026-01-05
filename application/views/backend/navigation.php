@@ -440,7 +440,7 @@ if ($this->session->userdata('user_type') == 'admin') {
                         $main_route = 'addons' . '/courses';
                         $has_direct_route = true;
                     }  elseif ($main_menu['unique_identifier'] == 'admin_fee_manager') {
-                        $main_route = $controller . '/admin_fee_manager';
+                        $main_route = $controller . '/invoice';
                         $has_direct_route = true;
                     } elseif ($main_menu['unique_identifier'] == 'central') {
                         $main_route = $controller . '/wall';

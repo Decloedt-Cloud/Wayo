@@ -56,7 +56,7 @@
                         <option value=""><?php echo get_phrase('select_a_category'); ?></option>
                         <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
                         <?php foreach ($categories as $categorie): ?>
-                            <option value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
+                            <option value="<?php echo $categorie['name']; ?>"><?php echo get_phrase($categorie['name']) ; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
