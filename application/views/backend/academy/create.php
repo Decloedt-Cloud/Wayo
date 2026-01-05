@@ -10,6 +10,121 @@
 .is-invalid {
     border: 1px solid #ff5b5b !important; /* Bordure rouge */
 }
+
+/* Styles pour les tags/badges */
+.tags-input-container {
+    position: relative;
+}
+
+.tags-input-wrapper {
+    position: relative;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    min-height: 46px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tags-input-wrapper:focus-within {
+    border-color: #3b76e1;
+    box-shadow: 0 0 0 0.2rem rgba(59, 118, 225, 0.25);
+}
+
+.tags-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    flex: 1;
+    min-width: 120px;
+    padding: 0.25rem 0.5rem !important;
+    background: transparent !important;
+}
+
+.tags-input::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 4px 8px;
+    background-color: #4f46e5;
+    color: #ffffff;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+    margin: 2px;
+}
+
+
+
+.tag-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color:rgb(255, 255, 255);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    padding: 0;
+    margin-right: 5px;
+    font-size: 0.875rem;
+    order: -1;
+}
+
+/* Style pour le champ quand il est vide */
+.tags-input-wrapper:empty::before {
+    content: attr(data-placeholder);
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+/* Animation pour l'ajout de tags */
+@keyframes tagAdd {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tag-badge {
+    animation: tagAdd 0.2s ease-out;
+}
+
+/* Style pour les tags dans le mode édition */
+.tag-badge.editable {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+.tag-badge.editable:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
 </style>
 
 <!--<div class="container-fluid p-0">-->
@@ -194,7 +309,7 @@
                             <!-- Outcomes Tab -->
                             <div class="tab-pane fade" id="outcomes">
                                 <div class="p-4 p-lg-5">
-                                    <h4 class="section-title"><?php echo get_phrase('Learning outcomes'); ?></h4>
+                                    <h4 class="section-title"><?php echo get_phrase('course_objective'); ?></h4>
 
                                     <div class="quiz-form-group">
                                         <label class="quiz-form-label" for="outcomes_desc">
@@ -206,6 +321,79 @@
                                             <textarea name="outcomes" id="outcomes_desc" style="display:none;"></textarea>
                                         </div>
                                         <span class="quiz-form-hint"><?php echo get_phrase('List specific skills and knowledge students will gain'); ?></span>
+                                    </div>
+
+                                    <div class="quiz-form-group">
+                                        <label class="quiz-form-label" for="prerequisites_input">
+                                            <i class="fas fa-list-check"></i>
+                                            <?php echo get_phrase('Prerequisites'); ?>
+                                        </label>
+                                        <div class="tags-input-container">
+                                            <div class="tags-input-wrapper">
+                                                <input type="text" 
+                                                       class="quiz-form-control tags-input" 
+                                                       id="prerequisites_input" 
+                                                       placeholder="<?php echo get_phrase('Type a prerequisite and press Enter'); ?>">
+                                                <div class="tags-list" id="prerequisites_tags"></div>
+                                            </div>
+                                            <input type="hidden" name="prerequisites" id="prerequisites_hidden">
+                                            <span class="quiz-form-hint"><?php echo get_phrase('Add prerequisites as tags. Press Enter or comma to add a tag'); ?></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="quiz-form-group">
+                                        <label class="quiz-form-label" for="field_of_activity">
+                                            <i class="fas fa-layer-group"></i>
+                                            <?php echo get_phrase('field_of_activity'); ?>
+                                        </label>
+                                        <select class="quiz-form-control quiz-select" name="field_of_activity" id="field_of_activity">
+                                            <option value=""><?php echo get_phrase('select_a_field_of_activity'); ?></option>
+                                            <?php if (isset($categories) && !empty($categories)): ?>
+                                                <?php foreach ($categories as $category): ?>
+                                                    <option value="<?php echo htmlspecialchars($category['name']); ?>"
+                                                        <?php echo ($school_category == $category['name']) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($category['name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <!-- Fallback options if categories table is empty -->
+                                                <option value="technology" <?php echo ($school_category == 'technology') ? 'selected' : ''; ?>><?php echo get_phrase('Technology'); ?></option>
+                                                <option value="business" <?php echo ($school_category == 'business') ? 'selected' : ''; ?>><?php echo get_phrase('Business'); ?></option>
+                                                <option value="marketing" <?php echo ($school_category == 'marketing') ? 'selected' : ''; ?>><?php echo get_phrase('Marketing'); ?></option>
+                                                <option value="design" <?php echo ($school_category == 'design') ? 'selected' : ''; ?>><?php echo get_phrase('Design'); ?></option>
+                                                <option value="soft_skills" <?php echo ($school_category == 'soft_skills') ? 'selected' : ''; ?>><?php echo get_phrase('Soft Skills'); ?></option>
+                                                <option value="languages" <?php echo ($school_category == 'languages') ? 'selected' : ''; ?>><?php echo get_phrase('Languages'); ?></option>
+                                                <option value="health" <?php echo ($school_category == 'health') ? 'selected' : ''; ?>><?php echo get_phrase('Health & Wellness'); ?></option>
+                                                <option value="arts" <?php echo ($school_category == 'arts') ? 'selected' : ''; ?>><?php echo get_phrase('Arts & Creativity'); ?></option>
+                                                <option value="science" <?php echo ($school_category == 'science') ? 'selected' : ''; ?>><?php echo get_phrase('Science'); ?></option>
+                                                <option value="education" <?php echo ($school_category == 'education') ? 'selected' : ''; ?>><?php echo get_phrase('Education'); ?></option>
+                                                <option value="other" <?php echo ($school_category == 'other') ? 'selected' : ''; ?>><?php echo get_phrase('Other'); ?></option>
+                                            <?php endif; ?>
+                                        </select>
+                                        <span class="quiz-form-hint"><?php echo get_phrase('select_the_main_field_of_activity_for_this_course'); ?></span>
+                                    </div>
+
+                                    <div class="quiz-form-group">
+                                        <label class="quiz-form-label" for="course_style">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <?php echo get_phrase('course_style'); ?>
+                                        </label>
+                                        <select class="quiz-form-control quiz-select" name="course_style" id="course_style">
+                                            <option value=""><?php echo get_phrase('select_a_course_style'); ?></option>
+                                            <option value="tutorial_step_by_step"><?php echo get_phrase('tutorial_step_by_step'); ?></option>
+                                            <option value="reference_documentation"><?php echo get_phrase('reference_documentation'); ?></option>
+                                            <option value="practical_workshop"><?php echo get_phrase('practical_workshop'); ?></option>
+                                            <option value="project_from_a_to_z"><?php echo get_phrase('project_from_a_to_z'); ?></option>
+                                            <option value="case_study"><?php echo get_phrase('case_study'); ?></option>
+                                            <option value="intensive_bootcamp"><?php echo get_phrase('intensive_bootcamp'); ?></option>
+                                            <option value="microlearning"><?php echo get_phrase('microlearning'); ?></option>
+                                            <option value="blended"><?php echo get_phrase('blended'); ?></option>
+                                            <option value="exam_certification_prep"><?php echo get_phrase('exam_certification_prep'); ?></option>
+                                            <option value="onboarding_getting_started"><?php echo get_phrase('onboarding_getting_started'); ?></option>
+                                            <option value="troubleshooting_runbook"><?php echo get_phrase('troubleshooting_runbook'); ?></option>
+                                            <option value="masterclass"><?php echo get_phrase('masterclass'); ?></option>
+                                        </select>
+                                        <span class="quiz-form-hint"><?php echo get_phrase('Select the teaching methodology for this course'); ?></span>
                                     </div>
 
                                     <!-- Navigation Buttons -->
@@ -600,6 +788,120 @@
         tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+        
+        // Initialiser le système de tags
+        initTagsSystem();
     });
+
+    /**
+     * Initialise le système de tags pour les prérequis
+     */
+    function initTagsSystem() {
+        const tagsInput = document.getElementById('prerequisites_input');
+        const tagsContainer = document.getElementById('prerequisites_tags');
+        const hiddenInput = document.getElementById('prerequisites_hidden');
+        
+        let tags = [];
+        
+        // Fonction pour mettre à jour le champ caché
+        function updateHiddenInput() {
+            hiddenInput.value = JSON.stringify(tags);
+        }
+        
+        // Fonction pour créer un badge de tag
+        function createTagBadge(tag) {
+            const badge = document.createElement('span');
+            badge.className = 'tag-badge';
+            badge.innerHTML = `
+                ${tag}
+                <button type="button" class="tag-remove" aria-label="Remove tag">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Ajouter l'événement de suppression
+            const removeBtn = badge.querySelector('.tag-remove');
+            removeBtn.addEventListener('click', function() {
+                const index = tags.indexOf(tag);
+                if (index > -1) {
+                    tags.splice(index, 1);
+                    badge.remove();
+                    updateHiddenInput();
+                }
+            });
+            
+            return badge;
+        }
+        
+        // Fonction pour ajouter un tag
+        function addTag(tagText) {
+            const tag = tagText.trim();
+            
+            // Vérifier si le tag n'est pas vide et n'existe pas déjà
+            if (tag && !tags.includes(tag)) {
+                tags.push(tag);
+                
+                // Créer et ajouter le badge
+                const badge = createTagBadge(tag);
+                tagsContainer.appendChild(badge);
+                
+                // Mettre à jour le champ caché
+                updateHiddenInput();
+                
+                // Réinitialiser l'input
+                tagsInput.value = '';
+            }
+        }
+        
+        // Gérer l'événement keydown sur l'input
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tagText = this.value;
+                if (tagText.trim()) {
+                    addTag(tagText);
+                }
+            }
+            
+            // Supprimer le dernier tag avec Backspace si l'input est vide
+            if (e.key === 'Backspace' && this.value === '' && tags.length > 0) {
+                const lastTag = tags[tags.length - 1];
+                const index = tags.indexOf(lastTag);
+                if (index > -1) {
+                    tags.splice(index, 1);
+                    const lastBadge = tagsContainer.lastElementChild;
+                    if (lastBadge) {
+                        lastBadge.remove();
+                    }
+                    updateHiddenInput();
+                }
+            }
+        });
+        
+        // Gérer l'événement blur (perte de focus)
+        tagsInput.addEventListener('blur', function() {
+            const tagText = this.value.trim();
+            if (tagText) {
+                addTag(tagText);
+            }
+        });
+        
+        // Gérer l'événement paste
+        tagsInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = e.clipboardData.getData('text');
+            const tagsArray = pastedText.split(/[,;\n]/);
+            
+            tagsArray.forEach(tag => {
+                const trimmedTag = tag.trim();
+                if (trimmedTag) {
+                    addTag(trimmedTag);
+                }
+            });
+        });
+        
+        // Initialiser le champ caché
+        updateHiddenInput();
+    }
 
 </script>
