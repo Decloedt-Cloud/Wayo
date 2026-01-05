@@ -8,15 +8,14 @@
 $settings_school = $this->settings_model->get_settings_school_data($school_id);
 
 $vat_applicable = isset($settings_school['vat']) && (int)$settings_school['vat'] === 1;
-// Utiliser country depuis schools table (source unique de vérité)
-$tax_residence = isset($school['country']) ? $school['country'] : null;
+$tax_residence  = isset($settings_school['Tax_residence']) ? $settings_school['Tax_residence'] : null;
 
 $vat_rate = 0; // en pourcentage
 if ($vat_applicable) {
     if ($tax_residence === 'MA') {
         // 1 - Communauté au Maroc  => 20% de TVA
         $vat_rate = 20;
-    } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+    } elseif ($tax_residence === 'UAE') {
         // 2 - Communauté aux EAU => 5% de TVA
         $vat_rate = 5;
     }
@@ -132,8 +131,13 @@ foreach ($classes as $key => $class) {
               ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-3" id="classesGrid">
               <?php if (!empty($classes)): ?>
+                <?php 
+                  // Get community status once
+                  $community_status = $this->user_model->check_student_status($school_id);
+                  $is_logged_in = (bool)$this->session->userdata('user_id');
+                ?>
                 
-                <?php foreach ($classes as $class): ?>
+                <?php foreach ($classes as $key => $class): ?>
                   <div class="col">
                     <div class="card h-100 border rounded-4 class-card position-relative"
                       data-title="<?php echo htmlspecialchars($class['name']); ?>"
@@ -192,6 +196,8 @@ foreach ($classes as $key => $class) {
                         data-bs-toggle="modal" 
                         data-bs-target="#classModal"
                         data-class-id="<?php echo $class['id']; ?>"
+                        data-student-id="<?php echo $student_id; ?>"
+                        data-currency="<?php echo $currencies; ?>"
                         data-class-price="<?php echo $class['price']; ?>"
                         data-class-enrolled="<?php 
                             echo $this->db->get_where('enrols', [
@@ -200,6 +206,11 @@ foreach ($classes as $key => $class) {
                                 'class_id' => $class['id']
                             ])->num_rows(); 
                         ?>"
+                        data-school-id="<?php echo $school_id; ?>"
+                        data-community-status="<?php echo $community_status; ?>"
+                        data-school-price="<?php echo $school_price_ttc; ?>"
+                        data-school-currency="<?php echo $settings_data['system_currency']; ?>"
+                        data-is-logged-in="<?php echo $is_logged_in ? '1' : '0'; ?>"
                       >
                         <?php echo get_phrase("See more"); ?>
                       </button>
@@ -248,13 +259,22 @@ foreach ($classes as $key => $class) {
                                   <input type="hidden" name="price" value="<?php echo $school_price_ttc; ?>" />
                                   <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
 
-                                  <button type="submit" class="btn btn-wayo fw-bold join-community-login-popup">
+                                  <button type="submit" class="btn btn-wayo fw-bold <?php if(!$this->session->userdata('user_id')) echo 'join-community-login-popup'; ?>">
                                     <?php echo htmlspecialchars(get_phrase("join_community")); ?>
                                   </button>
                                 </form>
 
                               <?php 
-                              // CASE 3.2 : déjà dans la communauté
+                              // CASE 3.2 : déjà dans la communauté (approuvé ou en attente)
+                              elseif ($status == 0): 
+                                // Status = 0 : Payé mais en attente d'approbation admin
+                              ?>
+                                <button type="button" class="btn btn-outline-secondary fw-bold" disabled>
+                                  <?php echo htmlspecialchars(get_phrase("pending")); ?>
+                                </button>
+
+                              <?php 
+                              // CASE 3.3 : Approuvé dans la communauté (status = 1)
                               else:
 
                                 // NOUVELLE CONDITION : classe gratuite → Start course direct
@@ -275,8 +295,8 @@ foreach ($classes as $key => $class) {
                                     <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
                                     <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
                                     <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
-                                    <input type="hidden" name="price" value="<?php echo isset($classes_with_vat[$key]['price_ttc']) ? $classes_with_vat[$key]['price_ttc'] : $class['price']; ?>" />
-                                    <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
+                                    <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                                    <input type="hidden" name="currency" value="<?php echo $currencies; ?>" />
 
                                     <button type="submit" class="btn btn-wayo fw-bold">
                                       <?php echo htmlspecialchars(get_phrase("join_classe")); ?>
@@ -437,12 +457,70 @@ document.addEventListener("DOMContentLoaded", function() {
       const schoolId = this.dataset.schoolId;
       const csrfName = "<?php echo $this->security->get_csrf_token_name(); ?>";
       const csrfHash = "<?php echo $this->security->get_csrf_hash(); ?>";
-      const currency = "<?php echo $settings_data['system_currency']; ?>";
+      const currency = this.dataset.currency || "<?php echo $settings_data['system_currency']; ?>";
 
       const container = document.getElementById('modalActionBtnContainer');
       container.innerHTML = ""; // reset le bouton
 
-      if (enrolled > 0 || classPrice === 0) {
+      const communityStatus = parseInt(this.dataset.communityStatus);
+      const schoolPrice = parseFloat(this.dataset.schoolPrice);
+      const schoolCurrency = this.dataset.schoolCurrency;
+      const isLoggedIn = this.dataset.isLoggedIn === '1';
+
+      if (communityStatus === -1) {
+          // Not a member -> Join Community
+          const form = document.createElement('form');
+          form.action = base_url + "student/join_school/assigned/" + schoolId;
+          // form.action = base_url + "Student/payment/community/" + schoolId;
+          form.method = 'post';
+          
+          let btnClass = "btn btn-wayo fw-bold";
+          if (!isLoggedIn) {
+             btnClass += " join-community-login-popup";
+          }
+
+          form.innerHTML = `
+            <input type="hidden" name="${csrfName}" value="${csrfHash}">
+            <input type="hidden" name="school_id" value="${schoolId}">
+            <input type="hidden" name="price" value="${schoolPrice}">
+            <input type="hidden" name="currency" value="${schoolCurrency}">
+            <button type="submit" class="${btnClass}"><?php echo get_phrase('join_community'); ?></button>
+          `;
+          container.appendChild(form);
+          
+            // Re-attach event listener for login popup if needed
+            if (!isLoggedIn) {
+                 const newBtn = form.querySelector('.join-community-login-popup');
+                 if(newBtn){
+                     newBtn.addEventListener("click", function(e) {
+                      e.preventDefault();
+                      
+                      // Open login popup
+                        const toggle = document.querySelector('.login-toggle');
+                        if (toggle) {
+                          toggle.click();
+                        }
+
+                        // Close modal
+                        const applyModal = document.getElementById("classModal");
+                        if (applyModal) {
+                          const modalInstance = bootstrap.Modal.getInstance(applyModal);
+                          if (modalInstance) {
+                            modalInstance.hide();
+                          }
+                        }
+                    });
+                 }
+            }
+
+      } else if (communityStatus === 0) {
+        // Status = 0: Paid but pending admin approval -> Show "En attente"
+        const pendingBtn = document.createElement('button');
+        pendingBtn.className = 'btn btn-outline-secondary fw-bold';
+        pendingBtn.disabled = true;
+        pendingBtn.textContent = "<?php echo get_phrase('pending'); ?>";
+        container.appendChild(pendingBtn);
+      } else if (enrolled > 0 || classPrice === 0) {
         // L'utilisateur a déjà payé ou la classe est gratuite → Start Course
         const startBtn = document.createElement('button');
         startBtn.className = 'btn btn-outline-wayo-join fw-bold start-course-btn';
