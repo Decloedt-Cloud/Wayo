@@ -1153,10 +1153,10 @@ const CalendarApp = {
                                         const joinUrl = data.join_url || '<?php echo site_url('bigbluebutton/join_meeting'); ?>/' + encodeURIComponent(data.meeting_id);
                                         const newWindow = window.open(joinUrl, '_blank');
                                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                                            this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
+                                            this.showNotification('warning', "Unable to open meeting. Please allow pop-ups for this site or click <a href=\"" + joinUrl + "\" target=\"_blank\">here</a> to join.", 5000);
                                             $('#joinMeetingBtn').show();
                                         } else {
-                                            this.showNotification('success', 'Starting meeting...');
+                                            this.showNotification('success', "Starting meeting...");
                                             // Monitor window close to show the button again
                                             const checkWindowClosed = setInterval(() => {
                                                 if (newWindow.closed) {
@@ -1224,13 +1224,13 @@ const CalendarApp = {
                                         return;
                                     }
                                 } else {
-                                    this.showNotification('error', 'Failed to verify meeting state');
+                                    this.showNotification('error', "Failed to verify meeting state");
                                     $('#joinMeetingBtn').show();
                                     return;
                                 }
                             },
                             error: (xhr, status, error) => {
-                                this.showNotification('error', 'Failed to verify meeting state');
+                                this.showNotification('error', "Failed to verify meeting state");
                                 $('#joinMeetingBtn').show();
                                 return;
                             }
@@ -1239,10 +1239,10 @@ const CalendarApp = {
                         const joinUrl = '<?php echo site_url('bigbluebutton/join_meeting'); ?>/' + encodeURIComponent(occurrenceData.meeting_id);
                         const newWindow = window.open(joinUrl, '_blank');
                         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                            this.showNotification('warning', 'Unable to open meeting. Please allow pop-ups for this site or click <a href="' + joinUrl + '" target="_blank">here</a> to join.', 5000);
+                            this.showNotification('warning', "Unable to open meeting. Please allow pop-ups for this site or click <a href=\"" + joinUrl + "\" target=\"_blank\">here</a> to join.", 5000);
                             $('#joinMeetingBtn').show();
                         } else {
-                            this.showNotification('success', 'Joining meeting...');
+                            this.showNotification('success', "Joining meeting...");
                             this.startPolling(eventId, occurrenceData.meeting_id, occurrenceDate);
                              // Monitor window close to show the button again
                             const checkWindowClosed = setInterval(() => {
@@ -1270,7 +1270,7 @@ const CalendarApp = {
             }
         },
         error: (xhr) => {
-            this.showNotification('error', 'Failed to load event');
+            this.showNotification('error', "Failed to load event");
             $('#joinMeetingBtn').show(); 
         }
     });
@@ -1850,7 +1850,7 @@ refreshUsersDropdown(schoolId, participants, callback) {
                     }
                 }
             } catch (e) {
-                CalendarApp.showNotification('error', 'Error parsing school data');
+                CalendarApp.showNotification('error', "Error parsing school data");
                 if (typeof callback === 'function') {
                     callback();
                 }
