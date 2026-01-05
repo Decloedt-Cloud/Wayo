@@ -5249,4 +5249,343 @@ public function get_school_data() {
       ]
     ]);
   }
+
+  // =====================================================
+  // BILLING ENTITIES MANAGEMENT
+  // =====================================================
+
+  /**
+   * Billing Entities main page
+   */
+  public function billing_entities($param1 = '', $param2 = '')
+  {
+    // Load the service
+    $this->load->library('BillingEntityService', null, 'billingEntityService');
+    
+    // Handle actions
+    if ($param1 == 'create') {
+      $this->_billing_entity_create();
+      return;
+    }
+    
+    if ($param1 == 'update' && !empty($param2)) {
+      $this->_billing_entity_update($param2);
+      return;
+    }
+    
+    if ($param1 == 'delete' && !empty($param2)) {
+      $this->_billing_entity_delete($param2);
+      return;
+    }
+    
+    if ($param1 == 'set_default' && !empty($param2)) {
+      $this->_billing_entity_set_default($param2);
+      return;
+    }
+    
+    if ($param1 == 'list') {
+      $this->_billing_entity_list();
+      return;
+    }
+    
+    if ($param1 == 'save_credentials' && !empty($param2)) {
+      $provider = $this->uri->segment(5); // /superadmin/billing_entities/save_credentials/{id}/{provider}
+      $this->_billing_entity_save_credentials($param2, $provider);
+      return;
+    }
+    
+    // Default: show index page
+    $page_data['entities'] = $this->billingEntityService->get_for_admin();
+    $page_data['mappings'] = $this->_get_billing_mappings();
+    $page_data['folder_name'] = 'billing_entities';
+    $page_data['page_title'] = 'Billing Entities';
+    $this->load->view('backend/index', $page_data);
+  }
+
+  /**
+   * Create billing entity
+   */
+  private function _billing_entity_create()
+  {
+    $data = [
+      'code' => strtoupper($this->input->post('code')),
+      'name' => $this->input->post('name'),
+      'legal_name' => $this->input->post('legal_name'),
+      'country_code' => strtoupper($this->input->post('country_code')),
+      'country_name' => $this->input->post('country_name'),
+      'country_flag' => $this->input->post('country_flag'),
+      'vat_rate' => (float) $this->input->post('vat_rate'),
+      'currency_code' => strtoupper($this->input->post('currency_code')),
+      'currency_symbol' => $this->input->post('currency_symbol'),
+      'psp_name' => $this->input->post('psp_name'),
+      'psp_type' => $this->input->post('psp_type'),
+      'bank_name' => $this->input->post('bank_name'),
+      'bank_country' => $this->input->post('bank_country'),
+      'color_primary' => $this->input->post('color_primary'),
+      'color_secondary' => $this->input->post('color_secondary'),
+      'display_order' => (int) $this->input->post('display_order'),
+      'is_active' => $this->input->post('is_active') ? 1 : 0,
+      'is_default' => $this->input->post('is_default') ? 1 : 0,
+      'created_by' => $this->session->userdata('user_id')
+    ];
+    
+    $result = $this->billingEntityService->create_entity($data);
+    
+    if ($result['success']) {
+      // Create mappings if provided
+      $mappings = $this->input->post('mappings');
+      if (!empty($mappings)) {
+        $this->_create_billing_mappings($result['entity_id'], $mappings);
+      }
+      
+      echo json_encode([
+        'status' => true,
+        'notification' => get_phrase('Entity created successfully')
+      ]);
+    } else {
+      echo json_encode([
+        'status' => false,
+        'notification' => $result['message']
+      ]);
+    }
+  }
+
+  /**
+   * Update billing entity
+   */
+  private function _billing_entity_update($id)
+  {
+    $data = [
+      'code' => strtoupper($this->input->post('code')),
+      'name' => $this->input->post('name'),
+      'legal_name' => $this->input->post('legal_name'),
+      'country_code' => strtoupper($this->input->post('country_code')),
+      'country_name' => $this->input->post('country_name'),
+      'country_flag' => $this->input->post('country_flag'),
+      'vat_rate' => (float) $this->input->post('vat_rate'),
+      'currency_code' => strtoupper($this->input->post('currency_code')),
+      'currency_symbol' => $this->input->post('currency_symbol'),
+      'psp_name' => $this->input->post('psp_name'),
+      'psp_type' => $this->input->post('psp_type'),
+      'bank_name' => $this->input->post('bank_name'),
+      'bank_country' => $this->input->post('bank_country'),
+      'color_primary' => $this->input->post('color_primary'),
+      'color_secondary' => $this->input->post('color_secondary'),
+      'display_order' => (int) $this->input->post('display_order'),
+      'is_active' => $this->input->post('is_active') ? 1 : 0,
+      'is_default' => $this->input->post('is_default') ? 1 : 0
+    ];
+    
+    $result = $this->billingEntityService->update_entity($id, $data);
+    
+    if ($result['success']) {
+      // Update mappings if provided
+      $mappings = $this->input->post('mappings');
+      $this->_update_billing_mappings($id, $mappings);
+      
+      echo json_encode([
+        'status' => true,
+        'notification' => get_phrase('Entity updated successfully')
+      ]);
+    } else {
+      echo json_encode([
+        'status' => false,
+        'notification' => $result['message']
+      ]);
+    }
+  }
+
+  /**
+   * Delete billing entity
+   */
+  private function _billing_entity_delete($id)
+  {
+    $result = $this->billingEntityService->delete_entity($id);
+    
+    echo json_encode([
+      'status' => $result['success'],
+      'notification' => $result['success'] ? get_phrase('Entity deleted successfully') : $result['message']
+    ]);
+  }
+
+  /**
+   * Set default billing entity
+   */
+  private function _billing_entity_set_default($id)
+  {
+    $this->load->model('BillingEntity_model', 'billing_entity_model');
+    $result = $this->billing_entity_model->set_default($id);
+    
+    echo json_encode([
+      'status' => $result,
+      'notification' => $result ? get_phrase('Default entity updated') : get_phrase('Failed to update default entity')
+    ]);
+  }
+
+  /**
+   * List billing entities (AJAX)
+   */
+  private function _billing_entity_list()
+  {
+    $data['entities'] = $this->billingEntityService->get_for_admin();
+    $data['mappings'] = $this->_get_billing_mappings();
+    $this->load->view('backend/superadmin/billing_entities/list', $data);
+  }
+
+  /**
+   * Get all billing mappings
+   */
+  private function _get_billing_mappings()
+  {
+    if (!$this->billingEntityService->is_available()) {
+      return [];
+    }
+    
+    $this->load->model('BillingEntity_model', 'billing_entity_model');
+    return $this->billing_entity_model->get_all_mappings();
+  }
+
+  /**
+   * Create billing mappings from comma-separated string
+   */
+  private function _create_billing_mappings($entity_id, $mappings_str)
+  {
+    $this->load->model('BillingEntity_model', 'billing_entity_model');
+    
+    $codes = array_filter(array_map('trim', explode(',', $mappings_str)));
+    foreach ($codes as $code) {
+      $this->billing_entity_model->create_mapping(strtoupper($code), $entity_id);
+    }
+  }
+
+  /**
+   * Update billing mappings
+   */
+  private function _update_billing_mappings($entity_id, $mappings_str)
+  {
+    $this->load->model('BillingEntity_model', 'billing_entity_model');
+    
+    // Delete existing mappings for this entity
+    $this->db->delete('billing_entity_mappings', ['billing_entity_id' => $entity_id]);
+    
+    // Create new mappings
+    if (!empty($mappings_str)) {
+      $this->_create_billing_mappings($entity_id, $mappings_str);
+    }
+  }
+
+  /**
+   * Save credentials for a billing entity
+   */
+  private function _billing_entity_save_credentials($entity_id, $provider)
+  {
+    $this->load->model('BillingEntityCredentials_model', 'credentials_model');
+    
+    $data = [
+      'mode' => $this->input->post('mode'),
+      'currency' => $this->input->post('currency'),
+      'is_active' => $this->input->post('is_active') ? 1 : 0,
+      'account_name' => $this->input->post('account_name'),
+      'account_email' => $this->input->post('account_email'),
+      'notes' => $this->input->post('notes')
+    ];
+    
+    // Stripe specific fields
+    if ($provider === 'stripe') {
+      $data['test_public_key'] = $this->input->post('test_public_key');
+      $data['test_secret_key'] = $this->input->post('test_secret_key');
+      $data['live_public_key'] = $this->input->post('live_public_key');
+      $data['live_secret_key'] = $this->input->post('live_secret_key');
+      $data['webhook_secret'] = $this->input->post('webhook_secret');
+    }
+    
+    // PayPal specific fields
+    if ($provider === 'paypal') {
+      $data['sandbox_client_id'] = $this->input->post('sandbox_client_id');
+      $data['sandbox_secret'] = $this->input->post('sandbox_secret');
+      $data['production_client_id'] = $this->input->post('production_client_id');
+      $data['production_secret'] = $this->input->post('production_secret');
+    }
+    
+    $result = $this->credentials_model->save_credentials($entity_id, $provider, $data);
+    
+    echo json_encode([
+      'status' => $result !== false,
+      'notification' => $result !== false 
+        ? get_phrase('Credentials saved successfully') 
+        : get_phrase('Failed to save credentials')
+    ]);
+  }
+
+  // =====================================================
+  // PAYMENT METHODS MANAGEMENT (Simplifié)
+  // Utilise payment_settings existant + liaisons entités
+  // =====================================================
+  
+  /**
+   * Payment Methods - Gestion des liaisons avec entités
+   */
+  public function payment_methods($param1 = "", $param2 = "")
+  {
+    $this->load->model('PaymentMethod_model', 'payment_method_model');
+    
+    switch ($param1) {
+      case 'toggle_entity':
+        $this->_payment_method_toggle_entity();
+        return;
+        
+      case 'enable_all_international':
+        $this->_payment_method_enable_all_international();
+        return;
+        
+      default:
+        // Show main page
+        $page_data['page_title'] = 'Payment Methods';
+        $page_data['folder_name'] = 'payment_methods';
+        $this->load->view('backend/index', $page_data);
+    }
+  }
+  
+  /**
+   * Toggle method-entity link
+   */
+  private function _payment_method_toggle_entity()
+  {
+    $method_code = $this->input->post('method_code');
+    $entity_id = $this->input->post('entity_id');
+    $enable = $this->input->post('enable') === 'true';
+    
+    if ($enable) {
+      $result = $this->payment_method_model->link_to_entity($entity_id, $method_code);
+    } else {
+      $result = $this->payment_method_model->unlink_from_entity($entity_id, $method_code);
+    }
+    
+    echo json_encode([
+      'status' => $result !== false,
+      'notification' => $result !== false ? get_phrase('Updated successfully') : get_phrase('Failed to update')
+    ]);
+  }
+  
+  /**
+   * Enable all international methods for all entities
+   */
+  private function _payment_method_enable_all_international()
+  {
+    $this->load->library('BillingEntityService', null, 'billingEntityService');
+    $entities = $this->billingEntityService->get_all_active();
+    
+    $international_methods = ['stripe', 'paypal', 'bank_transfer'];
+    
+    foreach ($entities as $entity) {
+      foreach ($international_methods as $method_code) {
+        $this->payment_method_model->link_to_entity($entity['id'], $method_code);
+      }
+    }
+    
+    echo json_encode([
+      'status' => true,
+      'notification' => get_phrase('International methods enabled for all entities')
+    ]);
+  }
 }

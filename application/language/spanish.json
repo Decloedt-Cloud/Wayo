@@ -3234,6 +3234,7 @@
     "file_not_found": "Archivo no encontrado",
     "document_contains_insufficient_text_for_ai_chat": "El documento contiene texto insuficiente para el chat IA",
     "insufficient_text": "Texto insuficiente",
+    "base_price": "Precio base",
     "lesson_title": "Título de la lección",
     "to_save": "Guardar",
     "instructions_optional": "Instrucciones (opcional)",
@@ -3361,5 +3362,10 @@
     "arabic": "Árabe",
     "dutch": "Neerlandés",
     "english": "Inglés",
-    "french": "Francés"
+    "french": "Francés",
+    "billing_architecture": "Arquitectura de facturación",
+    "manage_billing_entities_and_payment_methods_by_country/region": "Gestionar entidades de facturación y métodos de pago por país/región",
+    "admin_fee_manager": "Gestor de tarifas administrativas",
+    "cost_accounting": "Contabilidad de costos",
+    "cost_center": "Centro de costos"
 }

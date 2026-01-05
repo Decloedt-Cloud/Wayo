@@ -493,6 +493,10 @@ public function online_admission_school_post()
     $duplication_status = $this->user_model->check_duplication_school('on_create', $json_data['schoolName']);
 
     if ($duplication_status) {
+        // Période d'essai : 14 jours gratuits
+        $now = time();
+        $trial_days = 14;
+        
         // Extract school data from JSON
         $school_data = array(
             'name' => htmlspecialchars($json_data['schoolName']),
@@ -502,6 +506,12 @@ public function online_admission_school_post()
             'description' => htmlspecialchars($json_data['description']),
             'access' => htmlspecialchars($json_data['access']),
             'category' => htmlspecialchars($json_data['selectedCategory']),
+            // Champs liés à l'abonnement / période d'essai
+            'trial_start' => $now,
+            'trial_end' => $now + (60 * 60 * 24 * $trial_days),
+            'is_trial' => 1,
+            'is_paid' => 0,
+            'subscription_status' => 'trialing'
         );
 
         // Insert school data into the database
