@@ -3522,5 +3522,9 @@
     "add_first_section": "Voeg eerste sectie toe",
     "monetize": "Monetariseren",
     "create_communities": "Gemeenschappen creëren",
-    "dutch": "Nederlands"
+    "billing_architecture": "Facturatiearchitectuur",
+    "manage_billing_entities_and_payment_methods_by_country/region": "Beheer factureringsentiteiten en betalingsmethoden per land/regio",
+    "admin_fee_manager": "Beheerder van administratieve kosten",
+    "cost_accounting": "Kostenboekhouding",
+    "cost_center": "Kostenplaats"
 }
