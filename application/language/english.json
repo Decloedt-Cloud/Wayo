@@ -41,7 +41,7 @@
     "addon_manager": "Addon manager",
     "settings": "Settings",
     "system_settings": "System settings",
-    "school_settings": "community settings",
+    "school_settings": "Community settings",
     "payment_settings": "Payment settings",
     "no_payment_methods_configured": "No payment methods configured",
     "please_configure_stripe_or_paypal_in": "Please configure Stripe or PayPal in",

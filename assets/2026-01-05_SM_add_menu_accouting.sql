@@ -19,7 +19,7 @@ values ('cost_center', 'expense', 145, 'fas fa-file-invoice-dollar', 1, 1, 1, 1,
 UPDATE `menus` SET `displayed_name` = 'student_fee_manager' WHERE `displayed_name` = 'accounting';
 
 UPDATE `menus` SET `route_name` = 'invoice' WHERE id = 24;
-UPDATE `formation_preprod`.`menus` SET `admin_access` = '0' WHERE (`id` = '25');
+UPDATE `menus` SET `admin_access` = '0' WHERE (`id` = '25');
 
 UPDATE `menus` SET `category_order` = '2', `category` = 'accounting' WHERE (`id` = '24');
 UPDATE `menus` SET `category_order` = '3' WHERE (`id` = '140');
@@ -28,3 +28,13 @@ UPDATE `menus` SET `category_order` = '3' WHERE (`id` = '136');
 
 UPDATE `menus` SET `displayed_name` = 'cost_center' WHERE (`id` = '27');
 UPDATE `menus` SET `displayed_name` = 'cost_accounting' WHERE (`id` = '55');
+
+UPDATE `menus` SET `unique_identifier` = 'student_fee_manager' WHERE (`id` = '24');
+UPDATE `menus` SET `unique_identifier` = 'student_fee_manager' WHERE (`id` = '25');
+
+UPDATE `menus` SET `category` = 'general' WHERE (`id` = '1');
+UPDATE `menus` SET `category` = 'general' WHERE (`id` = '33');
+
+UPDATE `menus` SET `status` = '0' WHERE (`id` = '25');
+
+UPDATE `menus` SET `student_access` = '0' WHERE (`id` = '33');
