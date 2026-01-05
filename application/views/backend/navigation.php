@@ -442,6 +442,9 @@ if ($this->session->userdata('user_type') == 'admin') {
                     }  elseif ($main_menu['unique_identifier'] == 'admin_fee_manager') {
                         $main_route = $controller . '/invoice';
                         $has_direct_route = true;
+                    } elseif ($main_menu['unique_identifier'] == 'student_fee_manager') {
+                        $main_route = $controller . '/invoice';
+                        $has_direct_route = true;
                     } elseif ($main_menu['unique_identifier'] == 'central') {
                         $main_route = $controller . '/wall';
                         $has_direct_route = true;

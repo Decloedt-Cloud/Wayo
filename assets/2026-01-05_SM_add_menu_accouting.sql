@@ -15,3 +15,16 @@ values ('cost_accounting', 'expense_category', 145, 'fas fa-file-invoice-dollar'
 insert into menus (displayed_name, route_name, parent, icon, status, superadmin_access, admin_access, teacher_access, student_access, accountant_access, librarian_access, sort_order, is_addon, unique_identifier, category, category_order) 
 values ('cost_center', 'expense', 145, 'fas fa-file-invoice-dollar', 1, 1, 1, 1, 1, 1, 1, 15, 0, 'cost_center', 'accounting', 2);
 
+
+UPDATE `menus` SET `displayed_name` = 'student_fee_manager' WHERE `displayed_name` = 'accounting';
+
+UPDATE `menus` SET `route_name` = 'invoice' WHERE id = 24;
+UPDATE `formation_preprod`.`menus` SET `admin_access` = '0' WHERE (`id` = '25');
+
+UPDATE `menus` SET `category_order` = '2', `category` = 'accounting' WHERE (`id` = '24');
+UPDATE `menus` SET `category_order` = '3' WHERE (`id` = '140');
+UPDATE `menus` SET `category_order` = '3' WHERE (`id` = '28');
+UPDATE `menus` SET `category_order` = '3' WHERE (`id` = '136');
+
+UPDATE `menus` SET `displayed_name` = 'cost_center' WHERE (`id` = '27');
+UPDATE `menus` SET `displayed_name` = 'cost_accounting' WHERE (`id` = '55');
