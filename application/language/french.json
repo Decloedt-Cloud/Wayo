@@ -3411,5 +3411,13 @@
     "dutch": "Néerlandais",
     "english": "Anglais",
     "spanish": "Espagnol",
-    "base_price": "Prix de base"
+    "base_price": "Prix de base",
+    "events_this_month": "Events this month",
+    "view_all": "View all",
+    "no_events_this_month": "No events this month",
+    "billing_architecture": "Architecture de facturation",
+    "manage_billing_entities_and_payment_methods_by_country/region": "Gérer les entités de facturation et les méthodes de paiement par pays/région",
+    "admin_fee_manager": "Gestionnaire de frais administratifs",
+    "cost_accounting": "analyse des coûts",
+    "cost_center": "Centre de coûts"
 }

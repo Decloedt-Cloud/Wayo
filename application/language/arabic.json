@@ -3324,5 +3324,10 @@
     "dutch": "الهولندية",
     "english": "الإنجليزية",
     "french": "الفرنسية",
-    "spanish": "الإسبانية"
+    "spanish": "الإسبانية",
+    "billing_architecture": "بنية الفواتير",
+    "manage_billing_entities_and_payment_methods_by_country/region": "إدارة الكيانات المدفوعة وطرق الدفع بناءً على البلد/المنطقة",
+    "admin_fee_manager": "إدارة الرسوم الإدارية",
+    "cost_accounting": "المحاسبة التكلفة",
+    "cost_center": "مركز التكلفة"
 }
