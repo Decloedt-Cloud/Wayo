@@ -201,9 +201,11 @@
         current = i;
 
         if (i === 1) updateSummary(); // étape Résumé
+        if (typeof saveFormState === 'function') saveFormState();
 
         // window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+      window.goToStudent = goTo; // Exposer pour le gestionnaire de persistance
 
         qsa('.next').forEach(b => b.addEventListener('click', () => {
           if (!validate()) return;
@@ -214,7 +216,11 @@
           goTo(Math.max(0, current - 1));
         }));
 
-        goTo(0);
+        // Initialisation intelligente avec persistance
+        const saved = sessionStorage.getItem('wayo_student_form_state');
+        if (!saved) {
+            goTo(0);
+        }
 
     // ===== Résumé =====
     function dd(parent, t, v) {
@@ -385,6 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (data.status) {
           toastr.success(data.message);
+          if (typeof clearSavedState === 'function') clearSavedState();
           studentForm.reset();
           setTimeout(() => {
             window.location.href = '<?= site_url('/home/communities'); ?>';
@@ -422,5 +429,78 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 </script>
 
+<!-- ==========================================
+     PERSISTENCE MANAGER (Student Form)
+     ========================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const STORAGE_KEY = 'wayo_student_form_state';
+    const form = document.getElementById('studentform');
+    if (!form) return;
+
+    window.saveFormState = function() {
+        const formData = new FormData(form);
+        const data = {};
+        
+        formData.forEach((value, key) => {
+            // Exclude files and CSRF (Passwords included per user request)
+            if (!(value instanceof File) && !key.includes('csrf')) {
+                data[key] = value;
+            }
+        });
+
+        // Capture step index from DOM
+        const visiblePane = document.querySelector('.step-pane.is-visible');
+        if (visiblePane) {
+            data._step = parseInt(visiblePane.dataset.step) - 1;
+        }
+
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    window.restoreFormState = function() {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+
+        try {
+            const data = JSON.parse(saved);
+            
+            // Restore inputs
+            Object.keys(data).forEach(key => {
+                if (key.startsWith('_')) return;
+                const input = form.elements[key];
+                if (input) {
+                    if (input.type === 'checkbox') input.checked = !!data[key];
+                    else if (input.type === 'radio') {
+                        const r = form.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+                        if (r) r.checked = true;
+                    } else {
+                        input.value = data[key];
+                    }
+                }
+            });
+
+            // Restore Step
+            if (typeof data._step !== 'undefined' && typeof window.goToStudent === 'function') {
+                setTimeout(() => window.goToStudent(data._step), 100);
+            }
+
+        } catch (e) {
+            console.error("Student Form Persistence error:", e);
+        }
+    };
+
+    window.clearSavedState = function() {
+        sessionStorage.removeItem(STORAGE_KEY);
+    };
+
+    // Triggers
+    form.addEventListener('input', saveFormState);
+    form.addEventListener('change', saveFormState);
+
+    // Run restoration
+    restoreFormState();
+});
+</script>
 
 </html>

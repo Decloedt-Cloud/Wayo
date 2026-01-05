@@ -658,13 +658,14 @@
                         </div>
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Primary_language") ?> <span class="req">*</span></span>
+                            <?php $active_lang = get_user_language(); ?>
                             <select id="communityLang" name="communityLang" required aria-required="true"
                                     data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
-                                <option value="french"><?php echo get_phrase("French_(FR)") ?></option>
-                                <option value="english"><?php echo get_phrase("Anglais_(EN)") ?></option>
-                                <option value="deutsch"><?php echo get_phrase("Allemand_(DE)") ?></option>
-                                <option value="arabe"><?php echo get_phrase("Arabic_(AR)") ?></option>
-                                <option value="spanish"><?php echo get_phrase("Spanish_(ES)") ?></option>
+                                <option value="french" <?php if($active_lang == 'french') echo 'selected'; ?>><?php echo get_phrase("French_(FR)") ?></option>
+                                <option value="english" <?php if($active_lang == 'english') echo 'selected'; ?>><?php echo get_phrase("Anglais_(EN)") ?></option>
+                                <option value="deutsch" <?php if($active_lang == 'dutch') echo 'selected'; ?>><?php echo get_phrase("Allemand_(DE)") ?></option>
+                                <option value="arabe" <?php if($active_lang == 'arabic') echo 'selected'; ?>><?php echo get_phrase("Arabic_(AR)") ?></option>
+                                <option value="spanish" <?php if($active_lang == 'spanish') echo 'selected'; ?>><?php echo get_phrase("Spanish_(ES)") ?></option>
                             </select>
                             <div class="error" data-for="communityLang"></div>
                         </label>
@@ -1517,8 +1518,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateContinueButton();
         updateSummary();
+        if (typeof saveFormState === 'function') saveFormState();
         // window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    window.goTo = goTo; // Expose for persistence manager
 
     $$('.next').forEach(btn => btn.addEventListener('click', () => {
         if (validateStep(currentStep)) goTo(currentStep + 1);
@@ -1623,6 +1626,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.status) {
                 // toastr?.success(data.message);
+                if (typeof clearSavedState === 'function') clearSavedState();
                 $('#resetBtn')?.click();
                 // Show success popup instead of auto-redirect
                 const overlay = document.getElementById('successOverlay');
@@ -1751,7 +1755,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================
     applyPriceRules();
     updateCurrencyUI();
-    goTo(0);
+    
+    // Check if we should restore step or start at 0
+    const saved = sessionStorage.getItem('wayo_admission_form_state');
+    if (!saved) {
+        goTo(0);
+    }
 
     // Success button redirect
     const successBtn = document.getElementById('successBtn');
@@ -1766,5 +1775,128 @@ document.addEventListener('DOMContentLoaded', function() {
     if (successOverlay) {
         document.body.appendChild(successOverlay);
     }
+});
+</script>
+
+<!-- ==========================================
+     PERSISTENCE MANAGER (Non-invasive)
+     ========================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const STORAGE_KEY = 'wayo_admission_form_state';
+    const form = document.getElementById('schoolform');
+    if (!form) return;
+
+    window.saveFormState = function() {
+        const formData = new FormData(form);
+        const data = {};
+        
+        formData.forEach((value, key) => {
+            // Exclude files and CSRF (Passwords included per user request)
+            if (!(value instanceof File) && !key.includes('csrf')) {
+                data[key] = value;
+            }
+        });
+
+        // Save current step by reading from DOM
+        const visiblePane = document.querySelector('.step-pane.is-visible');
+        if (visiblePane) {
+            data._step = parseInt(visiblePane.dataset.step) - 1;
+        }
+
+        // Custom phone/country sync
+        const countryInput = document.getElementById('countrySelect');
+        if (countryInput) data._country = countryInput.value;
+
+        // Visual previews (Base64)
+        const logoImg = document.querySelector('#logoPreview img');
+        const coverImg = document.querySelector('#coverPreview img');
+        if (logoImg) data._logoPre = logoImg.src;
+        if (coverImg) data._coverPre = coverImg.src;
+
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    window.restoreFormState = function() {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+
+        try {
+            const data = JSON.parse(saved);
+            
+            // Restore inputs
+            Object.keys(data).forEach(key => {
+                if (key.startsWith('_')) return;
+                const input = form.elements[key];
+                if (input) {
+                    if (input.type === 'checkbox') input.checked = !!data[key];
+                    else if (input.type === 'radio') {
+                        const r = form.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+                        if (r) r.checked = true;
+                    } else {
+                        input.value = data[key];
+                    }
+                }
+            });
+
+            // Restore Phone/Country UI
+            if (data._country) {
+                const ci = document.getElementById('countrySelect');
+                const sf = document.getElementById('selectedFlag');
+                if (ci) ci.value = data._country;
+                const opt = document.querySelector(`.custom-option[data-value="${data._country}"]`);
+                if (opt && sf) {
+                    sf.className = `flag-icon flag-icon-${opt.getAttribute('data-flag')}`;
+                    document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                }
+                // Update internal logic if exposed (optional but safer)
+                if (typeof previousCode !== 'undefined') window.previousCode = data._country;
+            }
+
+            // Restore Previews
+            if (data._logoPre) {
+                const lp = document.getElementById('logoPreview');
+                if (lp) {
+                    lp.innerHTML = `<img src="${data._logoPre}" style="max-width:100%; border-radius:8px;">`;
+                    const li = document.getElementById('communityLogo');
+                    if (li) li.dataset.valid = 'true';
+                }
+            }
+            if (data._coverPre) {
+                const cp = document.getElementById('coverPreview');
+                if (cp) {
+                    cp.innerHTML = `<img src="${data._coverPre}" style="max-width:100%; border-radius:8px; height:80px; object-fit:cover;">`;
+                    const ci = document.getElementById('communityCover');
+                    if (ci) ci.dataset.valid = 'true';
+                }
+            }
+
+            // Restore Step
+            if (typeof data._step !== 'undefined' && typeof window.goTo === 'function') {
+                setTimeout(() => window.goTo(data._step), 100);
+            }
+
+            // Trigger existing UI updates
+            if (typeof applyPriceRules === 'function') applyPriceRules();
+            if (typeof updateCurrencyUI === 'function') updateCurrencyUI();
+            if (typeof updateSummary === 'function') updateSummary();
+            if (typeof updateContinueButton === 'function') updateContinueButton();
+
+        } catch (e) {
+            console.error("Persistence error:", e);
+        }
+    };
+
+    window.clearSavedState = function() {
+        sessionStorage.removeItem(STORAGE_KEY);
+    };
+
+    // Auto-save triggers
+    form.addEventListener('input', saveFormState);
+    form.addEventListener('change', saveFormState);
+
+    // Initial restoration
+    restoreFormState();
 });
 </script>

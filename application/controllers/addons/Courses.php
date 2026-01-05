@@ -13,7 +13,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require_once FCPATH . 'vendor/autoload.php';
 
 class Courses extends CI_Controller {
-  
+
+  // Constants for AI generation
+  const AI_GENERATION_TIMEOUT = 300; // 5 minutes
+  const AI_GENERATION_LOCK_DURATION = 300; // 5 minutes
+  const PDF_MAX_SIZE_MB = 10;
+  const PDF_MAX_SIZE_BYTES = 10240; // 10MB in KB
+
+  // AI model settings
+  const AI_MODEL = 'deepseek-chat';
+  const AI_TEMPERATURE = 0.7;
+
   private $purifier;
   
   public function __construct(){
@@ -230,6 +240,19 @@ class Courses extends CI_Controller {
     $this->student_access_denied();
     $page_data['all_teachers']    = $this->user_model->get_all_teachers();
     $page_data['classes']     = $this->crud_model->get_classes();
+    $page_data['categories']  = $this->db->get_where('categories', array())->result_array();
+    
+    // Récupérer la catégorie de l'école actuelle
+    $current_school_id = school_id();
+    $school_category = '';
+    if ($current_school_id) {
+        $school = $this->db->get_where('schools', array('id' => $current_school_id))->row_array();
+        if ($school && isset($school['category'])) {
+            $school_category = $school['category'];
+        }
+    }
+    $page_data['school_category'] = $school_category;
+    
     $page_data['course_classes'] = [];   // Pas encore de classes liées
     $page_data['course_teachers'] = [];  // Pas encore de mentors liés
     $page_data['folder_name'] = 'academy';
@@ -246,6 +269,18 @@ class Courses extends CI_Controller {
     $page_data['course']          = $this->lms_model->get_course_by_id($course_id);
     $page_data['all_teachers']        = $this->user_model->get_all_teachers();
     $page_data['classes']         = $this->crud_model->get_classes();
+    $page_data['categories']      = $this->db->get_where('categories', array())->result_array();
+    
+    // Récupérer la catégorie de l'école actuelle
+    $current_school_id = school_id();
+    $school_category = '';
+    if ($current_school_id) {
+        $school = $this->db->get_where('schools', array('id' => $current_school_id))->row_array();
+        if ($school && isset($school['category'])) {
+            $school_category = $school['category'];
+        }
+    }
+    $page_data['school_category'] = $school_category;
     // Pagination des sections (10 par page)
     $sections_per_page = 10;
     $page_data['course_sections'] = $this->lms_model->get_sections_paginated($course_id, $sections_per_page, 0);
@@ -446,9 +481,19 @@ class Courses extends CI_Controller {
     );
 
     if ($lesson) {
+      // Clean up the content - remove literal \n sequences that may appear as "n" in HTML
+      $content = html_entity_decode($lesson['summary'] ?? '', ENT_QUOTES, 'UTF-8');
+      $content = str_replace('\\n', '', $content);
+      $content = str_replace('\n', '', $content);
+      $content = preg_replace('/(?<=>)\s*\n\s*(?=<)/', '', $content); // Remove newlines between tags
+      $content = preg_replace('/\s+/', ' ', $content); // Normalize spaces
+
+      $clean_content = trim($content);
+
+
       echo json_encode(array(
-        'content' => $lesson['summary'] ?? '',
-        'title' => $lesson['title'] ?? '',
+        'content' => $clean_content,
+        'title' => html_entity_decode($lesson['title'] ?? '', ENT_QUOTES, 'UTF-8'),
         'last_modified' => $lesson['last_modified'] ?? '',
         'csrf' => $csrf
       ));
@@ -884,7 +929,7 @@ class Courses extends CI_Controller {
     $config = array(
       'upload_path' => $upload_path,
       'allowed_types' => 'pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|PDF|DOC|DOCX|XLS|XLSX|PPT|PPTX|ZIP|RAR|TXT',
-      'max_size' => 10240,
+      'max_size' => self::PDF_MAX_SIZE_BYTES,
       'encrypt_name' => true
     );
     
@@ -1260,7 +1305,7 @@ public function generate_questions_from_pdf()
     $generation_key = 'pdf_generation_in_progress_' . $this->session->userdata('user_id');
     $generation_lock = $this->session->userdata($generation_key);
 
-    if ($generation_lock && (time() - $generation_lock) < 300) {
+    if ($generation_lock && (time() - $generation_lock) < self::AI_GENERATION_LOCK_DURATION) {
       $this->respond_json([
         'status' => false,
         'message' => 'Une génération est déjà en cours. Veuillez patienter ou réessayer dans quelques instants.'
@@ -1592,5 +1637,2388 @@ public function generate_questions_from_pdf()
       ->set_status_header($status_code)
       ->set_content_type('application/json')
       ->set_output(json_encode($payload, JSON_UNESCAPED_UNICODE));
+  }
+
+  /**
+   * Extract PDF structure (TOC + H1/H2 headings) and save as JSON
+   */
+  public function extract_pdf_structure()
+  {
+    // Auth check
+    if (!$this->session->userdata('teacher_login') && 
+        !$this->session->userdata('admin_login') && 
+        !$this->session->userdata('superadmin_login')) {
+      return $this->respond_json(['error' => 'Unauthorized'], 403);
+    }
+
+    // Validate upload
+    if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
+      return $this->respond_json(['error' => 'No PDF file uploaded'], 400);
+    }
+
+    $file = $_FILES['pdf_file'];
+    
+    // Validate PDF type
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if (finfo_file($finfo, $file['tmp_name']) !== 'application/pdf') {
+      finfo_close($finfo);
+      return $this->respond_json(['error' => 'Only PDF files are allowed'], 400);
+    }
+    finfo_close($finfo);
+
+    // Setup directories
+    $temp_dir = FCPATH . 'uploads/temp_pdf/';
+    $json_dir = FCPATH . 'uploads/pdf_context/';
+    foreach ([$temp_dir, $json_dir] as $dir) {
+      if (!file_exists($dir)) mkdir($dir, 0755, true);
+    }
+
+    // Save temp file
+    $temp_path = $temp_dir . uniqid('pdf_') . '.pdf';
+    if (!move_uploaded_file($file['tmp_name'], $temp_path)) {
+      return $this->respond_json(['error' => 'Failed to process file'], 500);
+    }
+
+    // Run Python extraction
+    $script = APPPATH . 'scripts/extract_pdf_structure.py';
+    if (!file_exists($script)) {
+      unlink($temp_path);
+      return $this->respond_json(['error' => 'Extraction script not found'], 500);
+    }
+
+    $output = shell_exec(sprintf('python %s %s 2>&1', 
+      escapeshellarg($script), 
+      escapeshellarg($temp_path)
+    ));
+    
+    unlink($temp_path); // Cleanup
+
+    // Parse result
+    if (!$output) {
+      return $this->respond_json(['error' => 'Python not available'], 500);
+    }
+
+    $result = json_decode($output, true);
+    if (json_last_error() !== JSON_ERROR_NONE || isset($result['error'])) {
+      return $this->respond_json(['error' => $result['error'] ?? 'Extraction failed'], 500);
+    }
+
+    // Save JSON
+    $result['source_file'] = $file['name'];
+    $result['extracted_at'] = date('Y-m-d H:i:s');
+    
+    $filename = pathinfo($file['name'], PATHINFO_FILENAME) . '_' . date('Ymd_His') . '.json';
+    $json_path = $json_dir . $filename;
+    
+    if (!file_put_contents($json_path, json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+      return $this->respond_json(['error' => 'Failed to save JSON'], 500);
+    }
+
+    $this->respond_json([
+      'success' => true,
+      'json_file' => $filename,
+      'json_path' => 'uploads/pdf_context/' . $filename,
+      'csrf_hash' => $this->security->get_csrf_hash()
+    ]);
+  }
+
+  /**
+   * Generate outline schemas using DeepSeek API
+   */
+  public function generate_outline_schemas()
+  {
+    // Increase timeout for schema generation
+    ini_set('max_execution_time', 180); // 3 minutes for schema generation
+
+    // Auth check
+    if (!$this->session->userdata('teacher_login') &&
+        !$this->session->userdata('admin_login') &&
+        !$this->session->userdata('superadmin_login')) {
+      return $this->respond_json(['error' => 'Unauthorized'], 403);
+    }
+
+    // Get POST data
+    $course_id = $this->input->post('course_id') ?? 0;
+    $pdf_json_path = $this->input->post('pdf_json_path') ?? '';
+    $outline_rules_json = $this->input->post('outline_rules') ?? '{}';
+    $outline_rules = json_decode($outline_rules_json, true) ?? [];
+
+    // Load PDF extracted content
+    $pdf_json_file = FCPATH . $pdf_json_path;
+    if (!file_exists($pdf_json_file)) {
+      return $this->respond_json(['error' => 'PDF context file not found'], 404);
+    }
+
+    $pdf_content = json_decode(file_get_contents($pdf_json_file), true);
+    if (!$pdf_content) {
+      // Clean up invalid file
+      unlink($pdf_json_file);
+      return $this->respond_json(['error' => 'Invalid PDF context file'], 400);
+    }
+
+    // Get course context if available
+    $course_context = [];
+    if ($course_id > 0) {
+      $course = $this->db->get_where('course', ['id' => $course_id])->row_array();
+      if ($course) {
+        $course_context = [
+          'prerequisites' => $course['prerequisites'] ?? '',
+          'field_of_activity' => $course['field_of_activity'] ?? '',
+          'course_style' => $course['course_style'] ?? ''
+        ];
+      }
+    }
+
+    // Build prompt for DeepSeek
+    $prompt = $this->build_outline_prompt($pdf_content, $outline_rules, $course_context);
+
+    // Call DeepSeek API with extended timeout for schema generation
+    $deepseek_response = $this->call_deepseek_api($prompt, 120); // 2 minutes timeout
+
+    if (isset($deepseek_response['error'])) {
+      // Clean up JSON file on error
+      if (file_exists($pdf_json_file)) {
+        unlink($pdf_json_file);
+      }
+      return $this->respond_json(['error' => 'API Error: ' . $deepseek_response['error']], 500);
+    }
+
+    if (!isset($deepseek_response['content'])) {
+      // Clean up JSON file on error
+      if (file_exists($pdf_json_file)) {
+        unlink($pdf_json_file);
+      }
+      return $this->respond_json(['error' => 'No response content from API'], 500);
+    }
+
+    // Parse DeepSeek response to extract 3 schemas
+    $schemas = $this->parse_deepseek_schemas($deepseek_response);
+
+    if (empty($schemas) || !is_array($schemas)) {
+      // Clean up JSON file on error
+      if (file_exists($pdf_json_file)) {
+        unlink($pdf_json_file);
+      }
+      return $this->respond_json(['error' => 'Failed to parse API response'], 500);
+    }
+
+    // Clean up the JSON file after successful generation
+    if (file_exists($pdf_json_file)) {
+      unlink($pdf_json_file);
+    }
+
+    // Reset PHP execution time to default
+    ini_restore('max_execution_time');
+
+    $this->respond_json([
+      'success' => true,
+      'schemas' => $schemas
+    ]);
+  }
+
+  /**
+   * Build prompt for DeepSeek API
+   */
+  private function build_outline_prompt($pdf_content, $outline_rules, $course_context)
+  {
+    // Parse lessons per section range (e.g., "2-3" => min=2, max=3)
+    $lessons_range = explode('-', $outline_rules['lessonsPerSection'] ?? '2-3');
+    $lessons_min = $lessons_range[0] ?? 2;
+    $lessons_max = $lessons_range[1] ?? 3;
+
+    // Parse max sections range (e.g., "3-6" => min=3, max=6)
+    $sections_range = explode('-', $outline_rules['maxSections'] ?? '3-6');
+    $sections_min = intval($sections_range[0] ?? 3);
+    $sections_max = intval($sections_range[1] ?? 6);
+
+    // Calculate max CORE sections based on whether intro/outro are enabled
+    $include_intro = $outline_rules['includeIntro'] ?? true;
+    $include_outro = $outline_rules['includeConclusion'] ?? true;
+
+    $intro_outro_count = ($include_intro ? 1 : 0) + ($include_outro ? 1 : 0);
+    $max_core_sections = $sections_max - $intro_outro_count;
+
+    // Ensure at least 1 core section if intro/outro take all slots
+    $max_sections = max(1, $max_core_sections);
+    
+    // Map numbering mode
+    $numbering_map = [
+      'none' => 'NONE',
+      'auto_123' => 'AUTO_NUMERIC',
+      'auto_nested' => 'AUTO_DECIMAL',
+      'from_pdf' => 'FROM_SOURCE'
+    ];
+    $numbering_mode = $numbering_map[$outline_rules['numbering'] ?? 'none'] ?? 'NONE';
+    
+    // Map quiz policy
+    $quiz_policy_map = [
+      'none' => 'MANUAL',
+      'per_section' => 'PER_SECTION',
+      'per_lesson' => 'EVERY_N_LESSONS',
+      'final' => 'MANUAL'
+    ];
+    $quiz_policy = $quiz_policy_map[$outline_rules['quizFrequency'] ?? 'per_section'] ?? 'PER_SECTION';
+    $quiz_every_n = $quiz_policy === 'EVERY_N_LESSONS' ? 1 : 'null';
+    
+    // Map difficulty
+    $difficulty_map = [
+      'easy' => 'EASY',
+      'medium' => 'MEDIUM',
+      'hard' => 'HARD'
+    ];
+    $quiz_difficulty = $difficulty_map[$outline_rules['difficulty'] ?? 'medium'] ?? 'MEDIUM';
+    
+    // Map language
+    $language_map = [
+      'french' => 'fr',
+      'english' => 'en',
+      'spanish' => 'es',
+      'german' => 'de',
+      'arabic' => 'ar'
+    ];
+    $language = $language_map[$outline_rules['language'] ?? 'french'] ?? 'fr';
+    
+    // Include intro/outro
+    $include_intro = ($outline_rules['includeIntro'] ?? true) ? 'true' : 'false';
+    $include_outro = ($outline_rules['includeConclusion'] ?? true) ? 'true' : 'false';
+    
+    // Quiz questions count
+    $quiz_questions = $outline_rules['questionsCount'] ?? 10;
+    
+    // Convert PDF content to JSON string
+    $pdf_json = json_encode($pdf_content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+    $prompt = <<<PROMPT
+Generate 3 different course outline proposals from this source document.
+
+RULES:
+- max_core_sections: {$max_sections}
+- lessons_per_section: {$lessons_min}-{$lessons_max}
+- include_intro: {$include_intro}
+- include_outro: {$include_outro}
+- numbering: {$numbering_mode}
+- quiz_policy: {$quiz_policy}
+- language: {$language}
+
+CONTENT CLEANING:
+- Ignore API docs, tables of contents, noise headings
+- Keep logical order, prefer H1→sections, H2→lessons
+
+INTRO/OUTRO:
+If include_intro=true: ONE INTRO section with {$lessons_min}-{$lessons_max} lessons
+If include_outro=true: ONE OUTRO section with {$lessons_min}-{$lessons_max} lessons
+
+OUTPUT (STRICT JSON ONLY — NO MARKDOWN, NO EXTRA TEXT)
+Return exactly this JSON structure:
+
+{
+  "courseTitle": "<infer from source>",
+  "numberingMode": "{$numbering_mode}",
+  "quizPolicy": "{$quiz_policy}",
+  "proposals": [
+    {
+      "id": "proposal_1",
+      "label": "Design schéma 1",
+      "strategy": "<1 short sentence: how this outline is organized>",
+      "sections": [ ... ]
+    },
+    {
+      "id": "proposal_2",
+      "label": "Design schéma 2",
+      "strategy": "<1 short sentence>",
+      "sections": [ ... ]
+    },
+    {
+      "id": "proposal_3",
+      "label": "Design schéma 3",
+      "strategy": "<1 short sentence>",
+      "sections": [ ... ]
+    }
+  ]
+}
+
+SECTION OBJECT
+{
+  "id": "sec_01",
+  "type": "INTRO|CORE|OUTRO",
+  "order": 1,
+  "title": "…",
+  "sourcePages": {"start": 1, "end": 5},
+  "children": [
+    {
+      "id": "les_01_01",
+      "type": "LESSON",
+      "order": 1,
+      "title": "…",
+      "subtitle": "…",
+      "sourceHeadings": ["…"],
+      "sourcePages": {"start": 1, "end": 2}
+    },
+    {
+      "id": "quiz_01",
+      "type": "QUIZ",
+      "order": 99,
+      "title": "Quiz – …",
+      "questionsCount": {$quiz_questions},
+      "difficulty": "{$quiz_difficulty}"
+    }
+  ]
+}
+
+ID RULES
+- Sections: sec_01, sec_02, ...
+- Lessons: les_01_01 (section 01 lesson 01), ...
+- Quiz: quiz_01 (section 01 quiz)
+IDs must be unique WITHIN EACH PROPOSAL.
+
+DIFFERENTIATION REQUIREMENTS (VERY IMPORTANT)
+Each proposal must be meaningfully different:
+
+Proposal 1 (Balanced / Default):
+- Closely follows PDF flow (H1/H2), minimal rewriting.
+- Standard granularity.
+- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+
+Proposal 2 (Consolidated):
+- Fewer sections (combine adjacent H1 topics).
+- Keep lessons within limits by merging similar H2.
+- Titles are more thematic.
+- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+
+Proposal 3 (More granular / Learning path):
+- More sections up to max_sections.
+- Break down broad H1 into clearer learning steps.
+- If quiz_policy=PER_SECTION: quizzes focus on key takeaways.
+- If quiz_policy=EVERY_N_LESSONS: quizzes placed exactly every N lessons.
+- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+
+VALIDATION:
+- Max {$max_sections} core sections
+- {$lessons_min}-{$lessons_max} lessons per section
+- Valid JSON output only
+
+NOW PROCESS THIS SOURCE JSON:
+{$pdf_json}
+PROMPT;
+
+    return $prompt;
+  }
+
+  /**
+   * Generate content for multiple lessons in a single API call
+   */
+  private function generate_lessons_content_batch($lessons_data, $outline_rules)
+  {
+    if (empty($lessons_data)) {
+      return [];
+    }
+
+    $language = $outline_rules['language'] ?? 'french';
+    $language_map = [
+      'french' => 'fr',
+      'english' => 'en',
+      'spanish' => 'es',
+      'german' => 'de',
+      'arabic' => 'ar'
+    ];
+    $lang_code = $language_map[$language] ?? 'fr';
+
+    $tone_map = [
+      'very_concise' => 'Very concise (bullet points)',
+      'concise_technical' => 'Concise & technical',
+      'neutral_professional' => 'Neutral & professional',
+      'pedagogical_progressive' => 'Pedagogical & progressive',
+      'coach_motivating' => 'Coach / motivating',
+      'conversational' => 'Conversational (friendly)',
+      'corporate_institutional' => 'Corporate / institutional',
+      'expert_best_practices' => 'Expert / best practices',
+      'storytelling' => 'Storytelling',
+      'action_oriented' => 'Action oriented (checklists)',
+      'compliance_oriented' => 'Compliance oriented (rigorous)',
+      'support_troubleshooting' => 'Support / troubleshooting'
+    ];
+    $tone = $tone_map[$outline_rules['tone'] ?? 'concise_technical'] ?? 'Concise & technical';
+
+    $audience = $outline_rules['audience'] ?? 'intermediate';
+
+    // Build the batch prompt
+    $lessons_list = '';
+    foreach ($lessons_data as $index => $lesson) {
+      $lesson_num = $index + 1;
+      $lessons_list .= "\nLESSON {$lesson_num}:\n";
+      $lessons_list .= "- Title: \"{$lesson['title']}\"\n";
+      $lessons_list .= "- Section: \"{$lesson['section_context']}\"\n";
+      $lessons_list .= "- Course: \"{$lesson['course_context']}\"\n";
+    }
+
+    $prompt = <<<PROMPT
+Generate comprehensive content for {$language} language courses. Target audience: {$audience} level learners. Use {$tone} tone.
+
+CONTENT REQUIREMENTS:
+1. Write all content in {$language}
+2. Include 2-3 practical examples per lesson
+3. Structure with headings, paragraphs, and bullet points
+4. End each lesson with 3-5 key takeaways
+5. Keep each lesson concise but complete (400-800 words)
+
+{$lessons_list}
+
+OUTPUT: Return content in this exact format:
+
+=== LESSON 1 ===
+[HTML content for lesson 1]
+=== END LESSON 1 ===
+
+=== LESSON 2 ===
+[HTML content for lesson 2]
+=== END LESSON 2 ===
+
+Do not include JSON, just use the === LESSON X === markers.
+PROMPT;
+
+    $response = $this->call_deepseek_api($prompt, 150); // Extended timeout for batch processing
+
+    if (!isset($response['content']) || empty($response['content'])) {
+      log_message('error', "No content received from batch API call");
+      return [];
+    }
+
+    $content = $response['content'];
+
+    // Clean up escape sequences - convert literal \n to actual newlines then remove them
+    $content = str_replace('\\n', '', $content); // Remove literal \n sequences
+    $content = str_replace('\n', '', $content);  // Also try without double backslash
+    $content = stripslashes($content);
+
+    // Parse response using markers instead of JSON
+    $result = [];
+
+    foreach ($lessons_data as $index => $lesson) {
+      $lesson_num = $index + 1;
+
+      // Extract content between markers
+      $pattern = "/=== LESSON {$lesson_num} ===(.*?)(?:=== LESSON " . ($lesson_num + 1) . " ===|=== END LESSON {$lesson_num} ===|$)/s";
+      if (preg_match($pattern, $content, $matches)) {
+        $lesson_content = trim($matches[1]);
+
+        // Clean up the HTML content
+        if (!empty($lesson_content)) {
+          // Remove any remaining literal \n sequences
+          $lesson_content = str_replace('\\n', '', $lesson_content);
+          $lesson_content = str_replace('\n', '', $lesson_content);
+          $lesson_content = preg_replace('/\s*\n\s*/', '', $lesson_content); // Remove actual newlines
+          $lesson_content = preg_replace('/>\s+</', '><', $lesson_content); // Remove whitespace between tags
+          $lesson_content = preg_replace('/\s+/', ' ', $lesson_content); // Normalize multiple spaces to single
+
+          $lesson_content = trim($lesson_content);
+          $result[$lesson_num] = $lesson_content;
+        }
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Generate content for a single lesson using AI (fallback method)
+   */
+  private function generate_lesson_content($lesson_title, $section_context, $course_context, $outline_rules)
+  {
+    // Use batch method with single lesson
+    $lessons_data = [[
+      'title' => $lesson_title,
+      'section_context' => $section_context,
+      'course_context' => $course_context
+    ]];
+
+    $batch_result = $this->generate_lessons_content_batch($lessons_data, $outline_rules);
+    return $batch_result[1] ?? '';
+  }
+
+  /**
+   * Generate quiz questions using AI
+   */
+  private function generate_quiz_questions($quiz_title, $section_context, $course_context, $outline_rules, $question_count = 10)
+  {
+    $language = $outline_rules['language'] ?? 'french';
+    $difficulty = $outline_rules['difficulty'] ?? 'medium';
+
+    $language_map = [
+      'french' => 'fr',
+      'english' => 'en',
+      'spanish' => 'es',
+      'german' => 'de',
+      'arabic' => 'ar'
+    ];
+    $lang_code = $language_map[$language] ?? 'fr';
+
+    $prompt = <<<PROMPT
+You are an expert quiz designer. Generate {$question_count} multiple-choice questions for a quiz.
+
+QUIZ DETAILS:
+- Title: "{$quiz_title}"
+- Section Context: "{$section_context}"
+- Course Context: "{$course_context}"
+- Difficulty: "{$difficulty}"
+- Language: "{$language}" ({$lang_code})
+
+REQUIREMENTS:
+1. Write in {$language} language
+2. Create {$question_count} multiple-choice questions (4 options: A, B, C, D)
+3. {$difficulty} difficulty level
+4. One correct answer per question, 3 plausible wrong answers
+5. Test understanding of key concepts
+
+OUTPUT: Valid JSON array only, this exact format:
+[{"question": "Question?", "options": ["A) Opt1", "B) Opt2", "C) Opt3", "D) Opt4"], "correct_answer": "A"}]
+PROMPT;
+
+    $response = $this->call_deepseek_api($prompt);
+
+    if (isset($response['content'])) {
+      $content = $response['content'];
+
+      // Clean up Unicode escape sequences
+      $content = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function($match) {
+        return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+      }, $content);
+
+      // Remove any remaining escape sequences
+      $content = stripslashes($content);
+
+      $questions = json_decode($content, true);
+      return is_array($questions) ? $questions : [];
+    }
+
+    return [];
+  }
+
+  /**
+   * Call DeepSeek API
+   */
+  private function call_deepseek_api($prompt, $timeout_seconds = 60)
+  {
+    $api_key = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API key
+    $api_url = 'https://api.deepseek.com/v1/chat/completions';
+
+    $data = [
+      'model' => 'deepseek-chat',
+      'messages' => [
+        [
+          'role' => 'system',
+          'content' => 'You are an expert instructional designer for EdTech. You MUST respond with valid JSON ONLY. No markdown, no code blocks, no explanations - just pure JSON that can be parsed directly.'
+        ],
+        [
+          'role' => 'user',
+          'content' => $prompt
+        ]
+      ],
+      'temperature' => 0.7,
+      'max_tokens' => 8000,
+      'response_format' => ['type' => 'json_object']
+    ];
+
+    $ch = curl_init($api_url);
+    curl_setopt_array($ch, [
+      CURLOPT_POST => true,
+      CURLOPT_POSTFIELDS => json_encode($data),
+      CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $api_key
+      ],
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_TIMEOUT => $timeout_seconds
+    ]);
+
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_error) {
+      return ['error' => 'API connection failed: ' . $curl_error];
+    }
+
+    if ($http_code !== 200) {
+      $error_data = json_decode($response, true);
+      return ['error' => 'API error: ' . ($error_data['error']['message'] ?? 'Unknown error')];
+    }
+
+    $result = json_decode($response, true);
+    
+    if (!isset($result['choices'][0]['message']['content'])) {
+      return ['error' => 'Invalid API response'];
+    }
+
+    return ['content' => $result['choices'][0]['message']['content']];
+  }
+
+  /**
+   * Parse DeepSeek response to extract schemas
+   */
+  private function parse_deepseek_schemas($response)
+  {
+    $content = $response['content'] ?? '';
+    
+    // Try to extract JSON from the response (handle markdown code blocks)
+    if (preg_match('/```(?:json)?\s*(.*?)\s*```/s', $content, $matches)) {
+      $json_str = $matches[1];
+    } else {
+      $json_str = $content;
+    }
+    
+    // Clean up the JSON string
+    $json_str = trim($json_str);
+    
+    $data = json_decode($json_str, true);
+    
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      return $this->get_default_schemas();
+    }
+    
+    // Handle new format with proposals array
+    if (isset($data['proposals'])) {
+      return $this->transform_proposals_to_schemas($data);
+    }
+    
+    // Handle old format with schemas array
+    if (isset($data['schemas'])) {
+      return $data['schemas'];
+    }
+
+    return $this->get_default_schemas();
+  }
+
+  /**
+   * Transform new DeepSeek proposals format to frontend schema format
+   */
+  private function transform_proposals_to_schemas($data)
+  {
+    $schemas = [];
+    $courseTitle = $data['courseTitle'] ?? get_phrase('course');
+    $numberingMode = $data['numberingMode'] ?? 'NONE'; // Get numbering mode from API response
+    
+    $badge_types = ['Balanced', 'Consolidated', 'Progressive Learning'];
+    
+    foreach ($data['proposals'] as $index => $proposal) {
+      // Extract section titles
+      $section_titles = [];
+      $details = [];
+      $total_lessons = 0;
+      $total_quizzes = 0;
+      
+      foreach ($proposal['sections'] ?? [] as $section) {
+        $section_titles[] = $section['title'] ?? '';
+        
+        // Count lessons and quizzes in children
+        $lesson_count = 0;
+        foreach ($section['children'] ?? [] as $child) {
+          if (($child['type'] ?? '') === 'LESSON') {
+            $lesson_count++;
+            $total_lessons++;
+          }
+          if (($child['type'] ?? '') === 'QUIZ') {
+            $total_quizzes++;
+          }
+        }
+        
+        $lesson_text = $lesson_count . ' ' . ($lesson_count > 1 ? get_phrase('lessons') : get_phrase('lesson'));
+        $details[] = [
+          'section' => $section['order'] . '. ' . ($section['title'] ?? ''),
+          'lessons' => $lesson_text
+        ];
+      }
+      
+      $schemas[] = [
+        'name' => $badge_types[$index] ?? get_phrase('schema') . ' ' . ($index + 1),
+        'label' => $proposal['label'] ?? get_phrase('design_schema') . ' ' . ($index + 1),
+        'description' => $proposal['strategy'] ?? '',
+        'sections' => $section_titles,
+        'total_sections' => count($proposal['sections'] ?? []),
+        'total_quizzes' => $total_quizzes,
+        'total_lessons' => $total_lessons,
+        'details' => $details,
+        'numberingMode' => $numberingMode, // Pass numbering mode to each schema
+        'raw_data' => $proposal // Keep raw data for later use
+      ];
+    }
+    
+    return $schemas;
+  }
+
+  /**
+   * Get default schemas if API fails
+   */
+  private function get_default_schemas()
+  {
+    return [
+      [
+        'name' => 'Balanced',
+        'label' => 'Design schéma 1',
+        'description' => 'Balanced plan that closely follows the PDF flow.',
+        'sections' => ['Introduction', 'Core Concepts', 'Advanced Topics', 'Practical Applications', 'Assessment'],
+        'total_sections' => 5,
+        'total_quizzes' => 5,
+        'total_lessons' => 11,
+        'details' => [
+          ['section' => '1. Introduction', 'lessons' => '2 lessons'],
+          ['section' => '2. Core Concepts', 'lessons' => '3 lessons'],
+          ['section' => '3. Advanced Topics', 'lessons' => '3 lessons'],
+          ['section' => '4. Practical Applications', 'lessons' => '2 lessons'],
+          ['section' => '5. Assessment', 'lessons' => '1 lesson']
+        ],
+        'raw_data' => [
+          'sections' => [
+            ['order' => 1, 'title' => 'Introduction', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Welcome'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Overview'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Introduction Quiz', 'questions' => 5]
+            ]],
+            ['order' => 2, 'title' => 'Core Concepts', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Fundamentals'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Key Principles'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Best Practices'],
+              ['type' => 'QUIZ', 'order' => 4, 'title' => 'Core Concepts Quiz', 'questions' => 5]
+            ]],
+            ['order' => 3, 'title' => 'Advanced Topics', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Advanced Techniques'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Complex Scenarios'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Expert Tips'],
+              ['type' => 'QUIZ', 'order' => 4, 'title' => 'Advanced Quiz', 'questions' => 5]
+            ]],
+            ['order' => 4, 'title' => 'Practical Applications', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Real-world Examples'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Case Studies'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Practice Quiz', 'questions' => 5]
+            ]],
+            ['order' => 5, 'title' => 'Assessment', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Final Review'],
+              ['type' => 'QUIZ', 'order' => 2, 'title' => 'Final Assessment', 'questions' => 10]
+            ]]
+          ]
+        ]
+      ],
+      [
+        'name' => 'Consolidated',
+        'label' => 'Design schéma 2',
+        'description' => 'Consolidated plan that combines neighboring chapters into themes.',
+        'sections' => ['Fundamentals', 'Core Module', 'Advanced Module', 'Conclusion'],
+        'total_sections' => 4,
+        'total_quizzes' => 4,
+        'total_lessons' => 15,
+        'details' => [
+          ['section' => '1. Fundamentals', 'lessons' => '4 lessons'],
+          ['section' => '2. Core Module', 'lessons' => '5 lessons'],
+          ['section' => '3. Advanced Module', 'lessons' => '4 lessons'],
+          ['section' => '4. Conclusion', 'lessons' => '2 lessons']
+        ],
+        'raw_data' => [
+          'sections' => [
+            ['order' => 1, 'title' => 'Fundamentals', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Getting Started'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Basic Concepts'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Setup Guide'],
+              ['type' => 'LESSON', 'order' => 4, 'title' => 'First Steps'],
+              ['type' => 'QUIZ', 'order' => 5, 'title' => 'Fundamentals Quiz', 'questions' => 5]
+            ]],
+            ['order' => 2, 'title' => 'Core Module', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Core Feature 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Core Feature 2'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Core Feature 3'],
+              ['type' => 'LESSON', 'order' => 4, 'title' => 'Integration'],
+              ['type' => 'LESSON', 'order' => 5, 'title' => 'Best Practices'],
+              ['type' => 'QUIZ', 'order' => 6, 'title' => 'Core Module Quiz', 'questions' => 8]
+            ]],
+            ['order' => 3, 'title' => 'Advanced Module', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Advanced Topic 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Advanced Topic 2'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Performance'],
+              ['type' => 'LESSON', 'order' => 4, 'title' => 'Optimization'],
+              ['type' => 'QUIZ', 'order' => 5, 'title' => 'Advanced Quiz', 'questions' => 8]
+            ]],
+            ['order' => 4, 'title' => 'Conclusion', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Summary'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Next Steps'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Final Assessment', 'questions' => 10]
+            ]]
+          ]
+        ]
+      ],
+      [
+        'name' => 'Progressive Learning',
+        'label' => 'Design schéma 3',
+        'description' => 'More detailed plan with step-by-step progression.',
+        'sections' => ['Getting Started', 'Basic Concepts', 'Intermediate Skills', 'Advanced Techniques', 'Expert Level', 'Final Project', 'Review'],
+        'total_sections' => 7,
+        'total_quizzes' => 7,
+        'total_lessons' => 16,
+        'details' => [
+          ['section' => '1. Getting Started', 'lessons' => '2 lessons'],
+          ['section' => '2. Basic Concepts', 'lessons' => '3 lessons'],
+          ['section' => '3. Intermediate Skills', 'lessons' => '3 lessons'],
+          ['section' => '4. Advanced Techniques', 'lessons' => '3 lessons'],
+          ['section' => '5. Expert Level', 'lessons' => '2 lessons'],
+          ['section' => '6. Final Project', 'lessons' => '2 lessons'],
+          ['section' => '7. Review', 'lessons' => '1 lesson']
+        ],
+        'raw_data' => [
+          'sections' => [
+            ['order' => 1, 'title' => 'Getting Started', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Welcome'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Prerequisites'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Intro Quiz', 'questions' => 3]
+            ]],
+            ['order' => 2, 'title' => 'Basic Concepts', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Concept 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Concept 2'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Concept 3'],
+              ['type' => 'QUIZ', 'order' => 4, 'title' => 'Basics Quiz', 'questions' => 5]
+            ]],
+            ['order' => 3, 'title' => 'Intermediate Skills', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Skill 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Skill 2'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Skill 3'],
+              ['type' => 'QUIZ', 'order' => 4, 'title' => 'Intermediate Quiz', 'questions' => 5]
+            ]],
+            ['order' => 4, 'title' => 'Advanced Techniques', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Technique 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Technique 2'],
+              ['type' => 'LESSON', 'order' => 3, 'title' => 'Technique 3'],
+              ['type' => 'QUIZ', 'order' => 4, 'title' => 'Advanced Quiz', 'questions' => 5]
+            ]],
+            ['order' => 5, 'title' => 'Expert Level', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Expert Topic 1'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Expert Topic 2'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Expert Quiz', 'questions' => 5]
+            ]],
+            ['order' => 6, 'title' => 'Final Project', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Project Setup'],
+              ['type' => 'LESSON', 'order' => 2, 'title' => 'Project Implementation'],
+              ['type' => 'QUIZ', 'order' => 3, 'title' => 'Project Review', 'questions' => 5]
+            ]],
+            ['order' => 7, 'title' => 'Review', 'children' => [
+              ['type' => 'LESSON', 'order' => 1, 'title' => 'Course Summary'],
+              ['type' => 'QUIZ', 'order' => 2, 'title' => 'Final Assessment', 'questions' => 10]
+            ]]
+          ]
+        ]
+      ]
+    ];
+  }
+
+  /**
+   * Apply numbering to section title based on mode
+   */
+  private function apply_numbering_to_title($base_title, $order, $numbering_mode)
+  {
+    // First, remove any existing numbering from the title
+    $clean_title = preg_replace('/^\d+[\.\)]\s*/', '', $base_title);
+    $clean_title = trim($clean_title);
+
+    switch ($numbering_mode) {
+      case 'AUTO_NUMERIC':
+        return $order . '. ' . $clean_title;
+      case 'AUTO_DECIMAL':
+        return $order . '.0 ' . $clean_title;
+      case 'FROM_SOURCE':
+        // Keep original numbering if present, otherwise fallback to auto numeric
+        if (preg_match('/^\d+[\.\)]\s*/', $base_title)) {
+          return $base_title; // Already has numbering - keep it
+        }
+        return $order . '. ' . $clean_title;
+      case 'NONE':
+      default:
+        return $clean_title; // Return clean title without numbering
+    }
+  }
+
+  /**
+   * Apply selected outline schema - Create sections, lessons and quizzes
+   */
+  public function apply_outline_schema()
+  {
+    // Increase PHP execution time for content generation
+    ini_set('max_execution_time', 300); // 5 minutes instead of 120 seconds
+
+    $this->student_access_denied();
+
+    $course_id = $this->input->post('course_id');
+    $schema_json = $this->input->post('schema');
+    $outline_rules_json = $this->input->post('outline_rules') ?? '{}';
+    $outline_rules = json_decode($outline_rules_json, true) ?? [];
+
+    if (empty($course_id) || empty($schema_json)) {
+      echo json_encode(['error' => 'Missing required parameters']);
+      return;
+    }
+    
+    // Verify course exists and user has access
+    $course = $this->lms_model->get_course_by_id($course_id);
+    if (!$course) {
+      echo json_encode(['error' => 'Course not found']);
+      return;
+    }
+    
+    $this->teacher_access($course_id);
+    
+    // Parse schema JSON
+    $schema = json_decode($schema_json, true);
+    if (!$schema) {
+      echo json_encode(['error' => 'Invalid schema format']);
+      return;
+    }
+
+    // Get numbering mode from schema
+    $numbering_mode = $schema['numberingMode'] ?? 'NONE';
+
+    // Get raw_data which contains the detailed structure
+    $raw_data = isset($schema['raw_data']) ? $schema['raw_data'] : $schema;
+    $sections = isset($raw_data['sections']) ? $raw_data['sections'] : [];
+    
+    if (empty($sections)) {
+      echo json_encode(['error' => 'No sections found in schema']);
+      return;
+    }
+    
+    // Track created items
+    $created_sections = 0;
+    $created_lessons = 0;
+    $created_quizzes = 0;
+
+    // Collect all lessons that need content generation
+    $lessons_to_generate = [];
+
+    // Get current max order for sections
+    $this->db->select_max('orders');
+    $this->db->where('course_id', $course_id);
+    $max_order_result = $this->db->get('course_section')->row();
+    $section_order = ($max_order_result && $max_order_result->orders !== null) ? $max_order_result->orders : 0;
+
+    // Get current course section IDs
+    $course_details = $this->lms_model->get_course_by_id($course_id);
+    $previous_sections = json_decode($course_details['section'], true) ?? [];
+    
+    // Process each section
+    foreach ($sections as $section_data) {
+      $section_order++;
+
+      // Create section
+      $base_title = $section_data['title'] ?? 'Section ' . $section_order;
+
+      // Apply numbering based on mode
+      $section_title = $this->apply_numbering_to_title($base_title, $section_order, $numbering_mode);
+      
+      $section_insert = [
+        'title' => html_escape($section_title),
+        'course_id' => $course_id,
+        'orders' => $section_order
+      ];
+      
+      $this->db->insert('course_section', $section_insert);
+      $section_id = $this->db->insert_id();
+      $created_sections++;
+      
+      // Add section ID to course sections array
+      $previous_sections[] = $section_id;
+      
+      // Process children (lessons and quizzes)
+      $children = isset($section_data['children']) ? $section_data['children'] : [];
+      $lesson_order = 0;
+      
+      foreach ($children as $child) {
+        $lesson_order++;
+        $child_type = strtolower($child['type'] ?? 'lesson');
+        $child_title = $child['title'] ?? ($child_type == 'quiz' ? 'Quiz ' . $lesson_order : 'Lesson ' . $lesson_order);
+        
+        if ($child_type == 'quiz' && ($outline_rules['quizFrequency'] ?? 'per_section') !== 'none') {
+          // Create quiz
+          $quiz_data = [
+            'course_id' => $course_id,
+            'title' => html_escape($child_title),
+            'section_id' => $section_id,
+            'lesson_type' => 'quiz',
+            'duration' => 0,
+            'date_added' => strtotime(date('D, d-M-Y')),
+            'summary' => html_escape($child['summary'] ?? ''),
+            'order' => $lesson_order
+          ];
+          
+          $this->db->insert('lesson', $quiz_data);
+          $quiz_id = $this->db->insert_id();
+          $created_quizzes++;
+          
+          // Generate real questions
+          $questions_count = intval($child['questions'] ?? $outline_rules['questionsCount'] ?? 10);
+          $section_context = $section_data['title'] ?? '';
+          $course_context = $course['title'] ?? '';
+
+          if (($outline_rules['generateContent'] ?? true) && ($outline_rules['quizFrequency'] ?? 'per_section') !== 'none') {
+            try {
+              $generated_questions = $this->generate_quiz_questions($child_title, $section_context, $course_context, $outline_rules, $questions_count);
+
+              if (!empty($generated_questions) && is_array($generated_questions)) {
+                foreach ($generated_questions as $q_index => $question) {
+                  // Convert letter answer to numeric index (A=1, B=2, C=3, D=4)
+                  $correct_answer_letter = strtoupper($question['correct_answer'] ?? 'A');
+                  $correct_answer_index = ord($correct_answer_letter) - ord('A') + 1; // A=1, B=2, C=3, D=4
+
+                  $question_data = [
+                    'quiz_id' => $quiz_id,
+                    'title' => $question['question'] ?? 'Question ' . ($q_index + 1),
+                    'number_of_options' => 4,
+                    'type' => 'multiple_choice',
+                    'options' => json_encode($question['options'] ?? ['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
+                    'correct_answers' => json_encode([$correct_answer_index]) // Store as numeric index
+                  ];
+                  $this->db->insert('question', $question_data);
+                }
+              } else {
+                throw new Exception("No valid questions generated");
+              }
+            } catch (Exception $e) {
+            // Fallback to placeholder questions if generation fails
+            for ($q = 1; $q <= $questions_count; $q++) {
+              $question_data = [
+                'quiz_id' => $quiz_id,
+                'title' => 'Question ' . $q . ' (Content will be generated shortly)',
+                'number_of_options' => 4,
+                'type' => 'multiple_choice',
+                'options' => json_encode(['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
+                'correct_answers' => json_encode([1]) // Default to first option (A)
+              ];
+              $this->db->insert('question', $question_data);
+            }
+            }
+          } else {
+            // Create placeholder questions when content generation is disabled
+            for ($q = 1; $q <= $questions_count; $q++) {
+              $question_data = [
+                'quiz_id' => $quiz_id,
+                'title' => 'Question ' . $q . ' (Content will be generated when you enable full content generation)',
+                'number_of_options' => 4,
+                'type' => 'multiple_choice',
+                'options' => json_encode(['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
+                'correct_answers' => json_encode([1]) // Default to first option (A)
+              ];
+              $this->db->insert('question', $question_data);
+            }
+          }
+        } else {
+          // Create lesson structure first
+          $lesson_content = $child['summary'] ?? $child['content'] ?? '';
+
+          $lesson_data = [
+            'course_id' => $course_id,
+            'title' => html_escape($child_title),
+            'section_id' => $section_id,
+            'lesson_type' => 'text',
+            'attachment_type' => 'description',
+            'duration' => 0,
+            'date_added' => strtotime(date('D, d-M-Y')),
+            'summary' => $lesson_content, // Will be updated after batch generation
+            'order' => $lesson_order
+          ];
+
+          $this->db->insert('lesson', $lesson_data);
+          $lesson_id = $this->db->insert_id();
+          $created_lessons++;
+
+          // Collect lesson for batch content generation
+          if (empty($lesson_content) && ($outline_rules['generateContent'] ?? true)) {
+            $lessons_to_generate[] = [
+              'id' => $lesson_id,
+              'title' => $child_title,
+              'section_context' => $section_data['title'] ?? '',
+              'course_context' => $course['title'] ?? ''
+            ];
+          }
+        }
+      }
+    }
+
+    // Generate content for all lessons in batch
+    if (!empty($lessons_to_generate)) {
+      try {
+        $batch_content = $this->generate_lessons_content_batch($lessons_to_generate, $outline_rules);
+
+        // Update lessons with generated content
+        foreach ($lessons_to_generate as $index => $lesson_info) {
+          $lesson_number = $index + 1;
+          $generated_content = $batch_content[$lesson_number] ?? '';
+
+          if (!empty($generated_content)) {
+            $this->db->where('id', $lesson_info['id']);
+            $this->db->update('lesson', ['summary' => $generated_content]);
+          }
+        }
+      } catch (Exception $e) {
+        log_message('error', "Batch content generation failed: " . $e->getMessage());
+        // Leave placeholder content as is
+      }
+    } else {
+      log_message('info', "No lessons need content generation");
+    }
+
+    // Update course with new section IDs
+    $this->db->where('id', $course_id);
+    $this->db->update('course', ['section' => json_encode($previous_sections)]);
+    
+    // Return success response with CSRF token
+    $csrf = [
+      'csrfName' => $this->security->get_csrf_token_name(),
+      'csrfHash' => $this->security->get_csrf_hash(),
+    ];
+    
+    // Reset PHP execution time to default
+    ini_restore('max_execution_time');
+
+    echo json_encode([
+      'success' => true,
+      'message' => 'Course structure generated successfully',
+      'created' => [
+        'sections' => $created_sections,
+        'lessons' => $created_lessons,
+        'quizzes' => $created_quizzes
+      ],
+      'csrf' => $csrf
+    ]);
+  }
+
+  /**
+   * Generate quiz from PDF using AI
+   * Creates a quiz with questions generated from uploaded PDF content
+   */
+  public function generate_quiz_from_pdf()
+  {
+    if (!$this->input->is_ajax_request()) {
+      echo json_encode(['success' => false, 'message' => 'Access denied']);
+      return;
+    }
+
+    // Anti-duplicate lock
+    $generation_key = 'quiz_pdf_generation_' . $this->session->userdata('user_id');
+    $generation_lock = $this->session->userdata($generation_key);
+
+    if ($generation_lock && (time() - $generation_lock) < self::AI_GENERATION_LOCK_DURATION) {
+      $csrf = [
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+      ];
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('generation_already_in_progress'),
+        'csrf' => $csrf
+      ]);
+      return;
+    }
+
+    // Set lock
+    $this->session->set_userdata($generation_key, time());
+
+    // Increase timeout for AI generation
+    set_time_limit(self::AI_GENERATION_TIMEOUT);
+
+    $section_id = $this->input->post('section_id');
+    $course_id = $this->input->post('course_id');
+    $quiz_title = $this->input->post('quiz_title');
+    $questions_count = (int) $this->input->post('questions_count') ?: 10;
+    $difficulty = $this->input->post('difficulty') ?: 'medium';
+
+    // Validate inputs
+    if (empty($section_id) || empty($course_id) || empty($quiz_title)) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('missing_required_fields'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Check PDF file
+    if (empty($_FILES['pdf_file']['name'])) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('please_select_a_pdf_file'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Verify MIME type
+    if (!empty($_FILES['pdf_file']['tmp_name'])) {
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $mime = finfo_file($finfo, $_FILES['pdf_file']['tmp_name']);
+      finfo_close($finfo);
+      if ($mime !== 'application/pdf') {
+        $this->session->unset_userdata($generation_key);
+        echo json_encode([
+          'success' => false,
+          'message' => get_phrase('please_select_valid_pdf'),
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+          ]
+        ]);
+        return;
+      }
+    }
+
+    // Upload PDF
+    $upload_path = FCPATH . 'uploads/temp_pdf/';
+    if (!is_dir($upload_path)) {
+      mkdir($upload_path, 0755, true);
+    }
+
+    $this->load->library('upload');
+    $config = [
+      'upload_path' => $upload_path,
+      'allowed_types' => 'pdf',
+      'max_size' => self::PDF_MAX_SIZE_BYTES, // 10MB
+      'encrypt_name' => true
+    ];
+    $this->upload->initialize($config);
+
+    if (!$this->upload->do_upload('pdf_file')) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => strip_tags($this->upload->display_errors()),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    $upload_data = $this->upload->data();
+    $pdf_path = $upload_data['full_path'];
+
+    // Extract text from PDF
+    try {
+      $parser = new \Smalot\PdfParser\Parser();
+      $pdf = $parser->parseFile($pdf_path);
+      $text = $pdf->getText();
+      unlink($pdf_path);
+
+      if (empty(trim($text))) {
+        $this->session->unset_userdata($generation_key);
+        echo json_encode([
+          'success' => false,
+          'message' => get_phrase('no_text_extracted_from_pdf'),
+          'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+          ]
+        ]);
+        return;
+      }
+    } catch (Exception $e) {
+      @unlink($pdf_path);
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('error_reading_pdf'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Generate questions using AI
+    $questions = $this->generate_quiz_questions_from_text($text, $questions_count, $difficulty);
+
+    if (empty($questions)) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('ai_failed_to_generate_questions'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Get next lesson order
+    $this->db->select('MAX(`order`) as max_order');
+    $this->db->where('section_id', $section_id);
+    $max_order_result = $this->db->get('lesson')->row();
+    $next_order = ($max_order_result && $max_order_result->max_order) ? $max_order_result->max_order + 1 : 1;
+
+    // Create the quiz lesson
+    $quiz_data = [
+      'title' => $quiz_title,
+      'course_id' => $course_id,
+      'section_id' => $section_id,
+      'lesson_type' => 'quiz',
+      'summary' => '',
+      'order' => $next_order,
+      'duration' => 0,
+      'date_added' => strtotime(date('D, d-M-Y'))
+    ];
+
+    $this->db->insert('lesson', $quiz_data);
+    $quiz_id = $this->db->insert_id();
+
+    if (!$quiz_id) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('error_creating_quiz'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Add questions to quiz
+    $added_questions = 0;
+    foreach ($questions as $q) {
+      $options = isset($q['options']) ? $q['options'] : [];
+      $correct_index = isset($q['correct_answer']) ? (int)$q['correct_answer'] : 0;
+      
+      // Ensure correct_index is within bounds
+      if ($correct_index < 0 || $correct_index >= count($options)) {
+        $correct_index = 0;
+      }
+
+      $question_data = [
+        'quiz_id' => $quiz_id,
+        'title' => html_escape($q['title'] ?? $q['question'] ?? ''),
+        'number_of_options' => count($options),
+        'type' => 'multiple_choice',
+        'options' => json_encode($options),
+        'correct_answers' => json_encode([$correct_index])
+      ];
+
+      $this->db->insert('question', $question_data);
+      if ($this->db->insert_id()) {
+        $added_questions++;
+      }
+    }
+
+    $this->session->unset_userdata($generation_key);
+
+    echo json_encode([
+      'success' => true,
+      'message' => sprintf(get_phrase('quiz_created_with_n_questions'), $added_questions),
+      'quiz_id' => $quiz_id,
+      'questions_count' => $added_questions,
+      'csrf' => [
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+      ]
+    ]);
+  }
+
+  /**
+   * Generate quiz questions from text using DeepSeek AI
+   */
+  private function generate_quiz_questions_from_text($text, $num = 10, $difficulty = 'medium')
+  {
+    $text = substr(trim($text), 0, 25000);
+    
+    $difficulty_instructions = [
+      'easy' => "DIFFICULTY: EASY\n" .
+                "- Simple and direct questions\n" .
+                "- Obvious answers for anyone who read the document\n" .
+                "- Avoid tricks and complex nuances\n",
+      'medium' => "DIFFICULTY: MEDIUM\n" .
+                 "- Standard comprehension questions\n" .
+                 "- Requires good reading of the document\n" .
+                 "- Include some reflection questions\n",
+      'hard' => "DIFFICULTY: HARD\n" .
+                "- In-depth and analytical questions\n" .
+                "- Requires fine understanding of the content\n" .
+                "- Include synthesis and analysis questions\n",
+      'mixed' => "DIFFICULTY: MIXED\n" .
+                "- Vary levels: 30% easy, 40% medium, 30% hard\n" .
+                "- Start with simple questions and increase gradually\n"
+    ];
+    
+    $difficulty_text = $difficulty_instructions[$difficulty] ?? $difficulty_instructions['medium'];
+
+    $prompt = "You are an expert in creating educational MCQ questions.\n" .
+      "Generate EXACTLY $num multiple choice questions (4 options, 1 correct answer).\n\n" .
+      $difficulty_text . "\n" .
+      "Respond ONLY with valid JSON, NOTHING else. No markdown, no text before/after.\n\n" .
+      "Strict format:\n" .
+      "[\n" .
+      "  {\"title\": \"Question?\", \"options\": [\"A\", \"B\", \"C\", \"D\"], \"correct_answer\": 0}\n" .
+      "]\n" .
+      "correct_answer is the 0-based index of the correct option.\n" .
+      "Start directly with [ and end with ].\n\n" .
+      "Here is the document content:\n\n" . $text . "\n\n" .
+      "Generate exactly $num MCQ questions (4 options, 1 correct answer).";
+
+    // Use DeepSeek API with extended timeout for question generation
+    $response = $this->call_deepseek_api($prompt, 120);
+
+    if (isset($response['error'])) {
+      log_message('error', 'Quiz generation DeepSeek API error: ' . $response['error']);
+      return [];
+    }
+
+    $content = $response['content'] ?? '';
+
+    if (empty($content)) {
+      return [];
+    }
+
+    // Extract JSON from response
+    if (preg_match('/\[[\s\S]*\]/', $content, $m)) {
+      $json = json_decode($m[0], true);
+      if (json_last_error() === JSON_ERROR_NONE && is_array($json)) {
+        return $json;
+      }
+    }
+
+    return [];
+  }
+
+  /**
+   * Get lessons from sections that precede the target section
+   * Only includes sections with at least one non-empty lesson
+   */
+  public function get_lessons_for_quiz($course_id = '', $target_section_id = '')
+  {
+    if (!$this->input->is_ajax_request()) {
+      echo json_encode(['success' => false, 'message' => 'Access denied']);
+      return;
+    }
+
+    if (empty($course_id) || empty($target_section_id)) {
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('missing_required_fields')
+      ]);
+      return;
+    }
+
+    // Check if sections_to_include is provided (for including current section)
+    $sections_to_include = $this->input->post('sections_to_include');
+    if (!empty($sections_to_include)) {
+      // Decode JSON array of section IDs
+      $section_ids = json_decode($sections_to_include, true);
+      if (json_last_error() !== JSON_ERROR_NONE || empty($section_ids)) {
+        echo json_encode([
+          'success' => false,
+          'message' => get_phrase('invalid_section_data')
+        ]);
+        return;
+      }
+
+      // Get sections by IDs
+      $this->db->select('id, title, orders');
+      $this->db->where('course_id', $course_id);
+      $this->db->where_in('id', $section_ids);
+      $this->db->order_by('orders', 'ASC');
+      $sections = $this->db->get('course_section')->result_array();
+    } else {
+      // Legacy behavior: Get all sections before the target section (orders < target_order)
+      $this->db->select('orders');
+      $this->db->where('id', $target_section_id);
+      $target_section = $this->db->get('course_section')->row();
+
+      if (!$target_section) {
+        echo json_encode([
+          'success' => false,
+          'message' => get_phrase('section_not_found')
+        ]);
+        return;
+      }
+
+      $target_order = $target_section->orders;
+
+      // Get all sections before the target section (orders < target_order)
+      $this->db->select('id, title, orders');
+      $this->db->where('course_id', $course_id);
+      $this->db->where('orders <', $target_order);
+      $this->db->order_by('orders', 'ASC');
+      $sections = $this->db->get('course_section')->result_array();
+    }
+
+    $sections_with_lessons = [];
+
+    foreach ($sections as $section) {
+      // Get lessons (not quizzes) from this section that have content
+      $this->db->select('id, title, summary');
+      $this->db->where('section_id', $section['id']);
+      $this->db->where('lesson_type', 'text'); // Only text lessons, not quizzes
+      $this->db->order_by('order', 'ASC');
+      $lessons = $this->db->get('lesson')->result_array();
+
+      $valid_lessons = [];
+      foreach ($lessons as $lesson) {
+        // Check if lesson has content (not empty)
+        $content = trim(strip_tags($lesson['summary']));
+        if (!empty($content) && strlen($content) > 50) {
+          $valid_lessons[] = [
+            'id' => $lesson['id'],
+            'title' => html_entity_decode($lesson['title'], ENT_QUOTES, 'UTF-8')
+          ];
+        }
+      }
+
+      // Only include section if it has valid lessons
+      if (!empty($valid_lessons)) {
+        $sections_with_lessons[] = [
+          'id' => $section['id'],
+          'title' => html_entity_decode($section['title'], ENT_QUOTES, 'UTF-8'),
+          'lessons' => $valid_lessons
+        ];
+      }
+    }
+
+    echo json_encode([
+      'success' => true,
+      'sections' => $sections_with_lessons,
+      'csrf' => [
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash()
+      ]
+    ]);
+  }
+
+  /**
+   * Generate quiz from selected lessons using AI
+   */
+  public function generate_quiz_from_lessons()
+  {
+    if (!$this->input->is_ajax_request()) {
+      echo json_encode(['success' => false, 'message' => 'Access denied']);
+      return;
+    }
+
+    // Anti-duplicate lock
+    $generation_key = 'quiz_lessons_generation_' . $this->session->userdata('user_id');
+    $generation_lock = $this->session->userdata($generation_key);
+
+    if ($generation_lock && (time() - $generation_lock) < self::AI_GENERATION_LOCK_DURATION) {
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('generation_already_in_progress'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Set lock
+    $this->session->set_userdata($generation_key, time());
+
+    // Increase timeout for AI generation
+    set_time_limit(self::AI_GENERATION_TIMEOUT);
+
+    $section_id = $this->input->post('section_id');
+    $course_id = $this->input->post('course_id');
+    $quiz_title = $this->input->post('quiz_title');
+    $questions_count = (int) $this->input->post('questions_count') ?: 10;
+    $difficulty = $this->input->post('difficulty') ?: 'medium';
+    $lesson_ids_json = $this->input->post('lesson_ids');
+
+    // Validate inputs
+    if (empty($section_id) || empty($course_id) || empty($quiz_title) || empty($lesson_ids_json)) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('missing_required_fields'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    $lesson_ids = json_decode($lesson_ids_json, true);
+
+    if (empty($lesson_ids) || !is_array($lesson_ids)) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('please_select_at_least_one_lesson'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Get lesson content
+    $combined_text = '';
+    foreach ($lesson_ids as $lesson_id) {
+      $this->db->select('title, summary');
+      $this->db->where('id', $lesson_id);
+      $lesson = $this->db->get('lesson')->row();
+
+      if ($lesson && !empty($lesson->summary)) {
+        $lesson_title = html_entity_decode($lesson->title, ENT_QUOTES, 'UTF-8');
+        $lesson_content = strip_tags($lesson->summary);
+        $lesson_content = html_entity_decode($lesson_content, ENT_QUOTES, 'UTF-8');
+        $combined_text .= "\n\n=== " . $lesson_title . " ===\n" . $lesson_content;
+      }
+    }
+
+    $combined_text = trim($combined_text);
+
+    if (empty($combined_text) || strlen($combined_text) < 100) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('selected_lessons_have_no_content'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Generate questions using AI
+    $questions = $this->generate_quiz_questions_from_text($combined_text, $questions_count, $difficulty);
+
+    if (empty($questions)) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('ai_failed_to_generate_questions'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Get next lesson order
+    $this->db->select('MAX(`order`) as max_order');
+    $this->db->where('section_id', $section_id);
+    $max_order_result = $this->db->get('lesson')->row();
+    $next_order = ($max_order_result && $max_order_result->max_order) ? $max_order_result->max_order + 1 : 1;
+
+    // Create the quiz lesson
+    $quiz_data = [
+      'title' => $quiz_title,
+      'course_id' => $course_id,
+      'section_id' => $section_id,
+      'lesson_type' => 'quiz',
+      'summary' => '',
+      'order' => $next_order,
+      'duration' => 0,
+      'date_added' => strtotime(date('D, d-M-Y'))
+    ];
+
+    $this->db->insert('lesson', $quiz_data);
+    $quiz_id = $this->db->insert_id();
+
+    if (!$quiz_id) {
+      $this->session->unset_userdata($generation_key);
+      echo json_encode([
+        'success' => false,
+        'message' => get_phrase('error_creating_quiz'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+      return;
+    }
+
+    // Add questions to quiz
+    $added_questions = 0;
+    foreach ($questions as $q) {
+      $options = isset($q['options']) ? $q['options'] : [];
+      $correct_index = isset($q['correct_answer']) ? (int)$q['correct_answer'] : 0;
+      
+      // Ensure correct_index is within bounds
+      if ($correct_index < 0 || $correct_index >= count($options)) {
+        $correct_index = 0;
+      }
+
+      $question_data = [
+        'quiz_id' => $quiz_id,
+        'title' => html_escape($q['title'] ?? $q['question'] ?? ''),
+        'number_of_options' => count($options),
+        'type' => 'multiple_choice',
+        'options' => json_encode($options),
+        'correct_answers' => json_encode([$correct_index])
+      ];
+
+      $this->db->insert('question', $question_data);
+      if ($this->db->insert_id()) {
+        $added_questions++;
+      }
+    }
+
+    $this->session->unset_userdata($generation_key);
+
+    echo json_encode([
+      'success' => true,
+      'message' => sprintf(get_phrase('quiz_created_with_n_questions'), $added_questions),
+      'quiz_id' => $quiz_id,
+      'questions_count' => $added_questions,
+      'csrf' => [
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+      ]
+    ]);
+  }
+
+  /**
+   * Generate lesson content from AI
+   */
+  public function generate_lesson_from_ai()
+  {
+    // Validate AJAX request and anti-duplicate lock
+    $validation = $this->_validate_ai_lesson_request();
+    if ($validation !== true) {
+      echo json_encode($validation);
+      return;
+    }
+
+    // Get and validate input data
+    $input_data = $this->_get_ai_lesson_input_data();
+    $validation_result = $this->_validate_ai_lesson_input_data($input_data);
+
+    if ($validation_result !== true) {
+      $this->_release_ai_lesson_lock();
+      echo json_encode($validation_result);
+      return;
+    }
+
+    // Process the lesson generation
+    $this->_process_ai_lesson_generation($input_data);
+  }
+
+  /**
+   * Get generation lock key for current user
+   */
+  private function _get_ai_lesson_generation_key()
+  {
+    return 'lesson_ai_generation_' . $this->session->userdata('user_id');
+  }
+
+  /**
+   * Set generation lock
+   */
+  private function _set_ai_lesson_lock()
+  {
+    $generation_key = $this->_get_ai_lesson_generation_key();
+    $this->session->set_userdata($generation_key, time());
+  }
+
+  /**
+   * Release generation lock
+   */
+  private function _release_ai_lesson_lock()
+  {
+    $generation_key = $this->_get_ai_lesson_generation_key();
+    $this->session->unset_userdata($generation_key);
+  }
+
+  /**
+   * Validate AJAX request and check for duplicate generation locks
+   */
+  private function _validate_ai_lesson_request()
+  {
+    if (!$this->input->is_ajax_request()) {
+      return ['success' => false, 'message' => 'Access denied'];
+    }
+
+    // Anti-duplicate lock
+    $generation_key = $this->_get_ai_lesson_generation_key();
+    $generation_lock = $this->session->userdata($generation_key);
+
+    if ($generation_lock && (time() - $generation_lock) < self::AI_GENERATION_LOCK_DURATION) {
+      return [
+        'success' => false,
+        'message' => get_phrase('generation_already_in_progress'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ];
+    }
+
+    // Set lock
+    $this->_set_ai_lesson_lock();
+
+    // Increase timeout for AI generation
+    set_time_limit(self::AI_GENERATION_TIMEOUT);
+
+    return true;
+  }
+
+  /**
+   * Extract input data from POST request
+   */
+  private function _get_ai_lesson_input_data()
+  {
+    return [
+      'section_id' => $this->input->post('section_id'),
+      'course_id' => $this->input->post('course_id'),
+      'source' => $this->input->post('source'),
+      'audience' => $this->input->post('audience'),
+      'duration' => $this->input->post('duration'),
+      'language' => $this->input->post('language'),
+      'tone' => $this->input->post('tone'),
+      'instructions' => $this->input->post('instructions'),
+      'pdf_file' => isset($_FILES['pdf_file']) ? $_FILES['pdf_file'] : null
+    ];
+  }
+
+  /**
+   * Validate input data
+   */
+  private function _validate_ai_lesson_input_data($data)
+  {
+    if (empty($data['section_id']) || empty($data['course_id']) || empty($data['source'])) {
+      return [
+        'success' => false,
+        'message' => get_phrase('missing_required_fields'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ];
+    }
+
+    // Additional validation for PDF source
+    if ($data['source'] === 'pdf' && (!$data['pdf_file'] || $data['pdf_file']['error'] !== UPLOAD_ERR_OK)) {
+      return [
+        'success' => false,
+        'message' => get_phrase('pdf_file_required'),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ];
+    }
+
+    return true;
+  }
+
+  /**
+   * Process the AI lesson generation
+   */
+  private function _process_ai_lesson_generation($input_data)
+  {
+    try {
+      // Get course and section info
+      $course = $this->lms_model->get_course_by_id($input_data['course_id']);
+      $section = $this->lms_model->get_section('section', $input_data['section_id'])->row_array();
+
+      if (!$course || !$section) {
+        throw new Exception(get_phrase('course_or_section_not_found'));
+      }
+
+      // Prepare context based on source
+      $context = '';
+      if ($input_data['source'] === 'pdf') {
+        // Handle PDF upload
+        if (!empty($_FILES['pdf_file']['name'])) {
+          $upload_path = FCPATH . 'uploads/ai_pdfs/';
+          if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0755, true);
+          }
+
+          $this->load->library('upload');
+          $config = array(
+            'upload_path'   => $upload_path,
+            'allowed_types' => 'pdf',
+            'max_size'      => self::PDF_MAX_SIZE_BYTES,
+            'encrypt_name'  => true
+          );
+
+          $this->upload->initialize($config);
+
+          if (!$this->upload->do_upload('pdf_file')) {
+            throw new Exception($this->upload->display_errors());
+          }
+
+          $upload_data = $this->upload->data();
+          $pdf_path = $upload_data['full_path'];
+
+          // Extract structure from PDF using Python script
+          $context = $this->extract_text_from_pdf($pdf_path);
+          
+          // Clean up uploaded file
+          unlink($pdf_path);
+
+          if (empty($context)) {
+            throw new Exception(get_phrase('failed_to_extract_text_from_pdf'));
+          }
+        } else {
+          throw new Exception(get_phrase('pdf_file_required'));
+        }
+      } else {
+        // Use course outline
+        $sections = $this->lms_model->get_section('course', $input_data['course_id'])->result_array();
+        $course_outline = "Course: " . $course['title'] . "\n\n";
+
+        foreach ($sections as $sec) {
+          $course_outline .= "Section: " . $sec['title'] . "\n";
+          $lessons = $this->lms_model->get_lessons('section', $sec['id'])->result_array();
+          foreach ($lessons as $lesson) {
+            $course_outline .= "  - Lesson: " . $lesson['title'] . "\n";
+          }
+          $course_outline .= "\n";
+        }
+
+        $context = "Course Outline:\n" . $course_outline . "\n";
+      }
+
+      // Get current section lessons for context
+      $current_lessons = $this->lms_model->get_lessons('section', $input_data['section_id'])->result_array();
+      $lesson_count = count($current_lessons) + 1;
+
+      // Generate lesson title
+      $lesson_title = "Lesson " . $lesson_count . ": " . $section['title'];
+
+      // Prepare AI prompt
+      $prompt = $this->build_lesson_prompt(
+        $lesson_title,
+        $context,
+        $input_data['audience'],
+        $input_data['duration'],
+        $input_data['language'],
+        $input_data['tone'],
+        $input_data['instructions'],
+        $course['title'],
+        $section['title']
+      );
+
+      // Call DeepSeek API
+      $ai_response = $this->call_deepseek_api($prompt, 120);
+
+      if (!$ai_response || empty($ai_response['content'])) {
+        throw new Exception(get_phrase('ai_failed_to_generate_content'));
+      }
+
+      // Parse JSON response from DeepSeek
+      $json_content = json_decode($ai_response['content'], true);
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Failed to parse AI response JSON: ' . json_last_error_msg());
+      }
+
+      // Extract HTML content from JSON response
+      $raw_content = $json_content['lesson_content'] ?? $json_content['content'] ?? $ai_response['content'];
+
+      // Parse AI response
+      $lesson_content = $this->parse_lesson_content($raw_content, $input_data['language']);
+
+      // Create new lesson
+      $lesson_data = [
+        'course_id' => $input_data['course_id'],
+        'section_id' => $input_data['section_id'],
+        'title' => $lesson_title,
+        'summary' => $lesson_content,
+        'lesson_type' => 'text',
+        'attachment_type' => 'text',
+        'duration' => '00:00:00',
+        'date_added' => time(),
+        'last_modified' => time()
+      ];
+
+      $this->db->insert('lesson', $lesson_data);
+      $lesson_id = $this->db->insert_id();
+
+      if (!$lesson_id) {
+        throw new Exception(get_phrase('failed_to_create_lesson'));
+      }
+
+      // Remove lock
+      $this->_release_ai_lesson_lock();
+
+      echo json_encode([
+        'success' => true,
+        'message' => get_phrase('lesson_generated_successfully'),
+        'lesson_id' => $lesson_id,
+        'lesson_title' => $lesson_title,
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+
+    } catch (Exception $e) {
+      // Remove lock on error
+      $this->_release_ai_lesson_lock();
+
+      echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage(),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+    }
+  }
+
+  /**
+   * Extract text and structure from PDF file using Python script
+   */
+  private function extract_text_from_pdf($pdf_path)
+  {
+    try {
+      // Use the Python script through extract_raw_pdf_text
+      $json_output = $this->extract_raw_pdf_text($pdf_path);
+
+      if (!$json_output) {
+        throw new Exception('Failed to extract PDF structure');
+      }
+
+      // Parse JSON output
+      $json_data = json_decode($json_output, true);
+
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Invalid JSON output from Python script: ' . json_last_error_msg());
+      }
+
+      if (isset($json_data['error'])) {
+        throw new Exception($json_data['error']);
+      }
+
+      // Format the extracted data for AI context
+      $context = $this->format_pdf_context($json_data);
+
+      return $context;
+
+    } catch (Exception $e) {
+      // Fallback to simple text extraction if Python script fails
+      error_log('PDF extraction failed: ' . $e->getMessage());
+
+      // Try to extract raw text as fallback using pdftotext if available
+      if (function_exists('shell_exec')) {
+        $pdftotext_check = shell_exec('pdftotext -v 2>&1');
+        if (strpos($pdftotext_check, 'pdftotext') !== false) {
+          $temp_file = tempnam(sys_get_temp_dir(), 'pdf_text_');
+          $command = escapeshellcmd('pdftotext "' . $pdf_path . '" "' . $temp_file . '"');
+          shell_exec($command);
+
+          if (file_exists($temp_file)) {
+            $text = file_get_contents($temp_file);
+            unlink($temp_file);
+            return "PDF Content (raw text extraction):\n" . substr($text, 0, 5000) . "\n\n";
+          }
+        }
+      }
+
+      throw new Exception('PDF extraction failed: ' . $e->getMessage());
+    }
+  }
+  
+  /**
+   * Format PDF structure data for AI context
+   */
+  private function format_pdf_context($pdf_data)
+  {
+    $context = "PDF STRUCTURE ANALYSIS:\n\n";
+    
+    // Add metadata
+    if (!empty($pdf_data['title'])) {
+      $context .= "Document Title: " . $pdf_data['title'] . "\n";
+    }
+    if (!empty($pdf_data['total_pages'])) {
+      $context .= "Total Pages: " . $pdf_data['total_pages'] . "\n";
+    }
+    if (!empty($pdf_data['metadata']['author'])) {
+      $context .= "Author: " . $pdf_data['metadata']['author'] . "\n";
+    }
+    
+    $context .= "\n";
+    
+    // Add table of contents if available
+    if (!empty($pdf_data['toc'])) {
+      $context .= "TABLE OF CONTENTS:\n";
+      foreach ($pdf_data['toc'] as $item) {
+        $indent = str_repeat('  ', max(0, $item['level'] - 1));
+        $context .= $indent . "• " . $item['title'] . " (page " . $item['page'] . ")\n";
+      }
+      $context .= "\n";
+    }
+    
+    // Add headings structure
+    if (!empty($pdf_data['headings'])) {
+      $context .= "DOCUMENT STRUCTURE (Headings):\n";
+      
+      // Group by level
+      $h1_headings = [];
+      $h2_headings = [];
+      
+      foreach ($pdf_data['headings'] as $heading) {
+        if ($heading['level'] == 1) {
+          $h1_headings[] = $heading;
+        } elseif ($heading['level'] == 2) {
+          $h2_headings[] = $heading;
+        }
+      }
+      
+      // Add H1 headings
+      if (!empty($h1_headings)) {
+        $context .= "\nMAIN SECTIONS (H1):\n";
+        foreach ($h1_headings as $h1) {
+          $context .= "• " . $h1['title'] . " (pages " . $h1['page'];
+          if (isset($h1['end_page'])) {
+            $context .= "-" . $h1['end_page'];
+          }
+          $context .= ")\n";
+          
+          // Add H2 subheadings for this H1
+          $h2_for_h1 = array_filter($h2_headings, function($h2) use ($h1) {
+            return $h2['page'] >= $h1['page'] && 
+                   (!isset($h1['end_page']) || $h2['page'] <= $h1['end_page']);
+          });
+          
+          foreach ($h2_for_h1 as $h2) {
+            $context .= "  ◦ " . $h2['title'] . " (page " . $h2['page'] . ")\n";
+          }
+        }
+      } elseif (!empty($h2_headings)) {
+        // If no H1, show H2 as main sections
+        $context .= "\nMAIN SECTIONS:\n";
+        foreach ($h2_headings as $h2) {
+          $context .= "• " . $h2['title'] . " (page " . $h2['page'] . ")\n";
+        }
+      }
+      
+      $context .= "\n";
+    }
+    
+    // Add sample content from first few pages
+    $context .= "DOCUMENT OVERVIEW:\n";
+    $context .= "This PDF document contains structured educational content. ";
+    $context .= "The analysis shows a clear hierarchical organization with ";
+    
+    if (!empty($pdf_data['toc'])) {
+      $context .= count($pdf_data['toc']) . " items in the table of contents, ";
+    }
+    
+    if (!empty($h1_headings)) {
+      $context .= count($h1_headings) . " main sections, ";
+      if (!empty($h2_headings)) {
+        $context .= "and " . count($h2_headings) . " subsections. ";
+      }
+    } elseif (!empty($pdf_data['headings'])) {
+      $context .= count($pdf_data['headings']) . " identified headings. ";
+    } else {
+      $context .= "structured content suitable for lesson creation. ";
+    }
+    
+    $context .= "The content appears to be well-organized for educational purposes.\n\n";
+    
+    return $context;
+  }
+  
+  /**
+   * Fallback: Extract raw text from PDF using PHP
+   */
+  private function extract_raw_pdf_text($pdf_path)
+  {
+    // Use Python script for PDF structure extraction
+    if (function_exists('shell_exec')) {
+      $script_path = FCPATH . 'application/scripts/extract_pdf_structure.py';
+
+      // Check if Python script exists
+      if (!file_exists($script_path)) {
+        error_log('Python script not found: ' . $script_path);
+        return false;
+      }
+
+      // Check if Python is available
+      $python_check = shell_exec('python --version 2>&1');
+      if (strpos($python_check, 'Python') === false) {
+        // Try python3
+        $python_check = shell_exec('python3 --version 2>&1');
+        if (strpos($python_check, 'Python') === false) {
+          error_log('Python is not installed or not in PATH');
+          return false;
+        }
+        $python_cmd = 'python3';
+      } else {
+        $python_cmd = 'python';
+      }
+
+      // Check if PyMuPDF (fitz) is installed
+      $check_fitz = shell_exec($python_cmd . ' -c "import fitz; print(\'OK\')" 2>&1');
+      if (strpos($check_fitz, 'OK') === false) {
+        error_log('PyMuPDF (fitz) library is not installed. Please install it with: pip install PyMuPDF');
+        return false;
+      }
+
+      // Execute the Python script
+      $command = escapeshellcmd($python_cmd . ' "' . $script_path . '" "' . $pdf_path . '"');
+      $output = shell_exec($command . ' 2>&1');
+
+      if ($output === null) {
+        error_log('Failed to execute Python script');
+        return false;
+      }
+
+      // Parse JSON output
+      $json_data = json_decode($output, true);
+
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        // If not JSON, there might be an error message
+        if (strpos($output, 'error') !== false) {
+          $error_match = [];
+          if (preg_match('/"error"\s*:\s*"([^"]+)"/', $output, $error_match)) {
+            error_log('Python script error: ' . $error_match[1]);
+            return false;
+          }
+        }
+        error_log('Invalid JSON output from Python script: ' . substr($output, 0, 200));
+        return false;
+      }
+
+      if (isset($json_data['error'])) {
+        error_log('Python script error: ' . $json_data['error']);
+        return false;
+      }
+
+      // Return the structured data as JSON string for processing
+      return json_encode($json_data);
+    }
+
+    error_log('shell_exec not available');
+    return false;
+  }
+
+  /**
+   * Build prompt for lesson generation
+   */
+  private function build_lesson_prompt($lesson_title, $context, $audience, $duration, $language, $tone, $instructions, $course_title, $section_title)
+  {
+    // Map language codes
+    $language_map = [
+      'english' => 'English',
+      'french' => 'French',
+      'spanish' => 'Spanish',
+      'arabic' => 'Arabic'
+    ];
+
+    // Map tone
+    $tone_map = [
+      'formal' => 'Formal and professional',
+      'casual' => 'Casual and relaxed',
+      'friendly' => 'Friendly and approachable',
+      'academic' => 'Academic and scholarly',
+      'conversational' => 'Conversational and engaging'
+    ];
+
+    // Map audience
+    $audience_map = [
+      'beginner' => 'Beginner level learners with no prior knowledge',
+      'intermediate' => 'Intermediate level learners with basic understanding',
+      'advanced' => 'Advanced level learners with good understanding',
+      'expert' => 'Expert level learners with deep knowledge'
+    ];
+
+    $language_text = $language_map[$language] ?? 'English';
+    $tone_text = $tone_map[$tone] ?? 'Formal and professional';
+    $audience_text = $audience_map[$audience] ?? 'Intermediate level learners';
+
+    // Check if context is from PDF structure analysis
+    $is_pdf_structure = strpos($context, 'PDF STRUCTURE ANALYSIS:') !== false;
+    
+    if ($is_pdf_structure) {
+      $source_info = "The lesson should be based on the PDF document structure analysis provided below. ";
+      $source_info .= "Use the document's table of contents and heading structure as a guide for creating comprehensive lesson content. ";
+      $source_info .= "Focus on explaining the key concepts presented in the document's sections.";
+    } else {
+      $source_info = "The lesson should be based on the course outline structure provided below. ";
+      $source_info .= "Use the course sections and lesson titles as context for creating relevant educational content.";
+    }
+
+    $prompt = <<<PROMPT
+You are an expert course content creator and educator. Generate a comprehensive, engaging lesson for an online learning platform.
+
+COURSE CONTEXT:
+- Course Title: {$course_title}
+- Section Title: {$section_title}
+- Lesson Title: {$lesson_title}
+- Lesson Duration: {$duration} minutes
+- Target Audience: {$audience_text}
+- Language: {$language_text}
+- Tone: {$tone_text}
+
+SOURCE INFORMATION:
+{$source_info}
+
+SOURCE MATERIAL ANALYSIS:
+{$context}
+
+ADDITIONAL INSTRUCTIONS:
+{$instructions}
+
+LESSON CONTENT REQUIREMENTS:
+1. Write all content in {$language_text}
+2. Use {$tone_text} tone appropriate for {$audience_text}
+3. Structure the content for exactly {$duration} minutes of learning
+4. Include 2-3 practical examples or case studies relevant to the topic
+5. Use clear, hierarchical headings: <h2> for main sections, <h3> for subsections
+6. Include key takeaways or summary points at the end of each major section
+7. Make it engaging with questions, thought-provoking statements, or interactive elements
+8. Format the content in clean, semantic HTML without any markdown or code blocks
+9. Use <p> for paragraphs, <ul> or <ol> for lists, <strong> for emphasis
+10. Include relevant analogies or metaphors to help understanding
+11. Break complex concepts into digestible chunks
+12. Include a brief introduction and conclusion
+
+Generate a complete lesson that includes:
+1. INTRODUCTION: Brief overview of what will be covered and why it's important
+2. MAIN CONTENT: 3-5 key concepts with clear explanations
+3. EXAMPLES: Practical, real-world examples or case studies
+4. APPLICATIONS: How to apply this knowledge in practice
+5. SUMMARY: Key takeaways and review of main points
+6. NEXT STEPS: Suggested practice exercises or further reading
+
+IMPORTANT: The lesson should be self-contained and educational. Do not reference the PDF structure analysis in the content itself - use it only as source material to create original educational content.
+
+Format the response as clean HTML ready to be inserted into a lesson editor.
+PROMPT;
+
+    return $prompt;
+  }
+
+  /**
+   * Parse lesson content from AI response
+   */
+  private function parse_lesson_content($ai_content, $language)
+  {
+    // Clean up the AI response
+    $content = trim($ai_content);
+    
+    // Remove any markdown code blocks
+    $content = preg_replace('/```(?:html)?\s*(.*?)\s*```/s', '$1', $content);
+    
+    // Ensure proper HTML structure
+    if (!str_contains($content, '<html') && !str_contains($content, '<body')) {
+      // Wrap in div if not already HTML
+      $content = '<div class="ai-generated-content">' . $content . '</div>';
+    }
+    
+    // Sanitize HTML
+    $content = $this->sanitizeHtml($content);
+    
+    return $content;
   }
 }
