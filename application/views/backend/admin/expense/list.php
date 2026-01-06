@@ -148,7 +148,8 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
             <!-- Amount Column -->
             <div class="exp-col-amount">
                 <div class="exp-amount-display">
-                    <span class="exp-amount-value"><?php echo currency($expense['amount']); ?></span>
+                  <?php $school_currency = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency') ?? 'EUR'; ?>
+                    <span class="exp-amount-value"><?php echo $expense['amount'] . ' ' . $school_currency; ?></span>
                 </div>
             </div>
             
