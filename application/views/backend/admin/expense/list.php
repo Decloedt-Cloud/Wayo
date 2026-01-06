@@ -49,7 +49,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
                 <div class="exp-stat-pulse"></div>
             </div>
             <div class="exp-stat-data">
-                <span class="exp-stat-value-amount"><?php echo currency($total_amount); ?></span>
+                <span class="exp-stat-value-amount"><?php echo $total_amount . ' ' . $school_currency; ?></span>
                 <span class="exp-stat-title"><?php echo get_phrase('total_amount'); ?></span>
             </div>
             <div class="exp-stat-trend warning">
