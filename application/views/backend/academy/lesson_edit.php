@@ -11,7 +11,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
 
     <div class="form-group mb-2">
         <label><?php echo get_phrase('title'); ?><span class="required"> * </span></label>
-        <input type="text" name = "title" class="form-control" required value="<?php echo html_escape($lesson_details['title']); ?>">
+        <input type="text" name = "title" class="form-control" required value="<?php echo html_entity_decode($lesson_details['title'], ENT_QUOTES, 'UTF-8'); ?>">
     </div>
 
     <input type="hidden" name="course_id" value="<?php echo $param2; ?>">
@@ -20,7 +20,7 @@ $sections = $this->lms_model->get_section('course', $param2)->result_array();
         <label for="section_id"><?php echo get_phrase('section'); ?><span class="required"> * </span></label>
         <select class="form-control"  name="section_id" id="section_id" required>
             <?php foreach ($sections as $section): ?>
-                <option value="<?php echo $section['id']; ?>" <?php if($lesson_details['section_id'] == $section['id']) echo 'selected'; ?>><?php echo html_escape($section['title']); ?></option>
+                <option value="<?php echo $section['id']; ?>" <?php if($lesson_details['section_id'] == $section['id']) echo 'selected'; ?>><?php echo html_entity_decode($section['title'], ENT_QUOTES, 'UTF-8'); ?></option>
             <?php endforeach; ?>
         </select>
     </div>
