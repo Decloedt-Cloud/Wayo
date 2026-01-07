@@ -438,7 +438,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
     <div class="ai-stat-card cyan">
         <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-swap-horizontal-circle"></i></div></div>
         <div class="ai-stat-value"><?php echo $stats['fx_payments']; ?></div>
-        <div class="ai-stat-label">FX</div>
+        <div class="ai-stat-label"><?php echo get_phrase('Exchanges'); ?></div>
     </div>
     <div class="ai-stat-card pink">
         <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-cash-minus"></i></div></div>
@@ -515,7 +515,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
             </span>
             <?php if ($stats['fx_payments'] > 0): ?>
             <span class="ai-chip" data-filter="fx" onclick="filterStatus('fx', this)">
-                <i class="mdi mdi-swap-horizontal"></i> FX
+                <i class="mdi mdi-swap-horizontal"></i> <?php echo get_phrase('Exchanges'); ?>
                 <span class="count"><?php echo $stats['fx_payments']; ?></span>
             </span>
             <?php endif; ?>
@@ -637,7 +637,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                         <span class="ai-status-dot"></span>
                         <?php echo $is_paid ? get_phrase('paid') : ($is_overdue ? get_phrase('overdue') : get_phrase('unpaid')); ?>
                     </span>
-                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="mdi mdi-currency-usd-circle"></i> FX</div><?php endif; ?>
+                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="mdi mdi-currency-usd-circle"></i> <?php echo get_phrase('Exchanges'); ?></div><?php endif; ?>
                 </td>
                 <td>
                     <div class="ai-actions">

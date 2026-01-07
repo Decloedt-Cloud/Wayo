@@ -250,7 +250,7 @@
     "session_has_been_activated": "La sesión ha sido activada",
     "code": "Código",
     "photo": "Foto",
-    "add_single_invoice": "Agregar factura individual",
+    "add_single_invoice": "Agregar factura",
     "add_mass_invoice": "Agregar factura masiva",
     "update_invoice": "Actualizar factura",
     "select_student": "Seleccionar miembro",
@@ -3549,5 +3549,14 @@
     "total_categories": "Total de categorías",
     "with_cost_center": "Con centro de costos",
     "page": "Página",
-    "go": "Ir"
+    "go": "Ir",
+    "cost": "Costo",
+    "membership": "Membresía",
+    "manage_all_pricing": "Gestionar todos los precios",
+    "manage_all_classes": "Gestionar todas las clases",
+    "create_pricing_plan": "Crear plan de precios",
+    "add_pricing_plan": "Agregar plan de precios",
+    "pricing_plan": "Plan de precios",
+    "manage_all_pricing_plans": "Gestionar todos los planes de precios",
+    "manage_all_pricing_features": "Gestionar todas las características de precios"
 }
