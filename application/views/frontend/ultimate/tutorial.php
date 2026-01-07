@@ -12,7 +12,7 @@
           </h1>
 
           <p>
-            <?php echo get_phrase("This video guide") ?>obi-kicker <?php echo get_phrase("Guides you step by step to publish and monetize your knowledge to thousands of learners. ") ?>
+            <?php echo get_phrase("This video guide") ?><?php echo get_phrase("Guides you step by step to publish and monetize your knowledge to thousands of learners. ") ?>
           </p>
 
           <ul class="tuto-list list-group">

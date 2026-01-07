@@ -458,6 +458,10 @@ $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array(
     'api/login',
     'addons/courses/manage_multiple_choices_options',
+    'addons/courses/generate_outline_schemas',
+    'addons/courses/apply_outline_schema',
+    'addons/courses/generate_quiz_from_lessons',
+    'addons/courses/generate_lesson_from_ai',
     'bigbluebutton/create',
     'Liveclasse/create',
     'superadmin/add_appointment',
