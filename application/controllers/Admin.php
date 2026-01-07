@@ -3103,8 +3103,8 @@ class Admin extends CI_Controller
         
         // Construire la réponse
         $output = array(
-            'status' => $response_data['status'] ?? ($response ? true : false),
-            'message' => $response_data['notification'] ?? ($response ? 'Exam created successfully' : 'Failed to create exam'),
+            'status' => $response_data['status'] ?? false,
+            'message' => $response_data['notification'] ?? 'Failed to create exam',
             'class_id' => $class_id, // Inclure l'ID de la classe pour le frontend
             'csrf' => $csrf
         );
@@ -3132,10 +3132,10 @@ class Admin extends CI_Controller
             $exam['class_name'] = $class ? $class['name'] : 'No Class';
            
             $output = array(
-                'status' => isset($response['status']) ? $response['status'] : $response,
+                'status' => $response['status'] ?? false,
                 'exam' => $exam,
                 'class_id' => $class_id, // Inclure l'ID de la classe
-                'message' => $response['notification'] ?? ($response ? 'Exam updated successfully' : 'Failed to update exam'),
+                'message' => $response['notification'] ?? 'Failed to update exam',
                 'csrf' => array(
                     'csrfName' => $this->security->get_csrf_token_name(),
                     'csrfHash' => $this->security->get_csrf_hash(),
@@ -4496,6 +4496,8 @@ class Admin extends CI_Controller
 
 	public function filter_exams()
 {
+    header('Content-Type: application/json');
+    
     if ($this->session->userdata('admin_login') != 1) {
         echo json_encode(['error' => 'Unauthorized']);
         return;
@@ -4529,6 +4531,7 @@ class Admin extends CI_Controller
         $this->db->where('exams.starting_date >=', $date_from);
         $this->db->where('exams.starting_date <=', $date_to);
     }
+    $this->db->order_by('exams.starting_date', 'DESC');
     $exams = $this->db->get()->result_array();
 
     $exam_data = [];
@@ -4559,6 +4562,91 @@ class Admin extends CI_Controller
             'class_id' => $class_id,
             'date_range' => $date_range,
             'exam_count' => count($exams)
+        ]
+    ]);
+}
+
+// Paginated exams for AJAX loading
+public function get_exams_paginated()
+{
+    header('Content-Type: application/json');
+    
+    if ($this->session->userdata('admin_login') != 1) {
+        echo json_encode(['status' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+
+    $school_id = school_id();
+    $session = active_session();
+    
+    $page = (int) $this->input->get('page') ?: 1;
+    $limit = 10; // Exams per page
+    $offset = ($page - 1) * $limit;
+    
+    // Get filters if any
+    $class_id = $this->input->get('class_id');
+    $date_range = $this->input->get('date_range');
+    $date_from = '';
+    $date_to = '';
+
+    if (!empty($date_range)) {
+        $dates = explode(' - ', $date_range);
+        if (count($dates) == 2) {
+            $date_from = strtotime(trim($dates[0]) . ' 00:00:00');
+            $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
+        }
+    }
+
+    // Count total exams with filters
+    $this->db->from('exams');
+    $this->db->where('school_id', $school_id);
+    $this->db->where('session', $session);
+    if (!empty($class_id)) {
+        $this->db->where('class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('starting_date >=', $date_from);
+        $this->db->where('starting_date <=', $date_to);
+    }
+    $total_exams = $this->db->count_all_results();
+    $total_pages = ceil($total_exams / $limit);
+
+    // Get paginated exams
+    $this->db->select('exams.*, classes.name as class_name');
+    $this->db->from('exams');
+    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+    $this->db->where('exams.school_id', $school_id);
+    $this->db->where('exams.session', $session);
+    if (!empty($class_id)) {
+        $this->db->where('exams.class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('exams.starting_date >=', $date_from);
+        $this->db->where('exams.starting_date <=', $date_to);
+    }
+    $this->db->order_by('exams.id', 'DESC');
+    $this->db->limit($limit, $offset);
+    $exams = $this->db->get()->result_array();
+
+    $exam_data = [];
+    foreach ($exams as $exam) {
+        $exam_data[] = [
+            'id' => $exam['id'],
+            'name' => $exam['name'] ?: 'Unnamed Exam',
+            'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
+            'class_name' => $exam['class_name'] ?: 'No Class'
+        ];
+    }
+
+    echo json_encode([
+        'status' => true,
+        'exams' => $exam_data,
+        'current_page' => $page,
+        'total_pages' => $total_pages,
+        'total_exams' => $total_exams,
+        'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
         ]
     ]);
 }

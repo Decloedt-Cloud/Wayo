@@ -22,7 +22,10 @@ class Courses extends CI_Controller {
 
     $this->load->database();
     $this->load->library('session');
-    $this->lmStudioUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    
+    // DeepSeek API Configuration
+    $this->deepseekUrl = 'https://api.deepseek.com/v1/chat/completions';
+    $this->deepseekApiKey = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API Key
     
     // Initialize HTMLPurifier for XSS protection
     $this->initHtmlPurifier();
@@ -1198,6 +1201,139 @@ public function manage_multiple_choices_options() {
     }
 }
 
+// Save exam questions from integrated editor (autosave)
+public function save_exam_questions() {
+    $this->student_access_denied();
+
+    $exam_id = $this->input->post('exam_id');
+    $questions_json = $this->input->post('questions');
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($exam_id)) {
+        echo json_encode(array(
+            'success' => false,
+            'message' => get_phrase('exam_id_required'),
+            'csrf' => $csrf
+        ));
+        return;
+    }
+
+    // Verify exam exists
+    $exam = $this->lms_model->get_exams('exam', $exam_id)->row_array();
+    if (!$exam) {
+        echo json_encode(array(
+            'success' => false,
+            'message' => get_phrase('exam_not_found'),
+            'csrf' => $csrf
+        ));
+        return;
+    }
+
+    // Save questions if provided
+    if (!empty($questions_json)) {
+        $questions = json_decode($questions_json, true);
+        
+        if (is_array($questions)) {
+            // Delete existing questions for this exam
+            $this->db->where('exam_id', $exam_id);
+            $this->db->delete('exam_questions');
+            
+            // Insert new questions
+            $order = 0;
+            foreach ($questions as $q) {
+                if (empty($q['question']) || empty($q['options']) || count($q['options']) < 2) {
+                    continue;
+                }
+                
+                $order++;
+                $correct_answers = isset($q['correct_answers']) ? $q['correct_answers'] : array();
+                
+                $question_data = array(
+                    'exam_id' => $exam_id,
+                    'title' => html_escape($q['question']),
+                    'type' => 'multiple_choice',
+                    'number_of_options' => count($q['options']),
+                    'options' => json_encode($q['options']),
+                    'correct_answers' => json_encode($correct_answers),
+                    'order' => $order
+                );
+                $this->db->insert('exam_questions', $question_data);
+            }
+        }
+    }
+
+    // Get updated question count
+    $question_count = $this->db->where('exam_id', $exam_id)->count_all_results('exam_questions');
+
+    echo json_encode(array(
+        'success' => true,
+        'message' => get_phrase('questions_saved_successfully'),
+        'question_count' => $question_count,
+        'csrf' => $csrf
+    ));
+}
+
+// Get all exam questions as JSON (for refreshing editor after generation)
+public function get_exam_questions_json($exam_id = "") {
+    $this->student_access_denied();
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($exam_id)) {
+        echo json_encode(array('success' => false, 'questions' => [], 'csrf' => $csrf));
+        return;
+    }
+
+    $questions_result = $this->lms_model->get_exam_questions($exam_id)->result_array();
+    
+    $questions = array_map(function($q) {
+        return array(
+            'id' => $q['id'],
+            'question' => html_entity_decode($q['title'], ENT_QUOTES, 'UTF-8'),
+            'options' => json_decode($q['options'], true) ?: [],
+            'correct_answers' => json_decode($q['correct_answers'], true) ?: []
+        );
+    }, $questions_result);
+
+    echo json_encode(array(
+        'success' => true,
+        'questions' => $questions,
+        'csrf' => $csrf
+    ));
+}
+
+// Get exam question by ID for editing
+public function get_exam_question($question_id = "") {
+    $this->student_access_denied();
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($question_id)) {
+        echo json_encode(array('success' => false, 'csrf' => $csrf));
+        return;
+    }
+
+    $question = $this->lms_model->get_exam_question_by_id($question_id)->row_array();
+    
+    if ($question) {
+        $question['options'] = json_decode($question['options'], true);
+        $question['correct_answers'] = json_decode($question['correct_answers'], true);
+        echo json_encode(array('success' => true, 'question' => $question, 'csrf' => $csrf));
+    } else {
+        echo json_encode(array('success' => false, 'message' => get_phrase('question_not_found'), 'csrf' => $csrf));
+    }
+}
+
 public function manage_exam_multiple_choices_options() {
     $number_of_options = $this->input->post('number_of_options');
     $html = '';
@@ -1409,12 +1545,16 @@ public function generate_questions_from_pdf()
     // Libérer le verrouillage après succès
     $this->session->unset_userdata($generation_key);
 
+    // Get total question count for this exam
+    $total_questions = $this->db->where('exam_id', $exam_id)->count_all_results('exam_questions');
+
     $extra_message = $should_overwrite ? ' Les questions existantes ont été remplacées.' : '';
 
     $this->respond_json(array(
       'status'  => true,
       'message' => "$added questions générées et ajoutées avec succès !" . $extra_message,
-      'questions_count' => $added
+      'questions_count' => $total_questions,
+      'added_count' => $added
     ));
   }
 
@@ -1451,13 +1591,17 @@ public function generate_questions_from_pdf()
 
     try {
       $client = new \GuzzleHttp\Client([
-        'timeout'         => 400,
-        'connect_timeout' => 15,
+        'timeout'         => 120,
+        'connect_timeout' => 30,
       ]);
 
-      $response = $client->post($this->lmStudioUrl, [
-        'headers' => ['Content-Type' => 'application/json'],
+      $response = $client->post($this->deepseekUrl, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+          'Authorization' => 'Bearer ' . $this->deepseekApiKey
+        ],
         'json'    => [
+          'model' => 'deepseek-chat',
           'messages' => [
             [
               'role' => 'system',
@@ -1477,11 +1621,9 @@ public function generate_questions_from_pdf()
                 "Génère exactement $num questions QCM (4 options, 1 bonne réponse) en français."
             ]
           ],
-          'temperature'        => 0.6,
-          'max_tokens'         => 4000,
-          'top_p'              => 0.95,
-          'repetition_penalty' => 1.1,
-          'stop'               => null
+          'temperature' => 0.6,
+          'max_tokens' => 4000,
+          'stream' => false
         ]
       ]);
 
@@ -1498,7 +1640,7 @@ public function generate_questions_from_pdf()
 
       return [];
     } catch (Exception $e) {
-      log_message('error', 'Qwen Guzzle Error: ' . $e->getMessage());
+      log_message('error', 'DeepSeek API Error: ' . $e->getMessage());
       return [];
     }
   }
