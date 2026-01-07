@@ -585,9 +585,341 @@
     font-size: 1.75rem;
   }
 }
+    /* ================= SUMMARY REDESIGN ================= */
+    .summary-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 1.5rem;
+    }
 
+    .summary-card {
+        background: #fff;
+        border: 1px solid #ECEEF3;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1 1 300px; /* Allow growth, min-width 300px */
+    }
 
+    .summary-card:hover {
+        border-color: #f47a1f;
+        box-shadow: 0 4px 12px rgba(244, 122, 31, 0.08);
+    }
 
+    .summary-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-card-icon {
+        width: 36px;
+        height: 36px;
+        background: #fff5ec;
+        color: #f47a1f;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .summary-card-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e1e4b;
+        margin: 0;
+    }
+
+    .summary-card-body {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #4b5563;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-label {
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 12px;
+    }
+
+    .summary-value {
+        color: #1e293b;
+        text-align: right;
+    }
+
+    .summary-media-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 0.5rem;
+    }
+
+    .summary-media-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .summary-media-item img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .summary-media-item span {
+        display: block;
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    /* ================= STEPPER PROGRESS ================= */
+    .stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 40px;
+        counter-reset: step;
+    }
+
+    .step-create-commaunaute {
+        position: relative;
+        flex: 1;
+        text-align: center;
+        z-index: 1;
+    }
+
+    /* Connecting Line (The "Border") */
+    .step-create-commaunaute:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 20px; /* Half of circle height (40px) */
+        left: 50%;
+        width: 100%;
+        height: 3px;
+        background-color: #e0e0e0;
+        z-index: -1;
+        transform: translateY(-50%);
+        transition: background-color 0.3s ease;
+    }
+
+    /* Circle */
+    .step-create-commaunaute .num {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #e0e0e0;
+        color: #9ca3af;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        position: relative; /* To sit on top of line */
+        z-index: 2;
+    }
+
+    /* Label */
+    .step-create-commaunaute .lbl {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: #9ca3af;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    /* ACTIVE STATE (Current Step) */
+    .step-create-commaunaute.is-active .num {
+        border-color: #f47a1f;
+        color: #f47a1f;
+        background-color: #fff5ec;
+        box-shadow: 0 0 0 4px rgba(244, 122, 31, 0.1);
+    }
+    .step-create-commaunaute.is-active .lbl {
+        color: #f47a1f;
+        font-weight: 700;
+    }
+
+    /* COMPLETE STATE (Passed Steps) */
+    .step-create-commaunaute.is-complete .num {
+        background-color: #f47a1f;
+        border-color: #f47a1f;
+        color: #fff;
+    }
+    .step-create-commaunaute.is-complete .lbl {
+        color: #f47a1f;
+    }
+    
+    /* Coloring the line for completed steps */
+    .step-create-commaunaute.is-complete::after {
+        background-color: #f47a1f;
+    }
+
+    @media (max-width: 576px) {
+        .step-create-commaunaute .lbl {
+            font-size: 0.75rem;
+        }
+        .step-create-commaunaute .num {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+        .step-create-commaunaute:not(:last-child)::after {
+            top: 16px; /* Half of 32px */
+        }
+    }
+    
+    }
+    /* ================= SUBSCRIPTION STEP ================= */
+    .subscription-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .subscription-card {
+        background: #fff;
+        border: 2px solid #f47a1f; /* Wayo Orange */
+        border-radius: 20px;
+        padding: 50px 30px 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(244, 122, 31, 0.1);
+        margin-top: 15px;
+    }
+
+    .sub-header-badge {
+        background-color: #111;
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 99px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .sub-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #111;
+        margin-top: 15px;
+        margin-bottom: 12px;
+    }
+
+    .sub-trial-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #e0fbf0; /* Light green */
+        color: #0f9d58; /* Green */
+        padding: 8px 18px;
+        border-radius: 99px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+
+    .sub-price-big {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #f47a1f; /* Wayo Orange */
+        line-height: 1;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .sub-price-big small {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #f47a1f;
+    }
+
+    .sub-price-sub {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 20px;
+    }
+
+    .sub-desc {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+        max-width: 90%;
+        margin-inline: auto;
+    }
+
+    .sub-features {
+        text-align: left;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+    }
+
+    .sub-features li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+        font-size: 1.05rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .sub-features li i {
+        color: #f47a1f;
+        margin-top: 5px;
+    }
+
+    .sub-divider {
+        height: 1px;
+        background-color: #eee;
+        margin: 25px 0;
+        border: none;
+    }
+
+    .sub-footnotes {
+        text-align: left;
+        font-size: 0.85rem;
+        color: #888;
+        line-height: 1.5;
+    }
+    
+    .sub-footnotes p {
+        margin-bottom: 6px;
+    }
 </style>
 
 <main class="bg-light">
@@ -604,15 +936,16 @@
             <ol class="stepper" role="list" aria-label="<?php echo get_phrase('Steps'); ?>">
                 <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
                 <li class="step-create-commaunaute" data-stepnav="2"><span class="num">2</span><span class="lbl"><?php echo get_phrase("Community") ?></span></li>
-                <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl"><?php echo get_phrase("Price") ?></span></li>
-                <li class="step-create-commaunaute" data-stepnav="4"><span class="num">4</span><span class="lbl"><?php echo get_phrase("subscription") ?></span></li>
-                <li class="step-create-commaunaute" data-stepnav="5"><span class="num">5</span><span class="lbl"><?php echo get_phrase("Summary") ?></span></li>
+                <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl"><?php echo get_phrase("subscription") ?></span></li>
+                <li class="step-create-commaunaute" data-stepnav="4"><span class="num">4</span><span class="lbl"><?php echo get_phrase("Summary") ?></span></li>
             </ol>
 
             <form action="<?php echo site_url('admission/online_admission/submit/school'); ?>" method="post" id="schoolform"
                   class="js-validate studentform realtime-form container" enctype="multipart/form-data" novalidate>
-                <!-- Champ caché pour le jeton CSRF -->
+                <!-- Champ caché pour le jeton CSRF et données manquantes -->
                 <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
+                <input type="hidden" name="school_phone" id="school_phone_hidden">
+                <input type="hidden" name="currency" id="currency_hidden" value="MAD">
 
                 <!-- STEP 1 : PROFIL -->
                 <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1">
@@ -721,7 +1054,7 @@
                                         <option value="Autoentrepreneur"><?php echo get_phrase("Autoentrepreneur") ?></option>
                                         <option value="Particulier"><?php echo get_phrase("Particulier") ?></option>
                                     </select>
-                                    <div class="error" data-for="i_am"></div>
+                                    <div class="error" data-for="i_am_id"></div>
                                 </label>
 
                                 <div class="grid-2">
@@ -810,7 +1143,7 @@
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
-                                <div class="uploader" data-kind="logo">
+                                <div class="uploader" data-kind="logo" style="margin-bottom: 20px;">
                                     <input id="communityLogo" type="file" name="school_image" accept="image/*">
                                     <div class="uploader-content">
                                         <i class="fa-solid fa-upload"></i>
@@ -888,68 +1221,65 @@
                     </div>
                 </section>
 
-                <!-- STEP 3 : PRIX -->
-                <section class="card panel step-pane" data-step="3" aria-labelledby="title-step3">
-                    <div class="panel-head">
-                        <h2 id="title-step3"><?php echo get_phrase("Pricing_and_access") ?></h2>
-                    </div>
+                <!-- STEP 3 : PRICE REMOVED -->
 
-                    <div class="grid-3 price-grid">
-                        <div class="grid-2" id="priceFieldWrapper">
-                            <label class="field">
-                                <span class="field-label"><?php echo get_phrase("price") ?> <span class="req">*</span></span>
-                                <input id="communityprice" type="text"
-                                       placeholder="<?php echo get_phrase("price") ?>"
-                                       class="form-control shadow-none"
-                                       name="price"
-                                       required
-                                       data-msg="<?php echo get_phrase("Please enter the price") ?>"
-                                       data-error-class="u-has-error"
-                                       data-success-class="u-has-success">
-                                <div class="error" data-for="communityprice"></div>
-                                <input type="hidden" name="currency" id="currencyCode" value="MAD">
-                            </label>
-                        </div>
-
-                        <div id="particulierNotice_id" class="alert alert-warning" style="display:none; margin-bottom:12px;">
-                            <?php echo get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0"); ?>
-                        </div>
-                    </div>
-
-                    <div class="panel-actions">
-                        <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
-                        <button type="button" class="btn btn-primary next" disabled><?php echo get_phrase("Continue") ?></button>
-                    </div>
-                </section>
-
-                <!-- STEP 4 : SUBSCRIPTION -->
-                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step4">
+                <!-- STEP 3 : SUBSCRIPTION -->
+                <!-- STEP 3 : SUBSCRIPTION -->
+                <section class="card panel step-pane" data-step="3" aria-labelledby="title-step4" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <div class="panel-head">
                         <h2 id="title-step4"><?php echo get_phrase("subscription") ?></h2>
                     </div>
 
-                    <div class="grid-2 price-grid">
-                        <label class="radio-tile">
-                            <input type="radio" name="communityPriceType" value="oneoff" checked>
-                            <div class="tile" data-coming="true">
-                                <i class="fa-solid fa-hand-holding-dollar"></i>
-                                <strong>
-                                    <?php echo get_phrase("price_to_pay_790") ?>
-                                    <small id="currencyHint" class="help">MAD</small>
-                                </strong>
-                                <span><?php echo get_phrase("You are entitled to a 14-day free trial") ?></span>
+                    <div class="subscription-container">
+                        <div class="subscription-card">
+                            <div class="sub-header-badge"><?php echo get_phrase('unique_plan_total_access'); ?></div>
+                            
+                            <h3 class="sub-title"><?php echo get_phrase('Wayo_Creator_Pro'); ?></h3>
+                            
+                            <div class="sub-trial-badge">
+                                <i class="fa-solid fa-gift"></i> <?php echo get_phrase('14_day_free_trial'); ?>
                             </div>
-                        </label>
+                            
+                            <div class="sub-price-big">
+                                790 <small>MAD/m</small>
+                            </div>
+                            
+                            <div class="sub-price-sub">
+                                <?php echo get_phrase('price_to_pay_:_790_MAD'); ?>
+                            </div>
+                            
+                            <p class="sub-desc">
+                                <?php echo get_phrase('you_benefit_from_a_14_day_free_trial_to_test_all_features'); ?>
+                            </p>
+
+                            <ul class="sub-features">
+                                <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('unlimited_classes_&_trainings'); ?></li>
+                                <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('unlimited_members'); ?></li>
+                                <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('monetize_your_community_now'); ?></li>
+                                <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('3%_commission_excluding_tax_the_cheapest_on_the_market*'); ?></li>
+                                <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('monetization_tools_via_cash_payment**'); ?></li>
+                            </ul>
+                            
+                            <hr class="sub-divider">
+                            
+                            <div class="sub-footnotes">
+                                <p><?php echo get_phrase('*_excluding_payment_processor_commission'); ?></p>
+                                <p><?php echo get_phrase('**_integration_with_local_partner_for_cash_payment'); ?></p>
+                            </div>
+
+                            <!-- Selected plan hidden input -->
+                            <input type="hidden" name="communityPriceType" value="oneoff">
+                        </div>
                     </div>
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
-                        <button type="button" class="btn btn-primary next" disabled><?php echo get_phrase("Continue") ?></button>
+                        <button type="button" class="btn btn-primary next"><?php echo get_phrase("Continue") ?></button>
                     </div>
                 </section>
 
-                <!-- STEP 5 : RÉSUMÉ -->
-                <section class="card panel step-pane" data-step="5" aria-labelledby="title-step5">
+                <!-- STEP 4 : RÉSUMÉ -->
+                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step5">
                     <div class="panel-head">
                         <h2 id="title-step5"><?php echo get_phrase("Summary_&_publishing") ?></h2>
                     </div>
@@ -993,43 +1323,9 @@
         </div>
     </div>
     
-
 </main>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
-<!-- Aperçu simple via jQuery (tu peux le garder si tu veux un preview rapide) -->
-
-<script>
-    $(document).ready(function() {
-        function setupUploader(inputId, previewId) {
-            const input = $(inputId);
-            const preview = $(previewId);
-
-            if (!input.length || !preview.length) return;
-
-            input.on('change', function() {
-                const file = this.files[0];
-                if (!file) return;
-
-                if (!/^image\//.test(file.type)) {
-                    preview.html('<p style="color:red;">Le fichier sélectionné n\'est pas une image.</p>');
-                    input.val('');
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    preview.html(`<img src="${ev.target.result}" alt="Preview" style="max-width:100%; border-radius:8px;">`);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        setupUploader('#communityLogo', '#logoPreview');
-        setupUploader('#communityCover', '#coverPreview');
-    });
-</script>
 
 <!-- Script principal unifié & optimisé -->
 <script>
@@ -1055,9 +1351,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const steps           = $$('.step-create-commaunaute');
     const iAmSelect       = $('#i_am_id');
     const taxResSelect    = $('#Tax_residence');
-    const priceWrapper    = $('#priceFieldWrapper');
-    const priceInput      = $('#communityprice');
-    const monetizationNotice = $('#particulierNotice_id');
     const currencyHint    = $('#currencyHint');
     const currencyCodeEl  = $('#currencyCode');
     const logoInput       = $('#communityLogo');
@@ -1065,14 +1358,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoPreview     = $('#logoPreview');
     const coverPreview    = $('#coverPreview');
     const privateToggle   = $('#isPrivate_id');
-    const noticeMessages  = {
-        particulier: <?php echo json_encode(get_phrase("As_you_are_a_private_individual_you_are_not_allowed_to_set_a_price_It_is_automatically_set_to_0")); ?>,
-        private: <?php echo json_encode(get_phrase("You_cannot_monetize_a_private_community")); ?>
-    };
 
     let currentStep = 0;
-    let lastEmail   = '';
-    let lastSchool  = '';
+    // lastEmail and lastSchool removed to force re-check
 
     // ========================
     // Config images
@@ -1154,11 +1442,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================
     function checkDuplication(type, value, input) {
         if (!value.trim()) return;
-        if (type === 'email'       && value === lastEmail)  return;
-        if (type === 'school_name' && value === lastSchool) return;
-
-        if (type === 'email')       lastEmail  = value;
-        if (type === 'school_name') lastSchool = value;
 
         const formData = new FormData();
         formData.append('type',  type);
@@ -1167,26 +1450,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetch('<?= site_url('admission/check_duplication_ajax'); ?>', {
             method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             body: formData
         })
-        .then(r => r.json())
+        .then(async r => {
+            const raw = await r.text();
+            if (!raw) return { available: true };
+            try { return JSON.parse(raw); } 
+            catch (err) { console.warn('JSON Error', raw); return { available: true }; }
+        })
         .then(data => {
             const errorEl = $(`.error[data-for="${input.id}"]`);
+            
             if (!data.available) {
+                // Email is taken
                 if (errorEl) {
                     errorEl.textContent = data.message;
-                    errorEl.style.display = 'block';
+                    errorEl.style.display = 'block'; 
                 }
                 input.classList.add('is-invalid');
                 input.setAttribute('data-duplicate', 'true');
             } else {
-                if (errorEl) errorEl.style.display = 'none';
-                input.classList.remove('is-invalid');
+                // Email is free
+                // Only clear if no other validation errors exist (e.g. format)
+                if (input.validity.valid) {
+                     input.classList.remove('is-invalid');
+                     if (errorEl) errorEl.style.display = 'none';
+                }
                 input.removeAttribute('data-duplicate');
             }
+            updateContinueButton();
+        })
+        .catch(err => {
+            console.error(err);
+            input.removeAttribute('data-duplicate');
             updateContinueButton();
         });
     }
@@ -1199,53 +1496,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ========================
-    // Prix / Particulier
-    // ========================
-    function applyPriceRules() {
-        if (!priceWrapper || !priceInput) return;
-        const isParticulier      = iAmSelect?.value === 'Particulier';
-        const isPrivateCommunity = privateToggle?.checked;
-        const shouldDisablePrice = isParticulier || isPrivateCommunity;
-        priceWrapper.style.display = 'block';
-
-        if (shouldDisablePrice) {
-            priceInput.value = '0';
-            priceInput.disabled = true;
-            priceInput.classList.add('bg-light');
-            clearInvalid(priceInput);
-            if (monetizationNotice) {
-                let text = '';
-                if (isParticulier) {
-                    text = noticeMessages.particulier;
-                } else if (isPrivateCommunity) {
-                    text = noticeMessages.private;
-                }
-                monetizationNotice.style.display = text ? 'block' : 'none';
-                monetizationNotice.textContent   = text;
-            }
-        } else {
-            priceInput.disabled = false;
-            priceInput.classList.remove('bg-light');
-            if (monetizationNotice) {
-                monetizationNotice.style.display = 'none';
-                monetizationNotice.textContent = '';
-            }
-            if (priceInput.value === '0') priceInput.value = '';
-        }
-    }
-
-    iAmSelect?.addEventListener('change', () => {
-        applyPriceRules();
-        updateContinueButton();
-    });
-
-    privateToggle?.addEventListener('change', () => {
-        applyPriceRules();
-        updateContinueButton();
-        updateSummary();
-    });
-
-    // ========================
     // Currency (Tax residence)
     // ========================
     function updateCurrencyUI() {
@@ -1255,18 +1505,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (currencyHint)   currencyHint.textContent = code;
         if (currencyCodeEl) currencyCodeEl.value     = code;
-
-        if (priceInput && !priceInput.disabled) {
-            priceInput.placeholder = `<?php echo get_phrase("Price"); ?> (${code})`;
-        }
     }
 
     taxResSelect?.addEventListener('change', () => {
         updateCurrencyUI();
         updateContinueButton();
     });
-
-    priceInput?.addEventListener('input', updateContinueButton);
 
     // ========================
     // Validation de base des champs required
@@ -1300,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     $$('input[required], select[required], textarea[required]').forEach(el => {
-        el.addEventListener('blur', () => {
+        const update = () => {
             const isEmpty = !el.value.trim();
             if (isEmpty) {
                 setInvalid(el);
@@ -1308,7 +1552,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInvalid(el);
             }
             updateContinueButton();
-        });
+        };
+
+        el.addEventListener('blur', update);
+        if (el.tagName === 'SELECT') {
+            el.addEventListener('change', update);
+        }
+        
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
             el.addEventListener('input', () => {
                 if (el.classList.contains('is-invalid') && el.value.trim()) {
@@ -1317,6 +1567,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateContinueButton();
             });
         }
+    });
+
+    // Private toggle listener to update summary/buttons
+    privateToggle?.addEventListener('change', () => {
+        updateContinueButton();
+        updateSummary();
     });
 
     // ========================
@@ -1408,19 +1664,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Step 3 : prix
         if (stepId === '3') {
-            console.log(iAmSelect.value);
-            const iAm = iAmSelect?.value || '';
-            if (iAm !== 'Particulier' && priceInput && !priceInput.disabled) {
-                const val = (priceInput.value || '').trim();
-                if (val === '' || isNaN(val) || Number(val) < 0) {
-                    setInvalid(priceInput, '<?= get_phrase("Please enter a valid price"); ?>');
-                    ok = false;
-                } else {
-                    clearInvalid(priceInput);
-                }
-            }
+           // Step 3 is now Subscription - no custom validation logic needed yet
         }
 
         if (!ok) {
@@ -1452,14 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let priceOk = true;
-        if (pane.dataset.step === '3') {
-            const iAm = iAmSelect?.value || '';
-            if (iAm !== 'Particulier' && priceInput && !priceInput.disabled) {
-                const val = (priceInput.value || '').trim();
-                priceOk = val !== '' && !isNaN(val) && Number(val) >= 0;
-                priceInput.classList.toggle('is-invalid', !priceOk);
-            }
-        }
+        // Step 3 price check removed
 
         const disabled = hasDup || invalidInPane || !imagesOk || !priceOk;
         nextBtn.disabled = disabled;
@@ -1485,8 +1723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
                 reader.onload = e => {
                     preview.innerHTML = `
-                        <img src="${e.target.result}"
-                             style="max-width:100%; border-radius:8px; ${type === 'cover' ? 'height:80px; object-fit:cover;' : ''}">
+                        <img src="${e.target.result}">
                     `;
                 };
                 reader.readAsDataURL(file);
@@ -1494,6 +1731,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.removeAttribute('data-valid');
                 input.value = '';
                 showImageError(preview, result.msg);
+                if (window.toastr) {
+                    toastr.error(result.msg);
+                }
             }
             updateContinueButton();
         });
@@ -1534,7 +1774,11 @@ document.addEventListener('DOMContentLoaded', function() {
     steps.forEach((s, idx) => {
         s.style.cursor = 'pointer';
         s.addEventListener('click', () => {
-            if (idx <= currentStep) goTo(idx);
+            if (idx <= currentStep) {
+                goTo(idx);
+            } else if (idx === currentStep + 1) {
+                if (validateStep(currentStep)) goTo(idx);
+            }
         });
     });
 
@@ -1557,49 +1801,93 @@ document.addEventListener('DOMContentLoaded', function() {
         const number        = $('#communityNumber')?.value || '—';
         const city          = $('#communityCity')?.value || '—';
         const postal        = $('#communityPostalCode')?.value || '—';
+
         const tax           = $('#Tax_residence')?.value || '—';
         const currency      = $('#currencyCode')?.value || 'MAD';
-        const priceVal      = $('#communityprice')?.value || '';
-        const isPrivate     = privateToggle?.checked
+        const isPrivate     = privateToggle?.checked;
+        const visibilityText = isPrivate
             ? '<?php echo get_phrase("Private"); ?>'
             : '<?php echo get_phrase("Public"); ?>';
 
-        const vat = tax === 'MA' ? '20%' : tax === 'UAE' ? '5%' : '—';
-
         const logoImg  = $('#logoPreview img');
         const coverImg = $('#coverPreview img');
-        const logoHtml  = logoImg  ? `<img src="${logoImg.src}"  style="max-width:80px; border-radius:10px;">` : '—';
-        const coverHtml = coverImg ? `<img src="${coverImg.src}" style="max-width:120px; border-radius:10px;">` : '—';
-
-        const finalPrice = (i_am === 'Particulier' || privateToggle?.checked)
-            ? `0 ${currency}`
-            : (priceVal ? `${priceVal} ${currency}` : '—');
+        
 
         summaryDiv.innerHTML = `
-            <h3><?php echo get_phrase("Profile"); ?></h3>
-            <p><?php echo get_phrase("Name"); ?>: ${profileName}<br>
-               <?php echo get_phrase("Email"); ?>: ${profileEmail}<br>
-               <?php echo get_phrase("Phone"); ?>: ${phone}<br>
-               <?php echo get_phrase("Primary_language"); ?>: ${lang}</p>
+            <div class="summary-grid">
+                <!-- Profile Card -->
+                <div class="summary-card" style="cursor: pointer;" onclick="goTo(0)">
+                    <div class="summary-card-header">
+                        <div class="summary-card-icon"><i class="fa-solid fa-user"></i></div>
+                        <h3><?php echo get_phrase("Profile"); ?></h3>
+                    </div>
+                    <div class="summary-card-body">
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Name"); ?>:</span><span class="summary-value">${profileName}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Email"); ?>:</span><span class="summary-value">${profileEmail}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Phone"); ?>:</span><span class="summary-value">${phone}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Language"); ?>:</span><span class="summary-value">${lang}</span></div>
+                    </div>
+                </div>
 
-            <h3><?php echo get_phrase("Community"); ?></h3>
-            <p><?php echo get_phrase("I_am"); ?>: ${i_am}<br>
-               <?php echo get_phrase("Community_name"); ?>: ${communityName}<br>
-               <?php echo get_phrase("Description"); ?>: ${desc}<br>
-               <?php echo get_phrase("Category"); ?>: ${cat}<br>
-               <?php echo get_phrase("Address"); ?>: ${street}, ${number}, ${city}, ${postal}<br>
-               <?php echo get_phrase("Country applicable for VAT"); ?>: ${tax}</p>
+                <!-- Community Card -->
+                <div class="summary-card" style="cursor: pointer;" onclick="goTo(1)">
+                    <div class="summary-card-header">
+                        <div class="summary-card-icon"><i class="fa-solid fa-users"></i></div>
+                        <h3><?php echo get_phrase("Community"); ?></h3>
+                    </div>
+                    <div class="summary-card-body">
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Type"); ?>:</span><span class="summary-value">${i_am}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Name"); ?>:</span><span class="summary-value">${communityName}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Category"); ?>:</span><span class="summary-value">${cat}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Visibility"); ?>:</span><span class="summary-value">${visibilityText}</span></div>
+                    </div>
+                </div>
 
-            <h3><?php echo get_phrase("Media"); ?></h3>
-            <p><?php echo get_phrase("Logo"); ?>: ${logoHtml}<br>
-               <?php echo get_phrase("Cover"); ?>: ${coverHtml}</p>
+                <!-- Price Card Removed -->
 
-            <h3><?php echo get_phrase("Price"); ?></h3>
-            <p><?php echo get_phrase("price"); ?>: ${finalPrice}<br>
-               <?php echo get_phrase("VAT rate applied"); ?>: ${vat}</p>
+                <!-- Address Card -->
+                <div class="summary-card" style="cursor: pointer;" onclick="goTo(1)">
+                    <div class="summary-card-header">
+                        <div class="summary-card-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <h3><?php echo get_phrase("Address"); ?></h3>
+                    </div>
+                    <div class="summary-card-body">
+                        <div class="summary-item"><span class="summary-value">${street}, ${number}</span></div>
+                        <div class="summary-item"><span class="summary-value">${city}, ${postal}</span></div>
+                    </div>
+                </div>
 
-            <h3><?php echo get_phrase("Visibility"); ?></h3>
-            <p><?php echo get_phrase("Community"); ?>: ${isPrivate}</p>
+                <!-- Media Card -->
+                <div class="summary-card" style="cursor: pointer;" onclick="goTo(1)">
+                    <div class="summary-card-header">
+                        <div class="summary-card-icon"><i class="fa-solid fa-image"></i></div>
+                        <h3><?php echo get_phrase("Media"); ?></h3>
+                    </div>
+                    <div class="summary-card-body">
+                        <div class="summary-media-row">
+                            <div class="summary-media-item">
+                                ${logoImg ? `<img src="${logoImg.src}" alt="Logo">` : '<div style="height:140px; background:#f8fafc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#cbd5e1;"><i class="fa-solid fa-plus"></i></div>'}
+                                <span><?php echo get_phrase("Logo"); ?></span>
+                            </div>
+                            <div class="summary-media-item">
+                                ${coverImg ? `<img src="${coverImg.src}" alt="Cover">` : '<div style="height:140px; background:#f8fafc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#cbd5e1;"><i class="fa-solid fa-plus"></i></div>'}
+                                <span><?php echo get_phrase("Cover"); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Card -->
+                <div class="summary-card" style="cursor: pointer;" onclick="goTo(1)">
+                    <div class="summary-card-header">
+                        <div class="summary-card-icon"><i class="fa-solid fa-align-left"></i></div>
+                        <h3><?php echo get_phrase("Description"); ?></h3>
+                    </div>
+                    <div class="summary-card-body">
+                        <p style="margin:0; font-style: italic; color: #64748b;">"${desc}"</p>
+                    </div>
+                </div>
+            </div>
         `;
     }
 
@@ -1612,12 +1900,31 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         if (!validateStep(currentStep)) return;
 
+        // Sync hidden fields if needed
+        const phone = document.getElementById('profilePhone')?.value;
+        const schoolPhoneHidden = document.getElementById('school_phone_hidden');
+        if (schoolPhoneHidden) schoolPhoneHidden.value = phone;
+
         const formData = new FormData(this);
+        const submitBtn = document.getElementById('submitBtnSchool');
+        if (submitBtn) submitBtn.disabled = true;
+
         fetch(this.action, {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(async r => {
+            const raw = await r.text();
+            if (!raw) {
+                throw new Error('Server returned an empty response.');
+            }
+            try {
+                return JSON.parse(raw);
+            } catch (err) {
+                console.error('Server response is not valid JSON:', raw);
+                throw new Error('Server returned invalid JSON. Check console.');
+            }
+        })
         .then(data => {
             if (data.csrf) {
                 const csrfInput = document.querySelector(`input[name="${data.csrf.csrfName}"]`);
@@ -1625,18 +1932,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (data.status) {
-                // toastr?.success(data.message);
                 if (typeof clearSavedState === 'function') clearSavedState();
                 $('#resetBtn')?.click();
-                // Show success popup instead of auto-redirect
                 const overlay = document.getElementById('successOverlay');
                 if (overlay) overlay.classList.add('is-visible');
             } else {
                 toastr?.error(data.message || 'Error');
             }
         })
-        .catch(() => {
-            toastr?.error('An error occurred.');
+        .catch((err) => {
+            console.error('Submission error:', err);
+            toastr?.error(err.message || 'An error occurred during submission.');
+        })
+        .finally(() => {
+            if (submitBtn) submitBtn.disabled = false;
         });
     });
      // ========================
@@ -1753,7 +2062,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================
     // Init
     // ========================
-    applyPriceRules();
+    // Init
+    // applyPriceRules(); // REMOVED
     updateCurrencyUI();
     
     // Check if we should restore step or start at 0
@@ -1866,7 +2176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data._coverPre) {
                 const cp = document.getElementById('coverPreview');
                 if (cp) {
-                    cp.innerHTML = `<img src="${data._coverPre}" style="max-width:100%; border-radius:8px; height:80px; object-fit:cover;">`;
+                    cp.innerHTML = `<img src="${data._coverPre}" style="max-width:100%; border-radius:8px; object-fit:cover;">`;
                     const ci = document.getElementById('communityCover');
                     if (ci) ci.dataset.valid = 'true';
                 }

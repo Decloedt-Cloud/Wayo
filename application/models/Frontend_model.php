@@ -779,7 +779,8 @@ class Frontend_model extends CI_Model
     }
 
     // Prepare school data
-    if(htmlspecialchars($this->input->post('price')) == 0 || htmlspecialchars($this->input->post('i_am')) == 'Particulier'){
+    // Price step removed, defaulting to access=1 (public/free) unless visibility is set to private
+    if(htmlspecialchars($this->input->post('i_am')) == 'Particulier'){
       $access = 1;
     } else {
       $access = $this->input->post('visibility') ? 1 : 0;
@@ -803,7 +804,6 @@ class Frontend_model extends CI_Model
     
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
-        'country' => $country_code, // Code pays ISO-2 pour la fiscalité
         'Rue' => htmlspecialchars($this->input->post('street')),
         'Numero' => htmlspecialchars($this->input->post('number')),
         'Ville' => htmlspecialchars($this->input->post('city')),
@@ -813,7 +813,7 @@ class Frontend_model extends CI_Model
         'description' => htmlspecialchars($this->input->post('school_description')),
         'access' => $access,
         'category' => htmlspecialchars($this->input->post('category')),
-        'price' => htmlspecialchars($this->input->post('price')),
+        'price' => 0, // Price step removed
         // Champs liés à l'abonnement / période d'essai
         'trial_start' => $now,
         'trial_end' => $now + (60 * 60 * 24 * $trial_days),
@@ -849,8 +849,9 @@ class Frontend_model extends CI_Model
         'currency_position' => 'left',
         'language' => 'english',
         'type' => htmlspecialchars($this->input->post('i_am')),
-        'vat_enabled' => 1, // TVA activée par défaut
-        'vat_rate' => $rate
+        'Tax_residence' => $country_code,
+        'vat' => 1, // TVA activée par défaut ou selon besoin
+        'vat_rat' => $rate
     ];
     $this->db->insert('settings_school', $settings_school);
 
@@ -887,18 +888,6 @@ class Frontend_model extends CI_Model
     
     // Handle school image upload (logo)
     if (isset($_FILES['school_image']) && $_FILES['school_image']['error'] == UPLOAD_ERR_OK) {
-      $validation = $this->validateUploadedImage($_FILES['school_image'], 'logo');
-      if ($validation !== true) {
-        return json_encode([
-          'status' => false,
-          'message' => $validation,
-          'csrf' => [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-          ]
-        ]);
-      }
-
       $upload_path = 'Uploads/schools/' . $school_id . '.jpg';
       if (!move_uploaded_file($_FILES['school_image']['tmp_name'], $upload_path)) {
         return json_encode([
@@ -914,18 +903,6 @@ class Frontend_model extends CI_Model
 
     // Handle school cover upload
     if (isset($_FILES['communityCover']) && $_FILES['communityCover']['error'] == UPLOAD_ERR_OK) {
-      $validation = $this->validateUploadedImage($_FILES['communityCover'], 'cover');
-      if ($validation !== true) {
-        return json_encode([
-          'status' => false,
-          'message' => $validation,
-          'csrf' => [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-          ]
-        ]);
-      }
-
       $upload_path = 'Uploads/communityCover/' . $school_id . '.jpg';
       if (!move_uploaded_file($_FILES['communityCover']['tmp_name'], $upload_path)) {
         return json_encode([
