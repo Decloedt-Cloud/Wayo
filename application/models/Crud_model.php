@@ -1623,6 +1623,7 @@ class Crud_model extends CI_Model
 	public function create_expense_category()
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
+		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('expense_categories', $data);
@@ -1636,6 +1637,7 @@ class Crud_model extends CI_Model
 	public function update_expense_category($id)
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
+		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
 		$this->db->where('id', $id);
 		$this->db->update('expense_categories', $data);
 		$response = array(

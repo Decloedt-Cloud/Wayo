@@ -6,7 +6,7 @@
     <div class="card">
       <div class="card-body py-2">
         <h4 class="page-title d-inline-block">
-          <i class="mdi mdi-file-document-box title_icon"></i> <?php echo get_phrase('student_fee_manager'); ?>
+          <i class="mdi mdi-file-document-box title_icon"></i> <?php echo get_phrase('invoicing'); ?>
         </h4>
         <button type="button" class="btn btn-outline-primary btn-rounded alignToTitle float-end mt-1" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?></button>
           <button type="button" class="btn btn-outline-success btn-rounded alignToTitle float-end my-1" style="margin-right: 10px;" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')"> <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_mass_invoice'); ?></button>
