@@ -233,8 +233,6 @@
     "invoice_no": "Factuurnummer",
     "paid": "Betaald",
     "billing_details": "Facturatiegegevens",
-
-
     "due_amount": "Verschuldigd bedrag",
     "student_fee": "Lidmaatschapskosten",
     "created_at": "Aangemaakt op",
@@ -2048,8 +2046,6 @@
     "Student image": "Studentafbeelding",
     "Adding": "Toevoegen",
     "Error": "Fout",
-
-
     "Upload error": "Uploadfout",
     "Mentor profile image": "Mentorprofielafbeelding",
     "This field is required": "Dit veld is vereist",
@@ -2354,8 +2350,6 @@
     "spaces": "Ruimtes",
     "week": "Week",
     "list": "Lijst",
-
-
     "new_event": "Nieuw evenement",
     "repeat": "Herhalen",
     "visio": "Videoconferentie",
@@ -2860,8 +2854,6 @@
     "search_classes_or_users": "Zoek naar klassen of gebruikers",
     "meeting_not_started": "Vergadering niet gestart",
     "write_something_to_search...": "Schrijf iets om te zoeken...",
-
-
     "superadmin": "Superbeheerder",
     "no_results_found": "Geen resultaten gevonden",
     "checking_meeting...": "Vergadering controleren...",
@@ -3414,11 +3406,7 @@
     "pedagogical_context": "Pedagogische context",
     "audience": "Doelgroep",
     "expert": "Expert",
-    "french": "Frans",
-    "english": "Engels",
-    "spanish": "Spaans",
     "german": "Duits",
-    "arabic": "Arabisch",
     "tone": "Toon",
     "include_introduction_section": "Inleidingssectie opnemen",
     "include_conclusion_section": "Conclusiesectie opnemen",
@@ -3580,5 +3568,11 @@
     "add_pricing_plan": "Prijspaan toevoegen",
     "pricing_plan": "Prijspaan",
     "manage_all_pricing_plans": "Beheer alle prijspanen",
-    "manage_all_pricing_features": "Beheer alle prijsmogelijkheden"
+    "manage_all_pricing_features": "Beheer alle prijsmogelijkheden",
+    "Exchanges": "Uitwisselingen",
+    "you_are_not_currently_enrolled_in_any_community": "Je bent momenteel niet ingeschreven bij een community",
+    "please_join_a_community_to_access_this_page": "Sluit je aan bij een community om toegang te krijgen tot deze pagina",
+    "go_to_dashboard": "Ga naar dashboard",
+    "toegang_geweigerd": "Toegang geweigerd",
+    "billing_entities": "Factureringsentiteiten"
 }

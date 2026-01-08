@@ -3491,5 +3491,11 @@
     "add_pricing_plan": "إضافة مخطط تسعير",
     "pricing_plan": "مخطط التسعير",
     "manage_all_pricing_plans": "إدارة كل مخططات التسعير",
-    "manage_all_pricing_features": "إدارة كل ميزات التسعير"
+    "manage_all_pricing_features": "إدارة كل ميزات التسعير",
+    "Exchanges": "التبادلات",
+    "you_are_not_currently_enrolled_in_any_community": "أنت غير مسجل حاليًا في أي مجتمع",
+    "please_join_a_community_to_access_this_page": "يرجى الانضمام إلى مجتمع للوصول إلى هذه الصفحة",
+    "go_to_dashboard": "الذهاب إلى لوحة التحكم",
+    "الوصول_مرفوض": "الوصول مرفوض",
+    "billing_entities": "كيانات الفوترة"
 }

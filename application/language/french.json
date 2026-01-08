@@ -3633,5 +3633,12 @@
     "free_class_set_price_to_0": "Free class set price to 0",
     "select_status": "Select status",
     "please_select_class_status": "Please select class status",
-    "modify_class_details": "Modify class details"
+    "modify_class_details": "Modify class details",
+    "Exchanges": "Échanges",
+    "you_are_not_currently_enrolled_in_any_community": "Vous n'êtes actuellement inscrit dans aucune communauté",
+    "please_join_a_community_to_access_this_page": "Veuillez rejoindre une communauté pour accéder à cette page",
+    "go_to_dashboard": "Aller au tableau de bord",
+    "accès_refusé": "Accès refusé",
+    "billing_entities": "Entités de facturation",
+    "failed_to_load_recordings": "Failed to load recordings"
 }
