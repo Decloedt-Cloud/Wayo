@@ -233,8 +233,6 @@
     "invoice_no": "Factuurnummer",
     "paid": "Betaald",
     "billing_details": "Facturatiegegevens",
-
-
     "due_amount": "Verschuldigd bedrag",
     "student_fee": "Lidmaatschapskosten",
     "created_at": "Aangemaakt op",
@@ -1646,7 +1644,7 @@
     "fr": "Vr",
     "sa": "Za",
     "error_retrieving_csrf_token": "Fout bij ophalen van CSRF-token",
-    "entries": "Inzendingen",
+    "entries": "Items",
     "showing": "Tonen",
     "no_entries_to_show": "Geen inzendingen om te tonen",
     "no_data_available_in_table": "Geen gegevens beschikbaar in tabel",
@@ -2048,8 +2046,6 @@
     "Student image": "Studentafbeelding",
     "Adding": "Toevoegen",
     "Error": "Fout",
-
-
     "Upload error": "Uploadfout",
     "Mentor profile image": "Mentorprofielafbeelding",
     "This field is required": "Dit veld is vereist",
@@ -2354,8 +2350,6 @@
     "spaces": "Ruimtes",
     "week": "Week",
     "list": "Lijst",
-
-
     "new_event": "Nieuw evenement",
     "repeat": "Herhalen",
     "visio": "Videoconferentie",
@@ -2860,8 +2854,6 @@
     "search_classes_or_users": "Zoek naar klassen of gebruikers",
     "meeting_not_started": "Vergadering niet gestart",
     "write_something_to_search...": "Schrijf iets om te zoeken...",
-
-
     "superadmin": "Superbeheerder",
     "no_results_found": "Geen resultaten gevonden",
     "checking_meeting...": "Vergadering controleren...",
@@ -3414,11 +3406,11 @@
     "pedagogical_context": "Pedagogische context",
     "audience": "Doelgroep",
     "expert": "Expert",
-    "french": "Frans",
-    "english": "Engels",
-    "spanish": "Spaans",
+    "french": "Français",
+    "english": "English",
+    "spanish": "Español",
     "german": "Duits",
-    "arabic": "Arabisch",
+    "arabic": "العربية",
     "tone": "Toon",
     "include_introduction_section": "Inleidingssectie opnemen",
     "include_conclusion_section": "Conclusiesectie opnemen",
@@ -3532,11 +3524,7 @@
     "add_first_section": "Voeg eerste sectie toe",
     "monetize": "Monetariseren",
     "create_communities": "Gemeenschappen creëren",
-    "arabic": "العربية",
     "dutch": "Nederland",
-    "english": "English",
-    "french": "Français",
-    "spanish": "Español",
     "billing_architecture": "Facturatiearchitectuur",
     "manage_billing_entities_and_payment_methods_by_country/region": "Beheer factureringsentiteiten en betalingsmethoden per land/regio",
     "admin_fee_manager": "Beheerder van administratieve kosten",
@@ -3564,20 +3552,13 @@
     "configured": "Geconfigureerd",
     "reset_filters": "Filters resetten",
     "try_different_search_terms": "Probeer verschillende zoektermen",
-    "no_results_found": "Geen resultaten gevonden",
     "create_category": "Categorie aanmaken",
     "first": "Eerste",
     "last": "Laatste",
     "not_defined": "Niet gedefinieerd",
     "total_categories": "Totaal categorieën",
     "with_cost_center": "Met kostenplaats",
-    "entries": "Items",
     "page": "Pagina",
     "go": "Ga",
-    "to": "Tot",
-    "saving": "Opslaan",
-    "saved": "Opgeslagen",
-    "updating": "Bijwerken",
-    "updated": "Bijgewerkt",
-    "you_have_unsaved_changes": "Je hebt niet-opgeslagen wijzigingen"
+    "and": "And"
 }

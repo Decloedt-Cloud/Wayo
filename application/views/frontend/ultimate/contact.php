@@ -235,6 +235,31 @@
     .unified-phone-wrapper .form-control:focus {
         box-shadow: none !important;
     }
+    /* === RTL SUPPORT FOR FLOATING LABELS === */
+    html[lang="ar"] .form-floating > label,
+    [dir="rtl"] .form-floating > label {
+        left: auto;
+        right: 0;
+        transform-origin: 100% 0;
+    }
+
+    [dir="rtl"] .form-floating > .form-control:focus ~ label,
+    [dir="rtl"] .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    [dir="rtl"] .form-floating > .form-select ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+
+    /* === RTL SPECIFIC FOR PHONE INPUT === */
+    [dir="rtl"] .unified-phone-wrapper .country-select-wrapper {
+        border-right: none;
+        border-left: 1px solid #eee;
+        border-radius: 0 10px 10px 0; /* Flip rounding to right side */
+    }
+
+    [dir="rtl"] .unified-phone-wrapper .form-control {
+        text-align: right; 
+        direction: ltr; /* Keep numbers LTR but align block right */
+    }
   </style>
  
  
@@ -250,7 +275,7 @@
 </section>
  
 <?php $this->load->view('frontend/alert_view'); ?>
-<main class="container py-5" >
+<main class="container py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="row g-4 align-items-stretch">
       <div class="col-12 col-lg-7">
         <form id="contact_send" class="glass p-3 p-md-4 needs-validation" action="<?php echo site_url('home/contact/send'); ?>" method="post" enctype="multipart/form-data" novalidate>
@@ -344,7 +369,7 @@
  
       <!-- Sidebar infos -->
       <aside class="col-12 col-lg-5">
-        <div class="glass h-100 p-3 p-md-4 text-start d-flex flex-column justify-content-center align-items-center">
+        <div class="glass h-100 p-3 p-md-4 <?php echo (get_user_language() === 'arabic') ? 'text-center' : 'text-start'; ?> d-flex flex-column justify-content-center align-items-center">
           <h2 class="h4 fw-bold mb-4"><?php echo get_phrase('Contact_Information'); ?></h2>
           <ul class="list-unstyled d-flex flex-column gap-3 contact-list mb-4">
             <li>
