@@ -2355,43 +2355,87 @@ PROMPT;
         ]
       ],
       'temperature' => 0.7,
-      'max_tokens' => 8000,
+      'max_tokens' => 8192, // Maximum allowed by DeepSeek API
       'response_format' => ['type' => 'json_object']
     ];
 
-    $ch = curl_init($api_url);
-    curl_setopt_array($ch, [
-      CURLOPT_POST => true,
-      CURLOPT_POSTFIELDS => json_encode($data),
-      CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $api_key
-      ],
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_TIMEOUT => $timeout_seconds
-    ]);
+    // Retry mechanism for connection errors
+    $max_retries = 3;
+    $retry_delay = 2; // seconds
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
+    for ($attempt = 1; $attempt <= $max_retries; $attempt++) {
+      error_log("DeepSeek API Attempt {$attempt}/{$max_retries}");
 
-    if ($curl_error) {
-      return ['error' => 'API connection failed: ' . $curl_error];
+      $ch = curl_init($api_url);
+      curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $api_key
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout_seconds,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // Force HTTP/1.1 to avoid HTTP/2 issues
+        CURLOPT_FOLLOWLOCATION => true, // Follow redirects
+        CURLOPT_MAXREDIRS => 3, // Limit redirects
+        CURLOPT_CONNECTTIMEOUT => 60, // Increased connection timeout from 30 to 60 seconds
+        CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification if needed
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_FORBID_REUSE => false, // Allow connection reuse
+        CURLOPT_FRESH_CONNECT => ($attempt > 1), // Force new connection on retries
+        CURLOPT_BUFFERSIZE => 1048576, // 1MB buffer for large responses
+        CURLOPT_TCP_NODELAY => true, // Disable Nagle's algorithm for better performance
+        CURLOPT_FAILONERROR => false, // Don't fail on HTTP errors
+        CURLOPT_ENCODING => 'gzip, deflate', // Accept compressed responses
+      ]);
+
+      $response = curl_exec($ch);
+      $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $curl_error = curl_error($ch);
+      curl_close($ch);
+
+      // Debug logging
+      error_log('DeepSeek API HTTP Code: ' . $http_code);
+      error_log('DeepSeek API Response (first 1000 chars): ' . substr($response, 0, 1000));
+
+      // Check for connection errors that are retryable
+      if ($curl_error) {
+        error_log('DeepSeek API cURL Error (Attempt ' . $attempt . '): ' . $curl_error);
+
+        // Retry on connection errors
+        if ($attempt < $max_retries) {
+          error_log('Retrying in ' . $retry_delay . ' seconds...');
+          sleep($retry_delay);
+          continue;
+        }
+
+        return ['error' => 'API connection failed: ' . $curl_error];
+      }
+
+      if ($http_code !== 200) {
+        $error_data = json_decode($response, true);
+        $error_msg = 'API error: ' . ($error_data['error']['message'] ?? 'Unknown error');
+        error_log('DeepSeek API HTTP Error: ' . $error_msg);
+        error_log('Full error response: ' . $response);
+        return ['error' => $error_msg];
+      }
+
+      $result = json_decode($response, true);
+
+      if (!isset($result['choices'][0]['message']['content'])) {
+        error_log('DeepSeek API Invalid Response: ' . print_r($result, true));
+        return ['error' => 'Invalid API response'];
+      }
+
+      $content = $result['choices'][0]['message']['content'];
+      error_log('DeepSeek API Content length: ' . strlen($content));
+      error_log('DeepSeek API Content (first 500 chars): ' . substr($content, 0, 500));
+
+      return ['content' => $content];
     }
 
-    if ($http_code !== 200) {
-      $error_data = json_decode($response, true);
-      return ['error' => 'API error: ' . ($error_data['error']['message'] ?? 'Unknown error')];
-    }
-
-    $result = json_decode($response, true);
-    
-    if (!isset($result['choices'][0]['message']['content'])) {
-      return ['error' => 'Invalid API response'];
-    }
-
-    return ['content' => $result['choices'][0]['message']['content']];
+    return ['error' => 'API connection failed after ' . $max_retries . ' attempts'];
   }
 
   /**
@@ -3786,8 +3830,9 @@ PROMPT;
         $section['title']
       );
 
-      // Call DeepSeek API
-      $ai_response = $this->call_deepseek_api($prompt, 120);
+      // Call DeepSeek API with longer timeout for PDF processing
+      $timeout = ($input_data['source'] === 'pdf') ? 180 : 120; // 3 minutes for PDF, 2 for outline
+      $ai_response = $this->call_deepseek_api($prompt, $timeout);
 
       if (!$ai_response || empty($ai_response['content'])) {
         throw new Exception(get_phrase('ai_failed_to_generate_content'));
@@ -3938,21 +3983,32 @@ PROMPT;
         $section['title']
       );
 
-      // Call DeepSeek API
-      $ai_response = $this->call_deepseek_api($prompt, 120);
+      // Call DeepSeek API with longer timeout for PDF processing
+      $timeout = ($input_data['source'] === 'pdf') ? 180 : 120; // 3 minutes for PDF, 2 for outline
+      $ai_response = $this->call_deepseek_api($prompt, $timeout);
+
+      // Debug logging
+      error_log('AI Response from API (UPDATE): ' . print_r($ai_response, true));
 
       if (!$ai_response || empty($ai_response['content'])) {
-        throw new Exception(get_phrase('ai_failed_to_generate_content'));
+        $error_msg = isset($ai_response['error']) ? $ai_response['error'] : get_phrase('ai_failed_to_generate_content');
+        error_log('AI Response Error (UPDATE): ' . $error_msg);
+        throw new Exception($error_msg);
       }
 
       // Parse JSON response from DeepSeek
       $json_content = json_decode($ai_response['content'], true);
+      error_log('Parsed JSON content (UPDATE): ' . print_r($json_content, true));
+
       if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log('JSON decode error (UPDATE): ' . json_last_error_msg());
+        error_log('Raw content (UPDATE): ' . substr($ai_response['content'], 0, 1000));
         throw new Exception('Failed to parse AI response JSON: ' . json_last_error_msg());
       }
 
       // Extract HTML content from JSON response
       $raw_content = $json_content['lesson_content'] ?? $json_content['content'] ?? $ai_response['content'];
+      error_log('Raw content extracted (UPDATE), length: ' . strlen($raw_content));
 
       // Parse AI response
       $lesson_content = $this->parse_lesson_content($raw_content, $input_data['language']);
@@ -4056,7 +4112,7 @@ PROMPT;
   private function format_pdf_context($pdf_data)
   {
     $context = "PDF STRUCTURE ANALYSIS:\n\n";
-    
+
     // Add metadata
     if (!empty($pdf_data['title'])) {
       $context .= "Document Title: " . $pdf_data['title'] . "\n";
@@ -4067,63 +4123,78 @@ PROMPT;
     if (!empty($pdf_data['metadata']['author'])) {
       $context .= "Author: " . $pdf_data['metadata']['author'] . "\n";
     }
-    
+
     $context .= "\n";
-    
-    // Add table of contents if available
+
+    // Add table of contents if available (limit to first 30 items to keep context manageable)
     if (!empty($pdf_data['toc'])) {
-      $context .= "TABLE OF CONTENTS:\n";
-      foreach ($pdf_data['toc'] as $item) {
+      $context .= "TABLE OF CONTENTS (showing first 30 items):\n";
+      $toc_items = array_slice($pdf_data['toc'], 0, 30);
+      foreach ($toc_items as $item) {
         $indent = str_repeat('  ', max(0, $item['level'] - 1));
         $context .= $indent . "• " . $item['title'] . " (page " . $item['page'] . ")\n";
+      }
+      if (count($pdf_data['toc']) > 30) {
+        $context .= "  ... and " . (count($pdf_data['toc']) - 30) . " more items\n";
       }
       $context .= "\n";
     }
     
-    // Add headings structure
+    // Add headings structure (limited to keep context manageable)
     if (!empty($pdf_data['headings'])) {
-      $context .= "DOCUMENT STRUCTURE (Headings):\n";
-      
-      // Group by level
+      $context .= "DOCUMENT STRUCTURE (Headings, limited):\n";
+
+      // Group by level and limit to reduce context size
       $h1_headings = [];
       $h2_headings = [];
-      
-      foreach ($pdf_data['headings'] as $heading) {
+
+      foreach (array_slice($pdf_data['headings'], 0, 100) as $heading) { // Limit to first 100 headings
         if ($heading['level'] == 1) {
           $h1_headings[] = $heading;
         } elseif ($heading['level'] == 2) {
           $h2_headings[] = $heading;
         }
       }
-      
-      // Add H1 headings
+
+      // Add H1 headings (limit to 20)
       if (!empty($h1_headings)) {
-        $context .= "\nMAIN SECTIONS (H1):\n";
-        foreach ($h1_headings as $h1) {
+        $context .= "\nMAIN SECTIONS (H1, showing first 20):\n";
+        foreach (array_slice($h1_headings, 0, 20) as $h1) {
           $context .= "• " . $h1['title'] . " (pages " . $h1['page'];
           if (isset($h1['end_page'])) {
             $context .= "-" . $h1['end_page'];
           }
           $context .= ")\n";
-          
-          // Add H2 subheadings for this H1
+
+          // Add H2 subheadings for this H1 (limit to 5 per H1)
           $h2_for_h1 = array_filter($h2_headings, function($h2) use ($h1) {
-            return $h2['page'] >= $h1['page'] && 
+            return $h2['page'] >= $h1['page'] &&
                    (!isset($h1['end_page']) || $h2['page'] <= $h1['end_page']);
           });
-          
-          foreach ($h2_for_h1 as $h2) {
+
+          $h2_count = 0;
+          foreach (array_slice($h2_for_h1, 0, 5) as $h2) {
             $context .= "  ◦ " . $h2['title'] . " (page " . $h2['page'] . ")\n";
+            $h2_count++;
+          }
+          if (count($h2_for_h1) > 5) {
+            $context .= "  ... and " . (count($h2_for_h1) - 5) . " more subsections\n";
           }
         }
+        if (count($h1_headings) > 20) {
+          $context .= "  ... and " . (count($h1_headings) - 20) . " more sections\n";
+        }
       } elseif (!empty($h2_headings)) {
-        // If no H1, show H2 as main sections
-        $context .= "\nMAIN SECTIONS:\n";
-        foreach ($h2_headings as $h2) {
+        // If no H1, show H2 as main sections (limit to 30)
+        $context .= "\nMAIN SECTIONS (showing first 30):\n";
+        foreach (array_slice($h2_headings, 0, 30) as $h2) {
           $context .= "• " . $h2['title'] . " (page " . $h2['page'] . ")\n";
         }
+        if (count($h2_headings) > 30) {
+          $context .= "  ... and " . (count($h2_headings) - 30) . " more sections\n";
+        }
       }
-      
+
       $context .= "\n";
     }
     
@@ -4260,6 +4331,12 @@ PROMPT;
     $tone_text = $tone_map[$tone] ?? 'Formal and professional';
     $audience_text = $audience_map[$audience] ?? 'Intermediate level learners';
 
+    // Limit context size to avoid overwhelming the API (max 15000 chars for context)
+    if (strlen($context) > 15000) {
+      $context = substr($context, 0, 15000) . "\n\n... [Context truncated to fit API limits]";
+    }
+    error_log('Context size: ' . strlen($context) . ' chars');
+
     // Check if context is from PDF structure analysis
     $is_pdf_structure = strpos($context, 'PDF STRUCTURE ANALYSIS:') !== false;
     
@@ -4273,51 +4350,22 @@ PROMPT;
     }
 
     $prompt = <<<PROMPT
-You are an expert course content creator and educator. Generate a comprehensive, engaging lesson for an online learning platform.
+Create lesson content in {$language_text} with {$tone_text} tone for {$audience_text}.
 
-COURSE CONTEXT:
-- Course Title: {$course_title}
-- Section Title: {$section_title}
-- Lesson Title: {$lesson_title}
-- Lesson Duration: {$duration} minutes
-- Target Audience: {$audience_text}
-- Language: {$language_text}
-- Tone: {$tone_text}
+Course: {$course_title} | Section: {$section_title} | Lesson: {$lesson_title} ({$duration} min)
 
-SOURCE INFORMATION:
-{$source_info}
+Source: {$source_info}
 
-SOURCE MATERIAL ANALYSIS:
-{$context}
+Context: {$context}
 
-ADDITIONAL INSTRUCTIONS:
-{$instructions}
+Requirements:
+- HTML format (h2, h3, p, ul, ol, strong tags)
+- 3-5 key concepts with examples
+- Engaging introduction and clear summary
+- {$instructions}
 
-LESSON CONTENT REQUIREMENTS:
-1. Write all content in {$language_text}
-2. Use {$tone_text} tone appropriate for {$audience_text}
-3. Structure the content for exactly {$duration} minutes of learning
-4. Include 2-3 practical examples or case studies relevant to the topic
-5. Use clear, hierarchical headings: <h2> for main sections, <h3> for subsections
-6. Include key takeaways or summary points at the end of each major section
-7. Make it engaging with questions, thought-provoking statements, or interactive elements
-8. Format the content in clean, semantic HTML without any markdown or code blocks
-9. Use <p> for paragraphs, <ul> or <ol> for lists, <strong> for emphasis
-10. Include relevant analogies or metaphors to help understanding
-11. Break complex concepts into digestible chunks
-12. Include a brief introduction and conclusion
-
-Generate a complete lesson that includes:
-1. INTRODUCTION: Brief overview of what will be covered and why it's important
-2. MAIN CONTENT: 3-5 key concepts with clear explanations
-3. EXAMPLES: Practical, real-world examples or case studies
-4. APPLICATIONS: How to apply this knowledge in practice
-5. SUMMARY: Key takeaways and review of main points
-6. NEXT STEPS: Suggested practice exercises or further reading
-
-IMPORTANT: The lesson should be self-contained and educational. Do not reference the PDF structure analysis in the content itself - use it only as source material to create original educational content.
-
-Format the response as clean HTML ready to be inserted into a lesson editor.
+Response MUST be valid JSON only:
+{"lesson_content": "<div>HTML lesson content here</div>"}
 PROMPT;
 
     return $prompt;
