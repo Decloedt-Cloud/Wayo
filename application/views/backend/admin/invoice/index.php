@@ -353,9 +353,9 @@
         </div>
     </div>
     <div class="idx-header-actions">
-        <button type="button" class="idx-btn idx-btn-success" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')">
-            <i class="mdi mdi-account-group"></i> <?php echo get_phrase('add_mass_invoice'); ?>
-        </button>
+        <!-- <button type="button" class="idx-btn idx-btn-success" onclick="rightModal('<?php // echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')">
+            <i class="mdi mdi-account-group"></i> <?php //echo get_phrase('add_mass_invoice'); ?>
+        </button> -->
         <button type="button" class="idx-btn idx-btn-primary" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')">
             <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?>
         </button>

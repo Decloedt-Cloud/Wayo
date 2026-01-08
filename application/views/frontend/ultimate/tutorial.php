@@ -18,7 +18,7 @@
           <ul class="tuto-list list-group">
             <li><?php echo get_phrase("Create your Community space and set your goals.") ?></li>
             <li><?php echo get_phrase("Customize the homepage: branding, rules, visuals.") ?></li>
-            <li><?php echo get_phrase("Add your first classes: live, replay, files.") ?> &amp; <?php echo get_phrase("quiz") ?></li>
+            <li><?php echo get_phrase("Add your first classes: live, replay, files.") ?> <?php echo get_phrase("quiz") ?></li>
             <li><?php echo get_phrase("Invite members, manage roles, and subscription plans.") ?></li>
             <li><?php echo get_phrase("Track engagement, revenue, and feedback from the Mentor dashboard.") ?></li>
           </ul>
@@ -94,7 +94,7 @@
           <p><?php echo get_phrase("Clearly present your value proposition and set the price.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-solid fa-video"></i> <strong><?php echo get_phrase("Community video") ?></strong> <?php echo get_phrase("(YouTube/Vimeo ou téléversement) ") ?></li>
-            <li><i class="fa-regular fa-file-lines"></i> <strong><?php echo get_phrase("Community description") ?></strong> (300–600&nbsp;<?php echo get_phrase("characters") ?>)</li>
+            <li><i class="fa-regular fa-file-lines"></i> <strong><?php echo get_phrase("Community description") ?></strong> <?php echo get_phrase("characters") ?></li>
             <li><i class="fa-solid fa-tags"></i> <strong><?php echo get_phrase("Tags") ?></strong> <?php echo get_phrase("(3–5 keywords for search)") ?></li>
             <li><i class="fa-solid fa-dollar-sign"></i> <strong><?php echo get_phrase("Price") ?></strong> <?php echo get_phrase("(monthly subscription or one-time payment)") ?></li>
           </ul>
@@ -111,8 +111,8 @@
           <h3><?php echo get_phrase("Create classes") ?></h3>
           <p><?php echo get_phrase("Add your educational content and organize your catalog.") ?></p>
           <ul class="obi-bullets">
-            <li><i class="fa-solid fa-clapperboard"></i> <strong><?php echo get_phrase("Type") ?></strong> : <?php echo get_phrase("live, replay, files") ?> &amp; <?php echo get_phrase("quiz") ?></li>
-            <li><i class="fa-regular fa-clock"></i> <strong><?php echo get_phrase("Recommended duration") ?></strong> : 7–15&nbsp;<?php echo get_phrase("min per video") ?></li>
+            <li><i class="fa-solid fa-clapperboard"></i> <strong><?php echo get_phrase("Type") ?></strong> : <?php echo get_phrase("live, replay, files") ?> <?php echo get_phrase("quiz") ?></li>
+            <li><i class="fa-regular fa-clock"></i> <strong><?php echo get_phrase("Recommended duration") ?></strong> :<?php echo get_phrase("min per video") ?></li>
             <li><i class="fa-solid fa-list-check"></i> <strong><?php echo get_phrase("Structure") ?></strong> : <?php echo get_phrase("Intro → Goals → Demo → Exercise → Recap") ?></li>
             <li><i class="fa-solid fa-ticket"></i> <strong><?php echo get_phrase("Class price") ?></strong> <?php echo get_phrase("(per unit) or") ?> <strong><?php echo get_phrase("included") ?></strong> <?php echo get_phrase("in the subscription") ?></li>
           </ul>

@@ -380,6 +380,7 @@
           <div class="app-media"><img src="https://i.postimg.cc/Z5nbcDC6/app.png" alt="Wayo app mockup"/></div>
           <div class="app-copy">
             <p class="app-kicker"><?php echo get_phrase("EASIER, FASTER AND MORE ACCESSIBLE MENTORING"); ?></p>
+            <p class="app-kicker"><?php echo get_phrase("Take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere."); ?></p>
             <h2 class="app-title"><?php echo get_phrase("Coming soon "); ?>!</h2>
             <div class="stores">
               <a href="#" class="store"><img src="https://i.postimg.cc/QFpGF7SJ/app-store-badge.png" alt="App Store"/></a>
@@ -396,27 +397,27 @@
       <p class="subtitle"><?php echo get_phrase("Passionate professionals to guide you") ?></p>
       <div class="mentors-grid">
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor_3.webp" alt="Mentor 2" loading="lazy" />
-          <h3>Emma Dubois</h3>
-          <p class="specialty"><?php echo get_phrase("Digital Marketing") ?></p>
+          <img src="uploads/images/decloedt/home/mentor01-home.png" alt="Mentor 2" loading="lazy" />
+          <h3><?php echo get_phrase("Youssef_El_Omrani") ?></h3>
+          <p class="specialty"><?php echo get_phrase("Artificial_Intelligence_and_Data_Analysis") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor_1.webp" alt="Mentor 1" loading="lazy" />
-          <h3>Lucas Martin</h3>
-          <p class="specialty"><?php echo get_phrase("Web Development") ?></p>
+          <img src="uploads/images/decloedt/home/mentor02-home.png" alt="Mentor 1" loading="lazy" />
+          <h3><?php echo get_phrase("Salma_Benkacem") ?></h3>
+          <p class="specialty"><?php echo get_phrase("Cybersecurity_and_Systems_Protection") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor_4.webp" alt="Mentor 4" loading="lazy" />
-          <h3>Sophie Leroy</h3>
-          <p class="specialty"><?php echo get_phrase("Cybersecurity") ?></p>
+          <img src="uploads/images/decloedt/home/mentor03-home.png" alt="Mentor 4" loading="lazy" />
+          <h3><?php echo get_phrase("Hamza_Aït_Lahcen") ?></h3>
+          <p class="specialty"><?php echo get_phrase("Web_and_Application_Development") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor_2.webp" alt="Mentor 2" loading="lazy" />
-          <h3>Antoine Petit</h3>
-          <p class="specialty"><?php echo get_phrase("AI & Data") ?></p>
+          <img src="uploads/images/decloedt/home/logo-hwe.png" alt="Mentor 2" loading="lazy" />
+          <h3><?php echo get_phrase("Moscaling_academy") ?></h3>
+          <p class="specialty"><?php echo get_phrase("AI_&_Data") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
       </div>
