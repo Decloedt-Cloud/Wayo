@@ -70,7 +70,7 @@ $school_id = school_id();
 
             <!-- PAGE CONTAINER-->
             <div class="content-page" id="content-page-calendar">
-                <div class="content" style="padding-top: 30px;">
+                <div class="content" style="padding-top: 10px;">
                     <div class="loadings hidden"></div>
                     <!-- BEGIN PlACE PAGE CONTENT HERE -->
                     <?php

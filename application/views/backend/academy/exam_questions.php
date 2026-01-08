@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/manageQuizQuestions.css">
 <style>
     /* Bouton Wayo AI avec dégradé orange */
@@ -37,6 +38,482 @@
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 215, 0, 0.6);
         }
     }
+    
+    /* Styles spécifiques pour l'éditeur d'examens */
+    
+    .questions-list-panel {
+        flex: 1;
+        min-width: 0;
+        max-width: 1200px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e8ecf1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .questions-list-header {
+        padding: 20px;
+        border-bottom: 1px solid #e8ecf1;
+        background: #f8fafc;
+        flex-shrink: 0; /* Prevent header from shrinking */
+    }
+    
+    .questions-list-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .questions-list-title h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .questions-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #ffffff;
+        color: #64748b;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .questions-count-badge i {
+        font-size: 0.8rem;
+    }
+    
+    .questions-count-badge #existingQuestionsCount {
+        font-weight: 800;
+        font-size: 1rem;
+        color: #f47a1f;
+    }
+    
+    .questions-list-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .questions-list-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    /* Ensure proper flex layout for editor container */
+    .exam-header-and-editor {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .exam-editor-panel {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .exam-quiz-editor-form {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        padding-bottom: 80px; /* Space for footer */
+    }
+    
+    .exam-editor-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #f8fafc;
+        border-top: 1px solid #e8ecf1;
+        z-index: 10;
+    }
+    
+    .exam-question-editor-panel {
+        flex: 1;
+        min-width: 0;
+        max-width: 1200px;
+        display: none;
+        animation: slideIn 0.3s ease;
+    }
+    
+    .exam-question-editor-panel.show {
+        display: flex !important;
+        flex-direction: column;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    
+    .exam-question-editor-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e8ecf1;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 520px);
+    }
+    
+    .exam-question-editor-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        padding-right: 56px;
+        border-bottom: 1px solid #e8ecf1;
+        background: #f8fafc;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .exam-question-editor-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .exam-question-editor-title i {
+        color: #f47a1f;
+    }
+    
+    .exam-question-editor-form {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 240px);
+    }
+    
+    /* Custom scrollbar for editor form */
+    .exam-question-editor-form::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .exam-question-editor-form::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    
+    .exam-question-editor-form::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    
+    .exam-question-editor-form::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    
+    .question-input-group {
+        margin-bottom: 20px;
+    }
+    
+    .question-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #1e293b;
+        transition: all 0.15s ease;
+    }
+    
+    .question-input:focus {
+        outline: none;
+        border-color: #f47a1f;
+        box-shadow: 0 0 0 3px rgba(244, 122, 31, 0.1);
+    }
+    
+    .question-input::placeholder {
+        color: #94a3b8;
+    }
+    
+    .answers-section {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .answers-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .answers-header span {
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .answers-hint {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    
+    .answers-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    
+    /* Custom scrollbar for answers container */
+    .answers-container::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .answers-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    
+    .answers-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 2px;
+    }
+    
+    .answers-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    
+    .answer-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+    }
+    
+    .answer-item:hover {
+        border-color: #f47a1f;
+    }
+    
+    .answer-checkbox {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+    
+    .answer-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        z-index: 1;
+        margin: 0;
+    }
+    
+    .answer-checkbox .checkmark {
+        width: 20px;
+        height: 20px;
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+        pointer-events: none;
+    }
+    
+    .answer-checkbox:hover .checkmark {
+        border-color: #f47a1f;
+    }
+    
+    .answer-checkbox input:checked ~ .checkmark {
+        background: #f47a1f;
+        border-color: #f47a1f;
+    }
+    
+    .answer-checkbox input:checked ~ .checkmark::after {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    
+    .answer-input {
+        flex: 1;
+        padding: 8px 10px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #334155;
+        background: transparent;
+        transition: all 0.15s ease;
+    }
+    
+    .answer-input:focus {
+        outline: none;
+        background: #ffffff;
+        border-color: #e2e8f0;
+    }
+    
+    .answer-input::placeholder {
+        color: #94a3b8;
+    }
+    
+    .btn-remove-answer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    
+    .btn-remove-answer:hover {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+    
+    .btn-add-answer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: transparent;
+        border: 1px dashed #cbd5e1;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-add-answer:hover {
+        border-color: #f47a1f;
+        color: #f47a1f;
+        background: #fff7ed;
+    }
+    
+    .exam-question-editor-footer {
+        padding: 20px;
+        border-top: 1px solid #e8ecf1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        background: #f8fafc;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    .btn-save-question {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #f47a1f 0%, #fbb040 100%);
+        border: none;
+        color: #ffffff;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-save-question:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(244, 122, 31, 0.3);
+    }
+    
+    .btn-cancel-question {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-cancel-question:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    
+    .draggable-item {
+        cursor: move;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    
+    .draggable-item:hover {
+        border-color: #f47a1f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(244, 122, 31, 0.1);
+    }
+    
+    .draggable-item.gu-transit {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+    
+    .draggable-item.gu-mirror {
+        opacity: 0.8;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 </style>
 <?php
 // $param1 is Exam id
@@ -48,14 +525,6 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 <input type="hidden" id="csrf_token" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
 
 <?php if (count($exam_details)): ?>
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body p-0">
-                    <div class="row" data-plugin="dragula" data-containers='["question-list"]'>
-                        <div class="col-md-12">
-                            <div class="bg-dragula p-2 p-lg-4">
-                                <h5 class="mt-0 d-flex align-items-center flex-wrap gap-2">
                                     <?php
                                         $safeExamName = htmlspecialchars(
                                             html_entity_decode($exam_details['name'], $entityFlags, 'UTF-8'),
@@ -63,63 +532,115 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
                                             'UTF-8'
                                         );
                                         $existingQuestionsCount = count($questions);
-                                        echo get_phrase('questions_of') . ': ' . $safeExamName;
-                                    ?>
-                                    <span class="existing-questions-badge">
-                                        <i class="fas fa-layer-group"></i>
-                                        <span id="existingQuestionsCount"><?php echo $existingQuestionsCount; ?></span>
-                                        <?php echo get_phrase('questions'); ?>
-                                    </span>
-                                    <div class="d-inline-flex quiz-action-buttons ms-2">
-                                        <button type="button" class="btn btn-outline-primary btn-rounded btn-sm" id="question-sort-btn" onclick="sort()" name="button">
-                                            <i class="fa-solid fa-sort"></i> <?php echo get_phrase('update_sorting'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary btn-rounded btn-sm ms-1" onclick="showAjaxModal('<?php echo site_url('modal/popup/academy/exam_question_add/' . $param1) ?>', '<?php echo get_phrase('add_new_question'); ?>')" name="button" data-dismiss="modal">
-                                            <i class="fa-solid fa-plus"></i> <?php echo get_phrase('add_new_question'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary btn-rounded btn-sm ms-1" onclick="largeModal('<?php echo site_url('modal/popup/academy/exam_questions/' . $param1); ?>', '<?php echo get_phrase('manage_exam_questions'); ?>')" name="button" data-dismiss="modal">
-                                            <i class="fa-solid fa-arrow-rotate-right"></i> <?php echo get_phrase('refresh'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-wayo-ai btn-rounded btn-sm ms-1" onclick="generateQuestionsFromPdf(<?php echo $param1; ?>)">
-                                            <i class="fas fa-wand-magic-sparkles"></i>
-                                            <?php echo get_phrase('create_questions_from_pdf'); ?>
-                                        </button>
-                                    </div>
-                                </h5>
-                                <div id="question-list" class="py-2">
-                                    <?php foreach ($questions as $question): ?>
-                                        <!-- Item -->
-                                        <div class="card mb-0 mt-2 draggable-item on-hover-action" id="<?php echo $question['id']; ?>">
-                                            <div class="card-body">
-                                                <div class="media">
-                                                    <div class="media-body">
-                                                        <h5 class="mb-1 mt-0">
-                                                            <?php
-                                                                echo htmlspecialchars(
-                                                                    html_entity_decode($question['title'], $entityFlags, 'UTF-8'),
-                                                                    $entityFlags,
-                                                                    'UTF-8'
-                                                                );
-                                                            ?>
-                                                            <span id="<?php echo 'widgets-of-' . $question['id']; ?>" class="widgets-of-quiz-question">
-                                                                <a href="javascript:void(0)" class="alignToTitle float-end ms-1 text-secondary" onclick="deleteExamQuestionAndReloadModal('<?php echo $param1; ?>', '<?php echo $question['id']; ?>')" data-dismiss="modal"><i class="dripicons-cross"></i></a>
-                                                                <a href="javascript:void(0)" class="alignToTitle float-end text-secondary" onclick="showAjaxModal('<?php echo site_url('modal/popup/academy/exam_question_edit/' . $question['id'] . '/' . $param1); ?>', '<?php echo get_phrase('update_exam_question'); ?>')" data-dismiss="modal"><i class="dripicons-document-edit"></i></a>
-                                                            </span>
-                                                        </h5>
-                                                    </div> <!-- end media-body -->
-                                                </div> <!-- end media -->
-                                            </div> <!-- end card-body -->
-                                        </div> <!-- end col -->
-                                        <!-- item -->
-                                    <?php endforeach; ?>
-                                </div> <!-- end question-list -->
-                            </div> <!-- end div.bg-light -->
+    ?>
+    
+    
+        <!-- Combined Header and Editor Container -->
+        <div class="exam-header-and-editor">
+            <!-- Questions List Header -->
+            <div class="questions-list-header">
+                <div class="questions-list-title">
+                    <h4><?php echo get_phrase('questions_of') . ': ' . $safeExamName; ?></h4>
+                    <span class="questions-count-badge">
+                        <i class="fas fa-layer-group"></i>
+                        <span id="existingQuestionsCount"><?php echo $existingQuestionsCount; ?></span>
+                        <?php echo get_phrase('questions'); ?>
+                    </span>
+                </div>
+                <div class="questions-list-actions">
+                    <button type="button" class="btn btn-wayo-ai btn-rounded btn-sm" onclick="generateQuestionsFromPdf(<?php echo $param1; ?>)">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <?php echo get_phrase('create_questions_from_pdf'); ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Exam Question Editor (clone of curriculum quiz editor) -->
+            <div class="exam-editor-panel" id="examQuestionEditorPanel">
+                    <!-- Exam Form -->
+                    <div class="exam-quiz-editor-form">
+                        <!-- Questions Builder -->
+                        <div class="exam-quiz-questions-builder">
+                            <div class="exam-questions-header">
+                                <label>
+                                    <i class="fas fa-list-check"></i>
+                                    <?php echo get_phrase('questions'); ?>
+                                </label>
+                                <button type="button" class="exam-btn-add-question" onclick="addExamQuestion()">
+                                    <i class="fas fa-plus"></i> <?php echo get_phrase('add_question'); ?>
+                                </button>
+                            </div>
+
+                            <div id="examQuestionsContainer">
+                                <!-- Questions will be added here dynamically -->
+                            </div>
+
+                            <div class="exam-no-questions-message" id="examNoQuestionsMessage" style="display: none;">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p><?php echo get_phrase('no_questions_yet'); ?></p>
+                                <button type="button" class="exam-btn-add-first-question" onclick="addExamQuestion()">
+                                    <i class="fas fa-plus"></i> <?php echo get_phrase('add_first_question'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exam Footer (Autosave) -->
+                    <div class="exam-editor-footer">
+                        <div class="exam-save-status saved" id="examSaveStatus">
+                            <span class="exam-status-icon"><i class="fas fa-check"></i></span>
+                            <span class="exam-status-text"><?php echo get_phrase('ready'); ?></span>
+                        </div>
+                        <span class="exam-shortcut-hint"><i class="fas fa-keyboard"></i> Ctrl+S <?php echo get_phrase('to_save'); ?></span>
+                    </div>
+
+                    <!-- Hidden inputs -->
+                    <input type="hidden" id="currentExamId" value="<?php echo $param1; ?>">
+                    <input type="hidden" id="currentExamQuestionId" value="">
+            </div>
+            </div>
+
+            <!-- Questions List Content (for existing questions) -->
+            <div class="questions-list-content" id="questionsListContent" data-plugin="dragula" data-containers='["question-list"]' style="display: none;">
+                <div id="question-list" class="py-2">
+                    <?php foreach ($questions as $question): ?>
+                        <!-- Item -->
+                        <div class="card mb-2 draggable-item on-hover-action" id="<?php echo $question['id']; ?>">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h5 class="mb-1 mt-0">
+                                            <?php
+                                                echo htmlspecialchars(
+                                                    html_entity_decode($question['title'], $entityFlags, 'UTF-8'),
+                                                    $entityFlags,
+                                                    'UTF-8'
+                                                );
+                                            ?>
+                                            <span id="<?php echo 'widgets-of-' . $question['id']; ?>" class="widgets-of-quiz-question">
+                                                <a href="javascript:void(0)" class="alignToTitle float-end ms-1 text-secondary" onclick="deleteExamQuestion('<?php echo $param1; ?>', '<?php echo $question['id']; ?>')"><i class="dripicons-cross"></i></a>
+                                                <a href="javascript:void(0)" class="alignToTitle float-end text-secondary" onclick="openEditQuestionEditor('<?php echo $question['id']; ?>')"><i class="dripicons-document-edit"></i></a>
+                                            </span>
+                                        </h5>
+                                    </div> <!-- end media-body -->
+                                </div> <!-- end media -->
+                            </div> <!-- end card-body -->
                         </div> <!-- end col -->
-                    </div> <!-- end row -->
-                </div> <!-- end card-body -->
-            </div> <!-- end card -->
-        </div> <!-- end col -->
-    </div>
+                        <!-- item -->
+                    <?php endforeach; ?>
+                    
+                    <?php if (empty($questions)): ?>
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p><?php echo get_phrase('no_questions_yet'); ?></p>
+                        <button type="button" class="btn btn-outline-primary btn-rounded btn-sm" onclick="openNewQuestionEditor()">
+                            <i class="fa-solid fa-plus"></i> <?php echo get_phrase('add_first_question'); ?>
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                </div> <!-- end question-list -->
+            </div>
+        </div> <!-- end exam-header-and-editor -->
 <?php else: ?>
     <div class="row">
         <div class="col-12">
@@ -862,6 +1383,55 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
     background: linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #ef4444 100%); 
 }
 
+/* Responsive Difficulty Selector */
+@media (max-width: 480px) {
+    .difficulty-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .difficulty-option {
+        padding: 12px 8px 10px;
+        border-radius: 12px;
+    }
+    
+    .difficulty-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+    }
+    
+    .difficulty-name {
+        font-size: 0.75rem;
+    }
+    
+    .difficulty-bar .bar-fill {
+        width: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .difficulty-selector {
+        gap: 6px;
+    }
+    
+    .difficulty-option {
+        padding: 10px 6px 8px;
+    }
+    
+    .difficulty-badge {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .difficulty-name {
+        font-size: 0.7rem;
+    }
+}
+
 /* Existing Questions Badge */
 .existing-questions-badge {
     display: inline-flex;
@@ -1363,6 +1933,7 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 
 <!-- Init Dragula -->
 <script type="text/javascript">
+    // Initialize Dragula for drag and drop
     ! function(r) {
         "use strict";
         var a = function() {
@@ -1393,91 +1964,471 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 </script>
 
 <script type="text/javascript">
-    jQuery(document).ready(function() {
-        $('.widgets-of-quiz-question').hide();
-        // Show sort button
-        $('#question-sort-btn').show();
+    // Wrap everything in a self-executing function to avoid redeclaration errors
+    (function() {
+        // Only initialize if not already initialized
+        if (window.examQuestionsInitialized) {
+            return;
+        }
+        window.examQuestionsInitialized = true;
+        
+        // Global variables
+        window.questionUniqueId = 0;
+        window.answerCounters = {};
+        
+        jQuery(document).ready(function() {
+            // Initialize hover actions for question items
+            $('.widgets-of-quiz-question').hide();
 
-        $('.on-hover-action').mouseenter(function() {
-            var id = this.id;
-            $('#widgets-of-' + id).show();
+            $('.on-hover-action').mouseenter(function() {
+                var id = this.id;
+                $('#widgets-of-' + id).show();
+            });
+            $('.on-hover-action').mouseleave(function() {
+                var id = this.id;
+                $('#widgets-of-' + id).hide();
+            });
+            
+            // Initialize answer counters
+            window.answerCounters = {};
+            
+            // Initialize Dragula with auto-save on drop
+            setTimeout(function() {
+                var containers = document.querySelectorAll('[data-plugin="dragula"]');
+                if (containers.length > 0) {
+                    var dragulaContainers = [];
+                    containers.forEach(function(container) {
+                        var containerIds = container.getAttribute('data-containers');
+                        if (containerIds) {
+                            try {
+                                var ids = JSON.parse(containerIds.replace(/'/g, '"'));
+                                ids.forEach(function(id) {
+                                    var el = document.getElementById(id);
+                                    if (el) dragulaContainers.push(el);
+                                });
+                            } catch (e) {
+                                console.error('Error parsing container IDs:', e);
+                            }
+                        }
+                    });
+                    
+                    if (dragulaContainers.length > 0) {
+                        var drake = dragula(dragulaContainers);
+                        
+                        // Auto-save on drop
+                        drake.on('drop', function(el, target, source, sibling) {
+                            setTimeout(function() {
+                                saveQuestionOrder();
+                            }, 100);
+                        });
+                    }
+                }
+                
+                // Auto-open editor if there are no questions
+                var questionList = document.getElementById('question-list');
+                if (questionList) {
+                    var hasQuestions = questionList.querySelectorAll('.draggable-item').length > 0;
+                    if (!hasQuestions) {
+                        // Hide empty state and show editor
+                        var emptyState = document.getElementById('emptyState');
+                        if (emptyState) {
+                            emptyState.style.display = 'none';
+                        }
+                        openNewQuestionEditor();
+                    }
+                }
+            }, 500);
         });
-        $('.on-hover-action').mouseleave(function() {
-            var id = this.id;
-            $('#widgets-of-' + id).hide();
-        });
-    });
 
-    function deleteExamQuestionAndReloadModal(examID, questionID) {
-        var deletionURL = '<?php echo site_url(); ?>addons/courses/exam_questions/' + examID + '/delete/' + questionID;
-
-        confirmModal(deletionURL, function(response) {
-            if (!response) {
-                error_notify('<?php echo get_phrase('no_response_from_server'); ?>');
+        // Question Editor Functions - attach to window
+        window.openNewQuestionEditor = function() {
+            var titleEl = document.getElementById('questionEditorTitle');
+            var questionIdEl = document.getElementById('currentQuestionId');
+            var questionTitleEl = document.getElementById('questionTitle');
+            var answersContainer = document.getElementById('answersContainer');
+            var noAnswersMsg = document.getElementById('noAnswersMessage');
+            
+            if (titleEl) titleEl.textContent = '<?php echo addslashes(get_phrase('add_new_question')); ?>';
+            if (questionIdEl) questionIdEl.value = '';
+            if (questionTitleEl) questionTitleEl.value = '';
+            
+            // Clear answers
+            if (answersContainer) answersContainer.innerHTML = '';
+            if (noAnswersMsg) noAnswersMsg.style.display = 'none';
+            
+            // Add 2 default answers
+            if (typeof window.addAnswer === 'function') {
+                window.addAnswer();
+                window.addAnswer();
+            }
+            
+            // Hide questions list and show editor
+            var questionsListContent = document.getElementById('questionsListContent');
+            if (questionsListContent) questionsListContent.style.display = 'none';
+            
+            // Show editor panel
+            var editorPanel = document.getElementById('examQuestionEditorPanel');
+            if (editorPanel) {
+                editorPanel.style.display = '';
+                editorPanel.classList.add('show');
+                editorPanel.style.display = 'flex';
+            }
+            
+            // Hide empty state if it exists
+            var emptyState = document.getElementById('emptyState');
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        };
+        
+        window.openEditQuestionEditor = function(questionId) {
+            var titleEl = document.getElementById('questionEditorTitle');
+            var questionIdEl = document.getElementById('currentQuestionId');
+            
+            if (titleEl) titleEl.textContent = '<?php echo addslashes(get_phrase('edit_question')); ?>';
+            if (questionIdEl) questionIdEl.value = questionId;
+            
+            // Load question data via AJAX
+            $.ajax({
+                url: '<?php echo site_url('addons/courses/get_exam_question/'); ?>' + questionId,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        var questionTitleEl = document.getElementById('questionTitle');
+                        var answersContainer = document.getElementById('answersContainer');
+                        var noAnswersMsg = document.getElementById('noAnswersMessage');
+                        var questionsListContent = document.getElementById('questionsListContent');
+                        
+                        if (questionTitleEl) questionTitleEl.value = response.question.title || '';
+                        
+                        // Clear answers
+                        if (answersContainer) answersContainer.innerHTML = '';
+                        if (noAnswersMsg) noAnswersMsg.style.display = 'none';
+                        
+                        // Load answers
+                        if (response.question.options && typeof window.addAnswer === 'function') {
+                            const options = JSON.parse(response.question.options);
+                            const correctAnswers = JSON.parse(response.question.correct_answers || '[]');
+                            
+                            options.forEach((option, index) => {
+                                const isCorrect = correctAnswers.includes(index) || correctAnswers.includes(index.toString());
+                                window.addAnswer(option, isCorrect);
+                            });
+                        }
+                        
+                        // Hide questions list and show editor
+                        if (questionsListContent) questionsListContent.style.display = 'none';
+                        
+                        // Show editor panel with multiple methods to ensure it appears
+                        var editorPanel = document.getElementById('examQuestionEditorPanel');
+                        
+                        if (editorPanel) {
+                            // Remove any inline display style first
+                            editorPanel.style.display = '';
+                            // Add show class which has !important
+                            editorPanel.classList.add('show');
+                            // Also set inline style as backup
+                            editorPanel.style.display = 'flex';
+                        }
+                    }
+                },
+                error: function() {
+                    console.error('Error loading question');
+                }
+            });
+        };
+        
+        window.closeQuestionEditor = function() {
+            // Hide editor and show questions list
+            var editorPanel = document.getElementById('examQuestionEditorPanel');
+            if (editorPanel) {
+                editorPanel.classList.remove('show');
+                editorPanel.style.display = 'none';
+            }
+            
+            document.getElementById('questionsListContent').style.display = 'block';
+            
+            // Show empty state if there are no questions
+            var questionList = document.getElementById('question-list');
+            var emptyState = document.getElementById('emptyState');
+            if (questionList && emptyState) {
+                var hasQuestions = questionList.querySelectorAll('.draggable-item').length > 0;
+                if (!hasQuestions) {
+                    emptyState.style.display = 'flex';
+                }
+            }
+        };
+        
+        window.addAnswer = function(answerText = '', isCorrect = false) {
+            window.questionUniqueId++;
+            const container = document.getElementById('answersContainer');
+            const noAnswersMsg = document.getElementById('noAnswersMessage');
+            
+            // If container doesn't exist, this function shouldn't run
+            if (!container) return;
+            
+            if (noAnswersMsg) noAnswersMsg.style.display = 'none';
+            
+            const answerId = 'answer_' + window.questionUniqueId;
+            const answerHtml = `
+                <div class="answer-item" id="${answerId}">
+                    <label class="answer-checkbox">
+                        <input type="checkbox" ${isCorrect ? 'checked' : ''}>
+                        <span class="checkmark"></span>
+                    </label>
+                    <input type="text" class="answer-input" placeholder="<?php echo addslashes(get_phrase('enter_answer')); ?>" value="${window.escapeHtmlAttr(answerText)}">
+                    <button type="button" class="btn-remove-answer" onclick="window.removeAnswer('${answerId}')" title="<?php echo addslashes(get_phrase('remove_answer')); ?>">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', answerHtml);
+        };
+        
+        window.removeAnswer = function(answerId) {
+            const answer = document.getElementById(answerId);
+            const container = document.getElementById('answersContainer');
+            
+            if (!container) return;
+            
+            // Don't remove if only 2 answers left
+            if (container.querySelectorAll('.answer-item').length <= 2) {
                 return;
             }
-
-            if (response.status) {
-                success_notify('<?php echo get_phrase('exam_question_deleted_successfully'); ?>');
-                try {
-                    $('#alert-modal').modal('hide');
-                } catch (e) {
-                    console.error('Error while closing the modal: ', e);
+            
+            if (answer) {
+                answer.remove();
+            }
+            
+            // Show message if no answers
+            const noAnswersMsg = document.getElementById('noAnswersMessage');
+            if (container.querySelectorAll('.answer-item').length === 0 && noAnswersMsg) {
+                noAnswersMsg.style.display = 'flex';
+            }
+        };
+        
+        window.escapeHtmlAttr = function(text) {
+            if (!text) return '';
+            return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        };
+        
+        window.saveQuestion = function() {
+        const questionId = document.getElementById('currentQuestionId').value;
+        const examId = document.getElementById('currentExamId').value;
+        const questionTitle = document.getElementById('questionTitle').value.trim();
+        
+        if (!questionTitle) {
+            return;
+        }
+        
+        // Collect answers
+        const options = [];
+        const correctAnswers = [];
+        
+        document.querySelectorAll('.answer-item').forEach((item, index) => {
+            const answerText = item.querySelector('.answer-input').value.trim();
+            const isCorrect = item.querySelector('input[type="checkbox"]').checked;
+            
+            if (answerText) {
+                options.push(answerText);
+                if (isCorrect) {
+                    correctAnswers.push(options.length - 1);
                 }
-
-                setTimeout(function() {
-                    try {
-                        updateLargeModal('<?php echo site_url('modal/popup/academy/exam_questions/'); ?>' + examID, '<?php echo get_phrase('manage_exam_questions'); ?>');
-                    } catch (e) {
-                        console.error('Error while reloading the question list: ', e);
-                        error_notify('<?php echo get_phrase('error_reloading_question_list'); ?>');
-                    }
-                }, 500);
-            } else {
-                console.error('Deletion failed: ', response);
-                error_notify('<?php echo get_phrase('error_deleting_question'); ?>');
             }
         });
-    }
-
-    function sort() {
-        var containerArray = ['question-list'];
-        var itemArray = [];
-        for (var i = 0; i < containerArray.length; i++) {
-            $('#' + containerArray[i]).each(function() {
-                $(this).find('.draggable-item').each(function() {
-                    itemArray.push(this.id);
-                });
-            });
+        
+        if (options.length < 2) {
+            return;
         }
-
-        var examID = '<?php echo $param1; ?>';
-        var itemJSON = JSON.stringify(itemArray);
+        
+        if (correctAnswers.length === 0) {
+            return;
+        }
+        
+        // Prepare data
+        const formData = new FormData();
+        formData.append('exam_id', examId);
+        formData.append('title', questionTitle);
+        formData.append('options', JSON.stringify(options));
+        formData.append('correct_answers', JSON.stringify(correctAnswers));
+        formData.append('type', 'mcq');
+        
+        const csrfInput = document.getElementById('csrf_token');
+        if (csrfInput) {
+            formData.append(csrfInput.name, csrfInput.value);
+        }
+        
+        let url = '<?php echo site_url('addons/courses/exam_questions/'); ?>' + examId + '/add';
+        if (questionId) {
+            url = '<?php echo site_url('addons/courses/exam_questions/'); ?>' + examId + '/edit/' + questionId;
+        }
+        
         $.ajax({
-            url: '<?php echo site_url('addons/courses/ajax_sort_question/'); ?>',
+            url: url,
             type: 'POST',
-            data: {
-                itemJSON: itemJSON,
-                exam_id: examID
-            },
+            data: formData,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(response) {
                 if (response.status) {
-                    success_notify('<?php echo get_phrase('questions_have_been_sorted'); ?>');
+                    closeQuestionEditor();
+                    
+                    // Reload the question list via AJAX
                     setTimeout(function() {
-                        updateLargeModal('<?php echo site_url('modal/popup/academy/exam_questions/'); ?>' + examID, '<?php echo get_phrase('manage_exam_questions'); ?>');
-                    }, 1000);
-                } else {
-                    console.error('Sorting failed: ', response);
-                    error_notify('<?php echo get_phrase('error_sorting_questions'); ?>');
+                        $.ajax({
+                            url: '<?php echo site_url('addons/courses/get_exam_questions_ajax/'); ?>' + examId,
+                            type: 'GET',
+                            dataType: 'html',
+                            success: function(html) {
+                                // Update the questions list
+                                var questionsListContent = document.getElementById('questionsListContent');
+                                if (questionsListContent) {
+                                    questionsListContent.innerHTML = html;
+                                    
+                                    // Reinitialize drag and drop
+                                    setTimeout(function() {
+                                        var containers = document.querySelectorAll('[data-plugin="dragula"]');
+                                        if (containers.length > 0) {
+                                            var dragulaContainers = [];
+                                            containers.forEach(function(container) {
+                                                var containerIds = container.getAttribute('data-containers');
+                                                if (containerIds) {
+                                                    try {
+                                                        var ids = JSON.parse(containerIds.replace(/'/g, '"'));
+                                                        ids.forEach(function(id) {
+                                                            var el = document.getElementById(id);
+                                                            if (el) dragulaContainers.push(el);
+                                                        });
+                                                    } catch (e) {
+                                                        console.error('Error parsing container IDs:', e);
+                                                    }
+                                                }
+                                            });
+                                            
+                                            if (dragulaContainers.length > 0) {
+                                                var drake = dragula(dragulaContainers);
+                                                
+                                                // Auto-save on drop
+                                                drake.on('drop', function(el, target, source, sibling) {
+                                                    setTimeout(function() {
+                                                        saveQuestionOrder();
+                                                    }, 100);
+                                                });
+                                            }
+                                        }
+                                    }, 100);
+                                }
+                                
+                                // Update question count
+                                var existingQuestionsCount = document.getElementById('existingQuestionsCount');
+                                if (existingQuestionsCount && response.questions_count !== undefined) {
+                                    existingQuestionsCount.textContent = response.questions_count;
+                                }
+                            },
+                            error: function() {
+                                // If AJAX fails, reload the modal
+                                largeModal(
+                                    '<?php echo site_url('modal/popup/academy/exam_questions/'); ?>' + examId,
+                                    '<?php echo get_phrase('manage_exam_questions'); ?>'
+                                );
+                            }
+                        });
+                    }, 300);
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Error during sorting: ', error);
-                error_notify('<?php echo get_phrase('error_sorting_questions'); ?>');
+            error: function() {
+                console.error('Error saving question');
             }
         });
-    }
+        };
+        
+        window.deleteExamQuestion = function(examID, questionID) {
+            var deletionURL = '<?php echo site_url(); ?>addons/courses/exam_questions/' + examID + '/delete/' + questionID;
+
+            confirmModal(deletionURL, function(response) {
+                if (!response) {
+                    return;
+                }
+
+                if (response.status) {
+                    // Remove the question from the list
+                    var questionElement = document.getElementById(questionID);
+                    if (questionElement) {
+                        questionElement.remove();
+                        
+                        // Update question count
+                        var existingQuestionsCount = document.getElementById('existingQuestionsCount');
+                        if (existingQuestionsCount) {
+                            var currentCount = parseInt(existingQuestionsCount.textContent);
+                            existingQuestionsCount.textContent = currentCount - 1;
+                        }
+                        
+                        // Show empty state if no questions left
+                        var questionList = document.getElementById('question-list');
+                        var emptyState = document.getElementById('emptyState');
+                        if (questionList && emptyState) {
+                            var hasQuestions = questionList.querySelectorAll('.draggable-item').length > 0;
+                            if (!hasQuestions) {
+                                emptyState.style.display = 'flex';
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
+        window.saveQuestionOrder = function() {
+            var containerArray = ['question-list'];
+            var itemArray = [];
+            for (var i = 0; i < containerArray.length; i++) {
+                $('#' + containerArray[i]).each(function() {
+                    $(this).find('.draggable-item').each(function() {
+                        itemArray.push(this.id);
+                    });
+                });
+            }
+
+            var examID = '<?php echo $param1; ?>';
+            var itemJSON = JSON.stringify(itemArray);
+            $.ajax({
+                url: '<?php echo site_url('addons/courses/ajax_sort_question/'); ?>',
+                type: 'POST',
+                data: {
+                    itemJSON: itemJSON,
+                    exam_id: examID
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        // Success notification is optional since it's auto-save
+                        // success_notify('<?php echo get_phrase('questions_have_been_sorted'); ?>');
+                    } else {
+                        console.error('Sorting failed: ', response);
+                        // Don't show error notification for auto-save to avoid annoyance
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error during sorting: ', error);
+                    // Don't show error notification for auto-save to avoid annoyance
+                }
+            });
+        };
+    
+    // Close the self-executing function and attach functions to window
+    })();
+    
+    // Make sure functions are available globally
+    window.openNewQuestionEditor = window.openNewQuestionEditor || function() {};
+    window.openEditQuestionEditor = window.openEditQuestionEditor || function() {};
+    window.closeQuestionEditor = window.closeQuestionEditor || function() {};
+    window.addAnswer = window.addAnswer || function() {};
+    window.removeAnswer = window.removeAnswer || function() {};
+    window.saveQuestion = window.saveQuestion || function() {};
+    window.deleteExamQuestion = window.deleteExamQuestion || function() {};
+    window.saveQuestionOrder = window.saveQuestionOrder || function() {};
 </script>
 
 <script type="text/javascript">
@@ -1691,12 +2642,10 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
         if (!file) return;
 
         if (file.type !== 'application/pdf') {
-            error_notify('<?php echo get_phrase('please_select_valid_pdf'); ?>');
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 
@@ -1750,7 +2699,6 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
         
         // Vérifier si une génération est déjà en cours
         if (generateBtn.prop('disabled')) {
-            error_notify('<?php echo get_phrase("generation_already_in_progress"); ?>');
             return;
         }
         
@@ -1760,12 +2708,10 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
         const overwriteExisting = $('#overwriteExistingQuestions').is(':checked') ? 1 : 0;
 
         if (!file) {
-            error_notify('<?php echo get_phrase("please_select_a_pdf_file"); ?>');
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            error_notify('<?php echo get_phrase('file_too_large_max_10mb'); ?>');
             return;
         }
 
@@ -1863,7 +2809,6 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
                 try {
                     data = typeof response === 'string' ? JSON.parse(response) : response;
                 } catch (e) {
-                    error_notify('<?php echo get_phrase('server_response_error'); ?>');
                     resetGenerateButton();
                     return;
                 }
@@ -1883,55 +2828,74 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
                     }, 300);
                     
                     // Mettre à jour le compteur final
-                    const finalCount = data.questions_count || totalQuestions;
-                    updateQuestionCounter(finalCount, totalQuestions);
+                    var generatedCount = data.questions_count || totalQuestions;
+                    updateQuestionCounter(generatedCount, totalQuestions);
                     
                     $('#progressBar').css('width', '100%');
                     $('#progressPercent').text('100%');
-                    success_notify(data.message || '<?php echo get_phrase('questions_generated_successfully'); ?>');
-                    setTimeout(() => {
+                    
+                    setTimeout(function() {
                         $('#pdfQuestionModal').modal('hide');
                         resetGenerateButton();
                         resetProgressSteps();
+                        
+                        // Fetch fresh questions and update the editor without opening a new modal
+                        $.ajax({
+                            url: '<?php echo site_url('addons/courses/get_exam_questions_json/'); ?>' + examId,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success && response.questions) {
+                                    // Clear and repopulate the questions container
+                                    var container = document.getElementById('examQuestionsContainer');
+                                    if (container) container.innerHTML = '';
+                                    
+                                    window.examQuestionUniqueId = 0;
+                                    window.examAnswerCounters = {};
+                                    
+                                    var noQuestionsMsg = document.getElementById('examNoQuestionsMessage');
+                                    
+                                    if (response.questions.length > 0) {
+                                        if (noQuestionsMsg) noQuestionsMsg.style.display = 'none';
+                                        response.questions.forEach(function(q) {
+                                            addExamQuestion(q);
+                                        });
+                                    } else {
+                                        if (noQuestionsMsg) noQuestionsMsg.style.display = 'flex';
+                                    }
+                                    
+                                    // Update counter badge
+                                    var countBadge = document.getElementById('existingQuestionsCount');
+                                    if (countBadge) {
+                                        countBadge.textContent = response.questions.length;
+                                    }
+                                    
+                                    // Reset dirty state
+                                    window.examIsDirty = false;
+                                }
+                            }
+                        });
                     }, 800);
-
-                    setTimeout(() => {
-                        largeModal(
-                            '<?php echo site_url('modal/popup/academy/exam_questions/'); ?>' + examId,
-                            '<?php echo get_phrase('manage_exam_questions'); ?>'
-                        );
-                    }, 1000);
                 } else {
                     clearInterval(progressSimulation);
-                    error_notify(data.message || '<?php echo get_phrase('generation_error'); ?>');
                     resetGenerateButton();
                     resetProgressSteps();
                 }
             },
             error: function(xhr) {
                 clearInterval(progressSimulation);
-                let message = '<?php echo get_phrase('network_or_server_error'); ?>';
-                if (xhr.responseJSON) {
-                    if (xhr.responseJSON.csrf) {
-                        updateExamQuestionsCsrf(xhr.responseJSON.csrf);
-                    }
-                    if (xhr.responseJSON.message) {
-                        message = xhr.responseJSON.message;
-                    }
+                if (xhr.responseJSON && xhr.responseJSON.csrf) {
+                    updateExamQuestionsCsrf(xhr.responseJSON.csrf);
                 } else if (xhr.responseText) {
                     try {
                         const parsed = JSON.parse(xhr.responseText);
                         if (parsed.csrf) {
                             updateExamQuestionsCsrf(parsed.csrf);
                         }
-                        if (parsed.message) {
-                            message = parsed.message;
-                        }
                     } catch (err) {
                         // ignore parse errors
                     }
                 }
-                error_notify(message);
                 resetGenerateButton();
                 resetProgressSteps();
             },
@@ -1940,4 +2904,427 @@ $entityFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
             }
         });
     }
+
+// ===== INTEGRATED EXAM QUIZ EDITOR FUNCTIONS =====
+// Prevent re-declaration when loaded via AJAX
+if (typeof window.examEditorInitialized === 'undefined') {
+    window.examEditorInitialized = true;
+    window.examQuestionUniqueId = 0;
+    window.examAnswerCounters = {};
+    window.examIsDirty = false;
+    window.examAutosaveTimer = null;
+}
+var examQuestionUniqueId = window.examQuestionUniqueId;
+var examAnswerCounters = window.examAnswerCounters;
+
+function initializeExamQuestionEditor() {
+    // Initialize the integrated editor
+    var container = document.getElementById('examQuestionsContainer');
+    if (container) container.innerHTML = '';
+    
+    window.examQuestionUniqueId = 0;
+    window.examAnswerCounters = {};
+    examQuestionUniqueId = 0;
+    examAnswerCounters = {};
+
+    // Load existing questions from PHP
+    const existingQuestions = <?php echo json_encode(array_map(function($q) {
+        return [
+            'id' => $q['id'],
+            'question' => html_entity_decode($q['title'], ENT_QUOTES, 'UTF-8'),
+            'options' => json_decode($q['options'], true) ?: [],
+            'correct_answers' => json_decode($q['correct_answers'], true) ?: []
+        ];
+    }, $questions)); ?>;
+
+    var noQuestionsMsg = document.getElementById('examNoQuestionsMessage');
+    
+    if (existingQuestions && existingQuestions.length > 0) {
+        if (noQuestionsMsg) noQuestionsMsg.style.display = 'none';
+        existingQuestions.forEach(function(q) {
+            addExamQuestion(q);
+        });
+    } else {
+        if (noQuestionsMsg) noQuestionsMsg.style.display = 'flex';
+    }
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', handleExamEditorKeydown);
+}
+
+function openExamQuestionEditor() {
+    // Editor is always visible, no scroll needed
+}
+
+function closeExamQuestionEditorWithCheck() {
+    // Editor is always visible, just check for unsaved changes before potential navigation
+    const hasUnsavedChanges = checkExamUnsavedChanges();
+    if (hasUnsavedChanges) {
+        return confirm('<?php echo get_phrase('unsaved_changes_warning'); ?>');
+    }
+    return true;
+}
+
+function closeExamQuestionEditor() {
+    // Editor stays visible - just a placeholder for compatibility
+}
+
+function handleExamEditorKeydown(e) {
+    // Keyboard shortcuts are handled globally
+}
+
+function checkExamUnsavedChanges() {
+    const questions = getExamQuestionsData();
+
+    return title !== '' || instruction !== '' || questions.length > 0;
+}
+
+function addExamQuestion(questionData) {
+    questionData = questionData || null;
+    window.examQuestionUniqueId++;
+    examQuestionUniqueId = window.examQuestionUniqueId;
+    
+    var container = document.getElementById('examQuestionsContainer');
+    var noQuestionsMsg = document.getElementById('examNoQuestionsMessage');
+    if (noQuestionsMsg) noQuestionsMsg.style.display = 'none';
+
+    // Get the current count of questions for display number
+    var currentQuestionCount = container.querySelectorAll('.exam-question-card').length + 1;
+
+    var questionId = 'exam_question_' + examQuestionUniqueId;
+    var questionHtml = `
+        <div class="exam-question-card" id="${questionId}">
+            <div class="exam-question-card-header">
+                <span class="exam-question-number"><?php echo addslashes(get_phrase('question')); ?> ${currentQuestionCount}</span>
+                <button type="button" class="exam-btn-remove-question" onclick="removeExamQuestion('${questionId}')" title="<?php echo addslashes(get_phrase('remove_question')); ?>">
+                    <i class="fas fa-trash-can"></i>
+                </button>
+            </div>
+            <div class="exam-question-card-body">
+                <div class="exam-question-input-group">
+                    <input type="text" class="exam-question-input" placeholder="<?php echo addslashes(get_phrase('enter_your_question')); ?>" value="${questionData ? escapeHtmlAttr(questionData.question) : ''}">
+                </div>
+                <div class="exam-answers-section">
+                    <div class="exam-answers-header">
+                        <span><i class="fas fa-list-ul"></i> <?php echo addslashes(get_phrase('answers')); ?></span>
+                        <small class="exam-answers-hint"><?php echo addslashes(get_phrase('check_correct_answers')); ?></small>
+                    </div>
+                    <div class="exam-answers-container" id="exam_answers_${questionId}">
+                        <!-- Answers will be added here -->
+                    </div>
+                    <button type="button" class="exam-btn-add-answer" onclick="addExamAnswer('${questionId}')">
+                        <i class="fas fa-plus"></i> <?php echo addslashes(get_phrase('add_answer')); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', questionHtml);
+
+    // Add dirty tracking for question input
+    var questionInput = document.querySelector('#' + questionId + ' .exam-question-input');
+    if (questionInput) {
+        questionInput.addEventListener('input', function() {
+            setExamDirty(true);
+        });
+    }
+
+    // Add default answers
+    if (questionData && questionData.options) {
+        questionData.options.forEach(function(option, index) {
+            // Compare as numbers since correct_answers contains numbers
+            var isCorrect = questionData.correct_answers && (
+                questionData.correct_answers.includes(index) ||
+                questionData.correct_answers.includes(index.toString())
+            );
+            addExamAnswer(questionId, option, isCorrect);
+        });
+    } else {
+        // Add 2 default empty answers
+        addExamAnswer(questionId);
+        addExamAnswer(questionId);
+        // Mark as dirty when adding new question (not when loading)
+        setExamDirty(true);
+    }
+
+    // Don't auto-scroll - let user stay where they are
+}
+
+function addExamAnswer(questionId, answerText, isCorrect) {
+    answerText = answerText || '';
+    isCorrect = isCorrect || false;
+    
+    if (!window.examAnswerCounters[questionId]) {
+        window.examAnswerCounters[questionId] = 0;
+    }
+    window.examAnswerCounters[questionId]++;
+    examAnswerCounters = window.examAnswerCounters;
+
+    var container = document.getElementById('exam_answers_' + questionId);
+    if (!container) return;
+    
+    var answerId = questionId + '_answer_' + window.examAnswerCounters[questionId];
+
+    var answerHtml = '<div class="exam-answer-item" id="' + answerId + '">' +
+        '<label class="exam-answer-checkbox">' +
+            '<input type="checkbox" ' + (isCorrect ? 'checked' : '') + '>' +
+            '<span class="exam-checkmark"></span>' +
+        '</label>' +
+        '<input type="text" class="exam-answer-input" placeholder="<?php echo addslashes(get_phrase('enter_answer')); ?>" value="' + escapeHtmlAttr(answerText) + '">' +
+        '<button type="button" class="exam-btn-remove-answer" onclick="removeExamAnswer(\'' + answerId + '\', \'' + questionId + '\')" title="<?php echo addslashes(get_phrase('remove_answer')); ?>">' +
+            '<i class="fas fa-xmark"></i>' +
+        '</button>' +
+    '</div>';
+
+    container.insertAdjacentHTML('beforeend', answerHtml);
+
+    // Add dirty tracking for answer inputs
+    var answerEl = document.getElementById(answerId);
+    if (answerEl) {
+        var answerInput = answerEl.querySelector('.exam-answer-input');
+        var checkbox = answerEl.querySelector('input[type="checkbox"]');
+        if (answerInput) {
+            answerInput.addEventListener('input', function() {
+                setExamDirty(true);
+            });
+        }
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                setExamDirty(true);
+            });
+        }
+    }
+}
+
+function removeExamQuestion(questionId) {
+    var question = document.getElementById(questionId);
+    if (question) {
+        question.remove();
+        delete window.examAnswerCounters[questionId];
+        examAnswerCounters = window.examAnswerCounters;
+
+        // Mark as dirty
+        setExamDirty(true);
+
+        // Renumber questions
+        renumberExamQuestions();
+
+        // Show message if no questions
+        if (document.querySelectorAll('.exam-question-card').length === 0) {
+            var noQuestionsMsg = document.getElementById('examNoQuestionsMessage');
+            if (noQuestionsMsg) noQuestionsMsg.style.display = 'flex';
+        }
+    }
+}
+
+function removeExamAnswer(answerId, questionId) {
+    var answer = document.getElementById(answerId);
+    var container = document.getElementById('exam_answers_' + questionId);
+
+    // Don't remove if only 2 answers left
+    if (container && container.querySelectorAll('.exam-answer-item').length <= 2) {
+        toastr.warning('<?php echo addslashes(get_phrase('minimum_two_answers_required')); ?>');
+        return;
+    }
+
+    if (answer) {
+        answer.remove();
+        // Mark as dirty
+        setExamDirty(true);
+    }
+}
+
+function renumberExamQuestions() {
+    var questions = document.querySelectorAll('.exam-question-card');
+    questions.forEach(function(q, index) {
+        var numEl = q.querySelector('.exam-question-number');
+        if (numEl) numEl.textContent = '<?php echo addslashes(get_phrase('question')); ?> ' + (index + 1);
+    });
+}
+
+function getExamQuestionsData() {
+    var questions = [];
+    document.querySelectorAll('.exam-question-card').forEach(function(card) {
+        var questionInput = card.querySelector('.exam-question-input');
+        var questionText = questionInput ? questionInput.value.trim() : '';
+        if (!questionText) return;
+
+        var options = [];
+        var correctAnswers = [];
+
+        card.querySelectorAll('.exam-answer-item').forEach(function(item, index) {
+            var answerInput = item.querySelector('.exam-answer-input');
+            var checkbox = item.querySelector('input[type="checkbox"]');
+            var answerText = answerInput ? answerInput.value.trim() : '';
+            var isCorrect = checkbox ? checkbox.checked : false;
+
+            if (answerText) {
+                options.push(answerText);
+                if (isCorrect) {
+                    correctAnswers.push(options.length - 1);
+                }
+            }
+        });
+
+        if (options.length >= 2) {
+            questions.push({
+                question: questionText,
+                options: options,
+                correct_answers: correctAnswers,
+                type: 'mcq'
+            });
+        }
+    });
+
+    return questions;
+}
+
+// Autosave variables - use window to prevent re-declaration
+var examIsDirty = window.examIsDirty || false;
+var examAutosaveTimer = window.examAutosaveTimer || null;
+var EXAM_AUTOSAVE_DELAY = 2000; // 2 seconds after last change
+
+function setExamDirty(dirty) {
+    window.examIsDirty = dirty;
+    examIsDirty = dirty;
+    var statusEl = document.getElementById('examSaveStatus');
+    if (!statusEl) return;
+    
+    if (dirty) {
+        statusEl.className = 'exam-save-status';
+        var iconEl = statusEl.querySelector('.exam-status-icon');
+        var textEl = statusEl.querySelector('.exam-status-text');
+        if (iconEl) iconEl.innerHTML = '<i class="fas fa-circle" style="font-size: 0.5rem;"></i>';
+        if (textEl) textEl.textContent = '<?php echo addslashes(get_phrase('unsaved_changes')); ?>';
+        
+        // Trigger autosave after delay
+        clearTimeout(window.examAutosaveTimer);
+        window.examAutosaveTimer = setTimeout(function() {
+            saveExamQuestions();
+        }, EXAM_AUTOSAVE_DELAY);
+    }
+}
+
+function updateSaveStatus(status, message) {
+    var statusEl = document.getElementById('examSaveStatus');
+    if (!statusEl) return;
+    
+    statusEl.className = 'exam-save-status ' + status;
+    
+    var icon = '<i class="fas fa-check"></i>';
+    if (status === 'saving') {
+        icon = '<i class="fas fa-spinner fa-spin"></i>';
+    } else if (status === 'error') {
+        icon = '<i class="fas fa-exclamation-triangle"></i>';
+    }
+    
+    var iconEl = statusEl.querySelector('.exam-status-icon');
+    var textEl = statusEl.querySelector('.exam-status-text');
+    if (iconEl) iconEl.innerHTML = icon;
+    if (textEl) textEl.textContent = message;
+}
+
+function saveExamQuestions() {
+    const examId = document.getElementById('currentExamId').value;
+    const questions = getExamQuestionsData();
+
+    // Show saving status
+    updateSaveStatus('saving', '<?php echo addslashes(get_phrase('saving')); ?>...');
+
+    // Get current CSRF token from hidden input
+    var csrfInput = document.getElementById('csrf_token');
+    var csrfName = csrfInput ? csrfInput.name : '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = csrfInput ? csrfInput.value : '<?php echo $this->security->get_csrf_hash(); ?>';
+    
+    var postData = {
+        exam_id: examId,
+        questions: JSON.stringify(questions)
+    };
+    postData[csrfName] = csrfHash;
+
+    $.ajax({
+        url: '<?php echo site_url('addons/courses/save_exam_questions'); ?>',
+        type: 'POST',
+        dataType: 'json',
+        data: postData,
+        success: function(response) {
+            if (response.success) {
+                examIsDirty = false;
+                updateSaveStatus('saved', '<?php echo addslashes(get_phrase('saved')); ?>');
+                
+                // Update question count in header
+                if (response.question_count !== undefined) {
+                    const countEl = document.getElementById('existingQuestionsCount');
+                    if (countEl) countEl.textContent = response.question_count;
+                }
+
+                // Reset to ready state after 2 seconds
+                setTimeout(() => {
+                    if (!examIsDirty) {
+                        updateSaveStatus('saved', '<?php echo addslashes(get_phrase('ready')); ?>');
+                    }
+                }, 2000);
+
+                // Update CSRF token
+                if (response.csrf && response.csrf.csrfHash) {
+                    var csrfInput = document.getElementById('csrf_token');
+                    if (csrfInput) {
+                        csrfInput.value = response.csrf.csrfHash;
+                    }
+                }
+            } else {
+                updateSaveStatus('error', '<?php echo addslashes(get_phrase('save_failed')); ?>');
+            }
+        },
+        error: function(xhr) {
+            updateSaveStatus('error', '<?php echo addslashes(get_phrase('network_error')); ?>');
+        }
+    });
+}
+
+// Keyboard shortcut: Ctrl+S to save
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveExamQuestions();
+    }
+});
+
+// Warn before leaving if unsaved changes
+window.addEventListener('beforeunload', function(e) {
+    if (examIsDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+function escapeHtmlAttr(text) {
+    if (!text) return '';
+    return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Initialize the integrated editor on page load or when loaded via AJAX
+// Use setTimeout to ensure DOM is ready when loaded via AJAX
+(function() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeExamQuestionEditor);
+    } else {
+        // DOM already loaded (AJAX case), initialize immediately
+        setTimeout(initializeExamQuestionEditor, 50);
+    }
+})();
+
+// Make functions globally available
+window.initializeExamQuestionEditor = initializeExamQuestionEditor;
+window.openExamQuestionEditor = openExamQuestionEditor;
+window.closeExamQuestionEditorWithCheck = closeExamQuestionEditorWithCheck;
+window.closeExamQuestionEditor = closeExamQuestionEditor;
+window.addExamQuestion = addExamQuestion;
+window.removeExamQuestion = removeExamQuestion;
+window.addExamAnswer = addExamAnswer;
+window.removeExamAnswer = removeExamAnswer;
+window.saveExamQuestions = saveExamQuestions;
+window.setExamDirty = setExamDirty;
+
 </script>
