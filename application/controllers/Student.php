@@ -235,7 +235,9 @@ class Student extends CI_Controller {
 
     if (empty($student_ids)) {
         log_message('error', 'recording - No student associated with user_id: ' . $user_id);
-        show_error('No student associated with this user.', 403);
+        $page_data['page_name'] = 'no_student_access';
+        $page_data['page_title'] = get_phrase('access_denied');
+        $this->load->view('backend/index', $page_data);
         return;
     }
 
@@ -250,7 +252,9 @@ class Student extends CI_Controller {
 
     if (empty($enrols)) {
         log_message('error', 'recording - User not enrolled in any school: ' . $user_id);
-        show_error('Not enrolled in any school.', 403);
+        $page_data['page_name'] = 'no_student_access';
+        $page_data['page_title'] = get_phrase('access_denied');
+        $this->load->view('backend/index', $page_data);
         return;
     }
 

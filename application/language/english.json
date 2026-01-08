@@ -3860,7 +3860,8 @@
     "pricing_plan_feature_save": "Pricing plan feature save",
     "pricing_plan_feature_updated_successfully": "Pricing plan feature updated successfully",
     "pricing_plan_feature_created_successfully": "Pricing plan feature created successfully",
-    "Exchanges":"Exchanges"
-
-
+    "Exchanges": "Exchanges",
+    "you_are_not_currently_enrolled_in_any_community": "You are not currently enrolled in any community",
+    "please_join_a_community_to_access_this_page": "Please join a community to access this page",
+    "go_to_dashboard": "Go to dashboard"
 }
