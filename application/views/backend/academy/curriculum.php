@@ -1,4 +1,12 @@
-﻿<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
+
+<style>
+.preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+</style>
 
 <!-- SweetAlert2 -->
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
@@ -71,9 +79,14 @@
                     <i class="fas fa-file-lines"></i>
                     <span><?php echo get_phrase("lesson"); ?></span>
                 </div>
-                <button type="button" class="btn-edit-preview" id="btnEditPreview" onclick="switchToEditMode()">
-                    <i class="fas fa-pen-to-square"></i> <?php echo get_phrase("edit"); ?>
-                </button>
+                <div class="preview-actions">
+                    <button type="button" class="btn-edit-preview-ai" id="btnGeneratePreview" onclick="openGenerateLessonFromPreview()" style="margin-right: 8px;">
+                        <i class="fas fa-wand-magic-sparkles"></i> <?php echo get_phrase("generate_with_ai"); ?>
+                    </button>
+                    <button type="button" class="btn-edit-preview" id="btnEditPreview" onclick="switchToEditMode()">
+                        <i class="fas fa-pen-to-square"></i> <?php echo get_phrase("edit"); ?>
+                    </button>
+                </div>
             </div>
             
             <!-- Preview Title -->
@@ -302,6 +315,11 @@
                                     <span class="lesson-name"><?php echo html_entity_decode($lesson['title'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </div>
                                 <div class="lesson-actions">
+                                    <?php if($lesson['lesson_type'] != 'quiz'): ?>
+                                    <button type="button" class="btn-icon btn-generate-lesson" onclick="event.stopPropagation(); openGenerateLessonModal(<?php echo $lesson['id']; ?>, <?php echo $section['id']; ?>, <?php echo (!empty($lesson['attachment_type']) || !empty($lesson['video_url'])) ? 'true' : 'false'; ?>)" title="<?php echo get_phrase("generate_with_ai"); ?>">
+                                        <i class="fas fa-wand-magic-sparkles" style="color: orange;"></i>
+                                    </button>
+                                    <?php endif; ?>
                                     <button type="button" class="btn-icon btn-delete-lesson" onclick="event.stopPropagation(); confirmDelete('<?php echo site_url('addons/courses/lessons/'.$course['id'].'/delete/'.$lesson['id']); ?>')" title="<?php echo get_phrase("delete"); ?>">
                                         <i class="fas fa-trash-can"></i>
                                     </button>
@@ -1514,6 +1532,8 @@ function openLessonPreview(lessonId, sectionId, title) {
     document.getElementById('previewIsQuiz').value = 'false';
     document.getElementById('previewTitle').textContent = title;
     document.getElementById('previewType').innerHTML = '<i class="fas fa-file-lines"></i><span><?php echo addslashes(get_phrase("lesson")); ?></span>';
+    const btnGen = document.getElementById('btnGeneratePreview');
+    if(btnGen) btnGen.style.display = 'inline-block';
     document.getElementById('previewContent').innerHTML = '<p class="preview-loading"><i class="fas fa-spinner fa-spin"></i> <?php echo addslashes(get_phrase("loading")); ?>...</p>';
     
     // Mark lesson as active
@@ -1566,6 +1586,8 @@ function openQuizPreview(quizId, sectionId, title) {
     document.getElementById('previewIsQuiz').value = 'true';
     document.getElementById('previewTitle').textContent = title;
     document.getElementById('previewType').innerHTML = '<i class="fas fa-circle-question"></i><span><?php echo addslashes(get_phrase("quiz")); ?></span>';
+    const btnGen = document.getElementById('btnGeneratePreview');
+    if(btnGen) btnGen.style.display = 'none';
     document.getElementById('previewContent').innerHTML = '<p class="preview-loading"><i class="fas fa-spinner fa-spin"></i> <?php echo addslashes(get_phrase("loading")); ?>...</p>';
     
     // Mark quiz as active
@@ -2789,6 +2811,12 @@ function renderSection(section, sectionNumber) {
         
         const clickHandler = isQuiz ? `openQuizPreview(${lesson.id}, ${section.id}, '${escapeHtml(lesson.title)}')` : `openLessonPreview(${lesson.id}, ${section.id}, '${escapeHtml(lesson.title)}')`;
         
+        const generateBtn = !isQuiz ? `
+            <button type="button" class="btn-icon btn-generate-lesson" onclick="event.stopPropagation(); openGenerateLessonModal(${lesson.id}, ${section.id}, ${lesson.attachment_type || lesson.video_url ? 'true' : 'false'})" title="<?php echo addslashes(get_phrase("generate_with_ai")); ?>">
+                <i class="fas fa-wand-magic-sparkles" style="color: orange;"></i>
+            </button>
+        ` : '';
+        
         lessonsHtml += `
             <div class="lesson-item ${isQuiz ? 'quiz-item' : ''}" id="lesson-item-${lesson.id}" data-lesson-id="${lesson.id}">
                 <div class="lesson-drag-handle" title="<?php echo addslashes(get_phrase("drag_to_reorder")); ?>">
@@ -2800,6 +2828,7 @@ function renderSection(section, sectionNumber) {
                     <span class="lesson-name">${escapeHtml(lesson.title)}</span>
                 </div>
                 <div class="lesson-actions">
+                    ${generateBtn}
                     <button type="button" class="btn-icon btn-delete-lesson" onclick="event.stopPropagation(); confirmDelete('<?php echo site_url('addons/courses/lessons/'.$course['id'].'/delete/'); ?>${lesson.id}')" title="<?php echo addslashes(get_phrase("delete")); ?>">
                         <i class="fas fa-trash-can"></i>
                     </button>
@@ -2924,6 +2953,12 @@ function addLessonToSidebar(itemId, sectionId, title, type = 'lesson') {
         ? `openQuizPreview(${itemId}, ${sectionId}, '${escapeHtml(title)}')`
         : `openLessonPreview(${itemId}, ${sectionId}, '${escapeHtml(title)}')`;
     
+    const generateBtn = !isQuiz ? `
+        <button type="button" class="btn-icon btn-generate-lesson" onclick="event.stopPropagation(); openGenerateLessonModal(${itemId}, ${sectionId}, false)" title="<?php echo addslashes(get_phrase("generate_with_ai")); ?>">
+            <i class="fas fa-wand-magic-sparkles" style="color: orange;"></i>
+        </button>
+    ` : '';
+    
     const itemHtml = `
         <div class="${itemClass}" id="lesson-item-${itemId}" data-lesson-id="${itemId}">
             <div class="lesson-drag-handle" title="<?php echo addslashes(get_phrase("drag_to_reorder")); ?>">
@@ -2935,6 +2970,7 @@ function addLessonToSidebar(itemId, sectionId, title, type = 'lesson') {
                 <span class="lesson-name">${escapeHtml(title).replace(/\\'/g, "'")}</span>
             </div>
             <div class="lesson-actions">
+                ${generateBtn}
                 <button type="button" class="btn-icon btn-delete-lesson" onclick="event.stopPropagation(); confirmDelete('<?php echo site_url('addons/courses/lessons/'.$course['id'].'/delete/'); ?>${itemId}')" title="<?php echo addslashes(get_phrase("delete")); ?>">
                     <i class="fas fa-trash-can"></i>
                 </button>
@@ -4322,7 +4358,7 @@ function extractPdfStructure(file) {
                             <option value="french" selected><?php echo get_phrase("french"); ?></option>
                             <option value="english"><?php echo get_phrase("english"); ?></option>
                             <option value="spanish"><?php echo get_phrase("spanish"); ?></option>
-                            <option value="german"><?php echo get_phrase("german"); ?></option>
+                            <option value="dutch"><?php echo get_phrase("dutch"); ?></option>
                             <option value="arabic"><?php echo get_phrase("arabic"); ?></option>
                         </select>
                     </div>
@@ -4989,7 +5025,7 @@ function extractPdfStructure(file) {
                             <option value="french" selected><?php echo get_phrase("french"); ?></option>
                             <option value="english"><?php echo get_phrase("english"); ?></option>
                             <option value="spanish"><?php echo get_phrase("spanish"); ?></option>
-                            <option value="german"><?php echo get_phrase("german"); ?></option>
+                            <option value="dutch"><?php echo get_phrase("dutch"); ?></option>
                             <option value="arabic"><?php echo get_phrase("arabic"); ?></option>
                         </select>
                     </div>
@@ -5064,6 +5100,7 @@ function extractPdfStructure(file) {
     
     <!-- Hidden inputs -->
     <input type="hidden" id="aiLessonSectionId" value="">
+    <input type="hidden" id="aiLessonLessonId" value="">
     <input type="hidden" id="aiLessonCourseId" value="<?php echo $course['id']; ?>">
 </div>
 
@@ -5540,10 +5577,59 @@ let aiLessonCurrentSectionId = null;
 let aiLessonGenerationInProgress = false;
 let aiLessonPdfEventListener = null; // Store event listener reference
 
+// Open Generate Lesson Modal (for existing lessons)
+function openGenerateLessonModal(lessonId, sectionId, hasContent) {
+    if (hasContent) {
+        Swal.fire({
+            title: '<?php echo addslashes(get_phrase("warning_lesson_has_content")); ?>',
+            text: '<?php echo addslashes(get_phrase("generating_ai_content_will_overwrite_current_lesson_content")); ?>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<?php echo addslashes(get_phrase("yes_overwrite_it")); ?>',
+            cancelButtonText: '<?php echo addslashes(get_phrase("cancel")); ?>',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                _proceedToOpenAiModal(lessonId, sectionId);
+            }
+        });
+    } else {
+        _proceedToOpenAiModal(lessonId, sectionId);
+    }
+}
+
+function openGenerateLessonFromPreview() {
+    const lessonId = document.getElementById('previewLessonId').value;
+    const sectionId = document.getElementById('previewSectionId').value;
+    const previewContent = document.getElementById('previewContent');
+    
+    // Check if there is content (if .preview-empty is NOT present)
+    let hasContent = true;
+    if (previewContent.querySelector('.preview-empty')) {
+        hasContent = false;
+    }
+    
+    openGenerateLessonModal(lessonId, sectionId, hasContent);
+}
+
+function _proceedToOpenAiModal(lessonId, sectionId) {
+    aiLessonCurrentSectionId = sectionId;
+    document.getElementById('aiLessonSectionId').value = sectionId;
+    document.getElementById('aiLessonLessonId').value = lessonId;
+    
+    showModal('aiLessonModal');
+    resetAiLessonModal();
+    initAiLessonPdfEvents();
+    updateSourceSections();
+}
+
 // Open AI Lesson Modal
 function openAiLessonModal(sectionId) {
     aiLessonCurrentSectionId = sectionId;
     document.getElementById('aiLessonSectionId').value = sectionId;
+    document.getElementById('aiLessonLessonId').value = ''; // Clear lesson ID for new lesson
     showModal('aiLessonModal');
     resetAiLessonModal();
 
@@ -5681,6 +5767,7 @@ function formatFileSize(bytes) {
 function generateAiLesson() {
     const sectionId = document.getElementById('aiLessonSectionId').value;
     const courseId = document.getElementById('aiLessonCourseId').value;
+    const lessonId = document.getElementById('aiLessonLessonId').value;
     const source = document.querySelector('input[name="lessonSource"]:checked').value;
     const audience = document.getElementById('lessonAudience').value;
     const duration = document.getElementById('lessonDuration').value;
@@ -5707,6 +5794,9 @@ function generateAiLesson() {
     const formData = new FormData();
     formData.append('section_id', sectionId);
     formData.append('course_id', courseId);
+    if (lessonId) {
+        formData.append('lesson_id', lessonId);
+    }
     formData.append('source', source);
     formData.append('audience', audience);
     formData.append('duration', duration);
@@ -5720,8 +5810,12 @@ function generateAiLesson() {
     // Add CSRF token
     formData.append(document.getElementById('csrf_name').value, document.getElementById('csrf_hash').value);
     
+    const url = lessonId 
+        ? '<?php echo site_url("addons/courses/update_lesson_from_ai"); ?>' 
+        : '<?php echo site_url("addons/courses/generate_lesson_from_ai"); ?>';
+    
     // Send request
-    fetch('<?php echo site_url("addons/courses/generate_lesson_from_ai"); ?>', {
+    fetch(url, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -5740,16 +5834,21 @@ function generateAiLesson() {
             // Show success message and add lesson to sidebar
             setTimeout(() => {
                 closeAiLessonModal();
-                toastr.success('<?php echo addslashes(get_phrase("lesson_generated_successfully")); ?>');
+                toastr.success(lessonId ? '<?php echo addslashes(get_phrase("lesson_updated_successfully")); ?>' : '<?php echo addslashes(get_phrase("lesson_generated_successfully")); ?>');
 
-                // Add the new lesson to the sidebar without page refresh
-                if (data.lesson_id && data.lesson_title) {
-                    addLessonToSidebar(data.lesson_id, sectionId, data.lesson_title, 'lesson');
+                if (lessonId) {
+                    // Open the lesson in editor to show new content
+                    openLessonEditor(lessonId, sectionId);
+                } else {
+                    // Add the new lesson to the sidebar without page refresh
+                    if (data.lesson_id && data.lesson_title) {
+                        addLessonToSidebar(data.lesson_id, sectionId, data.lesson_title, 'lesson');
 
-                    // Open the lesson in editor after delay to ensure DOM is updated and content is ready
-                    setTimeout(() => {
-                        openLessonEditor(data.lesson_id, sectionId);
-                    }, 300);
+                        // Open the lesson in editor after delay to ensure DOM is updated and content is ready
+                        setTimeout(() => {
+                            openLessonEditor(data.lesson_id, sectionId);
+                        }, 300);
+                    }
                 }
             }, 1000);
         } else {

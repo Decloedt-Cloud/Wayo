@@ -2483,7 +2483,7 @@
     "wayo_academy,_[moroccan_address_to_be_completed]": "Wayo، [العنوان في المغرب ليُستكمل]",
     "at_wayo_academy,_we_are_committed_to_collecting_and_using_your_data_responsibly,_in_compliance_with_applicable_data_protection_laws,_including_moroccan_law_no._09-08_and,_when_applicable,_the_gdpr_(eu_2016/679).": "في Wayo، نلتزم بحماية بياناتك الشخصية وجمعها واستخدامها بمسؤولية وشفافية، وذلك وفقًا للقوانين المعمول بها، بما في ذلك القانون المغربي رقم 09-08، وعند الاقتضاء، اللائحة العامة لحماية البيانات الأوروبية (EU 2016/679).",
     "by_using_our_platform,_you_agree_to_the_collection,_processing,_and_use_of_your_data_as_described_in_this_privacy_policy.": "باستخدامك لمنصتنا، فإنك توافق على جمع ومعالجة واستخدام بياناتك كما هو موضح في سياسة الخصوصية هذه.",
-    "we_only_collect_data_that_is_necessary,_in_accordance_with_law_09-08_and,_where_applicable,_the_gdpr.":"نقوم بجمع البيانات الضرورية فقط، وبما يتوافق مع المتطلبات القانونية المعمول بها.",
+    "we_only_collect_data_that_is_necessary,_in_accordance_with_law_09-08_and,_where_applicable,_the_gdpr.": "نقوم بجمع البيانات الضرورية فقط، وبما يتوافق مع المتطلبات القانونية المعمول بها.",
     "2.1._for_mentors_(coaches_/_trainers)": "2.1 بيانات المرشدين (المدربون / الموجّهون)",
     "identification_and_contact_data:": "بيانات التعريف والتواصل:",
     "first_name,_last_name,_email_address,_phone_number.": "الاسم الشخصي والعائلي، البريد الإلكتروني، رقم الهاتف.",
@@ -2525,7 +2525,7 @@
     "performance_of_a_contract": "تنفيذ العقد",
     "or_pre-contractual_measures_(e.g.,_registration,_course_access,_billing).": "أو الإجراءات السابقة له (التسجيل، الوصول إلى المحتوى، الفوترة).",
     "compliance_with_a_legal_obligation": "الامتثال لالتزام قانوني",
-    "(_e.g.,_invoice_retention,_tax/accounting_obligations).":"(الاحتفاظ بالفواتير والبيانات المحاسبية).",
+    "(_e.g.,_invoice_retention,_tax/accounting_obligations).": "(الاحتفاظ بالفواتير والبيانات المحاسبية).",
     "our_legitimate_interest": "مصلحتنا المشروعة",
     "(_e.g.,_security,_service_improvement,_internal_analyses).": "(الأمن، تحسين الخدمات، التحليلات الداخلية).",
     "5._sharing_your_information": "5. مشاركة معلوماتك",
@@ -3534,5 +3534,10 @@
     "please_join_a_community_to_access_this_page": "يرجى الانضمام إلى مجتمع للوصول إلى هذه الصفحة",
     "go_to_dashboard": "الذهاب إلى لوحة التحكم",
     "الوصول_مرفوض": "الوصول مرفوض",
-    "billing_entities": "كيانات الفوترة"
+    "billing_entities": "كيانات الفوترة",
+    "generate_with_ai": "إنشاء باستخدام الذكاء الاصطناعي",
+    "warning_lesson_has_content": "تحذير: الدرس يحتوي على محتوى",
+    "generating_ai_content_will_overwrite_current_lesson_content": "إنشاء محتوى بالذكاء الاصطناعي سيؤدي إلى الكتابة فوق محتوى الدرس الحالي",
+    "yes_overwrite_it": "نعم، استبدله",
+    "lesson_updated_successfully": "تم تحديث الدرس بنجاح"
 }
