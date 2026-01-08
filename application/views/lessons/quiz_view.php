@@ -223,7 +223,7 @@ $lesson_progress = lesson_progress($lesson_details['id']);
     margin-top: 20px;
 }
 .start-exam-btn {
-    background: #6366f1;
+    background: #4f46e5 ;
     border: none;
     padding: 6px 6px;
     font-size: 1rem;
