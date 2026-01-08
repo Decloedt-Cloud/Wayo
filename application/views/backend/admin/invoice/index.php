@@ -6,7 +6,7 @@
    ============================================================================ */
 
 :root {
-    --idx-primary: #4f46e5;
+    --idx-primary: #6366f1;
     --idx-primary-light: #eef2ff;
     --idx-success: #059669;
     --idx-dark: #1e293b;
@@ -17,7 +17,7 @@
 
 /* Header Card */
 .idx-header {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     border-radius: 16px;
     padding: 1.5rem 2rem;
     margin-bottom: 1.5rem;
@@ -81,13 +81,13 @@
 }
 
 .idx-btn-primary {
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    background: linear-gradient(135deg, #1e293b, #1e293b);
     color: white;
 }
 
 .idx-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     color: white;
 }
 
@@ -227,7 +227,7 @@
 .idx-select:focus {
     outline: none;
     border-color: var(--idx-primary);
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
 .idx-filter-btn {
@@ -242,13 +242,13 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
 }
 
 .idx-filter-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 /* Export Section */
@@ -348,14 +348,14 @@
             <i class="mdi mdi-file-document-multiple"></i>
         </div>
         <div class="idx-header-text">
-            <h4><?php echo get_phrase('student_fee_manager'); ?></h4>
+            <h4><?php echo get_phrase('invoicing'); ?></h4>
             <p><?php echo get_phrase('manage_invoices_and_payments'); ?></p>
         </div>
     </div>
     <div class="idx-header-actions">
-        <button type="button" class="idx-btn idx-btn-success" onclick="rightModal('<?php echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')">
-            <i class="mdi mdi-account-group"></i> <?php echo get_phrase('add_mass_invoice'); ?>
-        </button>
+        <!-- <button type="button" class="idx-btn idx-btn-success" onclick="rightModal('<?php // echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')">
+            <i class="mdi mdi-account-group"></i> <?php //echo get_phrase('add_mass_invoice'); ?>
+        </button> -->
         <button type="button" class="idx-btn idx-btn-primary" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')">
             <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?>
         </button>

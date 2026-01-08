@@ -6,6 +6,9 @@
 
 $invoices = $this->crud_model->get_invoice_by_date_range($date_from, $date_to, $selected_class, $selected_status)->result_array();
 
+// Get school currency for costs display
+$school_currency = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency') ?? 'EUR';
+
 // ============================================================================
 // STATISTICS CALCULATION
 // ============================================================================
@@ -18,9 +21,16 @@ $stats = [
     'total_paid' => 0,
     'total_due' => 0,
     'fx_payments' => 0,
+    'total_cost' => 0,
     'currencies' => [],
     'methods' => []
 ];
+
+// Calculate total expenses/costs for the same period
+$expenses = $this->crud_model->get_expense($date_from, $date_to)->result_array();
+foreach ($expenses as $expense) {
+    $stats['total_cost'] += (float)$expense['amount'];
+}
 
 $today = time();
 foreach ($invoices as $inv) {
@@ -76,11 +86,12 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 /* Stats Grid */
 .ai-stats-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 0.75rem;
     margin-bottom: 1rem;
 }
-@media (max-width: 1400px) { .ai-stats-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1400px) { .ai-stats-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 992px) { .ai-stats-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px) { .ai-stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
 .ai-stat-card {
@@ -104,6 +115,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 .ai-stat-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
 .ai-stat-card.orange::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
 .ai-stat-card.cyan::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+.ai-stat-card.pink::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
 
 .ai-stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .ai-stat-icon {
@@ -118,6 +130,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 .ai-stat-card.blue .ai-stat-icon { background: #dbeafe; color: #2563eb; }
 .ai-stat-card.orange .ai-stat-icon { background: #fef3c7; color: #d97706; }
 .ai-stat-card.cyan .ai-stat-icon { background: #cffafe; color: #0891b2; }
+.ai-stat-card.pink .ai-stat-icon { background: #fce7f3; color: #db2777; }
 
 .ai-stat-trend { font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; }
 .ai-stat-trend.up { background: #d1fae5; color: #059669; }
@@ -425,7 +438,12 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
     <div class="ai-stat-card cyan">
         <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-swap-horizontal-circle"></i></div></div>
         <div class="ai-stat-value"><?php echo $stats['fx_payments']; ?></div>
-        <div class="ai-stat-label">FX</div>
+        <div class="ai-stat-label"><?php echo get_phrase('Exchanges'); ?></div>
+    </div>
+    <div class="ai-stat-card pink">
+        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-cash-minus"></i></div></div>
+        <div class="ai-stat-value"><?php echo number_format($stats['total_cost'], 0); ?> <small style="font-size: 0.7rem; color: var(--ai-gray);"><?php echo $school_currency; ?></small></div>
+        <div class="ai-stat-label"><?php echo get_phrase('cost'); ?></div>
     </div>
 </div>
 
@@ -497,7 +515,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
             </span>
             <?php if ($stats['fx_payments'] > 0): ?>
             <span class="ai-chip" data-filter="fx" onclick="filterStatus('fx', this)">
-                <i class="mdi mdi-swap-horizontal"></i> FX
+                <i class="mdi mdi-swap-horizontal"></i> <?php echo get_phrase('Exchanges'); ?>
                 <span class="count"><?php echo $stats['fx_payments']; ?></span>
             </span>
             <?php endif; ?>
@@ -619,7 +637,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                         <span class="ai-status-dot"></span>
                         <?php echo $is_paid ? get_phrase('paid') : ($is_overdue ? get_phrase('overdue') : get_phrase('unpaid')); ?>
                     </span>
-                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="mdi mdi-currency-usd-circle"></i> FX</div><?php endif; ?>
+                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="mdi mdi-currency-usd-circle"></i> <?php echo get_phrase('Exchanges'); ?></div><?php endif; ?>
                 </td>
                 <td>
                     <div class="ai-actions">

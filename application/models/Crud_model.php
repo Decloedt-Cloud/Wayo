@@ -135,23 +135,31 @@ class Crud_model extends CI_Model
 		$spaceData = [
 			// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
 			'name' => $data['name'], // Nom :  <classe>
-			'community_name' => $communityName,
-			'community_id' => $communitySpaceId,
 			'description' => '',
 			'join_policy' => 0, // 0 = Ouvert : tout le monde peut rejoindre l’espace sans validation
 			'visibility' => 2,  // 2 = Public : visible par tout le monde
-
 		];
 
 		$humhubResponse = $this->humhub_sso->createSpace($spaceData);
 		if (isset($humhubResponse['id'])) {
-			// Mise à jour directe dans la base HumHub
+			// Mise à jour directe dans la base HumHub (seulement si les colonnes existent)
 			$dbHumhub = $this->load->database('humhub', TRUE);
-			$dbHumhub->where('id', $humhubResponse['id']);
-			$dbHumhub->update('space', [
-				'community_name' => $communityName,
-				'community_id'   => $communitySpaceId
-			]);
+
+			// Vérifier si les colonnes community_name et community_id existent
+			$columns = $dbHumhub->list_fields('space');
+			$hasCommunityName = in_array('community_name', $columns);
+			$hasCommunityId = in_array('community_id', $columns);
+
+			if ($hasCommunityName && $hasCommunityId) {
+				$dbHumhub->where('id', $humhubResponse['id']);
+				$dbHumhub->update('space', [
+					'community_name' => $communityName,
+					'community_id'   => $communitySpaceId
+				]);
+			} else {
+				// Log pour indiquer que les colonnes sont manquantes
+				log_message('debug', 'Colonnes community_name et community_id manquantes dans table space HumHub. Migration SQL requise.');
+			}
 		}
 		log_message('debug', 'Réponse HumHub Space: ' . json_encode($humhubResponse));
 
@@ -272,22 +280,37 @@ class Crud_model extends CI_Model
 				$spaceUpdate = [
 					// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
 					'name' => $data['name'], // Nom : <classe>
-					'community_name' => $communityName,
-					'community_id' => $communitySpaceId,
 					'description' => '',
 					'defaultStreamSort' => $existing['defaultStreamSort'] ?? ''
 				];
 
+				// Vérifier si les colonnes community_name et community_id existent avant de les ajouter
+				$dbHumhub = $this->load->database('humhub', TRUE);
+				$columns = $dbHumhub->list_fields('space');
+				$hasCommunityName = in_array('community_name', $columns);
+				$hasCommunityId = in_array('community_id', $columns);
+
+				if ($hasCommunityName) {
+					$spaceUpdate['community_name'] = $communityName;
+				}
+				if ($hasCommunityId) {
+					$spaceUpdate['community_id'] = $communitySpaceId;
+				}
+
 				// Envoi à l’API HumHub
 				$this->humhub_sso->updateSpace($class->humhub_space_id, $spaceUpdate);
 
-				// Mise à jour directe dans la base HumHub
-				$dbHumhub = $this->load->database('humhub', TRUE);
-				$dbHumhub->where('id', $class->humhub_space_id);
-				$dbHumhub->update('space', [
-					'community_name' => $communityName,
-					'community_id'   => $communitySpaceId
-				]);
+				// Mise à jour directe dans la base HumHub (seulement si les colonnes existent)
+				if ($hasCommunityName && $hasCommunityId) {
+					$dbHumhub->where('id', $class->humhub_space_id);
+					$dbHumhub->update('space', [
+						'community_name' => $communityName,
+						'community_id'   => $communitySpaceId
+					]);
+				} else {
+					// Log pour indiquer que les colonnes sont manquantes
+					log_message('debug', 'Colonnes community_name et community_id manquantes dans table space HumHub. Migration SQL requise.');
+				}
 				// Copier la nouvelle photo vers HumHub (si présente)
 				if (!empty($data['photo']) && isset($existing['guid'])) {
 					$guid = $existing['guid'];
@@ -1623,6 +1646,7 @@ class Crud_model extends CI_Model
 	public function create_expense_category()
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
+		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('expense_categories', $data);
@@ -1636,6 +1660,7 @@ class Crud_model extends CI_Model
 	public function update_expense_category($id)
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
+		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
 		$this->db->where('id', $id);
 		$this->db->update('expense_categories', $data);
 		$response = array(
