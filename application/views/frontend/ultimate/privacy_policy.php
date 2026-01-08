@@ -42,7 +42,6 @@
             <li><a href="#s2-apprenants"><?php echo get_phrase("2.2_Learners"); ?></a></li>
             <li><a href="#s2-techniques"><?php echo get_phrase("2.3_Technical_Information"); ?></a></li>
             <li><a href="#s2-paiement"><?php echo get_phrase("2.4_Payment_Data"); ?></a></li>
-            <li><a href="#s2-mineurs"><?php echo get_phrase("2.5_Data_of_Minors"); ?></a></li>
           </ol>
         </li>
         <li><a href="#s3-finalites"><?php echo get_phrase("3._Purpose"); ?></a></li>
@@ -53,7 +52,6 @@
         <li><a href="#s8-cookies"><?php echo get_phrase("8._Cookies_and_Tracking_Technologies"); ?></a></li>
         <li><a href="#s9-liens"><?php echo get_phrase("9._Links_to_Third-Party_Sites"); ?></a></li>
         <li><a href="#s10-durees"><?php echo get_phrase("10._Retention_Periods"); ?></a></li>
-        <li><a href="#s11-enfants"><?php echo get_phrase("11._Children_Privacy"); ?></a></li>
         <li><a href="#s12-droits"><?php echo get_phrase("12._Your_Rights"); ?></a></li>
         <li><a href="#s13-transferts"><?php echo get_phrase("13._International_Transfers"); ?></a></li>
         <li><a href="#s14-modifs"><?php echo get_phrase("14._Changes"); ?></a></li>
@@ -117,10 +115,6 @@
     <p><em><?php echo get_phrase("Important:"); ?></em> <?php echo get_phrase("card_data_is_processed_exclusively_by_our_payment_provider_(e.g.,_Stripe)._Wayo_Academy_does_not_store_credit_card_information."); ?></p>
   </div>
 
-  <div class="pp-card" id="s2-mineurs">
-    <h3><?php echo get_phrase("2.5._Data_of_Minors"); ?></h3>
-    <p><?php echo get_phrase("For_learners_under_18,_data_is_collected_only_with_the_explicit_consent_of_a_parent_or_legal_guardian._Parents/guardians_can_request_access,_correction,_or_deletion_of_their_child's_data_via"); ?> <a href="mailto:info@wayo.cloud"><?php echo get_phrase("info@wayo.cloud"); ?></a>.</p>
-  </div>
 </section>
 
 <!-- 3. Purpose -->
@@ -157,7 +151,7 @@
   <ul>
     <li><strong><?php echo get_phrase("Essential_service_providers:"); ?></strong>
       <ul>
-        <li><strong><?php echo get_phrase("Stripe"); ?></strong> <?php echo get_phrase("(_secure_payments):_processes_only_necessary_payment_data."); ?></li>
+        <li><strong></strong> <?php echo get_phrase("(_secure_payments):_processes_only_necessary_payment_data."); ?></li>
         <li><strong><?php echo get_phrase("Hosting_providers"); ?></strong> <?php echo get_phrase("(_servers_preferably_within_the_EU):_content_storage_and_delivery,_databases."); ?></li>
         <li><strong><?php echo get_phrase("Emailing_tools"); ?></strong> <?php echo get_phrase("(_e.g.,_Brevo/Mailchimp):_transactional_emails_and,_with_consent,_marketing."); ?></li>
         <li><strong><?php echo get_phrase("Analytics"); ?></strong> <?php echo get_phrase("(_e.g.,_Google_Analytics):_audience_measurement,_subject_to_consent_for_non-essential_cookies."); ?></li>
@@ -249,11 +243,6 @@
   </div>
 </section>
 
-<!-- 11. Children's Privacy -->
-<section class="pp-section" id="s11-enfants">
-  <h2><?php echo get_phrase("11._Children's_Privacy"); ?></h2>
-  <p><?php echo get_phrase("For_users_under_18,_collection_and_processing_are_done_only_with_explicit_consent_of_a_parent/guardian._Parents/guardians_can_access,_correct,_or_request_deletion_of_their_child's_data_by_writing_to"); ?> <a href="mailto:info@wayo.cloud">info@wayo.cloud</a>.</p>
-</section>
 
 <!-- 12. Your Rights -->
 <section class="pp-section" id="s12-droits">
@@ -263,10 +252,8 @@
     <li><strong><?php echo get_phrase("Access:"); ?></strong><?php echo get_phrase("_obtain_confirmation_that_data_concerning_you_is_processed_and_receive_a_copy."); ?></li>
     <li><strong><?php echo get_phrase("Rectification:"); ?></strong> <?php echo get_phrase("correct_inaccurate_or_incomplete_data."); ?></li>
     <li><strong><?php echo get_phrase("Erasure:"); ?></strong> <?php echo get_phrase("request_deletion_of_your_data,_subject_to_legal_obligations."); ?></li>
-    <li><strong><?php echo get_phrase("Objection:"); ?></strong> <?php echo get_phrase("object_to_processing_for_legitimate_reasons_(including_marketing)."); ?></li>
     <li><strong><?php echo get_phrase("Restriction:"); ?></strong> <?php echo get_phrase("request_temporary_limitation_of_processing_in_certain_cases."); ?></li>
     <li><strong><?php echo get_phrase("Portability_(GDPR):"); ?></strong> <?php echo get_phrase("receive_your_data_in_a_structured,_commonly_used_format."); ?></li>
-    <li><strong><?php echo get_phrase("Withdraw_consent:"); ?></strong> <?php echo get_phrase("at_any_time,_without_affecting_the_legality_of_prior_processing."); ?></li>
   </ul>
   <p><?php echo get_phrase("To_exercise_your_rights:"); ?> <a href="mailto:info@wayo.cloud">info@wayo.cloud</a>. <?php echo get_phrase("Proof_of_identity_may_be_required._We_will_respond_within_30_days_(legal_timeframe)."); ?></p>
   <p><strong><?php echo get_phrase("Moroccan_supervisory_authority_(CNDP):"); ?></strong> <a href="https://www.cndp.ma" rel="noopener">www.cndp.ma</a> – <?php echo get_phrase("You_may_contact_the_CNDP_if_you_believe_your_rights_are_not_respected._For_EU_users,_you_may_contact_your_member_state_authority."); ?></p>
