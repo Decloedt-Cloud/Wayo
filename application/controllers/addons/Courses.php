@@ -32,7 +32,10 @@ class Courses extends CI_Controller {
 
     $this->load->database();
     $this->load->library('session');
-    $this->lmStudioUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    
+    // DeepSeek API Configuration
+    $this->deepseekUrl = 'https://api.deepseek.com/v1/chat/completions';
+    $this->deepseekApiKey = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API Key
     
     // Initialize HTMLPurifier for XSS protection
     $this->initHtmlPurifier();
@@ -1243,6 +1246,139 @@ public function manage_multiple_choices_options() {
     }
 }
 
+// Save exam questions from integrated editor (autosave)
+public function save_exam_questions() {
+    $this->student_access_denied();
+
+    $exam_id = $this->input->post('exam_id');
+    $questions_json = $this->input->post('questions');
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($exam_id)) {
+        echo json_encode(array(
+            'success' => false,
+            'message' => get_phrase('exam_id_required'),
+            'csrf' => $csrf
+        ));
+        return;
+    }
+
+    // Verify exam exists
+    $exam = $this->lms_model->get_exams('exam', $exam_id)->row_array();
+    if (!$exam) {
+        echo json_encode(array(
+            'success' => false,
+            'message' => get_phrase('exam_not_found'),
+            'csrf' => $csrf
+        ));
+        return;
+    }
+
+    // Save questions if provided
+    if (!empty($questions_json)) {
+        $questions = json_decode($questions_json, true);
+        
+        if (is_array($questions)) {
+            // Delete existing questions for this exam
+            $this->db->where('exam_id', $exam_id);
+            $this->db->delete('exam_questions');
+            
+            // Insert new questions
+            $order = 0;
+            foreach ($questions as $q) {
+                if (empty($q['question']) || empty($q['options']) || count($q['options']) < 2) {
+                    continue;
+                }
+                
+                $order++;
+                $correct_answers = isset($q['correct_answers']) ? $q['correct_answers'] : array();
+                
+                $question_data = array(
+                    'exam_id' => $exam_id,
+                    'title' => html_escape($q['question']),
+                    'type' => 'multiple_choice',
+                    'number_of_options' => count($q['options']),
+                    'options' => json_encode($q['options']),
+                    'correct_answers' => json_encode($correct_answers),
+                    'order' => $order
+                );
+                $this->db->insert('exam_questions', $question_data);
+            }
+        }
+    }
+
+    // Get updated question count
+    $question_count = $this->db->where('exam_id', $exam_id)->count_all_results('exam_questions');
+
+    echo json_encode(array(
+        'success' => true,
+        'message' => get_phrase('questions_saved_successfully'),
+        'question_count' => $question_count,
+        'csrf' => $csrf
+    ));
+}
+
+// Get all exam questions as JSON (for refreshing editor after generation)
+public function get_exam_questions_json($exam_id = "") {
+    $this->student_access_denied();
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($exam_id)) {
+        echo json_encode(array('success' => false, 'questions' => [], 'csrf' => $csrf));
+        return;
+    }
+
+    $questions_result = $this->lms_model->get_exam_questions($exam_id)->result_array();
+    
+    $questions = array_map(function($q) {
+        return array(
+            'id' => $q['id'],
+            'question' => html_entity_decode($q['title'], ENT_QUOTES, 'UTF-8'),
+            'options' => json_decode($q['options'], true) ?: [],
+            'correct_answers' => json_decode($q['correct_answers'], true) ?: []
+        );
+    }, $questions_result);
+
+    echo json_encode(array(
+        'success' => true,
+        'questions' => $questions,
+        'csrf' => $csrf
+    ));
+}
+
+// Get exam question by ID for editing
+public function get_exam_question($question_id = "") {
+    $this->student_access_denied();
+
+    $csrf = array(
+        'csrfName' => $this->security->get_csrf_token_name(),
+        'csrfHash' => $this->security->get_csrf_hash(),
+    );
+
+    if (empty($question_id)) {
+        echo json_encode(array('success' => false, 'csrf' => $csrf));
+        return;
+    }
+
+    $question = $this->lms_model->get_exam_question_by_id($question_id)->row_array();
+    
+    if ($question) {
+        $question['options'] = json_decode($question['options'], true);
+        $question['correct_answers'] = json_decode($question['correct_answers'], true);
+        echo json_encode(array('success' => true, 'question' => $question, 'csrf' => $csrf));
+    } else {
+        echo json_encode(array('success' => false, 'message' => get_phrase('question_not_found'), 'csrf' => $csrf));
+    }
+}
+
 public function manage_exam_multiple_choices_options() {
     $number_of_options = $this->input->post('number_of_options');
     $html = '';
@@ -1454,12 +1590,16 @@ public function generate_questions_from_pdf()
     // Libérer le verrouillage après succès
     $this->session->unset_userdata($generation_key);
 
+    // Get total question count for this exam
+    $total_questions = $this->db->where('exam_id', $exam_id)->count_all_results('exam_questions');
+
     $extra_message = $should_overwrite ? ' Les questions existantes ont été remplacées.' : '';
 
     $this->respond_json(array(
       'status'  => true,
       'message' => "$added questions générées et ajoutées avec succès !" . $extra_message,
-      'questions_count' => $added
+      'questions_count' => $total_questions,
+      'added_count' => $added
     ));
   }
 
@@ -1496,13 +1636,17 @@ public function generate_questions_from_pdf()
 
     try {
       $client = new \GuzzleHttp\Client([
-        'timeout'         => 400,
-        'connect_timeout' => 15,
+        'timeout'         => 120,
+        'connect_timeout' => 30,
       ]);
 
-      $response = $client->post($this->lmStudioUrl, [
-        'headers' => ['Content-Type' => 'application/json'],
+      $response = $client->post($this->deepseekUrl, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+          'Authorization' => 'Bearer ' . $this->deepseekApiKey
+        ],
         'json'    => [
+          'model' => 'deepseek-chat',
           'messages' => [
             [
               'role' => 'system',
@@ -1522,11 +1666,9 @@ public function generate_questions_from_pdf()
                 "Génère exactement $num questions QCM (4 options, 1 bonne réponse) en français."
             ]
           ],
-          'temperature'        => 0.6,
-          'max_tokens'         => 4000,
-          'top_p'              => 0.95,
-          'repetition_penalty' => 1.1,
-          'stop'               => null
+          'temperature' => 0.6,
+          'max_tokens' => 4000,
+          'stream' => false
         ]
       ]);
 
@@ -1543,7 +1685,7 @@ public function generate_questions_from_pdf()
 
       return [];
     } catch (Exception $e) {
-      log_message('error', 'Qwen Guzzle Error: ' . $e->getMessage());
+      log_message('error', 'DeepSeek API Error: ' . $e->getMessage());
       return [];
     }
   }
@@ -1873,7 +2015,7 @@ public function generate_questions_from_pdf()
       'french' => 'fr',
       'english' => 'en',
       'spanish' => 'es',
-      'german' => 'de',
+      'dutch' => 'nl',
       'arabic' => 'ar'
     ];
     $language = $language_map[$outline_rules['language'] ?? 'french'] ?? 'fr';
@@ -2018,7 +2160,7 @@ PROMPT;
       'french' => 'fr',
       'english' => 'en',
       'spanish' => 'es',
-      'german' => 'de',
+      'dutch' => 'nl',
       'arabic' => 'ar'
     ];
     $lang_code = $language_map[$language] ?? 'fr';
@@ -2146,7 +2288,7 @@ PROMPT;
       'french' => 'fr',
       'english' => 'en',
       'spanish' => 'es',
-      'german' => 'de',
+      'dutch' => 'nl',
       'arabic' => 'ar'
     ];
     $lang_code = $language_map[$language] ?? 'fr';
@@ -3407,6 +3549,44 @@ PROMPT;
     $this->_process_ai_lesson_generation($input_data);
   }
 
+  public function update_lesson_from_ai()
+  {
+    // Validate AJAX request and anti-duplicate lock
+    $validation = $this->_validate_ai_lesson_request();
+    if ($validation !== true) {
+      echo json_encode($validation);
+      return;
+    }
+
+    // Get and validate input data
+    $input_data = $this->_get_ai_lesson_input_data();
+    
+    // Validate lesson_id
+    if (empty($input_data['lesson_id'])) {
+        $this->_release_ai_lesson_lock();
+        echo json_encode([
+            'success' => false, 
+            'message' => get_phrase('lesson_id_required'),
+            'csrf' => [
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            ]
+        ]);
+        return;
+    }
+
+    $validation_result = $this->_validate_ai_lesson_input_data($input_data);
+
+    if ($validation_result !== true) {
+      $this->_release_ai_lesson_lock();
+      echo json_encode($validation_result);
+      return;
+    }
+
+    // Process the lesson update
+    $this->_process_ai_lesson_update($input_data);
+  }
+
   /**
    * Get generation lock key for current user
    */
@@ -3472,6 +3652,7 @@ PROMPT;
   private function _get_ai_lesson_input_data()
   {
     return [
+      'lesson_id' => $this->input->post('lesson_id'),
       'section_id' => $this->input->post('section_id'),
       'course_id' => $this->input->post('course_id'),
       'source' => $this->input->post('source'),
@@ -3651,6 +3832,149 @@ PROMPT;
         'success' => true,
         'message' => get_phrase('lesson_generated_successfully'),
         'lesson_id' => $lesson_id,
+        'lesson_title' => $lesson_title,
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+
+    } catch (Exception $e) {
+      // Remove lock on error
+      $this->_release_ai_lesson_lock();
+
+      echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage(),
+        'csrf' => [
+          'csrfName' => $this->security->get_csrf_token_name(),
+          'csrfHash' => $this->security->get_csrf_hash(),
+        ]
+      ]);
+    }
+  }
+
+  private function _process_ai_lesson_update($input_data)
+  {
+    try {
+      // Get course and section info
+      $course = $this->lms_model->get_course_by_id($input_data['course_id']);
+      $section = $this->lms_model->get_section('section', $input_data['section_id'])->row_array();
+      $existing_lesson = $this->lms_model->get_lessons('lesson', $input_data['lesson_id'])->row_array();
+
+      if (!$course || !$section || !$existing_lesson) {
+        throw new Exception(get_phrase('course_section_or_lesson_not_found'));
+      }
+
+      // Prepare context based on source
+      $context = '';
+      if ($input_data['source'] === 'pdf') {
+        // Handle PDF upload
+        if (!empty($_FILES['pdf_file']['name'])) {
+          $upload_path = FCPATH . 'uploads/ai_pdfs/';
+          if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0755, true);
+          }
+
+          $this->load->library('upload');
+          $config = array(
+            'upload_path'   => $upload_path,
+            'allowed_types' => 'pdf',
+            'max_size'      => self::PDF_MAX_SIZE_BYTES,
+            'encrypt_name'  => true
+          );
+
+          $this->upload->initialize($config);
+
+          if (!$this->upload->do_upload('pdf_file')) {
+            throw new Exception($this->upload->display_errors());
+          }
+
+          $upload_data = $this->upload->data();
+          $pdf_path = $upload_data['full_path'];
+
+          // Extract structure from PDF using Python script
+          $context = $this->extract_text_from_pdf($pdf_path);
+          
+          // Clean up uploaded file
+          unlink($pdf_path);
+
+          if (empty($context)) {
+            throw new Exception(get_phrase('failed_to_extract_text_from_pdf'));
+          }
+        } else {
+          throw new Exception(get_phrase('pdf_file_required'));
+        }
+      } else {
+        // Use course outline
+        $sections = $this->lms_model->get_section('course', $input_data['course_id'])->result_array();
+        $course_outline = "Course: " . $course['title'] . "\n\n";
+
+        foreach ($sections as $sec) {
+          $course_outline .= "Section: " . $sec['title'] . "\n";
+          $lessons = $this->lms_model->get_lessons('section', $sec['id'])->result_array();
+          foreach ($lessons as $lesson) {
+            $course_outline .= "  - Lesson: " . $lesson['title'] . "\n";
+          }
+          $course_outline .= "\n";
+        }
+
+        $context = "Course Outline:\n" . $course_outline . "\n";
+      }
+
+      // Use existing lesson title
+      $lesson_title = $existing_lesson['title'];
+
+      // Prepare AI prompt
+      $prompt = $this->build_lesson_prompt(
+        $lesson_title,
+        $context,
+        $input_data['audience'],
+        $input_data['duration'],
+        $input_data['language'],
+        $input_data['tone'],
+        $input_data['instructions'],
+        $course['title'],
+        $section['title']
+      );
+
+      // Call DeepSeek API
+      $ai_response = $this->call_deepseek_api($prompt, 120);
+
+      if (!$ai_response || empty($ai_response['content'])) {
+        throw new Exception(get_phrase('ai_failed_to_generate_content'));
+      }
+
+      // Parse JSON response from DeepSeek
+      $json_content = json_decode($ai_response['content'], true);
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Failed to parse AI response JSON: ' . json_last_error_msg());
+      }
+
+      // Extract HTML content from JSON response
+      $raw_content = $json_content['lesson_content'] ?? $json_content['content'] ?? $ai_response['content'];
+
+      // Parse AI response
+      $lesson_content = $this->parse_lesson_content($raw_content, $input_data['language']);
+
+      // Update lesson
+      $lesson_data = [
+        'summary' => $lesson_content,
+        'lesson_type' => 'text',
+        'attachment_type' => 'text',
+        'last_modified' => time()
+      ];
+
+      $this->db->where('id', $input_data['lesson_id']);
+      $this->db->update('lesson', $lesson_data);
+
+      // Remove lock
+      $this->_release_ai_lesson_lock();
+
+      echo json_encode([
+        'success' => true,
+        'message' => get_phrase('lesson_updated_successfully'),
+        'lesson_id' => $input_data['lesson_id'],
         'lesson_title' => $lesson_title,
         'csrf' => [
           'csrfName' => $this->security->get_csrf_token_name(),

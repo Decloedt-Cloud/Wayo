@@ -1520,58 +1520,483 @@ class Teacher extends CI_Controller {
 
 
 	//START EXAM section
-	public function exam($param1 = '', $param2 = ''){
+	public function exam($param1 = '', $param2 = '')
+{
+    // Get teacher ID and permitted classes for permission checking
+    $user_id = $this->session->userdata('user_id');
+    $teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+    $teacher_id = $teacher['id'] ?? null;
+    
+    // Get permitted class IDs from teacher_permissions where attendance = 1
+    $permitted_class_ids = [];
+    if ($teacher_id) {
+        $this->db->select('class_id');
+        $this->db->from('teacher_permissions');
+        $this->db->where('teacher_id', $teacher_id);
+        $this->db->where('attendance', 1);
+        $permitted_classes = $this->db->get()->result_array();
+        $permitted_class_ids = array_column($permitted_classes, 'class_id');
+    }
+    
+    if ($param1 == 'create') {
+        // Check if teacher has permission for the selected class
+        $class_id = $this->input->post('class_id') ?: '';
+        
+        if (!empty($class_id) && !empty($permitted_class_ids)) {
+            if (!in_array($class_id, $permitted_class_ids)) {
+                // Teacher doesn't have permission for this class
+                $output = array(
+                    'status' => false,
+                    'message' => get_phrase('you_do_not_have_permission_for_this_class'),
+                    'csrf' => array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    )
+                );
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode($output));
+                return;
+            }
+        } elseif (empty($permitted_class_ids)) {
+            // Teacher has no permitted classes at all
+            $output = array(
+                'status' => false,
+                'message' => get_phrase('you_do_not_have_permission_for_any_classes'),
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($output));
+            return;
+        }
+        
+        $response = $this->crud_model->exam_create();
+        $response_data = json_decode($response, true);
+        
+        // Ajouter un nouveau jeton CSRF
+        $csrf = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash(),
+        );
+        
+        // Construire la réponse
+        $output = array(
+            'status' => $response_data['status'] ?? false,
+            'message' => $response_data['notification'] ?? 'Failed to create exam',
+            'class_id' => $class_id, // Inclure l'ID de la classe pour le frontend
+            'csrf' => $csrf
+        );
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($output));
+    }
 
-		if($param1 == 'create'){
-			$response = $this->crud_model->exam_create();
-			// echo $response;
-				// Préparer la réponse avec un nouveau jeton CSRF
-				$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-			);
-		
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
 
-		if($param1 == 'update'){
-			$response = $this->crud_model->exam_update($param2);
-			// echo $response;
-				// Préparer la réponse avec un nouveau jeton CSRF
-				$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-			);
-		
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+    if ($param1 == 'update') {
+        // First check if teacher has permission to update this exam
+        $exam = $this->db->get_where('exams', array('id' => $param2))->row_array();
+        
+        if (!$exam) {
+            $output = array(
+                'status' => false,
+                'message' => 'Exam not found',
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($output));
+            return;
+        }
+        
+        // Check if teacher has permission for the exam's current class
+        if (!empty($permitted_class_ids)) {
+            if (!in_array($exam['class_id'], $permitted_class_ids)) {
+                // Teacher doesn't have permission for this exam's class
+                $output = array(
+                    'status' => false,
+                    'message' => get_phrase('you_do_not_have_permission_for_this_exam'),
+                    'csrf' => array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    )
+                );
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode($output));
+                return;
+            }
+        } else {
+            // Teacher has no permitted classes at all
+            $output = array(
+                'status' => false,
+                'message' => get_phrase('you_do_not_have_permission_for_any_classes'),
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($output));
+            return;
+        }
+        
+        // Also check if trying to change to a class without permission
+        $new_class_id = $this->input->post('class_id') ?: $exam['class_id'];
+        if ($new_class_id != $exam['class_id'] && !empty($permitted_class_ids)) {
+            if (!in_array($new_class_id, $permitted_class_ids)) {
+                // Teacher doesn't have permission for the new class
+                $output = array(
+                    'status' => false,
+                    'message' => get_phrase('you_do_not_have_permission_for_the_selected_class'),
+                    'csrf' => array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    )
+                );
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode($output));
+                return;
+            }
+        }
+        
+        $response = $this->crud_model->exam_update($param2);
+        // Vérifier si la réponse est déjà encodée en JSON et la décoder
+        if (is_string($response) && (json_decode($response) !== null)) {
+            $response = json_decode($response, true); // Convertir en tableau
+        }
+        
+        $class_id = $exam['class_id'] ?? ''; // Récupérer l'ID de la classe de l'examen
+        
+        if ($exam) {
+            $exam['formatted_date'] = date('D, d-M-Y H:i', $exam['starting_date']);
+            $class = $this->db->get_where('classes', array('id' => $exam['class_id']))->row_array();
+           
+            $exam['class_name'] = $class ? $class['name'] : 'No Class';
+           
+            $output = array(
+                'status' => $response['status'] ?? false,
+                'exam' => $exam,
+                'class_id' => $class_id, // Inclure l'ID de la classe
+                'message' => $response['notification'] ?? 'Failed to update exam',
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+        } else {
+            $output = array(
+                'status' => false,
+                'message' => 'Exam not found',
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+        }
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($output));
+    }
 
-		if($param1 == 'delete'){
-			$response = $this->crud_model->exam_delete($param2);
-			// echo $response;
-                  // Préparer la réponse avec un nouveau jeton CSRF
-				  $csrf = array(
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash(),
-				);
-			
-				// Renvoyer la réponse avec un nouveau jeton CSRF
-				echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		}
+    if ($param1 == 'delete') {
+        // First check if teacher has permission to delete this exam
+        $exam = $this->db->get_where('exams', array('id' => $param2))->row_array();
+        
+        if (!$exam) {
+            $output = array(
+                'status' => false,
+                'message' => 'Exam not found',
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($output));
+            return;
+        }
+        
+        // Check if teacher has permission for the exam's class
+        if (!empty($permitted_class_ids)) {
+            if (!in_array($exam['class_id'], $permitted_class_ids)) {
+                // Teacher doesn't have permission for this exam's class
+                $output = array(
+                    'status' => false,
+                    'message' => get_phrase('you_do_not_have_permission_to_delete_this_exam'),
+                    'csrf' => array(
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                    )
+                );
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode($output));
+                return;
+            }
+        } else {
+            // Teacher has no permitted classes at all
+            $output = array(
+                'status' => false,
+                'message' => get_phrase('you_do_not_have_permission_for_any_classes'),
+                'csrf' => array(
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash(),
+                )
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($output));
+            return;
+        }
+        
+        $response = $this->crud_model->exam_delete($param2);
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output($response);
+    }
 
-		if ($param1 == 'list') {
-			$this->load->view('backend/teacher/exam/list');
-		}
+    if ($param1 == 'list') {
+        $this->load->view('backend/teacher/exam/list');
+    }
 
-		if(empty($param1)){
-			$page_data['folder_name'] = 'exam';
-			$page_data['page_title'] = 'exam';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
+    if (empty($param1)) {
+        $page_data['folder_name'] = 'exam';
+        $page_data['page_title'] = 'Certifications';
+        $this->load->view('backend/index', $page_data);
+    }
+}
 	//END EXAM section
+	public function filter_exams()
+{
+    header('Content-Type: application/json');
+    
+    if ($this->session->userdata('teacher_login') != 1) {
+        echo json_encode(['error' => 'Unauthorized']);
+        return;
+    }
+
+    $school_id = school_id();
+    $session = active_session();
+
+    // Get teacher ID
+    $user_id = $this->session->userdata('user_id');
+    $teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+    $teacher_id = $teacher['id'] ?? null;
+    
+    if (!$teacher_id) {
+        echo json_encode(['error' => 'No teacher associated with this user']);
+        return;
+    }
+    
+    // Get permitted class IDs from teacher_permissions where attendance = 1
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+
+    $class_id = $this->input->post('class_id');
+
+    $date_range = $this->input->post('date_range');
+    $date_from = '';
+    $date_to = '';
+
+    if (!empty($date_range)) {
+        $dates = explode(' - ', $date_range);
+        $date_from = strtotime(trim($dates[0]) . ' 00:00:00');
+        $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
+    }
+
+    $this->db->select('exams.*, classes.name as class_name');
+    $this->db->from('exams');
+    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+    $this->db->where('exams.school_id', $school_id);
+    $this->db->where('exams.session', $session);
+    
+    // Filter by permitted classes only
+    if (!empty($permitted_class_ids)) {
+        $this->db->where_in('exams.class_id', $permitted_class_ids);
+    } else {
+        // If teacher has no permitted classes, return empty results
+        $this->db->where('1', '0');
+    }
+    
+    if (!empty($class_id)) {
+        $this->db->where('exams.class_id', $class_id);
+    }
+ 
+    if (!empty($date_range)) {
+        $this->db->where('exams.starting_date >=', $date_from);
+        $this->db->where('exams.starting_date <=', $date_to);
+    }
+    $this->db->order_by('exams.starting_date', 'DESC');
+    $exams = $this->db->get()->result_array();
+
+    $exam_data = [];
+    foreach ($exams as $exam) {
+        $exam_data[] = [
+            'id' => $exam['id'],
+            'name' => $exam['name'] ?: 'Unnamed Exam',
+            'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
+            'class_name' => $exam['class_name'] ?: 'No Class'
+           
+        ];
+    }
+
+    $exam_calendar = [];
+    foreach ($exams as $exam) {
+        if ($exam['starting_date']) {
+            $exam_calendar[] = [
+                'title' => $exam['name'] ?: 'Unnamed Exam',
+                'start' => date('Y-m-d H:i:s', $exam['starting_date'])
+            ];
+        }
+    }
+
+    echo json_encode([
+        'exams' => $exam_data,
+        'calendar' => $exam_calendar,
+        'debug' => [
+            'class_id' => $class_id,
+            'date_range' => $date_range,
+            'exam_count' => count($exams)
+        ]
+    ]);
+}
+
+// Paginated exams for AJAX loading
+public function get_exams_paginated()
+{
+    header('Content-Type: application/json');
+    
+    if ($this->session->userdata('teacher_login') != 1) {
+        echo json_encode(['status' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+
+    $school_id = school_id();
+    $session = active_session();
+    
+    // Get teacher ID
+    $user_id = $this->session->userdata('user_id');
+    $teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+    $teacher_id = $teacher['id'] ?? null;
+    
+    if (!$teacher_id) {
+        echo json_encode(['status' => false, 'error' => 'No teacher associated with this user']);
+        return;
+    }
+    
+    // Get permitted class IDs from teacher_permissions where attendance = 1
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+    
+    $page = (int) $this->input->get('page') ?: 1;
+    $limit = 10; // Exams per page
+    $offset = ($page - 1) * $limit;
+    
+    // Get filters if any
+    $class_id = $this->input->get('class_id');
+    $date_range = $this->input->get('date_range');
+    $date_from = '';
+    $date_to = '';
+
+    if (!empty($date_range)) {
+        $dates = explode(' - ', $date_range);
+        if (count($dates) == 2) {
+            $date_from = strtotime(trim($dates[0]) . ' 00:00:00');
+            $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
+        }
+    }
+
+    // Count total exams with filters
+    $this->db->from('exams');
+    $this->db->where('school_id', $school_id);
+    $this->db->where('session', $session);
+    
+    // Filter by permitted classes only
+    if (!empty($permitted_class_ids)) {
+        $this->db->where_in('class_id', $permitted_class_ids);
+    } else {
+        // If teacher has no permitted classes, return empty results
+        $this->db->where('1', '0');
+    }
+    
+    if (!empty($class_id)) {
+        $this->db->where('class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('starting_date >=', $date_from);
+        $this->db->where('starting_date <=', $date_to);
+    }
+    $total_exams = $this->db->count_all_results();
+    $total_pages = ceil($total_exams / $limit);
+
+    // Get paginated exams
+    $this->db->select('exams.*, classes.name as class_name');
+    $this->db->from('exams');
+    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+    $this->db->where('exams.school_id', $school_id);
+    $this->db->where('exams.session', $session);
+    
+    // Filter by permitted classes only
+    if (!empty($permitted_class_ids)) {
+        $this->db->where_in('exams.class_id', $permitted_class_ids);
+    } else {
+        // If teacher has no permitted classes, return empty results
+        $this->db->where('1', '0');
+    }
+    
+    if (!empty($class_id)) {
+        $this->db->where('exams.class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('exams.starting_date >=', $date_from);
+        $this->db->where('exams.starting_date <=', $date_to);
+    }
+    $this->db->order_by('exams.id', 'DESC');
+    $this->db->limit($limit, $offset);
+    $exams = $this->db->get()->result_array();
+
+    $exam_data = [];
+    foreach ($exams as $exam) {
+        $exam_data[] = [
+            'id' => $exam['id'],
+            'name' => $exam['name'] ?: 'Unnamed Exam',
+            'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
+            'class_name' => $exam['class_name'] ?: 'No Class'
+        ];
+    }
+
+    echo json_encode([
+        'status' => true,
+        'exams' => $exam_data,
+        'current_page' => $page,
+        'total_pages' => $total_pages,
+        'total_exams' => $total_exams,
+        'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        ]
+    ]);
+}
 
 		//HUMHUB DASHBOARD
 		public function wall()

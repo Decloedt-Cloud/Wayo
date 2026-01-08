@@ -10,6 +10,220 @@ if (empty($class)) {
 $currencies = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency');
 ?>
 
+<style>
+/* ============================================================================
+   CLASS READ VIEW - PREMIUM DESIGN
+   ============================================================================ */
+
+:root {
+    --read-primary: #6366f1;
+    --read-primary-rgb: 99, 102, 241;
+    --read-success: #10b981;
+    --read-danger: #ef4444;
+    --read-warning: #f59e0b;
+    --read-dark: #1e293b;
+    --read-gray: #64748b;
+    --read-light: #f8fafc;
+    --read-border: #e2e8f0;
+    --read-white: #ffffff;
+}
+
+/* Header Card */
+.read-header {
+    background: linear-gradient(135deg, var(--read-primary), #8b5cf6);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(var(--read-primary-rgb), 0.3);
+}
+
+.read-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.read-header-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.read-header-text h4 {
+    margin: 0;
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.read-header-text p {
+    margin: 0.25rem 0 0;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+}
+
+.read-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.read-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.read-btn-primary {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: white;
+}
+
+.read-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.4);
+    color: white;
+}
+
+/* Profile Cards */
+.profile-card {
+    background: var(--read-white);
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 1px solid var(--read-border);
+    overflow: hidden;
+    height: 100%;
+}
+
+.profile-cover {
+    height: 86px;
+    background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Banner-title {
+    font-size: 14px;
+    color: #536de6;
+}
+
+/* Avatar */
+.avatar-wrap {
+    margin-top: -60px;
+}
+
+.avatar-img {
+    border-radius: 50%;
+    border: 4px solid white;
+    outline: 3px solid var(--read-primary);
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Status Badges */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+/* Info Blocks */
+.info-block {
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--read-border);
+    border-radius: 12px;
+    background: #ffffffcc;
+    backdrop-filter: blur(6px);
+    margin-bottom: 1rem;
+}
+
+.info-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--read-gray);
+    margin-bottom: .25rem;
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: var(--read-dark);
+    font-weight: 500;
+}
+
+/* Price Display */
+.price-free {
+    color: var(--read-success);
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.price-paid {
+    color: var(--read-success);
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .read-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-card {
+        margin-bottom: 2rem;
+    }
+}
+</style>
+
+<!-- Header -->
+<div class="read-header">
+    <div class="read-header-left">
+        <div class="read-header-icon">
+            <i class="fas fa-eye"></i>
+        </div>
+        <div class="read-header-text">
+            <h4><?php echo get_phrase('class_details'); ?></h4>
+            <p><?php echo get_phrase('view_complete_class_information'); ?></p>
+        </div>
+    </div>
+    <div class="read-header-actions">
+        <button type="button" class="read-btn read-btn-primary" onclick="rightModal('<?php echo site_url('modal/popup/class/edit/'.$class['id'])?>', '<?php echo get_phrase('update_class'); ?>')">
+            <i class="mdi mdi-pencil-outline"></i> <?php echo get_phrase('edit'); ?>
+        </button>
+    </div>
+</div>
+
 <div class="container pb-4">
     <div class="row g-4 align-items-stretch">
 
@@ -125,23 +339,34 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                             <div class="row g-3">
                                 <div class="col-12">
                                     <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('class name'); ?></div>
+                                        <div class="info-title">
+                                            <i class="mdi mdi-account-outline" style="color: var(--read-primary); margin-right: 0.25rem;"></i>
+                                            <?php echo get_phrase('class_name'); ?>
+                                        </div>
                                         <div class="info-value">
-                                            <?php echo $class['name']; ?>
+                                            <strong><?php echo $class['name']; ?></strong>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col-md-12">
                                     <div class="info-block">
-                                    <div class="info-title"><?php echo get_phrase('price'); ?></div>
-
-                                    <div class="info-value">
-                                        <?php if ($class['price'] == 0): ?>
-                                            <?php echo get_phrase('FREE'); ?>
-                                        <?php else: ?>
-                                            <?php echo $class['price'] . ' ' . $currencies; ?>
-                                        <?php endif; ?>
+                                        <div class="info-title">
+                                            <i class="mdi mdi-cash-multiple" style="color: var(--read-success); margin-right: 0.25rem;"></i>
+                                            <?php echo get_phrase('price'); ?>
+                                        </div>
+                                        <div class="info-value">
+                                            <?php if ($class['price'] == 0): ?>
+                                                <span class="price-free">
+                                                    <i class="mdi mdi-gift-outline" style="margin-right: 0.25rem;"></i>
+                                                    <?php echo get_phrase('free'); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="price-paid">
+                                                    <?php echo number_format($class['price'], 2) . ' ' . $currencies; ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -174,19 +399,27 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                                 <?php if (!empty($class['date_debut']) && $class['date_debut'] != '0000-00-00'): ?>
                                     <div class="col-12">
                                         <div class="info-block">
-                                            <div class="info-title"><?php echo get_phrase('start_date'); ?></div>
+                                            <div class="info-title">
+                                                <i class="mdi mdi-calendar-start" style="color: var(--read-primary); margin-right: 0.25rem;"></i>
+                                                <?php echo get_phrase('start_date'); ?>
+                                            </div>
                                             <div class="info-value">
+                                                <i class="mdi mdi-calendar" style="color: var(--read-gray); margin-right: 0.25rem;"></i>
                                                 <?php echo date('d/m/Y', strtotime($class['date_debut'])); ?>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if(!empty($class['date_fin'] && $class['date_fin'] != '0000-00-00')): ?>
+                                <?php if(!empty($class['date_fin']) && $class['date_fin'] != '0000-00-00'): ?>
                                 <div class="col-12">
                                     <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('end_date'); ?></div>
+                                        <div class="info-title">
+                                            <i class="mdi mdi-calendar-end" style="color: var(--read-primary); margin-right: 0.25rem;"></i>
+                                            <?php echo get_phrase('end_date'); ?>
+                                        </div>
                                         <div class="info-value">
+                                            <i class="mdi mdi-calendar" style="color: var(--read-gray); margin-right: 0.25rem;"></i>
                                             <?php echo date('d/m/Y', strtotime($class['date_fin'])); ?>
                                         </div>
                                     </div>

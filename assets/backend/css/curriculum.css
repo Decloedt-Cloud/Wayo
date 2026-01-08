@@ -102,6 +102,30 @@
     font-size: 0.8rem;
 }
 
+.btn-edit-preview-ai {
+    background: linear-gradient(90deg, #f47a1f 0%, #fbb040 100%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-edit-preview-ai:hover {
+    background: linear-gradient(90deg, #fbb040 0%, #f47a1f 100%);
+    transform: translateY(-1px);
+}
+
+.btn-edit-preview-ai i {
+    font-size: 0.8rem;
+    color: #ffffff;
+}
+
 .preview-title-section {
     padding: 20px 24px;
     border-bottom: 1px solid #e8ecf1;

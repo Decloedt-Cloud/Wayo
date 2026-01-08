@@ -235,7 +235,9 @@ class Student extends CI_Controller {
 
     if (empty($student_ids)) {
         log_message('error', 'recording - No student associated with user_id: ' . $user_id);
-        show_error('No student associated with this user.', 403);
+        $page_data['page_name'] = 'no_student_access';
+        $page_data['page_title'] = get_phrase('access_denied');
+        $this->load->view('backend/index', $page_data);
         return;
     }
 
@@ -250,7 +252,9 @@ class Student extends CI_Controller {
 
     if (empty($enrols)) {
         log_message('error', 'recording - User not enrolled in any school: ' . $user_id);
-        show_error('Not enrolled in any school.', 403);
+        $page_data['page_name'] = 'no_student_access';
+        $page_data['page_title'] = get_phrase('access_denied');
+        $this->load->view('backend/index', $page_data);
         return;
     }
 
@@ -1100,19 +1104,203 @@ class Student extends CI_Controller {
 	//END EVENT CALENDAR section
 
 	//START EXAM section
-	public function exam($param1 = '', $param2 = ''){
+	public function exam($param1 = '', $param2 = '')
+{
+    // Empêcher les étudiants de créer, modifier ou supprimer des examens
+    if ($param1 == 'create') {
+        // Les étudiants ne peuvent pas créer d'examens
+        $output = array(
+            'status' => false,
+            'message' => get_phrase('students_cannot_create_exams'),
+            'csrf' => array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            )
+        );
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($output));
+        return;
+    }
 
-		if ($param1 == 'list') {
-			$this->load->view('backend/student/exam/list');
-		}
 
-		if(empty($param1)){
-			$page_data['folder_name'] = 'exam';
-			$page_data['page_title'] = 'exam';
-			$this->load->view('backend/index', $page_data);
-		}
-	}
+    if ($param1 == 'update') {
+        // Les étudiants ne peuvent pas modifier des examens
+        $output = array(
+            'status' => false,
+            'message' => get_phrase('students_cannot_update_exams'),
+            'csrf' => array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            )
+        );
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($output));
+        return;
+    }
+
+    if ($param1 == 'delete') {
+        // Les étudiants ne peuvent pas supprimer des examens
+        $output = array(
+            'status' => false,
+            'message' => get_phrase('students_cannot_delete_exams'),
+            'csrf' => array(
+                'csrfName' => $this->security->get_csrf_token_name(),
+                'csrfHash' => $this->security->get_csrf_hash(),
+            )
+        );
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($output));
+        return;
+    }
+
+    if ($param1 == 'list') {
+        $this->load->view('backend/student/exam/list');
+    }
+
+    if (empty($param1)) {
+        $page_data['folder_name'] = 'exam';
+        $page_data['page_title'] = 'Certifications';
+        $this->load->view('backend/index', $page_data);
+    }
+}
 	//END EXAM section
+
+// Paginated exams for AJAX loading
+public function get_exams_paginated()
+{
+    header('Content-Type: application/json');
+    
+    if ($this->session->userdata('student_login') != 1) {
+        echo json_encode(['status' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+
+    $school_id = school_id();
+    $session = active_session();
+    
+    // Get student ID
+    $user_id = $this->session->userdata('user_id');
+    $student = $this->db->get_where('students', ['user_id' => $user_id])->row_array();
+    $student_id = $student['id'] ?? null;
+    
+    if (!$student_id) {
+        echo json_encode(['status' => false, 'error' => 'No student associated with this user']);
+        return;
+    }
+    
+    // Get enrolled class IDs from enrols table
+    $this->db->select('class_id');
+    $this->db->from('enrols');
+    $this->db->where('student_id', $student_id);
+    $this->db->where('school_id', $school_id);
+    $this->db->where('session', $session);
+    $enrolled_classes = $this->db->get()->result_array();
+    $enrolled_class_ids = array_column($enrolled_classes, 'class_id');
+    
+    $page = (int) $this->input->get('page') ?: 1;
+    $limit = 10; // Exams per page
+    $offset = ($page - 1) * $limit;
+    
+    // Get filters if any
+    $class_id = $this->input->get('class_id');
+    $date_range = $this->input->get('date_range');
+    $date_from = '';
+    $date_to = '';
+
+    if (!empty($date_range)) {
+        $dates = explode(' - ', $date_range);
+        if (count($dates) == 2) {
+            $date_from = strtotime(trim($dates[0]) . ' 00:00:00');
+            $date_to = strtotime(trim($dates[1]) . ' 23:59:59');
+        }
+    }
+
+    // Count total exams with filters
+    $this->db->from('exams');
+    $this->db->where('school_id', $school_id);
+    $this->db->where('session', $session);
+    
+    // Filter by enrolled classes only
+    if (!empty($enrolled_class_ids)) {
+        $this->db->where_in('class_id', $enrolled_class_ids);
+    } else {
+        // If student is not enrolled in any classes, return empty results
+        $this->db->where('1', '0');
+    }
+    
+    if (!empty($class_id)) {
+        $this->db->where('class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('starting_date >=', $date_from);
+        $this->db->where('starting_date <=', $date_to);
+    }
+    $total_exams = $this->db->count_all_results();
+    $total_pages = ceil($total_exams / $limit);
+
+    // Get paginated exams
+    $this->db->select('exams.*, classes.name as class_name');
+    $this->db->from('exams');
+    $this->db->join('classes', 'exams.class_id = classes.id', 'left');
+    $this->db->where('exams.school_id', $school_id);
+    $this->db->where('exams.session', $session);
+    
+    // Filter by enrolled classes only
+    if (!empty($enrolled_class_ids)) {
+        $this->db->where_in('exams.class_id', $enrolled_class_ids);
+    } else {
+        // If student is not enrolled in any classes, return empty results
+        $this->db->where('1', '0');
+    }
+    
+    if (!empty($class_id)) {
+        $this->db->where('exams.class_id', $class_id);
+    }
+    if (!empty($date_range) && $date_from && $date_to) {
+        $this->db->where('exams.starting_date >=', $date_from);
+        $this->db->where('exams.starting_date <=', $date_to);
+    }
+    $this->db->order_by('exams.id', 'DESC');
+    $this->db->limit($limit, $offset);
+    $exams = $this->db->get()->result_array();
+
+    $exam_data = [];
+    foreach ($exams as $exam) {
+        // Vérifier si l'étudiant a déjà soumis cet examen
+        $this->db->select('id');
+        $this->db->from('exam_responses');
+        $this->db->where('exam_id', $exam['id']);
+        $this->db->where('user_id', $user_id);
+        $existing_submission = $this->db->get()->row_array();
+        
+        $exam_data[] = [
+            'id' => $exam['id'],
+            'name' => $exam['name'] ?: 'Unnamed Exam',
+            'starting_date' => $exam['starting_date'], // Ajouté pour le compteur
+            'formatted_date' => $exam['starting_date'] ? date('D, d-M-Y H:i', $exam['starting_date']) : 'No Date',
+            'class_name' => $exam['class_name'] ?: 'No Class',
+            'already_passed' => !empty($existing_submission) // Indicateur si l'examen est déjà passé
+        ];
+    }
+
+    echo json_encode([
+        'status' => true,
+        'exams' => $exam_data,
+        'current_page' => $page,
+        'total_pages' => $total_pages,
+        'total_exams' => $total_exams,
+        'csrf' => [
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        ]
+    ]);
+}
 
 		//HUMHUB DASHBOARD
 		public function wall()
