@@ -2079,12 +2079,12 @@ public function generate_questions_from_pdf()
     }
 
     // Build optimized prompt for Local LLM
-    $prompt = $this->build_outline_prompt_llm($pdf_content, $outline_rules, $course_context);
+    $prompt = $this->build_outline_prompt($pdf_content, $outline_rules, $course_context);
     
     log_message('debug', 'Starting Local LLM API call for outline generation');
 
     // Call Local LLM API for outline generation
-    $deepseek_response = $this->call_local_llm_api($prompt, 300); // 5 minutes timeout for local LLM
+    $deepseek_response = $this->call_deepseek_api($prompt, 300); // 5 minutes timeout for local LLM
 
     if (isset($deepseek_response['error'])) {
       log_message('error', 'Local LLM API Error: ' . $deepseek_response['error']);
