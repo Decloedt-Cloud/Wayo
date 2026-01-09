@@ -3889,5 +3889,9 @@
     "warning_lesson_has_content": "Warning lesson has content",
     "generating_ai_content_will_overwrite_current_lesson_content": "Generating ai content will overwrite current lesson content",
     "yes_overwrite_it": "Yes overwrite it",
-    "lesson_updated_successfully": "Lesson updated successfully"
+    "lesson_updated_successfully": "Lesson updated successfully",
+    "account_status": "Account status",
+    "step": "Step",
+    "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "After creation you can complete your profile directly from your dashboard",
+    "account_ready_to_create": "Account ready to create"
 }
