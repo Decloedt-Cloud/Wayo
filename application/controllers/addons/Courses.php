@@ -1896,17 +1896,37 @@ public function generate_questions_from_pdf()
     // Check if configured in constants.php
     if (defined('PYTHON_EXECUTABLE_PATH') && PYTHON_EXECUTABLE_PATH !== 'auto') {
       $configured_path = PYTHON_EXECUTABLE_PATH;
+      log_message('debug', 'Using configured Python path: ' . $configured_path);
+      
+      // Try to resolve relative paths if needed
+      if (strpos($configured_path, '/') === 0 && !file_exists($configured_path)) {
+        // Try common Linux paths
+        $alternative_paths = [
+          '/usr/bin/' . basename($configured_path),
+          '/usr/local/bin/' . basename($configured_path),
+          '/opt/' . basename($configured_path),
+        ];
+        
+        foreach ($alternative_paths as $alt_path) {
+          if (file_exists($alt_path)) {
+            log_message('debug', 'Resolved Python path to: ' . $alt_path);
+            return $alt_path;
+          }
+        }
+      }
+      
       if (file_exists($configured_path)) {
         return $configured_path;
       }
       log_message('error', 'Configured Python path does not exist: ' . $configured_path);
     }
     
-    // Auto-detect Python
+    // Auto-detect Python with enhanced logging
     $possible_paths = [];
     
     // Detect OS
     $is_windows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    log_message('debug', 'OS detected: ' . ($is_windows ? 'Windows' : 'Linux/Unix'));
     
     if ($is_windows) {
       // Windows paths
@@ -1924,25 +1944,31 @@ public function generate_questions_from_pdf()
         getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python310\\python.exe',
       ];
     } else {
-      // Linux/Unix paths
+      // Linux/Unix paths - include the specific path from the user
       $possible_paths = [
+        '/home/ubuntu/.pyenv/shims/python3',
         '/usr/bin/python3',
         '/usr/local/bin/python3',
         '/usr/bin/python',
         '/usr/local/bin/python',
         '/opt/python3/bin/python3',
+        '/usr/bin/python2',
+        '/usr/local/bin/python2',
       ];
     }
     
-    // Try each path
+    log_message('debug', 'Checking Python paths: ' . implode(', ', $possible_paths));
+    
+    // Try each path with enhanced logging
     foreach ($possible_paths as $path) {
       if ($path && file_exists($path)) {
-        log_message('debug', 'Auto-detected Python at: ' . $path);
+        log_message('debug', 'Found Python at: ' . $path);
         return $path;
       }
+      log_message('debug', 'Python not found at: ' . $path);
     }
     
-    // Try to find Python using shell command
+    // Try to find Python using shell command with enhanced logging
     if ($is_windows) {
       $where_output = shell_exec('where python 2>nul');
       if ($where_output) {
@@ -1954,14 +1980,27 @@ public function generate_questions_from_pdf()
       }
     } else {
       $which_output = shell_exec('which python3 2>/dev/null');
-      if ($which_output && file_exists(trim($which_output))) {
-        log_message('debug', 'Found Python via which command: ' . trim($which_output));
-        return trim($which_output);
+      if ($which_output) {
+        $paths = explode("\n", trim($which_output));
+        foreach ($paths as $path) {
+          $path = trim($path);
+          if (file_exists($path)) {
+            log_message('debug', 'Found Python3 via which command: ' . $path);
+            return $path;
+          }
+        }
       }
+      
       $which_output = shell_exec('which python 2>/dev/null');
-      if ($which_output && file_exists(trim($which_output))) {
-        log_message('debug', 'Found Python via which command: ' . trim($which_output));
-        return trim($which_output);
+      if ($which_output) {
+        $paths = explode("\n", trim($which_output));
+        foreach ($paths as $path) {
+          $path = trim($path);
+          if (file_exists($path)) {
+            log_message('debug', 'Found Python via which command: ' . $path);
+            return $path;
+          }
+        }
       }
     }
     
