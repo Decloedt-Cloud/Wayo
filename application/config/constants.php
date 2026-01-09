@@ -104,10 +104,11 @@ defined('HUMHUB_API_TOKEN') OR define('HUMHUB_API_TOKEN', 'JzJA-cCjiVsYcEKUJ_ZDT
 | Set this according to your environment:
 |
 | Windows (local):  'C:\\Users\\AbdelfattahAllam\\AppData\\Local\\Python\\bin\\python.exe'
-| Linux (preprod):  '/usr/bin/python3'
-| Linux (alt):      '/usr/local/bin/python3'
+| Linux (preprod):  '/home/ubuntu/.pyenv/shims/python3'
+| Linux (alt):      '/usr/bin/python3'
+| Linux (alt2):     '/usr/local/bin/python3'
 |
 | If not set or set to 'auto', the system will try to detect Python automatically.
 |
 */
-defined('PYTHON_EXECUTABLE_PATH') OR define('PYTHON_EXECUTABLE_PATH', 'auto');
+defined('PYTHON_EXECUTABLE_PATH') OR define('PYTHON_EXECUTABLE_PATH', '/home/ubuntu/.pyenv/shims/python3');
