@@ -4,7 +4,7 @@
     <div class="header-card">
              <div class="card-body">
                 <h4 class="page-title d-inline-block">
-    <i class="mdi mdi-file-document-box title_icon"></i> <?php echo get_phrase('student_fee_manager'); ?></h4>
+    <i class="mdi mdi-file-document-box title_icon"></i> <?php echo get_phrase('invoicing'); ?></h4>
       </div> <!-- end card body-->
     </div> <!-- end card -->
   </div><!-- end col-->
