@@ -37,6 +37,9 @@ class Courses extends CI_Controller {
     $this->deepseekUrl = 'https://api.deepseek.com/v1/chat/completions';
     $this->deepseekApiKey = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API Key
     
+    // Local LLM API Configuration (LM Studio / Ollama / vLLM)
+    $this->localLlmUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    
     // Initialize HTMLPurifier for XSS protection
     $this->initHtmlPurifier();
 
@@ -2080,12 +2083,11 @@ public function generate_questions_from_pdf()
     
     log_message('debug', 'Starting DeepSeek API call for outline generation');
 
-    // Call DeepSeek API with reduced timeout to avoid gateway timeout
-    // Most servers have 60s gateway timeout, so we use 50s to be safe
-    $deepseek_response = $this->call_deepseek_api($prompt, 50); // Reduced to 50 seconds
+    // Call Local LLM API for outline generation
+    $deepseek_response = $this->call_local_llm_api($prompt, 300); // 5 minutes timeout for local LLM
 
     if (isset($deepseek_response['error'])) {
-      log_message('error', 'DeepSeek API Error: ' . $deepseek_response['error']);
+      log_message('error', 'Local LLM API Error: ' . $deepseek_response['error']);
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -2094,7 +2096,7 @@ public function generate_questions_from_pdf()
     }
 
     if (!isset($deepseek_response['content'])) {
-      log_message('error', 'No response content from DeepSeek API');
+      log_message('error', 'No response content from Local LLM API');
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -2102,7 +2104,7 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'No response content from API'], 500);
     }
 
-    log_message('debug', 'DeepSeek API response received, parsing schemas');
+    log_message('debug', 'Local LLM API response received, parsing schemas');
 
     // Parse DeepSeek response to extract 3 schemas
     $schemas = $this->parse_deepseek_schemas($deepseek_response);
@@ -2205,117 +2207,117 @@ public function generate_questions_from_pdf()
     $pdf_json = json_encode($pdf_content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
     $prompt = <<<PROMPT
-Generate 3 different course outline proposals from this source document.
+      Generate 3 different course outline proposals from this source document.
 
-RULES:
-- max_core_sections: {$max_sections}
-- lessons_per_section: {$lessons_min}-{$lessons_max}
-- include_intro: {$include_intro}
-- include_outro: {$include_outro}
-- numbering: {$numbering_mode}
-- quiz_policy: {$quiz_policy}
-- language: {$language}
+      RULES:
+      - max_core_sections: {$max_sections}
+      - lessons_per_section: {$lessons_min}-{$lessons_max}
+      - include_intro: {$include_intro}
+      - include_outro: {$include_outro}
+      - numbering: {$numbering_mode}
+      - quiz_policy: {$quiz_policy}
+      - language: {$language}
 
-CONTENT CLEANING:
-- Ignore API docs, tables of contents, noise headings
-- Keep logical order, prefer H1→sections, H2→lessons
+      CONTENT CLEANING:
+      - Ignore API docs, tables of contents, noise headings
+      - Keep logical order, prefer H1→sections, H2→lessons
 
-INTRO/OUTRO:
-If include_intro=true: ONE INTRO section with {$lessons_min}-{$lessons_max} lessons
-If include_outro=true: ONE OUTRO section with {$lessons_min}-{$lessons_max} lessons
+      INTRO/OUTRO:
+      If include_intro=true: ONE INTRO section with {$lessons_min}-{$lessons_max} lessons
+      If include_outro=true: ONE OUTRO section with {$lessons_min}-{$lessons_max} lessons
 
-OUTPUT (STRICT JSON ONLY — NO MARKDOWN, NO EXTRA TEXT)
-Return exactly this JSON structure:
+      OUTPUT (STRICT JSON ONLY — NO MARKDOWN, NO EXTRA TEXT)
+      Return exactly this JSON structure:
 
-{
-  "courseTitle": "<infer from source>",
-  "numberingMode": "{$numbering_mode}",
-  "quizPolicy": "{$quiz_policy}",
-  "proposals": [
-    {
-      "id": "proposal_1",
-      "label": "Design schéma 1",
-      "strategy": "<1 short sentence: how this outline is organized>",
-      "sections": [ ... ]
-    },
-    {
-      "id": "proposal_2",
-      "label": "Design schéma 2",
-      "strategy": "<1 short sentence>",
-      "sections": [ ... ]
-    },
-    {
-      "id": "proposal_3",
-      "label": "Design schéma 3",
-      "strategy": "<1 short sentence>",
-      "sections": [ ... ]
-    }
-  ]
-}
+      {
+        "courseTitle": "<infer from source>",
+        "numberingMode": "{$numbering_mode}",
+        "quizPolicy": "{$quiz_policy}",
+        "proposals": [
+          {
+            "id": "proposal_1",
+            "label": "Design schéma 1",
+            "strategy": "<1 short sentence: how this outline is organized>",
+            "sections": [ ... ]
+          },
+          {
+            "id": "proposal_2",
+            "label": "Design schéma 2",
+            "strategy": "<1 short sentence>",
+            "sections": [ ... ]
+          },
+          {
+            "id": "proposal_3",
+            "label": "Design schéma 3",
+            "strategy": "<1 short sentence>",
+            "sections": [ ... ]
+          }
+        ]
+      }
 
-SECTION OBJECT
-{
-  "id": "sec_01",
-  "type": "INTRO|CORE|OUTRO",
-  "order": 1,
-  "title": "…",
-  "sourcePages": {"start": 1, "end": 5},
-  "children": [
-    {
-      "id": "les_01_01",
-      "type": "LESSON",
-      "order": 1,
-      "title": "…",
-      "subtitle": "…",
-      "sourceHeadings": ["…"],
-      "sourcePages": {"start": 1, "end": 2}
-    },
-    {
-      "id": "quiz_01",
-      "type": "QUIZ",
-      "order": 99,
-      "title": "Quiz – …",
-      "questionsCount": {$quiz_questions},
-      "difficulty": "{$quiz_difficulty}"
-    }
-  ]
-}
+      SECTION OBJECT
+      {
+        "id": "sec_01",
+        "type": "INTRO|CORE|OUTRO",
+        "order": 1,
+        "title": "…",
+        "sourcePages": {"start": 1, "end": 5},
+        "children": [
+          {
+            "id": "les_01_01",
+            "type": "LESSON",
+            "order": 1,
+            "title": "…",
+            "subtitle": "…",
+            "sourceHeadings": ["…"],
+            "sourcePages": {"start": 1, "end": 2}
+          },
+          {
+            "id": "quiz_01",
+            "type": "QUIZ",
+            "order": 99,
+            "title": "Quiz – …",
+            "questionsCount": {$quiz_questions},
+            "difficulty": "{$quiz_difficulty}"
+          }
+        ]
+      }
 
-ID RULES
-- Sections: sec_01, sec_02, ...
-- Lessons: les_01_01 (section 01 lesson 01), ...
-- Quiz: quiz_01 (section 01 quiz)
-IDs must be unique WITHIN EACH PROPOSAL.
+      ID RULES
+      - Sections: sec_01, sec_02, ...
+      - Lessons: les_01_01 (section 01 lesson 01), ...
+      - Quiz: quiz_01 (section 01 quiz)
+      IDs must be unique WITHIN EACH PROPOSAL.
 
-DIFFERENTIATION REQUIREMENTS (VERY IMPORTANT)
-Each proposal must be meaningfully different:
+      DIFFERENTIATION REQUIREMENTS (VERY IMPORTANT)
+      Each proposal must be meaningfully different:
 
-Proposal 1 (Balanced / Default):
-- Closely follows PDF flow (H1/H2), minimal rewriting.
-- Standard granularity.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 1 (Balanced / Default):
+      - Closely follows PDF flow (H1/H2), minimal rewriting.
+      - Standard granularity.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-Proposal 2 (Consolidated):
-- Fewer sections (combine adjacent H1 topics).
-- Keep lessons within limits by merging similar H2.
-- Titles are more thematic.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 2 (Consolidated):
+      - Fewer sections (combine adjacent H1 topics).
+      - Keep lessons within limits by merging similar H2.
+      - Titles are more thematic.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-Proposal 3 (More granular / Learning path):
-- More sections up to max_sections.
-- Break down broad H1 into clearer learning steps.
-- If quiz_policy=PER_SECTION: quizzes focus on key takeaways.
-- If quiz_policy=EVERY_N_LESSONS: quizzes placed exactly every N lessons.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 3 (More granular / Learning path):
+      - More sections up to max_sections.
+      - Break down broad H1 into clearer learning steps.
+      - If quiz_policy=PER_SECTION: quizzes focus on key takeaways.
+      - If quiz_policy=EVERY_N_LESSONS: quizzes placed exactly every N lessons.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-VALIDATION:
-- Max {$max_sections} core sections
-- {$lessons_min}-{$lessons_max} lessons per section
-- Valid JSON output only
+      VALIDATION:
+      - Max {$max_sections} core sections
+      - {$lessons_min}-{$lessons_max} lessons per section
+      - Valid JSON output only
 
-NOW PROCESS THIS SOURCE JSON:
-{$pdf_json}
-PROMPT;
+      NOW PROCESS THIS SOURCE JSON:
+      {$pdf_json}
+      PROMPT;
 
     return $prompt;
   }
@@ -2623,6 +2625,125 @@ PROMPT;
       $content = $result['choices'][0]['message']['content'];
       error_log('DeepSeek API Content length: ' . strlen($content));
       error_log('DeepSeek API Content (first 500 chars): ' . substr($content, 0, 500));
+
+      return ['content' => $content];
+    }
+
+    return ['error' => 'API connection failed after ' . $max_retries . ' attempts'];
+  }
+
+  /**
+   * Call Local LLM API (LM Studio / Ollama / vLLM compatible)
+   * Server: http://154.146.250.62:7000/v1/chat/completions
+   */
+  private function call_local_llm_api($prompt, $timeout_seconds = 120)
+  {
+    $api_url = $this->localLlmUrl;
+
+    $data = [
+      'messages' => [
+        [
+          'role' => 'system',
+          'content' => 'You are an expert instructional designer for EdTech. You MUST respond with valid JSON ONLY. No markdown, no code blocks, no explanations - just pure JSON that can be parsed directly.'
+        ],
+        [
+          'role' => 'user',
+          'content' => $prompt
+        ]
+      ],
+      'temperature' => 0.7,
+      'max_tokens' => 8192,
+      'top_p' => 0.95,
+      'repetition_penalty' => 1.1,
+      'stop' => null
+    ];
+
+    // Retry mechanism for connection errors
+    $max_retries = 3;
+    $retry_delay = 2; // seconds
+
+    for ($attempt = 1; $attempt <= $max_retries; $attempt++) {
+      error_log("Local LLM API Attempt {$attempt}/{$max_retries}");
+
+      $ch = curl_init($api_url);
+      curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => [
+          'Content-Type: application/json'
+          // No Authorization header needed for local API
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout_seconds,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 3,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_FORBID_REUSE => false,
+        CURLOPT_FRESH_CONNECT => ($attempt > 1),
+        CURLOPT_BUFFERSIZE => 1048576,
+        CURLOPT_TCP_NODELAY => true,
+        CURLOPT_FAILONERROR => false,
+      ]);
+
+      $response = curl_exec($ch);
+      $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $curl_error = curl_error($ch);
+      $curl_errno = curl_errno($ch);
+      curl_close($ch);
+
+      // Debug logging
+      error_log('Local LLM API HTTP Code: ' . $http_code);
+      error_log('Local LLM API Response (first 1000 chars): ' . substr($response, 0, 1000));
+
+      // Check for connection errors
+      if ($curl_error) {
+        error_log('Local LLM API cURL Error (Attempt ' . $attempt . '): ' . $curl_error);
+        
+        // Check for timeout errors
+        if ($curl_errno == CURLE_OPERATION_TIMEOUTED || 
+            $curl_errno == CURLE_OPERATION_TIMEDOUT ||
+            strpos($curl_error, 'timeout') !== false ||
+            strpos($curl_error, 'timed out') !== false) {
+          error_log('Local LLM API Timeout detected');
+          return ['error' => 'API request timed out. Please try again with a smaller PDF.'];
+        }
+
+        // Retry on other connection errors
+        if ($attempt < $max_retries) {
+          error_log('Retrying in ' . $retry_delay . ' seconds...');
+          sleep($retry_delay);
+          continue;
+        }
+
+        return ['error' => 'API connection failed: ' . $curl_error];
+      }
+      
+      // Check for HTTP errors
+      if ($http_code == 504) {
+        error_log('Local LLM API Gateway Timeout (504)');
+        return ['error' => 'Gateway timeout. Please try again with a smaller PDF.'];
+      }
+
+      if ($http_code !== 200) {
+        $error_data = json_decode($response, true);
+        $error_msg = 'API error: ' . ($error_data['error']['message'] ?? $error_data['error'] ?? 'Unknown error');
+        error_log('Local LLM API HTTP Error: ' . $error_msg);
+        error_log('Full error response: ' . $response);
+        return ['error' => $error_msg];
+      }
+
+      $result = json_decode($response, true);
+
+      if (!isset($result['choices'][0]['message']['content'])) {
+        error_log('Local LLM API Invalid Response: ' . print_r($result, true));
+        return ['error' => 'Invalid API response'];
+      }
+
+      $content = $result['choices'][0]['message']['content'];
+      error_log('Local LLM API Content length: ' . strlen($content));
+      error_log('Local LLM API Content (first 500 chars): ' . substr($content, 0, 500));
 
       return ['content' => $content];
     }
