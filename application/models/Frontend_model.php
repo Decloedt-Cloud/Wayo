@@ -813,7 +813,7 @@ class Frontend_model extends CI_Model
         'description' => htmlspecialchars($this->input->post('school_description')),
         'access' => $access,
         'category' => htmlspecialchars($this->input->post('category')),
-        'price' => 0, // Price step removed
+        // 'price' => 0, // Price step removed (Managed by DB default NULL)
         // Champs liés à l'abonnement / période d'essai
         'trial_start' => $now,
         'trial_end' => $now + (60 * 60 * 24 * $trial_days),

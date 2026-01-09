@@ -30,6 +30,9 @@ class Home extends CI_Controller
 		$this->load->model('Addon_model', 'addon_model');
 		$this->load->model('Frontend_model', 'frontend_model');
 
+		// Load Humhub SSO library prevents 500 error during community creation
+		$this->load->library('Humhub_sso');
+
 		if (addon_status('alumni')) {
 			$this->load->model('addons/Alumni_model', 'alumni_model');
 		}
@@ -787,70 +790,222 @@ function community_details($school_id = '')
 
 	public function online_admission_school()
 	{
-		$user_id = $this->session->userdata('user_id');
-		if (!$user_id) {
-			echo json_encode([
-				'status' => false,
-				'message' => get_phrase('You_must_be_logged_in.'),
-				'csrf' => [
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash()
-				]
-			]);
-			exit;
-		}
-
-		$user = $this->db->get_where('users', ['id' => $user_id])->row_array();
-		if (!$user) {
-			echo json_encode([
-				'status' => false,
-				'message' => get_phrase('User not found.'),
-				'csrf' => [
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash()
-				]
-			]);
-			exit;
-		}
-
-		$required_fields = [
-			'i_am' => 'Statut',
-			'Tax_residence' => 'Résidence fiscale',
-			'category' => 'Catégorie',
-			'school_name' => 'Nom de la communauté',
-			'school_description' => 'Description',
-			'street' => 'Rue',
-			'number' => 'Numéro',
-			'city' => 'Ville',
-			'postal_code' => 'Code postal'
-		];
-
-		$errors = [];
-		foreach ($required_fields as $field => $label) {
-			$value = trim($this->input->post($field));
-			if (empty($value)) {
-				$errors[$field] = get_phrase('The_field') . ' ' . $label . ' ' . get_phrase('is_required.');
+		try {
+			$user_id = $this->session->userdata('user_id');
+			if (!$user_id) {
+				echo json_encode([
+					'status' => false,
+					'message' => get_phrase('You_must_be_logged_in.'),
+					'csrf' => [
+						'csrfName' => $this->security->get_csrf_token_name(),
+						'csrfHash' => $this->security->get_csrf_hash()
+					]
+				]);
+				exit;
 			}
-		}
+	
+			$user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+			if (!$user) {
+				echo json_encode([
+					'status' => false,
+					'message' => get_phrase('User not found.'),
+					'csrf' => [
+						'csrfName' => $this->security->get_csrf_token_name(),
+						'csrfHash' => $this->security->get_csrf_hash()
+					]
+				]);
+				exit;
+			}
+	
+			$required_fields = [
+				'i_am' => 'Statut',
+				'Tax_residence' => 'Résidence fiscale',
+				'category' => 'Catégorie',
+				'school_name' => 'Nom de la communauté',
+				'school_description' => 'Description',
+				'street' => 'Rue',
+				'number' => 'Numéro',
+				'city' => 'Ville',
+				'postal_code' => 'Code postal'
+			];
+	
+			$errors = [];
+			foreach ($required_fields as $field => $label) {
+				$value = trim($this->input->post($field));
+				if (empty($value)) {
+					$errors[$field] = get_phrase('The_field') . ' ' . $label . ' ' . get_phrase('is_required.');
+				}
+			}
+	
+			if (!empty($this->input->post('school_name')) && strlen($this->input->post('school_name')) > 80) {
+				$errors['school_name'] = get_phrase('The_name_must_not_exceed_80_characters.');
+			}
+			if (!empty($this->input->post('school_description')) && strlen($this->input->post('school_description')) < 40) {
+				$errors['school_description'] = get_phrase('The_description_must_be_at_least_40_characters_long.');
+			}
+	
+			$school_name = $this->input->post('school_name');
+			$existing_school = $this->db->get_where('schools', ['name' => $school_name])->row();
+			if ($existing_school) {
+				$errors['school_name'] = get_phrase('This_community_name_already_exists.');
+			}
+	
+			if (!empty($errors)) {
+				echo json_encode([
+					'status' => false,
+					'message' => get_phrase('validation_error'),
+					'errors' => $errors,
+					'csrf' => [
+						'csrfName' => $this->security->get_csrf_token_name(),
+						'csrfHash' => $this->security->get_csrf_hash()
+					]
+				]);
+				exit;
+			}
+	
+			
+			// All communities are now free (price = 0)
+			// Access is determined only by the visibility setting
+			$access = $this->input->post('visibility') ? 1 : 0;
+			// $price = 0; // REMOVED: Managed by DB default (NULL)
+	
+	
+			// Gestion de la période d'essai : 14 jours gratuits pour l’admin de la communauté
+			$now        = time();
+			$trial_days = 14;
+	
+			// Normaliser le country code depuis le formulaire Tax_residence
+			$tax_residence_input = $this->input->post('Tax_residence');
+			$country_code = null;
+			if ($tax_residence_input === 'MA' || strtoupper($tax_residence_input) === 'MAROC') {
+				$country_code = 'MA';
+			} elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
+				$country_code = 'AE';
+			} elseif (!empty($tax_residence_input)) {
+				$country_code = strtoupper(substr($tax_residence_input, 0, 2));
+			}
+	
+			$school_data = [
+				'name'        => htmlspecialchars($school_name),
+				'Rue'         => htmlspecialchars($this->input->post('street')),
+				'Numero'      => htmlspecialchars($this->input->post('number')),
+				'Ville'       => htmlspecialchars($this->input->post('city')),
+				'Codepostal'  => htmlspecialchars($this->input->post('postal_code')),
+				'status'      => 0,
+				'description' => htmlspecialchars($this->input->post('school_description')),
+				'access'      => $access,
+				'category'    => htmlspecialchars($this->input->post('category')),
+				// 'price'       => $price, // REMOVED
+				// Champs liés à l'abonnement / période d'essai
+				'trial_start' => $now,
+				'trial_end'   => $now + (60 * 60 * 24 * $trial_days),
+				'is_trial'    => 1,
+				'is_paid'     => 0,
+				'subscription_status' => 'trialing',
+			];
+	
+			$this->db->insert('schools', $school_data);
+			$school_id = $this->db->insert_id();
+	
+			$this->db->insert('user_schools', [
+				'user_id' => $user_id,
+				'school_id' => $school_id,
+				'role' => 'admin'
+			]);
+	
+			$upload_dir = 'Uploads/schools/';
+			if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+	
+			if (!empty($_FILES['school_image']['name'])) {
+				$logo_path = $upload_dir . $school_id . '.jpg';
+				move_uploaded_file($_FILES['school_image']['tmp_name'], $logo_path);
+			}
+	
+			$cover_dir = 'Uploads/communityCover/';
+			if (!is_dir($cover_dir)) mkdir($cover_dir, 0777, true);
+	
+			if (!empty($_FILES['communityCover']['name'])) {
+				$cover_path = $cover_dir . $school_id . '.jpg';
+				move_uploaded_file($_FILES['communityCover']['tmp_name'], $cover_path);
+			}
+	
+			$this->db->insert_batch('payment_settings', [
+				[
+					'key' => 'stripe_settings',
+					'value' => json_encode([['stripe_active' => 'no']]),
+					'school_id' => $school_id
+				],
+				[
+					'key' => 'paypal_settings',
+					'value' => json_encode([['paypal_active' => 'no']]),
+					'school_id' => $school_id
+				]
+			]);
+	
+			$rate = $country_code === 'MA' ? 20 : 5;
+			$this->db->insert('settings_school', [
+				'school_id' => $school_id,
+				'system_currency' => ($country_code === 'AE' || $country_code === 'UAE') ? 'AED' : 'MAD',
+				'currency_position' => 'left',
+				'language' => 'french',
+				'type' => $this->input->post('i_am'),
+				'vat' => 1, // TVA activée par défaut
+				'vat_rat' => $rate
+			]);
+	
+			$spaceData = [
+				'name' => $school_data['name'],
+				'description' => $school_data['description'],
+				'join_policy' => $access ? 1 : 0,
+				'visibility' => $access ? 2 : 1
+			];
 
-		if (!empty($this->input->post('school_name')) && strlen($this->input->post('school_name')) > 80) {
-			$errors['school_name'] = get_phrase('The_name_must_not_exceed_80_characters.');
-		}
-		if (!empty($this->input->post('school_description')) && strlen($this->input->post('school_description')) < 40) {
-			$errors['school_description'] = get_phrase('The_description_must_be_at_least_40_characters_long.');
-		}
+			// Load library explicitly here to be super sure
+			$this->load->library('Humhub_sso');
+			if (isset($this->humhub_sso)) {
+				$humhubSpace = $this->humhub_sso->createSpace($spaceData);
+		
+				if (isset($humhubSpace['id'])) {
+					$this->db->where('id', $school_id)->update('schools', ['humhub_space_id' => $humhubSpace['id']]);
+					$this->humhub_sso->addUserSpace($humhubSpace['id'], $user['humhub_id'] ?? null);
+				}
+			}
+	
+			$this->db->where('id', $user_id);
+			$this->db->update('users', [
+				'role' => 'admin',
+				'school_id' => $school_id
+			]);
+	
+			$this->session->set_userdata([
+				'active_school_id' => $school_id,
+				'role'             => 'admin',
+				'user_type'        => 'admin',
+				'school_id'        => $school_id,
+				'school_name'      => $school_data['name'],
+				'admin_login'      => true,
+				'teacher_login'    => false,
+				'student_login'    => false,
+				'superadmin_login' => false,
+			]);
+	
+			echo json_encode([
+				'status'       => 'success',
+				'message'      => get_phrase('The_community_has_been_successfully_created!'),
+				'redirect_url' => site_url('admin/dashboard/' . $school_id),
+				'csrf'         => [
+					'csrfName' => $this->security->get_csrf_token_name(),
+					'csrfHash' => $this->security->get_csrf_hash()
+				]
+			]);
+			exit;
 
-		$school_name = $this->input->post('school_name');
-		$existing_school = $this->db->get_where('schools', ['name' => $school_name])->row();
-		if ($existing_school) {
-			$errors['school_name'] = get_phrase('This_community_name_already_exists.');
-		}
-
-		if (!empty($errors)) {
+		} catch (Throwable $e) {
+			log_message('error', 'Online Admission Error: ' . $e->getMessage());
+			http_response_code(200); // Send 200 so JS can parse the JSON error
 			echo json_encode([
 				'status' => false,
-				'message' => get_phrase('validation_error'),
-				'errors' => $errors,
+				'message' => 'Server Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(),
 				'csrf' => [
 					'csrfName' => $this->security->get_csrf_token_name(),
 					'csrfHash' => $this->security->get_csrf_hash()
@@ -858,141 +1013,6 @@ function community_details($school_id = '')
 			]);
 			exit;
 		}
-
-		
-		if(htmlspecialchars($this->input->post('price')) == 0 || htmlspecialchars($this->input->post('i_am')) == 'Particulier'){
-			$access = 1;
-		  } else {
-			$access = $this->input->post('visibility') ? 1 : 0;
-		  }
-
-		$price = $this->input->post('i_am') === 'Particulier' ? 0 : ($this->input->post('price') ?: 0);
-
-		// Gestion de la période d'essai : 14 jours gratuits pour l’admin de la communauté
-		$now        = time();
-		$trial_days = 14;
-
-		// Normaliser le country code depuis le formulaire Tax_residence
-		$tax_residence_input = $this->input->post('Tax_residence');
-		$country_code = null;
-		if ($tax_residence_input === 'MA' || strtoupper($tax_residence_input) === 'MAROC') {
-			$country_code = 'MA';
-		} elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
-			$country_code = 'AE';
-		} elseif (!empty($tax_residence_input)) {
-			$country_code = strtoupper(substr($tax_residence_input, 0, 2));
-		}
-
-		$school_data = [
-			'name'        => htmlspecialchars($school_name),
-			'country'     => $country_code, // Code pays ISO-2 pour la fiscalité
-			'Rue'         => htmlspecialchars($this->input->post('street')),
-			'Numero'      => htmlspecialchars($this->input->post('number')),
-			'Ville'       => htmlspecialchars($this->input->post('city')),
-			'Codepostal'  => htmlspecialchars($this->input->post('postal_code')),
-			'status'      => 0,
-			'description' => htmlspecialchars($this->input->post('school_description')),
-			'access'      => $access,
-			'category'    => htmlspecialchars($this->input->post('category')),
-			'price'       => $price,
-			// Champs liés à l'abonnement / période d'essai
-			'trial_start' => $now,
-			'trial_end'   => $now + (60 * 60 * 24 * $trial_days),
-			'is_trial'    => 1,
-			'is_paid'     => 0,
-			'subscription_status' => 'trialing',
-		];
-
-		$this->db->insert('schools', $school_data);
-		$school_id = $this->db->insert_id();
-
-		$this->db->insert('user_schools', [
-			'user_id' => $user_id,
-			'school_id' => $school_id,
-			'role' => 'admin'
-		]);
-
-		$upload_dir = 'Uploads/schools/';
-		if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
-		if (!empty($_FILES['school_image']['name'])) {
-			$logo_path = $upload_dir . $school_id . '.jpg';
-			move_uploaded_file($_FILES['school_image']['tmp_name'], $logo_path);
-		}
-
-		$cover_dir = 'Uploads/communityCover/';
-		if (!is_dir($cover_dir)) mkdir($cover_dir, 0777, true);
-
-		if (!empty($_FILES['communityCover']['name'])) {
-			$cover_path = $cover_dir . $school_id . '.jpg';
-			move_uploaded_file($_FILES['communityCover']['tmp_name'], $cover_path);
-		}
-
-		$this->db->insert_batch('payment_settings', [
-			[
-				'key' => 'stripe_settings',
-				'value' => json_encode([['stripe_active' => 'no']]),
-				'school_id' => $school_id
-			],
-			[
-				'key' => 'paypal_settings',
-				'value' => json_encode([['paypal_active' => 'no']]),
-				'school_id' => $school_id
-			]
-		]);
-
-		$rate = $country_code === 'MA' ? 20 : 5;
-		$this->db->insert('settings_school', [
-			'school_id' => $school_id,
-			'system_currency' => ($country_code === 'AE' || $country_code === 'UAE') ? 'AED' : 'MAD',
-			'currency_position' => 'left',
-			'language' => 'french',
-			'type' => $this->input->post('i_am'),
-			'vat_enabled' => 1, // TVA activée par défaut
-			'vat_rate' => $rate
-		]);
-
-		$spaceData = [
-			'name' => $school_data['name'],
-			'description' => $school_data['description'],
-			'join_policy' => $access ? 1 : 0,
-			'visibility' => $access ? 2 : 1
-		];
-		$humhubSpace = $this->humhub_sso->createSpace($spaceData);
-
-		if (isset($humhubSpace['id'])) {
-			$this->db->where('id', $school_id)->update('schools', ['humhub_space_id' => $humhubSpace['id']]);
-			$this->humhub_sso->addUserSpace($humhubSpace['id'], $user['humhub_id'] ?? null);
-		}
-
-		$this->db->where('id', $user_id);
-		$this->db->update('users', [
-			'role' => 'admin',
-			'school_id' => $school_id
-		]);
-
-		$this->session->set_userdata([
-			'active_school_id' => $school_id,
-			'role'             => 'admin',
-			'user_type'        => 'admin',
-			'school_id'        => $school_id,
-			'school_name'      => $school_data['name'],
-			'admin_login'      => true,
-			'teacher_login'    => false,
-			'student_login'    => false,
-			'superadmin_login' => false,
-		]);
-
-		echo json_encode([
-			'status'       => 'success',
-			'message'      => get_phrase('The_community_has_been_successfully_created!'),
-			'redirect_url' => site_url('admin/dashboard/' . $school_id),
-			'csrf'         => [
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash()
-			]
-		]);
-		exit;
 	}
 
 	public function check_community_name_exists()
