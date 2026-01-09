@@ -3530,8 +3530,6 @@
     "chrome,_edge,_firefox,_safari_(latest_versions).": "Chrome, edge, firefox, safari (latest versions).",
     "add_first_section": "Ajouter une première section",
     "dutch": "Néerlandais",
-    "english": "Anglais",
-    "spanish": "Espagnol",
     "base_price": "Prix de base",
     "take_control_of_your_community_and_stay_close_to_your_members_anytime,_anywhere.": "Prenez le contrôle de votre communauté et restez proche de vos membres, à tout moment et depuis n’importe où.",
     "(seo,_social_ads,_content,_growth,_e-commerce,_automation)_and_connect_with_over": "(seo, social ads, content, growth, e-commerce, automation) and connect with over",
@@ -3545,7 +3543,6 @@
     "web_and_application_development": "Développement web et applications",
     "moscaling_academy": "Académie Moscaling",
     "aucune_classe_disponible_pour_cette_communauté.": "Aucune classe disponible pour cette communauté.",
-    "base_price": "Prix de base",
     "create_certification": "Créer une certification",
     "add_certification": "Ajouter une certification",
     "certification_date": "Date de certification",
@@ -3574,9 +3571,6 @@
     "events_this_month": "Événements ce mois-ci",
     "view_all": "Voir tout",
     "no_events_this_month": "Aucun événement ce mois-ci",
-    "(seo,_social_ads,_content,_growth,_e-commerce,_automation)_and_connect_with_over": "(seo, social ads, content, growth, e-commerce, automation) and connect with over",
-    "6,000_marketers": "6,000 marketers",
-    "aucune_classe_disponible_pour_cette_communauté.": "Aucune classe disponible pour cette communauté.",
     "billing_architecture": "Architecture de facturation",
     "manage_billing_entities_and_payment_methods_by_country/region": "Gérer les entités de facturation et les méthodes de paiement par pays/région",
     "admin_fee_manager": "Gestionnaire de frais administratifs",
@@ -3681,5 +3675,6 @@
     "go_to_dashboard": "Aller au tableau de bord",
     "accès_refusé": "Accès refusé",
     "billing_entities": "Entités de facturation",
-    "failed_to_load_recordings": "Failed to load recordings"
+    "failed_to_load_recordings": "Failed to load recordings",
+    "payment_methods": "Payment methods"
 }

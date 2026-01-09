@@ -1783,9 +1783,18 @@ public function generate_questions_from_pdf()
 
   /**
    * Extract PDF structure (TOC + H1/H2 headings) and save as JSON
+   * Uses Python script with PyMuPDF for better extraction
    */
   public function extract_pdf_structure()
   {
+    // Get Python executable path from config or auto-detect
+    $python_path = $this->get_python_path();
+    
+    if (!$python_path) {
+      log_message('error', 'Python not found. Please configure PYTHON_EXECUTABLE_PATH in constants.php');
+      return $this->respond_json(['error' => 'Python not configured. Contact administrator.'], 500);
+    }
+    
     // Auth check
     if (!$this->session->userdata('teacher_login') && 
         !$this->session->userdata('admin_login') && 
@@ -1821,28 +1830,40 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'Failed to process file'], 500);
     }
 
-    // Run Python extraction
+    // Run Python extraction script
     $script = APPPATH . 'scripts/extract_pdf_structure.py';
     if (!file_exists($script)) {
       unlink($temp_path);
       return $this->respond_json(['error' => 'Extraction script not found'], 500);
     }
 
-    $output = shell_exec(sprintf('python %s %s 2>&1', 
+    log_message('debug', 'Starting PDF extraction with Python: ' . $temp_path);
+    log_message('debug', 'Python path: ' . $python_path);
+    log_message('debug', 'Script path: ' . $script);
+
+    $output = shell_exec(sprintf('"%s" %s %s 2>&1', 
+      $python_path,
       escapeshellarg($script), 
       escapeshellarg($temp_path)
     ));
-    
+    log_message('debug', "Python output: " . $output);
     unlink($temp_path); // Cleanup
 
     // Parse result
     if (!$output) {
-      return $this->respond_json(['error' => 'Python not available'], 500);
+      log_message('error', 'Python returned no output');
+      return $this->respond_json(['error' => 'Python extraction failed'], 500);
     }
 
     $result = json_decode($output, true);
-    if (json_last_error() !== JSON_ERROR_NONE || isset($result['error'])) {
-      return $this->respond_json(['error' => $result['error'] ?? 'Extraction failed'], 500);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      log_message('error', 'JSON decode error: ' . json_last_error_msg() . ' - Output: ' . substr($output, 0, 500));
+      return $this->respond_json(['error' => 'Extraction failed: Invalid JSON response'], 500);
+    }
+    
+    if (isset($result['error'])) {
+      log_message('error', 'Python script error: ' . $result['error']);
+      return $this->respond_json(['error' => $result['error']], 500);
     }
 
     // Save JSON
@@ -1856,6 +1877,8 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'Failed to save JSON'], 500);
     }
 
+    log_message('debug', 'PDF extraction successful, saved to: ' . $json_path);
+
     $this->respond_json([
       'success' => true,
       'json_file' => $filename,
@@ -1863,8 +1886,93 @@ public function generate_questions_from_pdf()
       'csrf_hash' => $this->security->get_csrf_hash()
     ]);
   }
-
+  
   /**
+   * Get Python executable path from config or auto-detect
+   * @return string|false Python path or false if not found
+   */
+  private function get_python_path()
+  {
+    // Check if configured in constants.php
+    if (defined('PYTHON_EXECUTABLE_PATH') && PYTHON_EXECUTABLE_PATH !== 'auto') {
+      $configured_path = PYTHON_EXECUTABLE_PATH;
+      if (file_exists($configured_path)) {
+        return $configured_path;
+      }
+      log_message('error', 'Configured Python path does not exist: ' . $configured_path);
+    }
+    
+    // Auto-detect Python
+    $possible_paths = [];
+    
+    // Detect OS
+    $is_windows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    
+    if ($is_windows) {
+      // Windows paths
+      $possible_paths = [
+        'C:\\Users\\AbdelfattahAllam\\AppData\\Local\\Python\\bin\\python.exe',
+        'C:\\Python312\\python.exe',
+        'C:\\Python311\\python.exe',
+        'C:\\Python310\\python.exe',
+        'C:\\Python39\\python.exe',
+        'C:\\Program Files\\Python312\\python.exe',
+        'C:\\Program Files\\Python311\\python.exe',
+        'C:\\Program Files\\Python310\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python312\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python311\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python310\\python.exe',
+      ];
+    } else {
+      // Linux/Unix paths
+      $possible_paths = [
+        '/usr/bin/python3',
+        '/usr/local/bin/python3',
+        '/usr/bin/python',
+        '/usr/local/bin/python',
+        '/opt/python3/bin/python3',
+      ];
+    }
+    
+    // Try each path
+    foreach ($possible_paths as $path) {
+      if ($path && file_exists($path)) {
+        log_message('debug', 'Auto-detected Python at: ' . $path);
+        return $path;
+      }
+    }
+    
+    // Try to find Python using shell command
+    if ($is_windows) {
+      $where_output = shell_exec('where python 2>nul');
+      if ($where_output) {
+        $paths = explode("\n", trim($where_output));
+        if (!empty($paths[0]) && file_exists(trim($paths[0]))) {
+          log_message('debug', 'Found Python via where command: ' . trim($paths[0]));
+          return trim($paths[0]);
+        }
+      }
+    } else {
+      $which_output = shell_exec('which python3 2>/dev/null');
+      if ($which_output && file_exists(trim($which_output))) {
+        log_message('debug', 'Found Python via which command: ' . trim($which_output));
+        return trim($which_output);
+      }
+      $which_output = shell_exec('which python 2>/dev/null');
+      if ($which_output && file_exists(trim($which_output))) {
+        log_message('debug', 'Found Python via which command: ' . trim($which_output));
+        return trim($which_output);
+      }
+    }
+    
+    log_message('error', 'Python not found in any known location');
+    return false;
+  }
+  
+  /**
+   * Extract headings from page texts using regex patterns
+   */
+/**
    * Generate outline schemas using DeepSeek API
    */
   public function generate_outline_schemas()
