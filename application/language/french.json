@@ -3396,7 +3396,6 @@
     "french": "Français",
     "english": "Anglais",
     "spanish": "Espagnol",
-    "german": "Allemand",
     "arabic": "العربية",
     "tone": "Ton",
     "include_introduction_section": "Inclure une section introduction",
@@ -3676,5 +3675,10 @@
     "accès_refusé": "Accès refusé",
     "billing_entities": "Entités de facturation",
     "failed_to_load_recordings": "Failed to load recordings",
-    "payment_methods": "Payment methods"
+    "payment_methods": "Payment methods",
+    "generate_with_ai": "Générer avec l'IA",
+    "warning_lesson_has_content": "Attention : la leçon contient déjà du contenu",
+    "generating_ai_content_will_overwrite_current_lesson_content": "La génération de contenu par IA écrasera le contenu actuel de la leçon",
+    "yes_overwrite_it": "Oui, écraser",
+    "lesson_updated_successfully": "Leçon mise à jour avec succès"
 }

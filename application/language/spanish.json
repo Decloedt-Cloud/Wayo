@@ -3372,7 +3372,6 @@
     "french": "Français",
     "english": "English",
     "spanish": "Español",
-    "german": "Alemán",
     "arabic": "العربية",
     "tone": "Tono",
     "include_introduction_section": "Incluir sección de introducción",
@@ -3515,9 +3514,6 @@
     "events_this_month": "Eventos este mes",
     "view_all": "Ver todo",
     "no_events_this_month": "No hay eventos este mes",
-    "english": "English",
-    "french": "Français",
-    "spanish": "Español",
     "take_control_of_your_community_and_stay_close_to_your_members_anytime,_anywhere.": "Toma el control de tu comunidad y mantente cerca de tus miembros en cualquier momento y lugar.",
     "take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere.": "Toma el control de tu comunidad y mantente cerca de tus miembros en cualquier momento, Mentor-Card en cualquier lugar.",
     "youssef_el_omrani": "Youssef El Omrani",
@@ -3576,5 +3572,10 @@
     "please_join_a_community_to_access_this_page": "Por favor, únete a una comunidad para acceder a esta página",
     "go_to_dashboard": "Ir al panel de control",
     "acceso_denegado": "Acceso denegado",
-    "billing_entities": "Entidades de facturación"
+    "billing_entities": "Entidades de facturación",
+    "generate_with_ai": "Generar con IA",
+    "warning_lesson_has_content": "Advertencia: la lección ya tiene contenido",
+    "generating_ai_content_will_overwrite_current_lesson_content": "Generar contenido con IA sobrescribirá el contenido actual de la lección",
+    "yes_overwrite_it": "Sí, sobrescribir",
+    "lesson_updated_successfully": "Lección actualizada con éxito"
 }

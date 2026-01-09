@@ -503,6 +503,7 @@ $config['csrf_exclude_uris'] = array(
     'addons/courses/manage_multiple_choices_options',
     'addons/courses/ajax_sort_question',
     'addons/courses/generate_questions_from_pdf',
+    'addons/courses/update_lesson_from_ai',
      'admin/delete_room',
      'teacher/delete_room',
     'BigBlueButton/',

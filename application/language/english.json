@@ -3182,7 +3182,7 @@
     "go_to_payment_page": "Go to payment page",
     "fermer": "Fermer",
     "wayo": "Wayo",
-    "welcome_emoji": "Welcome emoji",
+    "welcome_emoji": "Welcome",
     "is_this_your_first_time_using": "Is this your first time using",
     "follow_this_guide_to_get_started": "Follow this guide to get started",
     "you_can_close_this_guide_at_any_time_button": "You can close this guide at any time button",
@@ -3594,7 +3594,6 @@
     "french": "Français",
     "english": "English",
     "spanish": "Español",
-    "german": "German",
     "arabic": "العربية",
     "tone": "Tone",
     "include_introduction_section": "Include introduction section",
@@ -3886,5 +3885,10 @@
     "you_are_not_currently_enrolled_in_any_community": "You are not currently enrolled in any community",
     "please_join_a_community_to_access_this_page": "Please join a community to access this page",
     "go_to_dashboard": "Go to dashboard",
-    "exchanges": "Exchanges"
+    "exchanges": "Exchanges",
+    "generate_with_ai": "Generate with ai",
+    "warning_lesson_has_content": "Warning lesson has content",
+    "generating_ai_content_will_overwrite_current_lesson_content": "Generating ai content will overwrite current lesson content",
+    "yes_overwrite_it": "Yes overwrite it",
+    "lesson_updated_successfully": "Lesson updated successfully"
 }
