@@ -2078,10 +2078,10 @@ public function generate_questions_from_pdf()
       }
     }
 
-    // Build prompt for DeepSeek
-    $prompt = $this->build_outline_prompt($pdf_content, $outline_rules, $course_context);
+    // Build optimized prompt for Local LLM
+    $prompt = $this->build_outline_prompt_llm($pdf_content, $outline_rules, $course_context);
     
-    log_message('debug', 'Starting DeepSeek API call for outline generation');
+    log_message('debug', 'Starting Local LLM API call for outline generation');
 
     // Call Local LLM API for outline generation
     $deepseek_response = $this->call_local_llm_api($prompt, 300); // 5 minutes timeout for local LLM
@@ -2318,6 +2318,157 @@ public function generate_questions_from_pdf()
       NOW PROCESS THIS SOURCE JSON:
       {$pdf_json}
       PROMPT;
+
+    return $prompt;
+  }
+
+  /**
+   * Build optimized outline prompt for Local LLM API
+   * Simplified and more direct prompt for better performance with local models
+   */
+  private function build_outline_prompt_llm($pdf_content, $outline_rules, $course_context)
+  {
+    // Parse lessons per section range
+    $lessons_range = explode('-', $outline_rules['lessonsPerSection'] ?? '2-3');
+    $lessons_min = intval($lessons_range[0] ?? 2);
+    $lessons_max = intval($lessons_range[1] ?? 3);
+
+    // Parse max sections range
+    $sections_range = explode('-', $outline_rules['maxSections'] ?? '3-6');
+    $sections_max = intval($sections_range[1] ?? 6);
+
+    // Calculate max CORE sections
+    $include_intro = $outline_rules['includeIntro'] ?? true;
+    $include_outro = $outline_rules['includeConclusion'] ?? true;
+    $intro_outro_count = ($include_intro ? 1 : 0) + ($include_outro ? 1 : 0);
+    $max_sections = max(1, $sections_max - $intro_outro_count);
+    
+    // Map settings
+    $numbering_mode = match($outline_rules['numbering'] ?? 'none') {
+      'auto_123' => 'AUTO_NUMERIC',
+      'auto_nested' => 'AUTO_DECIMAL',
+      'from_pdf' => 'FROM_SOURCE',
+      default => 'NONE'
+    };
+    
+    $quiz_policy = match($outline_rules['quizFrequency'] ?? 'per_section') {
+      'per_section' => 'PER_SECTION',
+      'per_lesson' => 'EVERY_N_LESSONS',
+      default => 'MANUAL'
+    };
+    
+    $quiz_difficulty = strtoupper($outline_rules['difficulty'] ?? 'medium');
+    
+    $language = match($outline_rules['language'] ?? 'french') {
+      'english' => 'en',
+      'spanish' => 'es',
+      'dutch' => 'nl',
+      'arabic' => 'ar',
+      default => 'fr'
+    };
+    
+    $quiz_questions = intval($outline_rules['questionsCount'] ?? 10);
+    $include_intro_str = $include_intro ? 'true' : 'false';
+    $include_outro_str = $include_outro ? 'true' : 'false';
+    
+    // Simplify PDF content for local LLM (reduce token usage)
+    $simplified_content = [
+      'title' => $pdf_content['title'] ?? 'Untitled',
+      'total_pages' => $pdf_content['total_pages'] ?? 0,
+      'toc' => array_slice($pdf_content['toc'] ?? [], 0, 50), // Limit TOC entries
+      'headings' => array_slice($pdf_content['headings'] ?? [], 0, 100), // Limit headings
+    ];
+    
+    $pdf_json = json_encode($simplified_content, JSON_UNESCAPED_UNICODE);
+
+    $prompt = <<<PROMPT
+Tu es un expert en conception pédagogique. Génère 3 propositions de plan de cours à partir du document source.
+
+RÈGLES:
+- Sections principales max: {$max_sections}
+- Leçons par section: {$lessons_min} à {$lessons_max}
+- Inclure intro: {$include_intro_str}
+- Inclure conclusion: {$include_outro_str}
+- Numérotation: {$numbering_mode}
+- Quiz: {$quiz_policy}
+- Langue: {$language}
+
+RÉPONDS UNIQUEMENT EN JSON VALIDE (pas de markdown, pas de texte avant/après).
+
+Format de réponse:
+{
+  "courseTitle": "Titre du cours",
+  "numberingMode": "{$numbering_mode}",
+  "quizPolicy": "{$quiz_policy}",
+  "proposals": [
+    {
+      "id": "proposal_1",
+      "label": "Schéma équilibré",
+      "strategy": "Description courte",
+      "sections": [
+        {
+          "id": "sec_01",
+          "type": "INTRO",
+          "order": 1,
+          "title": "Introduction",
+          "sourcePages": {"start": 1, "end": 2},
+          "children": [
+            {
+              "id": "les_01_01",
+              "type": "LESSON",
+              "order": 1,
+              "title": "Titre leçon",
+              "subtitle": "Sous-titre",
+              "sourceHeadings": ["Heading"],
+              "sourcePages": {"start": 1, "end": 1}
+            },
+            {
+              "id": "quiz_01",
+              "type": "QUIZ",
+              "order": 99,
+              "title": "Quiz",
+              "questionsCount": {$quiz_questions},
+              "difficulty": "{$quiz_difficulty}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proposal_2",
+      "label": "Schéma consolidé",
+      "strategy": "Moins de sections, plus thématique",
+      "sections": []
+    },
+    {
+      "id": "proposal_3",
+      "label": "Schéma détaillé",
+      "strategy": "Plus granulaire, parcours d'apprentissage",
+      "sections": []
+    }
+  ]
+}
+
+TYPES DE SECTIONS:
+- INTRO: 1 section d'introduction (si include_intro=true)
+- CORE: Sections principales du contenu
+- OUTRO: 1 section de conclusion (si include_outro=true)
+
+IDs UNIQUES:
+- Sections: sec_01, sec_02...
+- Leçons: les_01_01 (section 01, leçon 01)
+- Quiz: quiz_01 (section 01)
+
+3 PROPOSITIONS DIFFÉRENTES:
+1. Équilibré: Suit le flux du PDF
+2. Consolidé: Moins de sections, fusionne les sujets similaires
+3. Détaillé: Plus de sections, décompose en étapes claires
+
+DOCUMENT SOURCE:
+{$pdf_json}
+
+Génère maintenant les 3 propositions complètes en JSON:
+PROMPT;
 
     return $prompt;
   }
