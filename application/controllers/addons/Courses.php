@@ -2017,7 +2017,24 @@ public function generate_questions_from_pdf()
   public function generate_outline_schemas()
   {
     // Increase timeout for schema generation
-    ini_set('max_execution_time', 180); // 3 minutes for schema generation
+    ini_set('max_execution_time', 300); // 5 minutes for schema generation
+    set_time_limit(300); // Also set time limit
+    
+    // Send headers to prevent timeout
+    if (ob_get_level() == 0) {
+      ob_start();
+    }
+    
+    // Send initial response headers to keep connection alive
+    header('Content-Type: application/json');
+    header('X-Accel-Buffering: no'); // Disable nginx buffering
+    header('Connection: keep-alive');
+    
+    // Flush output buffer to prevent timeout
+    if (ob_get_level() > 0) {
+      ob_flush();
+      flush();
+    }
 
     // Auth check
     if (!$this->session->userdata('teacher_login') &&
@@ -2060,11 +2077,15 @@ public function generate_questions_from_pdf()
 
     // Build prompt for DeepSeek
     $prompt = $this->build_outline_prompt($pdf_content, $outline_rules, $course_context);
+    
+    log_message('debug', 'Starting DeepSeek API call for outline generation');
 
-    // Call DeepSeek API with extended timeout for schema generation
-    $deepseek_response = $this->call_deepseek_api($prompt, 120); // 2 minutes timeout
+    // Call DeepSeek API with reduced timeout to avoid gateway timeout
+    // Most servers have 60s gateway timeout, so we use 50s to be safe
+    $deepseek_response = $this->call_deepseek_api($prompt, 50); // Reduced to 50 seconds
 
     if (isset($deepseek_response['error'])) {
+      log_message('error', 'DeepSeek API Error: ' . $deepseek_response['error']);
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -2073,6 +2094,7 @@ public function generate_questions_from_pdf()
     }
 
     if (!isset($deepseek_response['content'])) {
+      log_message('error', 'No response content from DeepSeek API');
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -2080,16 +2102,21 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'No response content from API'], 500);
     }
 
+    log_message('debug', 'DeepSeek API response received, parsing schemas');
+
     // Parse DeepSeek response to extract 3 schemas
     $schemas = $this->parse_deepseek_schemas($deepseek_response);
 
     if (empty($schemas) || !is_array($schemas)) {
+      log_message('error', 'Failed to parse DeepSeek schemas');
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
       }
       return $this->respond_json(['error' => 'Failed to parse API response'], 500);
     }
+
+    log_message('debug', 'Schemas parsed successfully, count: ' . count($schemas));
 
     // Clean up the JSON file after successful generation
     if (file_exists($pdf_json_file)) {
@@ -2540,6 +2567,7 @@ PROMPT;
       $response = curl_exec($ch);
       $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $curl_error = curl_error($ch);
+      $curl_errno = curl_errno($ch);
       curl_close($ch);
 
       // Debug logging
@@ -2549,8 +2577,19 @@ PROMPT;
       // Check for connection errors that are retryable
       if ($curl_error) {
         error_log('DeepSeek API cURL Error (Attempt ' . $attempt . '): ' . $curl_error);
+        
+        // Check for timeout errors specifically
+        if ($curl_errno == CURLE_OPERATION_TIMEOUTED || 
+            $curl_errno == CURLE_OPERATION_TIMEDOUT ||
+            strpos($curl_error, 'timeout') !== false ||
+            strpos($curl_error, 'timed out') !== false) {
+          error_log('DeepSeek API Timeout detected');
+          
+          // Don't retry on timeout, return error immediately
+          return ['error' => 'API request timed out. The request took too long to process. Please try again with a smaller PDF or simpler outline rules.'];
+        }
 
-        // Retry on connection errors
+        // Retry on other connection errors
         if ($attempt < $max_retries) {
           error_log('Retrying in ' . $retry_delay . ' seconds...');
           sleep($retry_delay);
@@ -2558,6 +2597,12 @@ PROMPT;
         }
 
         return ['error' => 'API connection failed: ' . $curl_error];
+      }
+      
+      // Check for timeout via HTTP code (504 Gateway Timeout)
+      if ($http_code == 504) {
+        error_log('DeepSeek API Gateway Timeout (504)');
+        return ['error' => 'Gateway timeout. The request took too long. Please try again with a smaller PDF or simpler outline rules.'];
       }
 
       if ($http_code !== 200) {
