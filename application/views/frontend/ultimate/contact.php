@@ -399,6 +399,9 @@
             <a href="https://www.linkedin.com/company/wayoacademy/" target="_blank" class="social-btn">
               <i class="fa-brands fa-linkedin-in"></i>
             </a>
+            <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">
+              <i class="fa-brands fa-youtube"></i>
+            </a>
           </div>
         </div>
       </aside>

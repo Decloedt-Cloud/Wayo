@@ -1568,6 +1568,10 @@ main [dir="rtl"] {
   text-align: center;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
 }
 
 .mentor-card:hover {
@@ -1601,6 +1605,7 @@ main [dir="rtl"] {
 }
 
 .mentor-card .btn-mentors {
+  margin-top: auto;
   padding: 0.6rem 1.2rem;
   background: transparent;
   border: 1.5px solid #fc7b30;

@@ -93,7 +93,6 @@ img {
   color: #fff;
   border-radius: 18px;
   font-size: .8rem;
-  text-transform: uppercase;
   vertical-align: middle
 }
 
@@ -328,9 +327,19 @@ img {
   font-size: .95rem
 }
 
+
+.obi-bullets li {
+  position: relative;
+  padding-left: 26px;
+  line-height: 1.5;
+}
+
 .obi-bullets i {
+  position: absolute;
+  left: 0;
+  top: 4px;
   color: var(--orange);
-  margin-right: 8px
+  /* margin-right: 8px; */
 }
 
 .obi-hint {
