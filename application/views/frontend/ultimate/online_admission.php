@@ -1119,7 +1119,17 @@
                                     <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description"
                                               placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
                                               data-msg="<?php echo get_phrase("Please enter a description") ?>"></textarea>
-                                    <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
+                                    <div style="margin-top: 10px; width: 100%;">
+                                        <small class="help" style="margin: 0; color: #6b7280; font-size: 0.85rem; display: block;">
+                                            <?php echo get_phrase("At_least_40_characters.") ?>
+                                        </small>
+                                        <div style="margin-top: 10px; display: flex; gap: 5px; width:100%;">
+                                            <span id="charCount" style="font-weight: 800; color: #dc3545; font-size: 1rem; line-height: 1;">0</span>
+                                            <small class="help" style="margin: 0; color: #9ca3af; font-size: 0.8rem;">
+                                                <?php echo get_phrase("characters"); ?>
+                                            </small>
+                                        </div>
+                                    </div>
                                     <div class="error" data-for="communityDesc"></div>
                                 </label>
                             </fieldset>
@@ -1605,6 +1615,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updateContinueButton();
         updateSummary();
     });
+
+    // Character counter logic
+    const descInput = $('#communityDesc');
+    const countSpan = $('#charCount');
+    if (descInput && countSpan) {
+        const updateCharCount = () => {
+            const count = descInput.value.length;
+            countSpan.textContent = count;
+            if (count < 40) {
+                countSpan.style.color = '#dc3545';
+            } else {
+                countSpan.style.color = '#28a745';
+            }
+        };
+        ['input', 'change', 'keyup', 'focus'].forEach(ev => {
+            descInput.addEventListener(ev, updateCharCount);
+        });
+        updateCharCount(); // Initial count
+    }
 
     // ========================
     // Validation step par step
