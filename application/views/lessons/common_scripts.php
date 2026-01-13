@@ -163,9 +163,8 @@ function initProgressBar(dataPercent) {
 
 //THIRD SECTIONS
 function toggle_lesson_view() {
-    $('#lesson-container').toggleClass('justify-content-center');
-    $("#video_player_area").toggleClass("order-md-1");
-    $("#lesson_list_area").toggleClass("col-lg-5 order-md-1");
+    $('.play-lesson-sidebar').toggle();
+    // No need to manually adjust flex of body if it's set to grow, but let's be safe
 }
 
 

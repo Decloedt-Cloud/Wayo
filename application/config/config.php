@@ -502,6 +502,8 @@ $config['csrf_exclude_uris'] = array(
     'addons/courses/manage_exam_multiple_choices_options',
     'addons/courses/manage_multiple_choices_options',
     'addons/courses/ajax_sort_question',
+    'addons/courses/generate_questions_from_pdf',
+    'addons/courses/update_lesson_from_ai',
      'admin/delete_room',
      'teacher/delete_room',
     'BigBlueButton/',
@@ -584,11 +586,13 @@ $config['csrf_exclude_uris'] = array(
     'admin/teacher/create',
     'admission/check_duplication_ajax',
     'home/get_communities_by_role',
+    'home/switch_community_role',
     'home/check_community_name_exists',
     'api/fx/.*',
     'cron/fx_.*',
     'StripeWebhook',
-    'StripeWebhook/index'
+    'StripeWebhook/index',
+    'addons/courses/extract_pdf_structure'
 );
  
 /*

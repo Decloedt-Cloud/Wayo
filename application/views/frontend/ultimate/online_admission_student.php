@@ -13,6 +13,167 @@
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
 
+    /* Buttons override from online_admission */
+    .btn-primary-custom, .btn-outline-primary-custom {
+      padding: 0.75rem 1.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+    }
+
+    .btn-primary-custom {
+      background: #f47a1f;
+      border: 1px solid #f47a1f;
+      color: white;
+      box-shadow: 0 4px 6px rgba(244, 122, 31, 0.2);
+    }
+    .btn-primary-custom:hover {
+      background: #e06912;
+      border-color: #e06912;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(244, 122, 31, 0.3);
+      color:#fff;
+    }
+
+    /* ================= SUCCESS POPUP ================= */
+    .success-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 7, 18, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100001;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* État visible */
+    .success-overlay.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Card */
+    .success-card {
+      background: #ffffff;
+      width: min(500px, 90vw);
+      padding: 3rem 2.5rem;
+      border-radius: 30px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Animation d’entrée */
+    .success-overlay.is-visible .success-card {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Icone */
+    .success-icon {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 1.5rem;
+
+      background: #fff5ec; /* light orange */
+      color: #f47a1f;      /* orange */
+      border-radius: 28px; /* Squircle */
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 2.5rem;
+      transform: rotate(-10deg);
+      animation: success-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Titre */
+    .success-card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1e1e4b;
+    }
+
+    /* Texte */
+    .success-card p {
+      margin: 0 auto 2rem;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #6b7280;
+      max-width: 400px;
+    }
+
+    /* Info Box */
+    .success-info-box {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    .success-info-icon {
+        font-size: 1.5rem;
+        color: #f47a1f;
+        flex-shrink: 0;
+        width: 24px;
+        text-align: center;
+    }
+
+    .success-info-text {
+        font-size: 0.95rem;
+        color: #334155;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+
+    .success-info-text strong {
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    /* Animation icône */
+    @keyframes success-pop {
+      0% {
+        transform: scale(0) rotate(-45deg);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) rotate(-10deg);
+        opacity: 1;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .success-card {
+        padding: 2rem 1.5rem;
+        border-radius: 24px;
+      }
+      .success-card h2 {
+        font-size: 1.75rem;
+      }
+    }
+
 </style>
 
 <main>
@@ -157,6 +318,28 @@
     </form>
   </section>
 </main>
+
+    <!--success overlay-->
+    <div id="successOverlay" class="success-overlay" aria-hidden="true">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h2><?php echo get_phrase("Request_sent") ?>!</h2>
+            <p><?php echo get_phrase("Your_profile_has_been_successfully_created_on_Wayo.") ?></p>
+
+            <div class="success-info-box">
+                <div class="success-info-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div class="success-info-text">
+                    <?php echo get_phrase("You_will_receive_a_validation_email_within_a_maximum_of") ?> <strong><?php echo get_phrase("24 hours.") ?></strong> <?php echo get_phrase("to confirm your registration.") ?>
+                </div>
+            </div>
+
+            <button id="successBtn" type="button" class="btn btn-primary-custom w-100"><?php echo get_phrase("Discover_our_communities") ?></button>
+        </div>
+    </div>
 
 
 <script>
@@ -439,12 +622,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (data.status) {
-          toastr.success(data.message);
+          // toastr.success(data.message);
           if (typeof clearSavedState === 'function') clearSavedState();
           studentForm.reset();
-          setTimeout(() => {
-            window.location.href = '<?= site_url('/home/communities'); ?>';
-          }, 2000);
+          
+          // Show success popup instead of auto-redirect
+          const overlay = document.getElementById('successOverlay');
+          if (overlay) overlay.classList.add('is-visible');
         } else {
           toastr.error(data.message || 'Erreur inconnue.');
         }
@@ -464,6 +648,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const password = document.getElementById('password-student');
   const repeatPassword = document.getElementById('repeat-password-student');
   const errorMessage = document.getElementById('errorMessage');
+
+  // Success button redirect
+  const successBtn = document.getElementById('successBtn');
+  if (successBtn) {
+      successBtn.addEventListener('click', () => {
+           location.href = '<?= site_url('/home/communities'); ?>';
+      });
+  }
+
+  // Move success overlay to body to prevent z-index/clipping issues
+  const successOverlay = document.getElementById('successOverlay');
+  if (successOverlay) {
+      document.body.appendChild(successOverlay);
+  }
 
   if (password && repeatPassword && errorMessage) {
     repeatPassword.addEventListener('input', function () {

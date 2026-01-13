@@ -141,7 +141,7 @@
   <ul>
     <li><?php echo get_phrase("Fraud_(e.g.,_cheating_on_exams,_identity_theft)."); ?></li>
     <li><?php echo get_phrase("Illegal,_offensive,_or_harmful_content."); ?></li>
-    <li><?php echo get_phrase("Attempting_to_hack_or_disrupt_the_platform."); ?></li>
+    
   </ul>
   <p><?php echo get_phrase("Any_breach_may_result_in"); ?> <strong><?php echo get_phrase("permanent_suspension"); ?></strong> <?php echo get_phrase("of_the_account."); ?></p>
 </section>
