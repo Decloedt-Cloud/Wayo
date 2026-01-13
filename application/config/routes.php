@@ -601,6 +601,14 @@ $route['api/DisplayYoutubeVideo'] = 'api/Admin/display_youtube';
 $route['api/UpdateLessonYoutubeVideo'] = 'api/Admin/update_lesson_youtube';
 $route['api/GetLessonDetails'] = 'api/Admin/get_lesson_details';
 $route['api/DeleteLesson'] = 'api/Admin/delete_lesson';
+
+// Export routes
+$route['export/url'] = 'admin/export/url';
+$route['export/(:any)'] = 'admin/export/$1';
+$route['export/(:any)/(:num)'] = 'admin/export/$1/$2';
+$route['export/(:any)/(:num)/(:num)'] = 'admin/export/$1/$2/$3';
+$route['export/(:any)/(:num)/(:num)/(:any)'] = 'admin/export/$1/$2/$3/$4';
+$route['export/(:any)/(:num)/(:num)/(:any)/(:any)'] = 'admin/export/$1/$2/$3/$4/$5';
 $route['api/GetLessonVideoType'] = 'api/Admin/lesson_video_type';
 $route['api/UpdateLessonDevice'] = 'api/Admin/update_lesson_device';
 $route['api/AddOthersLessons'] = 'api/Admin/add_lesson_with_attachment';

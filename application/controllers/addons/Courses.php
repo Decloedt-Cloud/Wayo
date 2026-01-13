@@ -323,6 +323,34 @@ class Courses extends CI_Controller {
     $this->load->view('backend/index', $page_data);
   }
 
+  public function filter() {
+      $class_id = $this->input->get('class_id');
+      $user_id = $this->input->get('user_id');
+      $status = $this->input->get('status');
+      $school_id = $this->input->get('school_id'); // Optional, defaulting to empty/all if not passed
+
+      $page_data['selected_class_id']   = $class_id;
+      $page_data['selected_user_id']    = $user_id;
+      $page_data['selected_status']     = $status;
+      $page_data['selected_school_id']  = $school_id;
+
+      $page_data['courses']             = $this->lms_model->filter_course_for_backend($class_id, $user_id, $status);
+      $page_data['status_wise_courses'] = $this->lms_model->get_status_wise_courses();
+      $page_data['all_teachers']        = $this->user_model->get_all_teachers();
+      $page_data['classes']             = $this->crud_model->get_classes();
+      
+      $this->load->view('backend/academy/list', $page_data);
+  }
+
+  public function update_status($course_id = "") {
+    $this->student_access_denied();
+    $this->teacher_access($course_id);
+    
+    $this->lms_model->course_activity($course_id);
+    
+    echo true;
+  }
+
   public function course_sections($param1 = "", $param2 = "", $param3 = "") {
     $this->student_access_denied();
     $this->teacher_access($param1);
@@ -2382,93 +2410,93 @@ public function generate_questions_from_pdf()
     $pdf_json = json_encode($simplified_content, JSON_UNESCAPED_UNICODE);
 
     $prompt = <<<PROMPT
-Tu es un expert en conception pédagogique. Génère 3 propositions de plan de cours à partir du document source.
+      Tu es un expert en conception pédagogique. Génère 3 propositions de plan de cours à partir du document source.
 
-RÈGLES:
-- Sections principales max: {$max_sections}
-- Leçons par section: {$lessons_min} à {$lessons_max}
-- Inclure intro: {$include_intro_str}
-- Inclure conclusion: {$include_outro_str}
-- Numérotation: {$numbering_mode}
-- Quiz: {$quiz_policy}
-- Langue: {$language}
+      RÈGLES:
+      - Sections principales max: {$max_sections}
+      - Leçons par section: {$lessons_min} à {$lessons_max}
+      - Inclure intro: {$include_intro_str}
+      - Inclure conclusion: {$include_outro_str}
+      - Numérotation: {$numbering_mode}
+      - Quiz: {$quiz_policy}
+      - Langue: {$language}
 
-RÉPONDS UNIQUEMENT EN JSON VALIDE (pas de markdown, pas de texte avant/après).
+      RÉPONDS UNIQUEMENT EN JSON VALIDE (pas de markdown, pas de texte avant/après).
 
-Format de réponse:
-{
-  "courseTitle": "Titre du cours",
-  "numberingMode": "{$numbering_mode}",
-  "quizPolicy": "{$quiz_policy}",
-  "proposals": [
-    {
-      "id": "proposal_1",
-      "label": "Schéma équilibré",
-      "strategy": "Description courte",
-      "sections": [
-        {
-          "id": "sec_01",
-          "type": "INTRO",
-          "order": 1,
-          "title": "Introduction",
-          "sourcePages": {"start": 1, "end": 2},
-          "children": [
-            {
-              "id": "les_01_01",
-              "type": "LESSON",
-              "order": 1,
-              "title": "Titre leçon",
-              "subtitle": "Sous-titre",
-              "sourceHeadings": ["Heading"],
-              "sourcePages": {"start": 1, "end": 1}
-            },
-            {
-              "id": "quiz_01",
-              "type": "QUIZ",
-              "order": 99,
-              "title": "Quiz",
-              "questionsCount": {$quiz_questions},
-              "difficulty": "{$quiz_difficulty}"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "proposal_2",
-      "label": "Schéma consolidé",
-      "strategy": "Moins de sections, plus thématique",
-      "sections": []
-    },
-    {
-      "id": "proposal_3",
-      "label": "Schéma détaillé",
-      "strategy": "Plus granulaire, parcours d'apprentissage",
-      "sections": []
-    }
-  ]
-}
+      Format de réponse:
+      {
+        "courseTitle": "Titre du cours",
+        "numberingMode": "{$numbering_mode}",
+        "quizPolicy": "{$quiz_policy}",
+        "proposals": [
+          {
+            "id": "proposal_1",
+            "label": "Schéma équilibré",
+            "strategy": "Description courte",
+            "sections": [
+              {
+                "id": "sec_01",
+                "type": "INTRO",
+                "order": 1,
+                "title": "Introduction",
+                "sourcePages": {"start": 1, "end": 2},
+                "children": [
+                  {
+                    "id": "les_01_01",
+                    "type": "LESSON",
+                    "order": 1,
+                    "title": "Titre leçon",
+                    "subtitle": "Sous-titre",
+                    "sourceHeadings": ["Heading"],
+                    "sourcePages": {"start": 1, "end": 1}
+                  },
+                  {
+                    "id": "quiz_01",
+                    "type": "QUIZ",
+                    "order": 99,
+                    "title": "Quiz",
+                    "questionsCount": {$quiz_questions},
+                    "difficulty": "{$quiz_difficulty}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "proposal_2",
+            "label": "Schéma consolidé",
+            "strategy": "Moins de sections, plus thématique",
+            "sections": []
+          },
+          {
+            "id": "proposal_3",
+            "label": "Schéma détaillé",
+            "strategy": "Plus granulaire, parcours d'apprentissage",
+            "sections": []
+          }
+        ]
+      }
 
-TYPES DE SECTIONS:
-- INTRO: 1 section d'introduction (si include_intro=true)
-- CORE: Sections principales du contenu
-- OUTRO: 1 section de conclusion (si include_outro=true)
+      TYPES DE SECTIONS:
+      - INTRO: 1 section d'introduction (si include_intro=true)
+      - CORE: Sections principales du contenu
+      - OUTRO: 1 section de conclusion (si include_outro=true)
 
-IDs UNIQUES:
-- Sections: sec_01, sec_02...
-- Leçons: les_01_01 (section 01, leçon 01)
-- Quiz: quiz_01 (section 01)
+      IDs UNIQUES:
+      - Sections: sec_01, sec_02...
+      - Leçons: les_01_01 (section 01, leçon 01)
+      - Quiz: quiz_01 (section 01)
 
-3 PROPOSITIONS DIFFÉRENTES:
-1. Équilibré: Suit le flux du PDF
-2. Consolidé: Moins de sections, fusionne les sujets similaires
-3. Détaillé: Plus de sections, décompose en étapes claires
+      3 PROPOSITIONS DIFFÉRENTES:
+      1. Équilibré: Suit le flux du PDF
+      2. Consolidé: Moins de sections, fusionne les sujets similaires
+      3. Détaillé: Plus de sections, décompose en étapes claires
 
-DOCUMENT SOURCE:
-{$pdf_json}
+      DOCUMENT SOURCE:
+      {$pdf_json}
 
-Génère maintenant les 3 propositions complètes en JSON:
-PROMPT;
+      Génère maintenant les 3 propositions complètes en JSON:
+      PROMPT;
 
     return $prompt;
   }
