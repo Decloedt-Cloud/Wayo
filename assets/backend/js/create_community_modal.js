@@ -11,82 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const iAmSelect = document.getElementById('i_am');
     const taxSelect = document.getElementById('Tax_residence');
-    const priceInput = document.getElementById('community-price');
-    const monetizationNotice = document.getElementById('monetizationNotice');
-    const currencySymbol = document.getElementById('currencySymbol');
     const privateToggle = document.getElementById('isPrivate');
 
-    taxSelect?.addEventListener('change', function () {
-        updateCurrency();
-        togglePriceField();
-    });
-    
-    // === DEVISE DYNAMIQUE ===
-    function updateCurrency() {
-        const tax = taxSelect?.value || '';
-        const symbolSpan = document.getElementById('currencySymbol');
-        const priceInput = document.getElementById('community-price');
-        const planCurrency = document.getElementById('planCurrency');
 
-        if (!symbolSpan || !priceInput) return;
 
-        let symbol = '—';
-        let placeholder = '299.00';
-        let planSymbol = '';
 
-        if (tax === 'MA') {
-            symbol = 'MAD';
-            planSymbol = 'MAD';
-            placeholder = '299.00';
-        } else if (tax === 'UAE') {
-            symbol = 'AED';
-            planSymbol = 'AED';
-            placeholder = '299.00';
-        }
-
-        symbolSpan.textContent = symbol;
-        symbolSpan.style.color = symbol === '—' ? '#9CA3AF' : '#6B7280';
-
-        if (planCurrency) planCurrency.textContent = planSymbol || '—';
-
-        // Ne pas écraser la valeur saisie
-        if (!priceInput.value || priceInput.value === '0') {
-            priceInput.placeholder = placeholder;
-        }
-    }
-
-    // === PRIX BLOQUÉ SI PARTICULIER ===
-    function togglePriceField() {
-        const isParticulier = iAmSelect?.value === 'Particulier';
-        const isPrivateCommunity = privateToggle?.checked;
-        const shouldDisable = isParticulier || isPrivateCommunity;
-
-        if (shouldDisable) {
-            priceInput.value = '0';
-            priceInput.disabled = true;
-            priceInput.classList.add('bg-light');
-
-            if (monetizationNotice) {
-                let message = '';
-                if (isParticulier) {
-                    message = monetizationNotice.dataset.particulierMessage || '';
-                } else if (isPrivateCommunity) {
-                    message = monetizationNotice.dataset.privateMessage || '';
-                }
-                monetizationNotice.textContent = message;
-                monetizationNotice.style.display = message ? 'block' : 'none';
-            }
-        } else {
-            priceInput.disabled = false;
-            priceInput.classList.remove('bg-light');
-            if (priceInput.value === '0') priceInput.value = '';
-
-            if (monetizationNotice) {
-                monetizationNotice.style.display = 'none';
-                monetizationNotice.textContent = '';
-            }
-        }
-    }
 
     // === FONCTION DE VALIDATION COMPLÈTE (temps réel) ===
     function validateStep1() {
@@ -192,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.csrf?.csrfHash) {
                     window.csrfTokenValue = response.csrf.csrfHash;
-                    const input = document.getElementById('csrf_token');
+                    const input = document.getElementById('community_csrf_token');
                     if (input) input.value = response.csrf.csrfHash;
                 }
 
@@ -253,12 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     iAmSelect?.addEventListener('change', () => {
-        togglePriceField();
         updateContinueButton();
-    });
-
-    privateToggle?.addEventListener('change', () => {
-        togglePriceField();
     });
 
     // === ÉCOUTEURS BOUTONS ===
@@ -340,10 +264,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const formData = new FormData(this);
-            const csrfInput = document.getElementById('csrf_token');
+
+            // FORCE Update CSRF token (using set to avoid duplicates)
+            const csrfInput = document.getElementById('community_csrf_token');
             if (csrfInput) {
-                formData.append(csrfInput.name, csrfInput.value);
+                formData.set(csrfInput.name, csrfInput.value);
             }
+
 
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
@@ -363,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Mise à jour du token CSRF
                     if (data.csrf?.csrfHash) {
-                        const input = document.getElementById('csrf_token');
+                        const input = document.getElementById('community_csrf_token');
                         if (input) input.value = data.csrf.csrfHash;
                     }
 
@@ -386,15 +313,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                     console.error('AJAX Error:', xhr.responseText);
-                    toastr.error('Erreur réseau ou serveur (403 ? Vérifie le contrôleur)');
+                    let errorMsg = 'Erreur: ' + xhr.status + ' ' + xhr.statusText;
+                    if (xhr.status === 403) errorMsg = 'Erreur 403 (CSRF ou Permission)';
+                    if (xhr.status === 500) errorMsg = 'Erreur 500 (Serveur)';
+                    toastr.error(errorMsg);
                 }
             });
         });
     }
 
     // === INITIALISATION ===
-    togglePriceField();
-    updateCurrency();
 
     function getCsrfData() {
         return {
