@@ -81,7 +81,7 @@ function confirmModal(delete_url, callback) {
                 // Afficher une notification basée sur la réponse
                 if (response.status) {
                     
-                    showNotification('success', response.notification || '<?php echo get_phrase('deleted_successfully'); ?>');
+                    showNotification('success', response.notification || <?php echo js_phrase('deleted_successfully'); ?>);
 
                     // Update CSRF token with the new one from response
                     if (response.csrf) {
@@ -98,16 +98,15 @@ function confirmModal(delete_url, callback) {
                     }, 500);
 
                 } else {
-                    showNotification('error', response.notification || '<?php echo get_phrase('failed_to_delete'); ?>');
+                    showNotification('error', response.notification || <?php echo js_phrase('failed_to_delete'); ?>);
                 }
-
                 
             },
             error: function(xhr, status, error) {
                 console.error('Erreur AJAX : ', error);
                 console.error('Statut : ', status);
                 console.error('Réponse : ', xhr.responseText);
-                showNotification('error', "<?php echo get_phrase('failed_to_delete_exam'); ?>");
+                showNotification('error', <?php echo js_phrase('failed_to_delete_exam'); ?>);
                 // Fermer le modal même en cas d'erreur
                 jQuery('#alert-modal').modal('hide');
             }

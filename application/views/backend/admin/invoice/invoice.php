@@ -86,7 +86,7 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
 <style>
 /* Invoice View Pro Styles */
 :root {
-    --inv-primary: #4f46e5;
+    --inv-primary: #6366f1;
     --inv-success: #059669;
     --inv-danger: #dc2626;
     --inv-warning: #d97706;
@@ -609,7 +609,7 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
                 </div>
             </div>
             <div class="inv-header-right">
-                <div class="inv-title">FACTURE</div>
+                <div class="inv-title"><?php echo get_phrase('invoice'); ?></div>
                 <div class="inv-number">#<?php echo sprintf('%08d', $invoice_details['id']); ?></div>
           </div>
         </div>
@@ -643,7 +643,7 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
                         <?php endif; ?>
                         <?php echo htmlspecialchars($school['Codepostal']); ?> <?php echo htmlspecialchars($school['Ville']); ?>
                         <?php if (!empty($school['num_vat'])): ?>
-                            <br>TVA: <?php echo htmlspecialchars($school['num_vat']); ?>
+                            <br><?php echo get_phrase('vat'); ?>: <?php echo htmlspecialchars($school['num_vat']); ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -737,7 +737,7 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
             <div class="inv-totals-section">
                 <div class="inv-totals-box">
                     <div class="inv-totals-row">
-                        <span class="inv-totals-label"><?php echo get_phrase('sub_total'); ?> HT</span>
+                        <span class="inv-totals-label"><?php echo get_phrase('sub_total'); ?> <?php echo get_phrase('excl_tax'); ?></span>
                         <span class="inv-totals-value"><?php echo number_format($sub_total, 2, ',', ' '); ?> <?php echo $invoice_details['currency']; ?></span>
                     </div>
                     <div class="inv-totals-row">
@@ -745,7 +745,7 @@ $school_logo = $this->settings_model->get_logo_school($invoice_details['school_i
                         <span class="inv-totals-value"><?php echo number_format($vat_amount, 2, ',', ' '); ?> <?php echo $invoice_details['currency']; ?></span>
                     </div>
                     <div class="inv-totals-row grand">
-                        <span class="inv-totals-label"><?php echo get_phrase('total'); ?> TTC</span>
+                        <span class="inv-totals-label"><?php echo get_phrase('total'); ?> <?php echo get_phrase('incl_tax'); ?></span>
                         <span class="inv-totals-value"><?php echo number_format($grand_total, 2, ',', ' '); ?> <?php echo $invoice_details['currency']; ?></span>
                     </div>
                     <?php if (!$is_paid && $due_amount > 0): ?>
