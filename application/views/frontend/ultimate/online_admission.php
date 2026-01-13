@@ -671,25 +671,35 @@
                         </label>
                     </div>
 
-                    <label class="field">
-                        <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
-                        <input id="profilePass" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
-                               aria-required="true" autocomplete="new-password"
-                               class="form-control rounded-end shadow-none" name="password"
-                               data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>"
-                               data-error-class="u-has-error" data-success-class="u-has-success">
-                        <div class="error" data-for="profilePass"></div>
-                    </label>
+                    <div class="grid-2">
+                        <label class="field">
+                            <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
+                            <div style="position:relative; width: 100%;">
+                                <input id="profilePass" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
+                                    aria-required="true" autocomplete="new-password"
+                                    class="form-control rounded-end shadow-none" name="password"
+                                    data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>"
+                                    data-error-class="u-has-error" data-success-class="u-has-success"
+                                    style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass', this, event)" style="position:absolute; right:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;"></i>
+                            </div>
+                            <div class="error" data-for="profilePass" style="margin-top: 45px;"></div>
+                        </label>
 
-                    <label class="field">
-                        <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
-                        <input id="profilePass2" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
-                               aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
-                               name="repeat-password"
-                               data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>"
-                               data-error-class="u-has-error" data-success-class="u-has-success">
-                        <div class="error" data-for="profilePass2"></div>
-                    </label>
+                        <label class="field">
+                            <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
+                            <div style="position:relative; width: 100%;">
+                                <input id="profilePass2" type="password" placeholder="********" required minlength="8" pattern=".{8,}"
+                                    aria-required="true" autocomplete="new-password" class="form-control rounded-end shadow-none"
+                                    name="repeat-password"
+                                    data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>"
+                                    data-error-class="u-has-error" data-success-class="u-has-success"
+                                    style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass2', this, event)" style="position:absolute; right:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;"></i>
+                            </div>
+                            <div class="error" data-for="profilePass2" style="margin-top: 45px;"></div>
+                        </label>
+                    </div>
 
                     <div class="panel-actions">
                         <button type="button" class="btn btn-secondary prev" disabled><?php echo get_phrase("Back") ?></button>
@@ -1033,6 +1043,27 @@
 
 <!-- Script principal unifié & optimisé -->
 <script>
+function toggleAdmissionPassword(inputId, icon, e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const input = document.getElementById(inputId);
+  if (input && icon) {
+    const isPassword = input.getAttribute("type") === "password";
+    input.setAttribute("type", isPassword ? "text" : "password");
+    if (isPassword) {
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+      icon.style.color = "#F47A1F"; // Orange
+    } else {
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+      icon.style.color = "#6b7280"; // Gray
+    }
+  }
+}
+
     
 document.addEventListener('DOMContentLoaded', function() {
     // ========================
@@ -1281,7 +1312,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const err = $(`.error[data-for="${el.id}"]`);
         if (err) {
             err.textContent = msg || el.dataset.msg || '';
-            err.style.display = 'block';
+            err.style.setProperty('display', 'block', 'important');
         }
     }
 
@@ -1295,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const err = $(`.error[data-for="${el.id}"]`);
         if (err) {
             err.textContent = '';
-            err.style.display = 'none';
+            err.style.setProperty('display', 'none', 'important');
         }
     }
 
