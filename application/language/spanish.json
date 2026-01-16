@@ -3611,6 +3611,11 @@
     "generating_ai_content_will_overwrite_current_lesson_content": "Generar contenido con IA sobrescribirá el contenido actual de la lección",
     "yes_overwrite_it": "Sí, sobrescribir",
     "lesson_updated_successfully": "Lección actualizada con éxito",
+    "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "Después de la creación, puedes completar tu perfil directamente desde tu panel de control",
+    "your_profile_has_been_successfully_created_on_wayo.": "Tu perfil ha sido creado con éxito en Wayo.",
+    "account_status": "Estado de la cuenta",
+    "account_ready_to_create": "Cuenta lista para crear",
+
     "export_date": "Fecha de exportación",
     "total_paid": "Total pagado",
     "total_unpaid": "Total pendiente",
