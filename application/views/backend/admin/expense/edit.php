@@ -434,7 +434,7 @@
             <?php echo strtoupper(substr($expense_category_details['name'] ?? 'EX', 0, 2)); ?>
         </div>
         <div class="exp-preview-info">
-            <h4 class="exp-preview-amount"><?php echo currency($expense_details['amount']); ?></h4>
+            <h4 class="exp-preview-amount"><?php echo $expense_details['amount'].' '.$this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency'); ?></h4>
             <span class="exp-preview-id">
                 <i class="mdi mdi-identifier"></i>
                 EXP-<?php echo str_pad($expense_details['id'], 4, '0', STR_PAD_LEFT); ?>
@@ -491,7 +491,7 @@
         <div class="exp-form-group">
             <label class="exp-form-label">
                 <i class="mdi mdi-currency-usd"></i>
-                <span><?php echo get_phrase('amount').' ('.currency_code_and_symbol('code').')'; ?></span>
+                <span><?php echo get_phrase('amount').' ('. $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency').')'; ?></span>
                 <span class="exp-required">*</span>
             </label>
             <div class="exp-input-wrapper">

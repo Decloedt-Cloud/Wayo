@@ -380,18 +380,24 @@
         <div class="grid-2">
           <label class="field">
             <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
-            <input id="password" type="password"  class="form-control rounded-end shadow-none"
-                name="password-student" required aria-required="true" data-msg="Please enter a password" data-error-class="u-has-error"
-                data-success-class="u-has-success">
-            <div class="error" data-for="password"></div>
+            <div style="position:relative; width: 100%;">
+                <input id="password" type="password"  class="form-control rounded-end shadow-none"
+                    name="password-student" required aria-required="true" data-msg="Please enter a password" data-error-class="u-has-error"
+                    data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('password', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+            </div>
+            <div class="error" data-for="password" style="margin-top: 45px;"></div>
           </label>
 
           <label class="field">
             <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
-            <input id="confirmPassword" type="password"  class="form-control rounded-end shadow-none"
-                name="repeat-password-student"  minlength="6" required aria-required="true" data-msg="Please repeat your password"
-                data-error-class="u-has-error" data-success-class="u-has-success">
-            <div class="error" data-for="confirmPassword"></div>
+            <div style="position:relative; width: 100%;">
+                <input id="confirmPassword" type="password"  class="form-control rounded-end shadow-none"
+                    name="repeat-password-student"  minlength="6" required aria-required="true" data-msg="Please repeat your password"
+                    data-error-class="u-has-error" data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('confirmPassword', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+            </div>
+            <div class="error" data-for="confirmPassword" style="margin-top: 45px;"></div>
           </label>
         </div>
 
@@ -629,7 +635,10 @@
       if (!el) return false;
       el.classList.add('is-invalid');
       const err = document.querySelector(`.error[data-for="${el.id}"]`);
-      if (err) err.textContent = msg || '';
+      if (err) {
+        err.textContent = msg || '';
+        err.style.setProperty('display', 'block', 'important');
+      }
       return false;
     }
 
@@ -637,7 +646,10 @@
       if (!el) return;
       el.classList.remove('is-invalid');
       const err = document.querySelector(`.error[data-for="${el.id}"]`);
-      if (err) err.textContent = '';
+      if (err) {
+        err.textContent = '';
+        err.style.setProperty('display', 'none', 'important');
+      }
     }
 
     function isEmail(addr) {
@@ -721,6 +733,27 @@
     });
   }
 })();
+
+function toggleStudentPassword(inputId, icon, e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const input = document.getElementById(inputId);
+  if (input && icon) {
+    const isPassword = input.getAttribute("type") === "password";
+    input.setAttribute("type", isPassword ? "text" : "password");
+    if (isPassword) {
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+      icon.style.color = "#F47A1F"; // Orange
+    } else {
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+      icon.style.color = "#6b7280"; // Gray
+    }
+  }
+}
 </script>
 
 

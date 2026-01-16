@@ -147,7 +147,10 @@
  
           <label for="loginPassword" class="login-field">
             <span><?php echo get_phrase("password") ?> *</span>
-            <input type="password" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password">
+            <div style="position:relative; width: 100%;">
+              <input type="password" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password" style="width:100%; padding-right: 40px; box-sizing: border-box;">
+              <i id="togglePassword" class="fa-regular fa-eye-slash" onclick="toggleLoginPassword(event)" style="position:absolute; right:12px; top:23px; bottom:0; margin:auto; height:18px; line-height:18px; cursor:pointer; color:#6b7280; font-size:13px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+            </div>
           </label>
  
           <div class="login-row">
@@ -228,6 +231,33 @@ document.addEventListener("DOMContentLoaded", function() {
     joinBtn?.addEventListener("click", scrollToTop);
     navToggler?.addEventListener("click", scrollToTop);
 });
+
+function toggleLoginPassword(e) {
+    if (e) { 
+      e.preventDefault(); 
+      e.stopPropagation();
+    }
+    
+    const password = document.querySelector("#loginPassword");
+    const icon = document.querySelector("#togglePassword");
+
+    if (password && icon) {
+        // Toggle the type attribute
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+        
+        // Toggle the icon class and style
+        if (type === "text") {
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+            icon.style.color = "#F47A1F"; // Orange
+        } else {
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+            icon.style.color = "#6b7280"; // Gray
+        }
+    }
+}
 </script>
 
 <script type="text/javascript">

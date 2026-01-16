@@ -216,7 +216,7 @@ label {
 label div {
   width: 3px;
   height: 3px;
-  background-color: #000;
+  /* background-color: #000; */
   margin-bottom: 6px;
   border-radius: 6px;
   transition: 0.3s ease width, 0.3s ease margin-left, 0.3s ease margin-bottom,
@@ -228,7 +228,7 @@ label div:first-child {
 }
 
 label div:nth-child(2) {
-  width: 13px;
+  /* width: 13px; */
 }
 
 label div:last-child {

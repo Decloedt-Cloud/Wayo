@@ -37,6 +37,9 @@ class Courses extends CI_Controller {
     $this->deepseekUrl = 'https://api.deepseek.com/v1/chat/completions';
     $this->deepseekApiKey = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API Key
     
+    // Local LLM API Configuration (LM Studio / Ollama / vLLM)
+    $this->localLlmUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    
     // Initialize HTMLPurifier for XSS protection
     $this->initHtmlPurifier();
 
@@ -318,6 +321,34 @@ class Courses extends CI_Controller {
     $page_data['page_name']       = 'edit';
 
     $this->load->view('backend/index', $page_data);
+  }
+
+  public function filter() {
+      $class_id = $this->input->get('class_id');
+      $user_id = $this->input->get('user_id');
+      $status = $this->input->get('status');
+      $school_id = $this->input->get('school_id'); // Optional, defaulting to empty/all if not passed
+
+      $page_data['selected_class_id']   = $class_id;
+      $page_data['selected_user_id']    = $user_id;
+      $page_data['selected_status']     = $status;
+      $page_data['selected_school_id']  = $school_id;
+
+      $page_data['courses']             = $this->lms_model->filter_course_for_backend($class_id, $user_id, $status);
+      $page_data['status_wise_courses'] = $this->lms_model->get_status_wise_courses();
+      $page_data['all_teachers']        = $this->user_model->get_all_teachers();
+      $page_data['classes']             = $this->crud_model->get_classes();
+      
+      $this->load->view('backend/academy/list', $page_data);
+  }
+
+  public function update_status($course_id = "") {
+    $this->student_access_denied();
+    $this->teacher_access($course_id);
+    
+    $this->lms_model->course_activity($course_id);
+    
+    echo true;
   }
 
   public function course_sections($param1 = "", $param2 = "", $param3 = "") {
@@ -1783,9 +1814,18 @@ public function generate_questions_from_pdf()
 
   /**
    * Extract PDF structure (TOC + H1/H2 headings) and save as JSON
+   * Uses Python script with PyMuPDF for better extraction
    */
   public function extract_pdf_structure()
   {
+    // Get Python executable path from config or auto-detect
+    $python_path = $this->get_python_path();
+    
+    if (!$python_path) {
+      log_message('error', 'Python not found. Please configure PYTHON_EXECUTABLE_PATH in constants.php');
+      return $this->respond_json(['error' => 'Python not configured. Contact administrator.'], 500);
+    }
+    
     // Auth check
     if (!$this->session->userdata('teacher_login') && 
         !$this->session->userdata('admin_login') && 
@@ -1821,28 +1861,40 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'Failed to process file'], 500);
     }
 
-    // Run Python extraction
+    // Run Python extraction script
     $script = APPPATH . 'scripts/extract_pdf_structure.py';
     if (!file_exists($script)) {
       unlink($temp_path);
       return $this->respond_json(['error' => 'Extraction script not found'], 500);
     }
 
-    $output = shell_exec(sprintf('python %s %s 2>&1', 
+    log_message('debug', 'Starting PDF extraction with Python: ' . $temp_path);
+    log_message('debug', 'Python path: ' . $python_path);
+    log_message('debug', 'Script path: ' . $script);
+
+    $output = shell_exec(sprintf('"%s" %s %s 2>&1', 
+      $python_path,
       escapeshellarg($script), 
       escapeshellarg($temp_path)
     ));
-    
+    log_message('debug', "Python output: " . $output);
     unlink($temp_path); // Cleanup
 
     // Parse result
     if (!$output) {
-      return $this->respond_json(['error' => 'Python not available'], 500);
+      log_message('error', 'Python returned no output');
+      return $this->respond_json(['error' => 'Python extraction failed'], 500);
     }
 
     $result = json_decode($output, true);
-    if (json_last_error() !== JSON_ERROR_NONE || isset($result['error'])) {
-      return $this->respond_json(['error' => $result['error'] ?? 'Extraction failed'], 500);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      log_message('error', 'JSON decode error: ' . json_last_error_msg() . ' - Output: ' . substr($output, 0, 500));
+      return $this->respond_json(['error' => 'Extraction failed: Invalid JSON response'], 500);
+    }
+    
+    if (isset($result['error'])) {
+      log_message('error', 'Python script error: ' . $result['error']);
+      return $this->respond_json(['error' => $result['error']], 500);
     }
 
     // Save JSON
@@ -1856,6 +1908,8 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'Failed to save JSON'], 500);
     }
 
+    log_message('debug', 'PDF extraction successful, saved to: ' . $json_path);
+
     $this->respond_json([
       'success' => true,
       'json_file' => $filename,
@@ -1863,14 +1917,155 @@ public function generate_questions_from_pdf()
       'csrf_hash' => $this->security->get_csrf_hash()
     ]);
   }
-
+  
   /**
+   * Get Python executable path from config or auto-detect
+   * @return string|false Python path or false if not found
+   */
+  private function get_python_path()
+  {
+    // Check if configured in constants.php
+    if (defined('PYTHON_EXECUTABLE_PATH') && PYTHON_EXECUTABLE_PATH !== 'auto') {
+      $configured_path = PYTHON_EXECUTABLE_PATH;
+      log_message('debug', 'Using configured Python path: ' . $configured_path);
+      
+      // Try to resolve relative paths if needed
+      if (strpos($configured_path, '/') === 0 && !file_exists($configured_path)) {
+        // Try common Linux paths
+        $alternative_paths = [
+          '/usr/bin/' . basename($configured_path),
+          '/usr/local/bin/' . basename($configured_path),
+          '/opt/' . basename($configured_path),
+        ];
+        
+        foreach ($alternative_paths as $alt_path) {
+          if (file_exists($alt_path)) {
+            log_message('debug', 'Resolved Python path to: ' . $alt_path);
+            return $alt_path;
+          }
+        }
+      }
+      
+      if (file_exists($configured_path)) {
+        return $configured_path;
+      }
+      log_message('error', 'Configured Python path does not exist: ' . $configured_path);
+    }
+    
+    // Auto-detect Python with enhanced logging
+    $possible_paths = [];
+    
+    // Detect OS
+    $is_windows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    log_message('debug', 'OS detected: ' . ($is_windows ? 'Windows' : 'Linux/Unix'));
+    
+    if ($is_windows) {
+      // Windows paths
+      $possible_paths = [
+        'C:\\Users\\AbdelfattahAllam\\AppData\\Local\\Python\\bin\\python.exe',
+        'C:\\Python312\\python.exe',
+        'C:\\Python311\\python.exe',
+        'C:\\Python310\\python.exe',
+        'C:\\Python39\\python.exe',
+        'C:\\Program Files\\Python312\\python.exe',
+        'C:\\Program Files\\Python311\\python.exe',
+        'C:\\Program Files\\Python310\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python312\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python311\\python.exe',
+        getenv('LOCALAPPDATA') . '\\Programs\\Python\\Python310\\python.exe',
+      ];
+    } else {
+      // Linux/Unix paths - include the specific path from the user
+      $possible_paths = [
+        '/home/ubuntu/.pyenv/shims/python3',
+        '/usr/bin/python3',
+        '/usr/local/bin/python3',
+        '/usr/bin/python',
+        '/usr/local/bin/python',
+        '/opt/python3/bin/python3',
+        '/usr/bin/python2',
+        '/usr/local/bin/python2',
+      ];
+    }
+    
+    log_message('debug', 'Checking Python paths: ' . implode(', ', $possible_paths));
+    
+    // Try each path with enhanced logging
+    foreach ($possible_paths as $path) {
+      if ($path && file_exists($path)) {
+        log_message('debug', 'Found Python at: ' . $path);
+        return $path;
+      }
+      log_message('debug', 'Python not found at: ' . $path);
+    }
+    
+    // Try to find Python using shell command with enhanced logging
+    if ($is_windows) {
+      $where_output = shell_exec('where python 2>nul');
+      if ($where_output) {
+        $paths = explode("\n", trim($where_output));
+        if (!empty($paths[0]) && file_exists(trim($paths[0]))) {
+          log_message('debug', 'Found Python via where command: ' . trim($paths[0]));
+          return trim($paths[0]);
+        }
+      }
+    } else {
+      $which_output = shell_exec('which python3 2>/dev/null');
+      if ($which_output) {
+        $paths = explode("\n", trim($which_output));
+        foreach ($paths as $path) {
+          $path = trim($path);
+          if (file_exists($path)) {
+            log_message('debug', 'Found Python3 via which command: ' . $path);
+            return $path;
+          }
+        }
+      }
+      
+      $which_output = shell_exec('which python 2>/dev/null');
+      if ($which_output) {
+        $paths = explode("\n", trim($which_output));
+        foreach ($paths as $path) {
+          $path = trim($path);
+          if (file_exists($path)) {
+            log_message('debug', 'Found Python via which command: ' . $path);
+            return $path;
+          }
+        }
+      }
+    }
+    
+    log_message('error', 'Python not found in any known location');
+    return false;
+  }
+  
+  /**
+   * Extract headings from page texts using regex patterns
+   */
+/**
    * Generate outline schemas using DeepSeek API
    */
   public function generate_outline_schemas()
   {
     // Increase timeout for schema generation
-    ini_set('max_execution_time', 180); // 3 minutes for schema generation
+    ini_set('max_execution_time', 300); // 5 minutes for schema generation
+    set_time_limit(300); // Also set time limit
+    
+    // Send headers to prevent timeout
+    if (ob_get_level() == 0) {
+      ob_start();
+    }
+    
+    // Send initial response headers to keep connection alive
+    header('Content-Type: application/json');
+    header('X-Accel-Buffering: no'); // Disable nginx buffering
+    header('Connection: keep-alive');
+    
+    // Flush output buffer to prevent timeout
+    if (ob_get_level() > 0) {
+      ob_flush();
+      flush();
+    }
 
     // Auth check
     if (!$this->session->userdata('teacher_login') &&
@@ -1911,13 +2106,16 @@ public function generate_questions_from_pdf()
       }
     }
 
-    // Build prompt for DeepSeek
+    // Build optimized prompt for Local LLM
     $prompt = $this->build_outline_prompt($pdf_content, $outline_rules, $course_context);
+    
+    log_message('debug', 'Starting Local LLM API call for outline generation');
 
-    // Call DeepSeek API with extended timeout for schema generation
-    $deepseek_response = $this->call_deepseek_api($prompt, 120); // 2 minutes timeout
+    // Call Local LLM API for outline generation
+    $deepseek_response = $this->call_deepseek_api($prompt, 300); // 5 minutes timeout for local LLM
 
     if (isset($deepseek_response['error'])) {
+      log_message('error', 'Local LLM API Error: ' . $deepseek_response['error']);
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -1926,6 +2124,7 @@ public function generate_questions_from_pdf()
     }
 
     if (!isset($deepseek_response['content'])) {
+      log_message('error', 'No response content from Local LLM API');
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
@@ -1933,16 +2132,21 @@ public function generate_questions_from_pdf()
       return $this->respond_json(['error' => 'No response content from API'], 500);
     }
 
+    log_message('debug', 'Local LLM API response received, parsing schemas');
+
     // Parse DeepSeek response to extract 3 schemas
     $schemas = $this->parse_deepseek_schemas($deepseek_response);
 
     if (empty($schemas) || !is_array($schemas)) {
+      log_message('error', 'Failed to parse DeepSeek schemas');
       // Clean up JSON file on error
       if (file_exists($pdf_json_file)) {
         unlink($pdf_json_file);
       }
       return $this->respond_json(['error' => 'Failed to parse API response'], 500);
     }
+
+    log_message('debug', 'Schemas parsed successfully, count: ' . count($schemas));
 
     // Clean up the JSON file after successful generation
     if (file_exists($pdf_json_file)) {
@@ -2031,117 +2235,268 @@ public function generate_questions_from_pdf()
     $pdf_json = json_encode($pdf_content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
     $prompt = <<<PROMPT
-Generate 3 different course outline proposals from this source document.
+      Generate 3 different course outline proposals from this source document.
 
-RULES:
-- max_core_sections: {$max_sections}
-- lessons_per_section: {$lessons_min}-{$lessons_max}
-- include_intro: {$include_intro}
-- include_outro: {$include_outro}
-- numbering: {$numbering_mode}
-- quiz_policy: {$quiz_policy}
-- language: {$language}
+      RULES:
+      - max_core_sections: {$max_sections}
+      - lessons_per_section: {$lessons_min}-{$lessons_max}
+      - include_intro: {$include_intro}
+      - include_outro: {$include_outro}
+      - numbering: {$numbering_mode}
+      - quiz_policy: {$quiz_policy}
+      - language: {$language}
 
-CONTENT CLEANING:
-- Ignore API docs, tables of contents, noise headings
-- Keep logical order, prefer H1→sections, H2→lessons
+      CONTENT CLEANING:
+      - Ignore API docs, tables of contents, noise headings
+      - Keep logical order, prefer H1→sections, H2→lessons
 
-INTRO/OUTRO:
-If include_intro=true: ONE INTRO section with {$lessons_min}-{$lessons_max} lessons
-If include_outro=true: ONE OUTRO section with {$lessons_min}-{$lessons_max} lessons
+      INTRO/OUTRO:
+      If include_intro=true: ONE INTRO section with {$lessons_min}-{$lessons_max} lessons
+      If include_outro=true: ONE OUTRO section with {$lessons_min}-{$lessons_max} lessons
 
-OUTPUT (STRICT JSON ONLY — NO MARKDOWN, NO EXTRA TEXT)
-Return exactly this JSON structure:
+      OUTPUT (STRICT JSON ONLY — NO MARKDOWN, NO EXTRA TEXT)
+      Return exactly this JSON structure:
 
-{
-  "courseTitle": "<infer from source>",
-  "numberingMode": "{$numbering_mode}",
-  "quizPolicy": "{$quiz_policy}",
-  "proposals": [
-    {
-      "id": "proposal_1",
-      "label": "Design schéma 1",
-      "strategy": "<1 short sentence: how this outline is organized>",
-      "sections": [ ... ]
-    },
-    {
-      "id": "proposal_2",
-      "label": "Design schéma 2",
-      "strategy": "<1 short sentence>",
-      "sections": [ ... ]
-    },
-    {
-      "id": "proposal_3",
-      "label": "Design schéma 3",
-      "strategy": "<1 short sentence>",
-      "sections": [ ... ]
-    }
-  ]
-}
+      {
+        "courseTitle": "<infer from source>",
+        "numberingMode": "{$numbering_mode}",
+        "quizPolicy": "{$quiz_policy}",
+        "proposals": [
+          {
+            "id": "proposal_1",
+            "label": "Design schéma 1",
+            "strategy": "<1 short sentence: how this outline is organized>",
+            "sections": [ ... ]
+          },
+          {
+            "id": "proposal_2",
+            "label": "Design schéma 2",
+            "strategy": "<1 short sentence>",
+            "sections": [ ... ]
+          },
+          {
+            "id": "proposal_3",
+            "label": "Design schéma 3",
+            "strategy": "<1 short sentence>",
+            "sections": [ ... ]
+          }
+        ]
+      }
 
-SECTION OBJECT
-{
-  "id": "sec_01",
-  "type": "INTRO|CORE|OUTRO",
-  "order": 1,
-  "title": "…",
-  "sourcePages": {"start": 1, "end": 5},
-  "children": [
-    {
-      "id": "les_01_01",
-      "type": "LESSON",
-      "order": 1,
-      "title": "…",
-      "subtitle": "…",
-      "sourceHeadings": ["…"],
-      "sourcePages": {"start": 1, "end": 2}
-    },
-    {
-      "id": "quiz_01",
-      "type": "QUIZ",
-      "order": 99,
-      "title": "Quiz – …",
-      "questionsCount": {$quiz_questions},
-      "difficulty": "{$quiz_difficulty}"
-    }
-  ]
-}
+      SECTION OBJECT
+      {
+        "id": "sec_01",
+        "type": "INTRO|CORE|OUTRO",
+        "order": 1,
+        "title": "…",
+        "sourcePages": {"start": 1, "end": 5},
+        "children": [
+          {
+            "id": "les_01_01",
+            "type": "LESSON",
+            "order": 1,
+            "title": "…",
+            "subtitle": "…",
+            "sourceHeadings": ["…"],
+            "sourcePages": {"start": 1, "end": 2}
+          },
+          {
+            "id": "quiz_01",
+            "type": "QUIZ",
+            "order": 99,
+            "title": "Quiz – …",
+            "questionsCount": {$quiz_questions},
+            "difficulty": "{$quiz_difficulty}"
+          }
+        ]
+      }
 
-ID RULES
-- Sections: sec_01, sec_02, ...
-- Lessons: les_01_01 (section 01 lesson 01), ...
-- Quiz: quiz_01 (section 01 quiz)
-IDs must be unique WITHIN EACH PROPOSAL.
+      ID RULES
+      - Sections: sec_01, sec_02, ...
+      - Lessons: les_01_01 (section 01 lesson 01), ...
+      - Quiz: quiz_01 (section 01 quiz)
+      IDs must be unique WITHIN EACH PROPOSAL.
 
-DIFFERENTIATION REQUIREMENTS (VERY IMPORTANT)
-Each proposal must be meaningfully different:
+      DIFFERENTIATION REQUIREMENTS (VERY IMPORTANT)
+      Each proposal must be meaningfully different:
 
-Proposal 1 (Balanced / Default):
-- Closely follows PDF flow (H1/H2), minimal rewriting.
-- Standard granularity.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 1 (Balanced / Default):
+      - Closely follows PDF flow (H1/H2), minimal rewriting.
+      - Standard granularity.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-Proposal 2 (Consolidated):
-- Fewer sections (combine adjacent H1 topics).
-- Keep lessons within limits by merging similar H2.
-- Titles are more thematic.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 2 (Consolidated):
+      - Fewer sections (combine adjacent H1 topics).
+      - Keep lessons within limits by merging similar H2.
+      - Titles are more thematic.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-Proposal 3 (More granular / Learning path):
-- More sections up to max_sections.
-- Break down broad H1 into clearer learning steps.
-- If quiz_policy=PER_SECTION: quizzes focus on key takeaways.
-- If quiz_policy=EVERY_N_LESSONS: quizzes placed exactly every N lessons.
-- STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
+      Proposal 3 (More granular / Learning path):
+      - More sections up to max_sections.
+      - Break down broad H1 into clearer learning steps.
+      - If quiz_policy=PER_SECTION: quizzes focus on key takeaways.
+      - If quiz_policy=EVERY_N_LESSONS: quizzes placed exactly every N lessons.
+      - STRICTLY RESPECT: lessons_per_section_min ({$lessons_min}) to lessons_per_section_max ({$lessons_max}) lessons per section
 
-VALIDATION:
-- Max {$max_sections} core sections
-- {$lessons_min}-{$lessons_max} lessons per section
-- Valid JSON output only
+      VALIDATION:
+      - Max {$max_sections} core sections
+      - {$lessons_min}-{$lessons_max} lessons per section
+      - Valid JSON output only
 
-NOW PROCESS THIS SOURCE JSON:
-{$pdf_json}
-PROMPT;
+      NOW PROCESS THIS SOURCE JSON:
+      {$pdf_json}
+      PROMPT;
+
+    return $prompt;
+  }
+
+  /**
+   * Build optimized outline prompt for Local LLM API
+   * Simplified and more direct prompt for better performance with local models
+   */
+  private function build_outline_prompt_llm($pdf_content, $outline_rules, $course_context)
+  {
+    // Parse lessons per section range
+    $lessons_range = explode('-', $outline_rules['lessonsPerSection'] ?? '2-3');
+    $lessons_min = intval($lessons_range[0] ?? 2);
+    $lessons_max = intval($lessons_range[1] ?? 3);
+
+    // Parse max sections range
+    $sections_range = explode('-', $outline_rules['maxSections'] ?? '3-6');
+    $sections_max = intval($sections_range[1] ?? 6);
+
+    // Calculate max CORE sections
+    $include_intro = $outline_rules['includeIntro'] ?? true;
+    $include_outro = $outline_rules['includeConclusion'] ?? true;
+    $intro_outro_count = ($include_intro ? 1 : 0) + ($include_outro ? 1 : 0);
+    $max_sections = max(1, $sections_max - $intro_outro_count);
+    
+    // Map settings
+    $numbering_mode = match($outline_rules['numbering'] ?? 'none') {
+      'auto_123' => 'AUTO_NUMERIC',
+      'auto_nested' => 'AUTO_DECIMAL',
+      'from_pdf' => 'FROM_SOURCE',
+      default => 'NONE'
+    };
+    
+    $quiz_policy = match($outline_rules['quizFrequency'] ?? 'per_section') {
+      'per_section' => 'PER_SECTION',
+      'per_lesson' => 'EVERY_N_LESSONS',
+      default => 'MANUAL'
+    };
+    
+    $quiz_difficulty = strtoupper($outline_rules['difficulty'] ?? 'medium');
+    
+    $language = match($outline_rules['language'] ?? 'french') {
+      'english' => 'en',
+      'spanish' => 'es',
+      'dutch' => 'nl',
+      'arabic' => 'ar',
+      default => 'fr'
+    };
+    
+    $quiz_questions = intval($outline_rules['questionsCount'] ?? 10);
+    $include_intro_str = $include_intro ? 'true' : 'false';
+    $include_outro_str = $include_outro ? 'true' : 'false';
+    
+    // Simplify PDF content for local LLM (reduce token usage)
+    $simplified_content = [
+      'title' => $pdf_content['title'] ?? 'Untitled',
+      'total_pages' => $pdf_content['total_pages'] ?? 0,
+      'toc' => array_slice($pdf_content['toc'] ?? [], 0, 50), // Limit TOC entries
+      'headings' => array_slice($pdf_content['headings'] ?? [], 0, 100), // Limit headings
+    ];
+    
+    $pdf_json = json_encode($simplified_content, JSON_UNESCAPED_UNICODE);
+
+    $prompt = <<<PROMPT
+      Tu es un expert en conception pédagogique. Génère 3 propositions de plan de cours à partir du document source.
+
+      RÈGLES:
+      - Sections principales max: {$max_sections}
+      - Leçons par section: {$lessons_min} à {$lessons_max}
+      - Inclure intro: {$include_intro_str}
+      - Inclure conclusion: {$include_outro_str}
+      - Numérotation: {$numbering_mode}
+      - Quiz: {$quiz_policy}
+      - Langue: {$language}
+
+      RÉPONDS UNIQUEMENT EN JSON VALIDE (pas de markdown, pas de texte avant/après).
+
+      Format de réponse:
+      {
+        "courseTitle": "Titre du cours",
+        "numberingMode": "{$numbering_mode}",
+        "quizPolicy": "{$quiz_policy}",
+        "proposals": [
+          {
+            "id": "proposal_1",
+            "label": "Schéma équilibré",
+            "strategy": "Description courte",
+            "sections": [
+              {
+                "id": "sec_01",
+                "type": "INTRO",
+                "order": 1,
+                "title": "Introduction",
+                "sourcePages": {"start": 1, "end": 2},
+                "children": [
+                  {
+                    "id": "les_01_01",
+                    "type": "LESSON",
+                    "order": 1,
+                    "title": "Titre leçon",
+                    "subtitle": "Sous-titre",
+                    "sourceHeadings": ["Heading"],
+                    "sourcePages": {"start": 1, "end": 1}
+                  },
+                  {
+                    "id": "quiz_01",
+                    "type": "QUIZ",
+                    "order": 99,
+                    "title": "Quiz",
+                    "questionsCount": {$quiz_questions},
+                    "difficulty": "{$quiz_difficulty}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "proposal_2",
+            "label": "Schéma consolidé",
+            "strategy": "Moins de sections, plus thématique",
+            "sections": []
+          },
+          {
+            "id": "proposal_3",
+            "label": "Schéma détaillé",
+            "strategy": "Plus granulaire, parcours d'apprentissage",
+            "sections": []
+          }
+        ]
+      }
+
+      TYPES DE SECTIONS:
+      - INTRO: 1 section d'introduction (si include_intro=true)
+      - CORE: Sections principales du contenu
+      - OUTRO: 1 section de conclusion (si include_outro=true)
+
+      IDs UNIQUES:
+      - Sections: sec_01, sec_02...
+      - Leçons: les_01_01 (section 01, leçon 01)
+      - Quiz: quiz_01 (section 01)
+
+      3 PROPOSITIONS DIFFÉRENTES:
+      1. Équilibré: Suit le flux du PDF
+      2. Consolidé: Moins de sections, fusionne les sujets similaires
+      3. Détaillé: Plus de sections, décompose en étapes claires
+
+      DOCUMENT SOURCE:
+      {$pdf_json}
+
+      Génère maintenant les 3 propositions complètes en JSON:
+      PROMPT;
 
     return $prompt;
   }
@@ -2355,43 +2710,224 @@ PROMPT;
         ]
       ],
       'temperature' => 0.7,
-      'max_tokens' => 8000,
+      'max_tokens' => 8192, // Maximum allowed by DeepSeek API
       'response_format' => ['type' => 'json_object']
     ];
 
-    $ch = curl_init($api_url);
-    curl_setopt_array($ch, [
-      CURLOPT_POST => true,
-      CURLOPT_POSTFIELDS => json_encode($data),
-      CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $api_key
+    // Retry mechanism for connection errors
+    $max_retries = 3;
+    $retry_delay = 2; // seconds
+
+    for ($attempt = 1; $attempt <= $max_retries; $attempt++) {
+      error_log("DeepSeek API Attempt {$attempt}/{$max_retries}");
+
+      $ch = curl_init($api_url);
+      curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $api_key
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout_seconds,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // Force HTTP/1.1 to avoid HTTP/2 issues
+        CURLOPT_FOLLOWLOCATION => true, // Follow redirects
+        CURLOPT_MAXREDIRS => 3, // Limit redirects
+        CURLOPT_CONNECTTIMEOUT => 60, // Increased connection timeout from 30 to 60 seconds
+        CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification if needed
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_FORBID_REUSE => false, // Allow connection reuse
+        CURLOPT_FRESH_CONNECT => ($attempt > 1), // Force new connection on retries
+        CURLOPT_BUFFERSIZE => 1048576, // 1MB buffer for large responses
+        CURLOPT_TCP_NODELAY => true, // Disable Nagle's algorithm for better performance
+        CURLOPT_FAILONERROR => false, // Don't fail on HTTP errors
+        CURLOPT_ENCODING => 'gzip, deflate', // Accept compressed responses
+      ]);
+
+      $response = curl_exec($ch);
+      $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $curl_error = curl_error($ch);
+      $curl_errno = curl_errno($ch);
+      curl_close($ch);
+
+      // Debug logging
+      error_log('DeepSeek API HTTP Code: ' . $http_code);
+      error_log('DeepSeek API Response (first 1000 chars): ' . substr($response, 0, 1000));
+
+      // Check for connection errors that are retryable
+      if ($curl_error) {
+        error_log('DeepSeek API cURL Error (Attempt ' . $attempt . '): ' . $curl_error);
+        
+        // Check for timeout errors specifically
+        if ($curl_errno == CURLE_OPERATION_TIMEOUTED || 
+            $curl_errno == CURLE_OPERATION_TIMEDOUT ||
+            strpos($curl_error, 'timeout') !== false ||
+            strpos($curl_error, 'timed out') !== false) {
+          error_log('DeepSeek API Timeout detected');
+          
+          // Don't retry on timeout, return error immediately
+          return ['error' => 'API request timed out. The request took too long to process. Please try again with a smaller PDF or simpler outline rules.'];
+        }
+
+        // Retry on other connection errors
+        if ($attempt < $max_retries) {
+          error_log('Retrying in ' . $retry_delay . ' seconds...');
+          sleep($retry_delay);
+          continue;
+        }
+
+        return ['error' => 'API connection failed: ' . $curl_error];
+      }
+      
+      // Check for timeout via HTTP code (504 Gateway Timeout)
+      if ($http_code == 504) {
+        error_log('DeepSeek API Gateway Timeout (504)');
+        return ['error' => 'Gateway timeout. The request took too long. Please try again with a smaller PDF or simpler outline rules.'];
+      }
+
+      if ($http_code !== 200) {
+        $error_data = json_decode($response, true);
+        $error_msg = 'API error: ' . ($error_data['error']['message'] ?? 'Unknown error');
+        error_log('DeepSeek API HTTP Error: ' . $error_msg);
+        error_log('Full error response: ' . $response);
+        return ['error' => $error_msg];
+      }
+
+      $result = json_decode($response, true);
+
+      if (!isset($result['choices'][0]['message']['content'])) {
+        error_log('DeepSeek API Invalid Response: ' . print_r($result, true));
+        return ['error' => 'Invalid API response'];
+      }
+
+      $content = $result['choices'][0]['message']['content'];
+      error_log('DeepSeek API Content length: ' . strlen($content));
+      error_log('DeepSeek API Content (first 500 chars): ' . substr($content, 0, 500));
+
+      return ['content' => $content];
+    }
+
+    return ['error' => 'API connection failed after ' . $max_retries . ' attempts'];
+  }
+
+  /**
+   * Call Local LLM API (LM Studio / Ollama / vLLM compatible)
+   * Server: http://154.146.250.62:7000/v1/chat/completions
+   */
+  private function call_local_llm_api($prompt, $timeout_seconds = 120)
+  {
+    $api_url = $this->localLlmUrl;
+
+    $data = [
+      'messages' => [
+        [
+          'role' => 'system',
+          'content' => 'You are an expert instructional designer for EdTech. You MUST respond with valid JSON ONLY. No markdown, no code blocks, no explanations - just pure JSON that can be parsed directly.'
+        ],
+        [
+          'role' => 'user',
+          'content' => $prompt
+        ]
       ],
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_TIMEOUT => $timeout_seconds
-    ]);
+      'temperature' => 0.7,
+      'max_tokens' => 8192,
+      'top_p' => 0.95,
+      'repetition_penalty' => 1.1,
+      'stop' => null
+    ];
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
+    // Retry mechanism for connection errors
+    $max_retries = 3;
+    $retry_delay = 2; // seconds
 
-    if ($curl_error) {
-      return ['error' => 'API connection failed: ' . $curl_error];
+    for ($attempt = 1; $attempt <= $max_retries; $attempt++) {
+      error_log("Local LLM API Attempt {$attempt}/{$max_retries}");
+
+      $ch = curl_init($api_url);
+      curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => [
+          'Content-Type: application/json'
+          // No Authorization header needed for local API
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout_seconds,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 3,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_FORBID_REUSE => false,
+        CURLOPT_FRESH_CONNECT => ($attempt > 1),
+        CURLOPT_BUFFERSIZE => 1048576,
+        CURLOPT_TCP_NODELAY => true,
+        CURLOPT_FAILONERROR => false,
+      ]);
+
+      $response = curl_exec($ch);
+      $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $curl_error = curl_error($ch);
+      $curl_errno = curl_errno($ch);
+      curl_close($ch);
+
+      // Debug logging
+      error_log('Local LLM API HTTP Code: ' . $http_code);
+      error_log('Local LLM API Response (first 1000 chars): ' . substr($response, 0, 1000));
+
+      // Check for connection errors
+      if ($curl_error) {
+        error_log('Local LLM API cURL Error (Attempt ' . $attempt . '): ' . $curl_error);
+        
+        // Check for timeout errors
+        if ($curl_errno == CURLE_OPERATION_TIMEOUTED || 
+            $curl_errno == CURLE_OPERATION_TIMEDOUT ||
+            strpos($curl_error, 'timeout') !== false ||
+            strpos($curl_error, 'timed out') !== false) {
+          error_log('Local LLM API Timeout detected');
+          return ['error' => 'API request timed out. Please try again with a smaller PDF.'];
+        }
+
+        // Retry on other connection errors
+        if ($attempt < $max_retries) {
+          error_log('Retrying in ' . $retry_delay . ' seconds...');
+          sleep($retry_delay);
+          continue;
+        }
+
+        return ['error' => 'API connection failed: ' . $curl_error];
+      }
+      
+      // Check for HTTP errors
+      if ($http_code == 504) {
+        error_log('Local LLM API Gateway Timeout (504)');
+        return ['error' => 'Gateway timeout. Please try again with a smaller PDF.'];
+      }
+
+      if ($http_code !== 200) {
+        $error_data = json_decode($response, true);
+        $error_msg = 'API error: ' . ($error_data['error']['message'] ?? $error_data['error'] ?? 'Unknown error');
+        error_log('Local LLM API HTTP Error: ' . $error_msg);
+        error_log('Full error response: ' . $response);
+        return ['error' => $error_msg];
+      }
+
+      $result = json_decode($response, true);
+
+      if (!isset($result['choices'][0]['message']['content'])) {
+        error_log('Local LLM API Invalid Response: ' . print_r($result, true));
+        return ['error' => 'Invalid API response'];
+      }
+
+      $content = $result['choices'][0]['message']['content'];
+      error_log('Local LLM API Content length: ' . strlen($content));
+      error_log('Local LLM API Content (first 500 chars): ' . substr($content, 0, 500));
+
+      return ['content' => $content];
     }
 
-    if ($http_code !== 200) {
-      $error_data = json_decode($response, true);
-      return ['error' => 'API error: ' . ($error_data['error']['message'] ?? 'Unknown error')];
-    }
-
-    $result = json_decode($response, true);
-    
-    if (!isset($result['choices'][0]['message']['content'])) {
-      return ['error' => 'Invalid API response'];
-    }
-
-    return ['content' => $result['choices'][0]['message']['content']];
+    return ['error' => 'API connection failed after ' . $max_retries . ' attempts'];
   }
 
   /**
@@ -3786,8 +4322,9 @@ PROMPT;
         $section['title']
       );
 
-      // Call DeepSeek API
-      $ai_response = $this->call_deepseek_api($prompt, 120);
+      // Call DeepSeek API with longer timeout for PDF processing
+      $timeout = ($input_data['source'] === 'pdf') ? 180 : 120; // 3 minutes for PDF, 2 for outline
+      $ai_response = $this->call_deepseek_api($prompt, $timeout);
 
       if (!$ai_response || empty($ai_response['content'])) {
         throw new Exception(get_phrase('ai_failed_to_generate_content'));
@@ -3938,21 +4475,32 @@ PROMPT;
         $section['title']
       );
 
-      // Call DeepSeek API
-      $ai_response = $this->call_deepseek_api($prompt, 120);
+      // Call DeepSeek API with longer timeout for PDF processing
+      $timeout = ($input_data['source'] === 'pdf') ? 180 : 120; // 3 minutes for PDF, 2 for outline
+      $ai_response = $this->call_deepseek_api($prompt, $timeout);
+
+      // Debug logging
+      error_log('AI Response from API (UPDATE): ' . print_r($ai_response, true));
 
       if (!$ai_response || empty($ai_response['content'])) {
-        throw new Exception(get_phrase('ai_failed_to_generate_content'));
+        $error_msg = isset($ai_response['error']) ? $ai_response['error'] : get_phrase('ai_failed_to_generate_content');
+        error_log('AI Response Error (UPDATE): ' . $error_msg);
+        throw new Exception($error_msg);
       }
 
       // Parse JSON response from DeepSeek
       $json_content = json_decode($ai_response['content'], true);
+      error_log('Parsed JSON content (UPDATE): ' . print_r($json_content, true));
+
       if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log('JSON decode error (UPDATE): ' . json_last_error_msg());
+        error_log('Raw content (UPDATE): ' . substr($ai_response['content'], 0, 1000));
         throw new Exception('Failed to parse AI response JSON: ' . json_last_error_msg());
       }
 
       // Extract HTML content from JSON response
       $raw_content = $json_content['lesson_content'] ?? $json_content['content'] ?? $ai_response['content'];
+      error_log('Raw content extracted (UPDATE), length: ' . strlen($raw_content));
 
       // Parse AI response
       $lesson_content = $this->parse_lesson_content($raw_content, $input_data['language']);
@@ -4056,7 +4604,7 @@ PROMPT;
   private function format_pdf_context($pdf_data)
   {
     $context = "PDF STRUCTURE ANALYSIS:\n\n";
-    
+
     // Add metadata
     if (!empty($pdf_data['title'])) {
       $context .= "Document Title: " . $pdf_data['title'] . "\n";
@@ -4067,63 +4615,78 @@ PROMPT;
     if (!empty($pdf_data['metadata']['author'])) {
       $context .= "Author: " . $pdf_data['metadata']['author'] . "\n";
     }
-    
+
     $context .= "\n";
-    
-    // Add table of contents if available
+
+    // Add table of contents if available (limit to first 30 items to keep context manageable)
     if (!empty($pdf_data['toc'])) {
-      $context .= "TABLE OF CONTENTS:\n";
-      foreach ($pdf_data['toc'] as $item) {
+      $context .= "TABLE OF CONTENTS (showing first 30 items):\n";
+      $toc_items = array_slice($pdf_data['toc'], 0, 30);
+      foreach ($toc_items as $item) {
         $indent = str_repeat('  ', max(0, $item['level'] - 1));
         $context .= $indent . "• " . $item['title'] . " (page " . $item['page'] . ")\n";
+      }
+      if (count($pdf_data['toc']) > 30) {
+        $context .= "  ... and " . (count($pdf_data['toc']) - 30) . " more items\n";
       }
       $context .= "\n";
     }
     
-    // Add headings structure
+    // Add headings structure (limited to keep context manageable)
     if (!empty($pdf_data['headings'])) {
-      $context .= "DOCUMENT STRUCTURE (Headings):\n";
-      
-      // Group by level
+      $context .= "DOCUMENT STRUCTURE (Headings, limited):\n";
+
+      // Group by level and limit to reduce context size
       $h1_headings = [];
       $h2_headings = [];
-      
-      foreach ($pdf_data['headings'] as $heading) {
+
+      foreach (array_slice($pdf_data['headings'], 0, 100) as $heading) { // Limit to first 100 headings
         if ($heading['level'] == 1) {
           $h1_headings[] = $heading;
         } elseif ($heading['level'] == 2) {
           $h2_headings[] = $heading;
         }
       }
-      
-      // Add H1 headings
+
+      // Add H1 headings (limit to 20)
       if (!empty($h1_headings)) {
-        $context .= "\nMAIN SECTIONS (H1):\n";
-        foreach ($h1_headings as $h1) {
+        $context .= "\nMAIN SECTIONS (H1, showing first 20):\n";
+        foreach (array_slice($h1_headings, 0, 20) as $h1) {
           $context .= "• " . $h1['title'] . " (pages " . $h1['page'];
           if (isset($h1['end_page'])) {
             $context .= "-" . $h1['end_page'];
           }
           $context .= ")\n";
-          
-          // Add H2 subheadings for this H1
+
+          // Add H2 subheadings for this H1 (limit to 5 per H1)
           $h2_for_h1 = array_filter($h2_headings, function($h2) use ($h1) {
-            return $h2['page'] >= $h1['page'] && 
+            return $h2['page'] >= $h1['page'] &&
                    (!isset($h1['end_page']) || $h2['page'] <= $h1['end_page']);
           });
-          
-          foreach ($h2_for_h1 as $h2) {
+
+          $h2_count = 0;
+          foreach (array_slice($h2_for_h1, 0, 5) as $h2) {
             $context .= "  ◦ " . $h2['title'] . " (page " . $h2['page'] . ")\n";
+            $h2_count++;
+          }
+          if (count($h2_for_h1) > 5) {
+            $context .= "  ... and " . (count($h2_for_h1) - 5) . " more subsections\n";
           }
         }
+        if (count($h1_headings) > 20) {
+          $context .= "  ... and " . (count($h1_headings) - 20) . " more sections\n";
+        }
       } elseif (!empty($h2_headings)) {
-        // If no H1, show H2 as main sections
-        $context .= "\nMAIN SECTIONS:\n";
-        foreach ($h2_headings as $h2) {
+        // If no H1, show H2 as main sections (limit to 30)
+        $context .= "\nMAIN SECTIONS (showing first 30):\n";
+        foreach (array_slice($h2_headings, 0, 30) as $h2) {
           $context .= "• " . $h2['title'] . " (page " . $h2['page'] . ")\n";
         }
+        if (count($h2_headings) > 30) {
+          $context .= "  ... and " . (count($h2_headings) - 30) . " more sections\n";
+        }
       }
-      
+
       $context .= "\n";
     }
     
@@ -4260,6 +4823,12 @@ PROMPT;
     $tone_text = $tone_map[$tone] ?? 'Formal and professional';
     $audience_text = $audience_map[$audience] ?? 'Intermediate level learners';
 
+    // Limit context size to avoid overwhelming the API (max 15000 chars for context)
+    if (strlen($context) > 15000) {
+      $context = substr($context, 0, 15000) . "\n\n... [Context truncated to fit API limits]";
+    }
+    error_log('Context size: ' . strlen($context) . ' chars');
+
     // Check if context is from PDF structure analysis
     $is_pdf_structure = strpos($context, 'PDF STRUCTURE ANALYSIS:') !== false;
     
@@ -4273,51 +4842,22 @@ PROMPT;
     }
 
     $prompt = <<<PROMPT
-You are an expert course content creator and educator. Generate a comprehensive, engaging lesson for an online learning platform.
+Create lesson content in {$language_text} with {$tone_text} tone for {$audience_text}.
 
-COURSE CONTEXT:
-- Course Title: {$course_title}
-- Section Title: {$section_title}
-- Lesson Title: {$lesson_title}
-- Lesson Duration: {$duration} minutes
-- Target Audience: {$audience_text}
-- Language: {$language_text}
-- Tone: {$tone_text}
+Course: {$course_title} | Section: {$section_title} | Lesson: {$lesson_title} ({$duration} min)
 
-SOURCE INFORMATION:
-{$source_info}
+Source: {$source_info}
 
-SOURCE MATERIAL ANALYSIS:
-{$context}
+Context: {$context}
 
-ADDITIONAL INSTRUCTIONS:
-{$instructions}
+Requirements:
+- HTML format (h2, h3, p, ul, ol, strong tags)
+- 3-5 key concepts with examples
+- Engaging introduction and clear summary
+- {$instructions}
 
-LESSON CONTENT REQUIREMENTS:
-1. Write all content in {$language_text}
-2. Use {$tone_text} tone appropriate for {$audience_text}
-3. Structure the content for exactly {$duration} minutes of learning
-4. Include 2-3 practical examples or case studies relevant to the topic
-5. Use clear, hierarchical headings: <h2> for main sections, <h3> for subsections
-6. Include key takeaways or summary points at the end of each major section
-7. Make it engaging with questions, thought-provoking statements, or interactive elements
-8. Format the content in clean, semantic HTML without any markdown or code blocks
-9. Use <p> for paragraphs, <ul> or <ol> for lists, <strong> for emphasis
-10. Include relevant analogies or metaphors to help understanding
-11. Break complex concepts into digestible chunks
-12. Include a brief introduction and conclusion
-
-Generate a complete lesson that includes:
-1. INTRODUCTION: Brief overview of what will be covered and why it's important
-2. MAIN CONTENT: 3-5 key concepts with clear explanations
-3. EXAMPLES: Practical, real-world examples or case studies
-4. APPLICATIONS: How to apply this knowledge in practice
-5. SUMMARY: Key takeaways and review of main points
-6. NEXT STEPS: Suggested practice exercises or further reading
-
-IMPORTANT: The lesson should be self-contained and educational. Do not reference the PDF structure analysis in the content itself - use it only as source material to create original educational content.
-
-Format the response as clean HTML ready to be inserted into a lesson editor.
+Response MUST be valid JSON only:
+{"lesson_content": "<div>HTML lesson content here</div>"}
 PROMPT;
 
     return $prompt;

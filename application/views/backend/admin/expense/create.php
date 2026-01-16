@@ -427,7 +427,7 @@
         <div class="exp-form-group">
             <label class="exp-form-label">
                 <i class="mdi mdi-currency-usd"></i>
-                <span><?php echo get_phrase('amount').' ('.currency_code_and_symbol('code').')'; ?></span>
+                <span><?php echo get_phrase('amount').' ('. $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency').')'; ?></span>
                 <span class="exp-required">*</span>
             </label>
             <div class="exp-input-wrapper">
