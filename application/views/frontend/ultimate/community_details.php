@@ -366,7 +366,7 @@ foreach ($classes as $key => $class) {
               <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
               <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
             </form>
-            <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
+            <button id="login-join-button" class="join-button  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
           </div>
         </div>
         <div class="row justify-content-center">
