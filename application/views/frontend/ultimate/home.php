@@ -187,7 +187,7 @@
                       <span class="price-value"></span>
                       <div class="price-details">
                           <span class="price-currency"></span>
-                          <span class="price-period"><?php echo get_phrase("per month, no commitment"); ?></span>
+                          <span class="price-period"><?php echo str_replace('/', '/ ', get_phrase("per month, no commitment")); ?></span>
                       </div>
                   </div>
                   <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community"); ?></a>

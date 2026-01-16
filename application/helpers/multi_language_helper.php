@@ -26,9 +26,8 @@ if ( ! function_exists('get_phrase'))
 
             file_put_contents(APPPATH.'language/'.$language_code.'.json', stripslashes($jsonData));
         }
-		return $langArray[$key];
-		// Échapper les apostrophes et guillemets avant de retourner
-        //return isset($langArray[$key]) ? addslashes($langArray[$key]) : addslashes(ucfirst(str_replace('_', ' ', $key)));
+        // Échapper les apostrophes et guillemets avant de retourner
+        return isset($langArray[$key]) ? htmlspecialchars($langArray[$key], ENT_QUOTES, 'UTF-8') : htmlspecialchars(ucfirst(str_replace('_', ' ', $key)), ENT_QUOTES, 'UTF-8');
 	}
 }
 // This function retrieves the translated phrase from the language JSON file

@@ -127,7 +127,7 @@ if ($total_classes > 0): ?>
 
             <!-- Name Column -->
             <div class="class-col-name">
-                <div class="class-item-avatar" style="--hue: <?php echo (ord($class['name'][0]) * 15) % 360; ?>">
+                <div class="class-item-avatar">
                     <span><?php echo strtoupper(substr($class['name'], 0, 2)); ?></span>
                 </div>
                 <div class="class-item-info">
@@ -660,19 +660,19 @@ if ($total_classes > 0): ?>
    ============================================================================ */
 
 :root {
-    --class-primary: #6366f1;
-    --class-primary-rgb: 99, 102, 241;
-    --class-success: #10b981;
-    --class-success-rgb: 16, 185, 129;
-    --class-warning: #f59e0b;
-    --class-warning-rgb: 245, 158, 11;
-    --class-danger: #ef4444;
-    --class-danger-rgb: 239, 68, 68;
-    --class-dark: #1e293b;
-    --class-gray: #64748b;
-    --class-light: #f8fafc;
-    --class-border: #e2e8f0;
-    --class-white: #ffffff;
+    --class-primary: var(--bs-primary);
+    --class-primary-rgb: var(--bs-primary-rgb);
+    --class-success: var(--bs-success);
+    --class-success-rgb: var(--bs-success-rgb);
+    --class-warning: var(--bs-warning);
+    --class-warning-rgb: var(--bs-warning-rgb);
+    --class-danger: var(--bs-danger);
+    --class-danger-rgb: var(--bs-danger-rgb);
+    --class-dark: var(--bs-dark);
+    --class-gray: var(--bs-gray);
+    --class-light: var(--bs-light);
+    --class-border: var(--bs-gray-200);
+    --class-white: var(--bs-white);
     --class-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --class-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -1023,9 +1023,7 @@ if ($total_classes > 0): ?>
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: linear-gradient(135deg,
-        hsl(var(--hue, 250), 80%, 60%),
-        hsl(calc(var(--hue, 250) + 30), 80%, 50%));
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1033,7 +1031,7 @@ if ($total_classes > 0): ?>
     font-weight: 700;
     font-size: 0.875rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px hsla(var(--hue, 250), 80%, 50%, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .class-item-info {
@@ -1121,15 +1119,15 @@ if ($total_classes > 0): ?>
 }
 
 .class-btn-edit {
-    background: linear-gradient(135deg, rgba(var(--class-warning-rgb), 0.1), rgba(var(--class-warning-rgb), 0.05));
-    color: var(--class-warning);
+    background: linear-gradient(135deg, rgba(var(--class-primary-rgb), 0.1), rgba(var(--class-primary-rgb), 0.05));
+    color: var(--class-primary);
 }
 
 .class-btn-edit:hover {
-    background: linear-gradient(135deg, var(--class-warning), #fbbf24);
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(var(--class-warning-rgb), 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .class-btn-delete {

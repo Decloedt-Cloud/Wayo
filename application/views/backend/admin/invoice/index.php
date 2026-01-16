@@ -69,37 +69,172 @@
 .idx-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    gap: 0.625rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    text-transform: uppercase;
 }
 
 .idx-btn-primary {
-    background: linear-gradient(135deg, #1e293b, #1e293b);
+    background: linear-gradient(135deg, var(--idx-primary), #8b5cf6);
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.idx-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease-in-out;
+    z-index: 1;
+}
+
+.idx-btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.idx-btn-primary span,
+.idx-btn-primary i {
+    position: relative;
+    z-index: 2;
+}
+
+.idx-btn-primary i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
 }
 
 .idx-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 12px 30px rgba(99, 102, 241, 0.6),
+        0 4px 15px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #8b5cf6, var(--idx-primary));
+}
+
+.idx-btn-primary:hover::before {
+    left: 100%;
+}
+
+.idx-btn-primary:hover::after {
+    opacity: 1;
+}
+
+.idx-btn-primary:hover i {
+    transform: scale(1.15);
+}
+
+.idx-btn-primary:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 
+        0 6px 20px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.idx-btn-primary:focus {
+    outline: none;
+    box-shadow: 
+        0 0 0 3px rgba(99, 102, 241, 0.3),
+        0 12px 30px rgba(99, 102, 241, 0.6);
 }
 
 .idx-btn-success {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    background: linear-gradient(135deg, var(--idx-success), #10b981);
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.idx-btn-success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease-in-out;
+    z-index: 1;
+}
+
+.idx-btn-success::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.idx-btn-success span,
+.idx-btn-success i {
+    position: relative;
+    z-index: 2;
+}
+
+.idx-btn-success i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
 }
 
 .idx-btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
-    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 12px 30px rgba(5, 150, 105, 0.6),
+        0 4px 15px rgba(16, 185, 129, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #10b981, var(--idx-success));
+}
+
+.idx-btn-success:hover::before {
+    left: 100%;
+}
+
+.idx-btn-success:hover::after {
+    opacity: 1;
+}
+
+.idx-btn-success:hover i {
+    transform: scale(1.15);
+}
+
+.idx-btn-success:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 
+        0 6px 20px rgba(5, 150, 105, 0.5),
+        0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.idx-btn-success:focus {
+    outline: none;
+    box-shadow: 
+        0 0 0 3px rgba(5, 150, 105, 0.3),
+        0 12px 30px rgba(5, 150, 105, 0.6);
 }
 
 /* Filter Panel */
@@ -446,19 +581,10 @@
     </div>
 </div>
 
-<!-- Content Card -->
-<div class="idx-content-card">
-    <div class="idx-content-body">
-        <div class="invoice_content">
-            <?php include 'list.php'; ?>
-        </div>
-    </div>
-</div>
-
 <script>
 var showAllInvoices = function () {
     // Show loading state
-    $('.invoice_content').html('<div class="idx-loading"><i class="mdi mdi-loading"></i> <?php echo get_phrase('loading'); ?>...</div>');
+    $('.invoice_content').html('<div class="idx-loading"><i class="mdi mdi-loading"></i> '+<?php echo js_phrase('loading'); ?>+'...</div>');
     
     var url = '<?php echo route('invoice/list'); ?>';
     var dateRange = $('#selectedValue').text();
@@ -478,7 +604,7 @@ var showAllInvoices = function () {
             initDataTable("basic-datatable");
         },
         error: function() {
-            $('.invoice_content').html('<div class="idx-loading" style="color: #dc2626;"><i class="mdi mdi-alert-circle"></i> <?php echo get_phrase('error_loading_data'); ?></div>');
+            $('.invoice_content').html('<div class="idx-loading" style="color: #dc2626;"><i class="mdi mdi-alert-circle"></i> '+<?php echo js_phrase('error_loading_data'); ?>+'</div>');
         }
     });
 }
@@ -496,7 +622,7 @@ function getExportUrl(type) {
     // Validate CSRF token exists
     if (!csrfHash) {
         console.error('CSRF token not found');
-        alert('<?php echo get_phrase('error_security_token'); ?>');
+        alert(<?php echo js_phrase('error_security_token'); ?>);
         return;
     }
     
@@ -527,12 +653,12 @@ function getExportUrl(type) {
                 }
             } else {
                 console.error('Invalid response:', response);
-                alert('<?php echo get_phrase('export_error'); ?>');
+                alert(<?php echo js_phrase('export_error'); ?>);
             }
         },
         error: function(xhr, status, error) {
             console.error('Export error:', status, error);
-            alert('<?php echo get_phrase('export_error'); ?>: ' + error);
+            alert(<?php echo js_phrase('export_error'); ?> + ': ' + error);
         }
     });
 }
@@ -542,3 +668,12 @@ $('#class_id_invoice, #status_invoice').on('change', function() {
     showAllInvoices();
 });
 </script>
+
+<!-- Content Card -->
+<div class="idx-content-card">
+    <div class="idx-content-body">
+        <div class="invoice_content">
+            <?php include 'list.php'; ?>
+        </div>
+    </div>
+</div>

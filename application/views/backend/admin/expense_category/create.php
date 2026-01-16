@@ -388,23 +388,46 @@
             <label class="ec-form-label">
                 <i class="mdi mdi-calculator"></i>
                 <span><?php echo get_phrase('cost_center'); ?></span>
-                <span class="ec-form-hint"><?php echo get_phrase('optional_numbers_only'); ?></span>
+                <span class="ec-form-hint"><?php echo get_phrase('optional'); ?></span>
             </label>
             <div class="ec-input-wrapper">
-                <input type="number"
+                <input type="text"
                        class="ec-form-input"
                        id="cost_center"
                        name="cost_center"
                        placeholder="<?php echo get_phrase('enter_cost_center_code_optional'); ?>"
-                       min="0"
                        autocomplete="off">
-                <i class="mdi mdi-numeric ec-input-icon"></i>
+                <i class="mdi mdi-format-letter-case ec-input-icon"></i>
                 <i class="mdi mdi-check-circle ec-validation-icon success"></i>
                 <i class="mdi mdi-alert-circle ec-validation-icon error"></i>
             </div>
             <div class="ec-error-message" id="cost_center_error">
                 <i class="mdi mdi-alert-circle"></i>
-                <span><?php echo get_phrase('invalid_cost_center_numbers_only'); ?></span>
+                <span><?php echo get_phrase('invalid_cost_center'); ?></span>
+            </div>
+        </div>
+        
+        <!-- Department -->
+        <div class="ec-form-group">
+            <label class="ec-form-label">
+                <i class="mdi mdi-building"></i>
+                <span><?php echo get_phrase('department'); ?></span>
+                <span class="ec-form-hint"><?php echo get_phrase('optional'); ?></span>
+            </label>
+            <div class="ec-input-wrapper">
+                <input type="text"
+                       class="ec-form-input"
+                       id="department"
+                       name="department"
+                       placeholder="<?php echo get_phrase('enter_department_name_optional'); ?>"
+                       autocomplete="off">
+                <i class="mdi mdi-office-building ec-input-icon"></i>
+                <i class="mdi mdi-check-circle ec-validation-icon success"></i>
+                <i class="mdi mdi-alert-circle ec-validation-icon error"></i>
+            </div>
+            <div class="ec-error-message" id="department_error">
+                <i class="mdi mdi-alert-circle"></i>
+                <span><?php echo get_phrase('invalid_department'); ?></span>
             </div>
         </div>
         
@@ -424,13 +447,16 @@ $(document).ready(function() {
     // Elements
     const nameInput = $('#name');
     const costCenterInput = $('#cost_center');
+    const departmentInput = $('#department');
     const nameError = $('#name_error');
     const costCenterError = $('#cost_center_error');
+    const departmentError = $('#department_error');
     const submitBtn = $('#submit-btn');
     
     // Validation patterns
     const nameRegex = /^[a-zA-Z0-9àâäéèêëïîôùûüç\s\-_]{3,}$/;
-    const costCenterRegex = /^[0-9]+$/;
+    const costCenterRegex = /^[a-zA-Z0-9\s\-_]+$/;
+    const departmentRegex = /^[a-zA-Z0-9àâäéèêëïîôùûüç\s\-_]+$/;
     
     // CSRF Token
     function getCsrfToken() {
@@ -460,7 +486,7 @@ $(document).ready(function() {
 
     function validateCostCenter() {
         const val = costCenterInput.val().trim();
-        // Cost center is now optional
+        // Cost center is optional
         if (val.length === 0) {
             costCenterInput.removeClass('is-valid is-invalid');
             costCenterError.removeClass('show');
@@ -475,10 +501,29 @@ $(document).ready(function() {
         costCenterError.removeClass('show');
         return true;
     }
+
+    function validateDepartment() {
+        const val = departmentInput.val().trim();
+        // Department is optional
+        if (val.length === 0) {
+            departmentInput.removeClass('is-valid is-invalid');
+            departmentError.removeClass('show');
+            return true; // Valid when empty (optional)
+        }
+        if (!departmentRegex.test(val)) {
+            departmentInput.addClass('is-invalid').removeClass('is-valid');
+            departmentError.addClass('show');
+            return false;
+        }
+        departmentInput.addClass('is-valid').removeClass('is-invalid');
+        departmentError.removeClass('show');
+        return true;
+    }
     
     // Real-time validation
     nameInput.on('input', validateName);
     costCenterInput.on('input', validateCostCenter);
+    departmentInput.on('input', validateDepartment);
     
     // Form submission
     let isSubmitting = false;
@@ -490,6 +535,7 @@ $(document).ready(function() {
         
         const isNameValid = validateName();
         const isCostCenterValid = validateCostCenter();
+        const isDepartmentValid = validateDepartment();
 
         if (!isNameValid) {
             // Shake animation on errors

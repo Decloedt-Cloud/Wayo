@@ -168,9 +168,9 @@
 }
 
 .stat-card.students::before { background: var(--primary); }
-.stat-card.teachers::before { background: var(--secondary); }
-.stat-card.attendance::before { background: var(--accent); }
-.stat-card.events::before { background: var(--danger); }
+.stat-card.teachers::before { background: var(--primary); }
+.stat-card.attendance::before { background: var(--primary); }
+.stat-card.events::before { background: var(--primary); }
 
 .stat-card .stat-icon {
   width: 52px;
@@ -186,23 +186,23 @@
 }
 
 .stat-card.students .stat-icon {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .stat-card.teachers .stat-icon {
-  background: linear-gradient(135deg, #10b981, #34d399);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .stat-card.attendance .stat-icon {
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .stat-card.events .stat-icon {
-  background: linear-gradient(135deg, #ef4444, #f87171);
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .stat-card .stat-label {
@@ -327,7 +327,7 @@
 
 /* Attendance Highlight */
 .attendance-banner {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, #a78bfa 100%);
   border-radius: 16px;
   padding: 2rem;
   text-align: center;

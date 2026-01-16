@@ -70,7 +70,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
    INVOICE LIST - COMPACT MODERN STYLES
    ============================================================================ */
 :root {
-    --ai-primary: #4f46e5;
+    --ai-primary: #6366f1;
     --ai-primary-light: #eef2ff;
     --ai-success: #059669;
     --ai-success-light: #d1fae5;
@@ -374,10 +374,10 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
     text-decoration: none;
     font-size: 0.85rem;
 }
-.ai-action.view { background: #dbeafe; color: #2563eb; }
-.ai-action.pdf { background: #fce7f3; color: #db2777; }
-.ai-action.edit { background: #fef3c7; color: #d97706; }
-.ai-action.delete { background: #fee2e2; color: #dc2626; }
+.ai-action.view { background: var(--ai-primary-light); color: var(--ai-primary); } /* Primary Chart Color */
+.ai-action.pdf { background: var(--ai-primary-light); color: var(--ai-primary); } /* Primary Chart Color */
+.ai-action.edit { background: var(--ai-primary-light); color: var(--ai-primary); } /* Primary Chart Color */
+.ai-action.delete { background: #fee2e2; color: #dc2626; } /* Red */
 .ai-action:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
 /* Empty */
@@ -450,7 +450,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 <!-- Mini Charts -->
 <div class="ai-stats-secondary">
     <div class="ai-mini-chart">
-        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="mdi mdi-currency-usd"></i> <?php echo get_phrase('by_currency'); ?></span></div>
+        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="mdi mdi-currency"></i> <?php echo get_phrase('by_currency'); ?></span></div>
         <div class="ai-mini-chart-items">
             <?php $colors = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0891b2']; $i = 0;
             foreach ($stats['currencies'] as $curr => $amount): ?>
@@ -643,7 +643,9 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     <div class="ai-actions">
                         <a href="<?php echo route('invoice/invoice/'.$inv['id']); ?>" class="ai-action view" target="_blank" title="<?php echo get_phrase('view'); ?>"><i class="mdi mdi-eye"></i></a>
                         <a href="<?php echo route('invoice_pdf/'.$inv['id']); ?>" class="ai-action pdf" target="_blank" title="PDF"><i class="mdi mdi-file-pdf-box"></i></a>
+                        <?php if (empty($inv['payment_type']) || $inv['payment_type'] != 'subscription_admin'): ?>
                         <a href="javascript:void(0);" class="ai-action edit" onclick="rightModal('<?php echo site_url('modal/popup/invoice/edit/'.$inv['id']); ?>', '<?php echo get_phrase('edit'); ?>')" title="<?php echo get_phrase('edit'); ?>"><i class="mdi mdi-pencil"></i></a>
+                        <?php endif; ?>
                         <a href="javascript:void(0);" class="ai-action delete" onclick="confirmModal('<?php echo route('invoice/delete/'.$inv['id']); ?>', showAllInvoices)" title="<?php echo get_phrase('delete'); ?>"><i class="mdi mdi-delete"></i></a>
                     </div>
                 </td>

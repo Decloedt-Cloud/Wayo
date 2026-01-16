@@ -78,6 +78,16 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     </div>
     
     <div class="exp-toolbar-right">
+        <div class="exp-export-buttons">
+            <button type="button" class="exp-export-btn exp-export-csv" onclick="exportExpenses('csv')">
+                <i class="mdi mdi-file-document-outline"></i>
+                <span><?php echo get_phrase('export_csv'); ?></span>
+            </button>
+            <button type="button" class="exp-export-btn exp-export-pdf" onclick="exportExpenses('pdf')">
+                <i class="mdi mdi-file-pdf-box"></i>
+                <span><?php echo get_phrase('export_pdf'); ?></span>
+            </button>
+        </div>
         <div class="exp-view-options">
             <div class="exp-per-page-select">
                 <label><?php echo get_phrase('show'); ?></label>
@@ -277,6 +287,54 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 <?php endif; ?>
 
 <script>
+// Export function to be called from index.php
+if (typeof exportExpenses === 'undefined') {
+    var exportExpenses = function(type) {
+        var dateRange = '';
+        var categoryId = 'all';
+        
+        // Try to get filters from parent window (if in iframe) or current window
+        try {
+            var parentDoc = window.parent.document || document;
+            var selectedValueEl = parentDoc.getElementById('selectedValue');
+            var categoryEl = parentDoc.getElementById('expense_category_id');
+            
+            if (selectedValueEl) {
+                dateRange = selectedValueEl.textContent || selectedValueEl.innerText || '';
+            }
+            if (categoryEl) {
+                categoryId = categoryEl.value || 'all';
+            }
+        } catch(e) {
+            // Fallback: try current document
+            var selectedValueEl = document.getElementById('selectedValue');
+            var categoryEl = document.getElementById('expense_category_id');
+            
+            if (selectedValueEl) {
+                dateRange = selectedValueEl.textContent || '';
+            }
+            if (categoryEl) {
+                categoryId = categoryEl.value || 'all';
+            }
+        }
+        
+        // Default date range if empty
+        if (!dateRange || dateRange.trim() === '') {
+            var today = new Date();
+            var thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+            dateRange = thirtyDaysAgo.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) + 
+                       ' - ' + 
+                       today.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
+        }
+        
+        // Build export URL
+        var url = '<?php echo route('expense/export'); ?>?type=' + type + '&date=' + encodeURIComponent(dateRange) + '&expense_category_id=' + categoryId;
+        
+        // Open in new window/tab to trigger download without affecting current page
+        window.open(url, '_blank');
+    };
+}
+
 (function() {
     'use strict';
 
@@ -682,19 +740,19 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
    ============================================================================ */
 
 :root {
-    --exp-primary: #6366f1;
-    --exp-primary-rgb: 99, 102, 241;
-    --exp-success: #10b981;
-    --exp-success-rgb: 16, 185, 129;
-    --exp-warning: #f59e0b;
-    --exp-warning-rgb: 245, 158, 11;
-    --exp-danger: #ef4444;
-    --exp-danger-rgb: 239, 68, 68;
-    --exp-dark: #1e293b;
-    --exp-gray: #64748b;
-    --exp-light: #f8fafc;
-    --exp-border: #e2e8f0;
-    --exp-white: #ffffff;
+    --exp-primary: var(--bs-primary);
+    --exp-primary-rgb: var(--bs-primary-rgb);
+    --exp-success: var(--bs-success);
+    --exp-success-rgb: var(--bs-success-rgb);
+    --exp-warning: var(--bs-warning);
+    --exp-warning-rgb: var(--bs-warning-rgb);
+    --exp-danger: var(--bs-danger);
+    --exp-danger-rgb: var(--bs-danger-rgb);
+    --exp-dark: var(--bs-dark);
+    --exp-gray: var(--bs-gray);
+    --exp-light: var(--bs-light);
+    --exp-border: var(--bs-gray-200);
+    --exp-white: var(--bs-white);
     --exp-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --exp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -935,6 +993,65 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     background-position: right 0.75rem center;
 }
 
+/* Export Buttons */
+.exp-export-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.exp-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: 2px solid var(--exp-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--exp-white);
+    color: var(--exp-dark);
+}
+
+.exp-export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--exp-shadow);
+    border-color: var(--exp-primary);
+    color: var(--exp-primary);
+}
+
+.exp-export-btn:active {
+    transform: translateY(0);
+}
+
+.exp-export-btn i {
+    font-size: 1rem;
+}
+
+.exp-export-csv {
+    border-color: var(--exp-primary);
+    color: var(--exp-primary);
+}
+
+.exp-export-csv:hover {
+    background: rgba(var(--exp-primary-rgb), 0.05);
+    border-color: var(--exp-primary);
+    color: var(--exp-primary);
+}
+
+.exp-export-pdf {
+    border-color: var(--exp-primary);
+    color: var(--exp-primary);
+}
+
+.exp-export-pdf:hover {
+    background: rgba(var(--exp-primary-rgb), 0.05);
+    border-color: var(--exp-primary);
+    color: var(--exp-primary);
+}
+
 /* List Container */
 .exp-list-container {
     background: var(--exp-white);
@@ -1086,7 +1203,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--exp-success);
-    background: linear-gradient(135deg, rgba(var(--exp-success-rgb), 0.1), rgba(var(--exp-success-rgb), 0.05));
+    background: rgba(var(--exp-success-rgb), 0.1);
     padding: 0.5rem 1rem;
     border-radius: 10px;
 }
@@ -1102,9 +1219,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: linear-gradient(135deg, 
-        hsl(var(--hue, 250), 80%, 60%), 
-        hsl(calc(var(--hue, 250) + 30), 80%, 50%));
+    background: var(--exp-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1112,7 +1227,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     font-weight: 700;
     font-size: 0.875rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px hsla(var(--hue, 250), 80%, 50%, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--exp-primary-rgb), 0.3);
 }
 
 .exp-item-info {
@@ -1173,7 +1288,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 }
 
 .exp-btn-edit:hover {
-    background: linear-gradient(135deg, var(--exp-primary), #8b5cf6);
+    background: var(--exp-primary);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(var(--exp-primary-rgb), 0.3);
@@ -1185,7 +1300,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 }
 
 .exp-btn-delete:hover {
-    background: linear-gradient(135deg, var(--exp-danger), #f87171);
+    background: var(--exp-danger);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(var(--exp-danger-rgb), 0.3);
@@ -1242,8 +1357,9 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 }
 
 .exp-reset-btn:hover {
-    background: #4f46e5;
+    background: var(--exp-primary);
     transform: translateY(-2px);
+    opacity: 0.9;
 }
 
 /* Pagination Bar */
@@ -1252,7 +1368,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     justify-content: space-between;
     align-items: center;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, var(--exp-light), #f1f5f9);
+    background: var(--exp-light);
     border-top: 1px solid var(--exp-border);
     gap: 1.5rem;
     flex-wrap: wrap;
@@ -1284,7 +1400,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 
 .exp-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--exp-primary), #8b5cf6);
+    background: var(--exp-primary);
     border-radius: 2px;
     transition: width 0.3s ease;
 }
@@ -1351,7 +1467,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 }
 
 .exp-page-btn.active {
-    background: linear-gradient(135deg, var(--exp-primary), #8b5cf6);
+    background: var(--exp-primary);
     border-color: var(--exp-primary);
     color: white;
 }
@@ -1399,7 +1515,8 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
 }
 
 .exp-go-btn:hover {
-    background: #4f46e5;
+    background: var(--exp-primary);
+    opacity: 0.9;
 }
 
 /* Empty State */
@@ -1470,7 +1587,7 @@ $total_amount = array_sum(array_column($expenses, 'amount'));
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, var(--exp-primary), #8b5cf6);
+    background: var(--exp-primary);
     color: white;
     border: none;
     border-radius: 14px;

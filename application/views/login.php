@@ -554,13 +554,14 @@
             </div>
 
             <!-- Welcome Section -->
-            <div class="login-welcome-section">
-                <div class="welcome-icon">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <h2 class="welcome-title"><?php echo get_phrase('welcome_back'); ?></h2>
-                <p class="welcome-text"><?php echo get_phrase('login_to_access_your_dashboard_and_manage_your_school_efficiently'); ?>.</p>
-            </div>
+            <div class="login-welcome-section"> 
+                 <div class="welcome-icon"> 
+                     <!-- <i class="fas fa-graduation-cap"></i> --> 
+                     <span><img src="<?php echo $this->settings_model->get_logo_light(); ?>" alt="Logo" style="max-height: 80px; width: auto; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));"></span> 
+                 </div> 
+                 <h2 class="welcome-title"><?php echo get_phrase('welcome_back'); ?></h2> 
+                <p class="welcome-text"><?php echo get_phrase('login_to_access_your_dashboard_and_manage_your_school_efficiently'); ?>.</p> 
+             </div>
         </div>
     </div>
 
@@ -773,19 +774,19 @@ $('.form-input').on('keypress', function(e) {
 
 <?php if ($this->session->flashdata('info_message') != ""):?>
     <script type="text/javascript">
-    $.NotificationApp.send("<?php echo get_phrase('success'); ?>!", '<?php echo $this->session->flashdata("info_message");?>' ,"top-right","rgba(0,0,0,0.2)","info");
+    $.NotificationApp.send(<?php echo js_phrase('success'); ?>, '<?php echo $this->session->flashdata("info_message");?>' ,"top-right","rgba(0,0,0,0.2)","info");
 </script>
 <?php endif;?>
 
 <?php if ($this->session->flashdata('error_message') != ""):?>
     <script type="text/javascript">
-    $.NotificationApp.send("<?php echo get_phrase('oh_snap'); ?>!", '<?php echo $this->session->flashdata("error_message");?>' ,"top-right","rgba(0,0,0,0.2)","error");
+    $.NotificationApp.send(<?php echo js_phrase('oh_snap'); ?>, '<?php echo $this->session->flashdata("error_message");?>' ,"top-right","rgba(0,0,0,0.2)","error");
 </script>
 <?php endif;?>
 
 <?php if ($this->session->flashdata('flash_message') != ""):?>
     <script type="text/javascript">
-    $.NotificationApp.send("<?php echo get_phrase('congratulations'); ?>!", '<?php echo $this->session->flashdata("flash_message");?>' ,"top-right","rgba(0,0,0,0.2)","success");
+    $.NotificationApp.send(<?php echo js_phrase('congratulations'); ?>, '<?php echo $this->session->flashdata("flash_message");?>' ,"top-right","rgba(0,0,0,0.2)","success");
 </script>
 <?php endif;?>
 </body>

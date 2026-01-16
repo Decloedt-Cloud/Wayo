@@ -47,7 +47,6 @@
             <p><?php echo get_phrase("Monetize your knowledge through on-demand courses, live sessions, and 1:1 coaching. Manage content, pricing, schedule, and payments from a simple dashboard.") ?></p>
             <ul>
               <li><?php echo get_phrase("Full control over offers & pricing") ?></li>
-              <li><?php echo get_phrase("Integrated messaging & Q&A") ?></li>
               <li><?php echo get_phrase("Analytics & scheduled payouts") ?></li>
             </ul>
           </div>
@@ -84,7 +83,7 @@
             <h4 style="color:var(--wayo-orange-700)"><?php echo get_phrase("Learner Path (6 steps)") ?></h4>
             <div class="wayo-step"><div class="num">1</div><div><strong><?php echo get_phrase("Create an account") ?></strong> : <?php echo get_phrase("email + password.") ?></div></div>
             <div class="wayo-step"><div class="num">2</div><div><strong><?php echo get_phrase("Explore communities") ?></strong> : <?php echo get_phrase("topic, level, language, price, reviews.") ?></div></div>
-            <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Select a community") ?></strong> :  .<?php echo get_phrase("objectives, curriculum, prerequisites") ?></div></div>
+            <div class="wayo-step"><div class="num">3</div><div><strong><?php echo get_phrase("Select a community") ?></strong> :  <?php echo get_phrase("objectives, curriculum, prerequisites") ?></div></div>
             <div class="wayo-step"><div class="num">4</div><div><strong><?php echo get_phrase("Pay online or cash") ?></strong> : <?php echo get_phrase("secure checkout, instant confirmation.") ?></div></div>
             <div class="wayo-step"><div class="num">5</div><div><strong><?php echo get_phrase("Follow the training") ?></strong> : <?php echo get_phrase("videos, lives, resources, messaging.") ?></div></div>
             <div class="wayo-step"><div class="num">6</div><div><strong><?php echo get_phrase("Complete & certify") ?></strong> : <?php echo get_phrase("quizzes/evaluations (if any), certificate (if offered).") ?></div></div>

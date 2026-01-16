@@ -1572,6 +1572,7 @@ main [dir="rtl"] {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
 }
 
 .mentor-card:hover {
@@ -1605,6 +1606,7 @@ main [dir="rtl"] {
 }
 
 .mentor-card .btn-mentors {
+  margin-top: auto;
   padding: 0.6rem 1.2rem;
   background: transparent;
   border: 1.5px solid #fc7b30;
