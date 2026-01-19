@@ -67,7 +67,16 @@
 <?php
 $school_id = school_id();
 if (isset($class_id) ):
-    $syllabuses = $this->db->get_where('syllabuses', array('class_id' => $class_id, 'session_id' => active_session()))->result_array();
+    // Si class_id est "all", récupérer tous les syllabus de l'école active
+    if ($class_id == 'all') {
+        $sql = "SELECT syllabuses.* FROM syllabuses
+                INNER JOIN classes ON syllabuses.class_id = classes.id
+                WHERE classes.school_id = ? AND syllabuses.session_id = ?";
+        $syllabuses = $this->db->query($sql, array($school_id, active_session()))->result_array();
+    } else {
+        $this->db->reset_query();
+        $syllabuses = $this->db->get_where('syllabuses', array('class_id' => $class_id, 'session_id' => active_session()))->result_array();
+    }
     if(count($syllabuses) > 0):?>
     <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
         <thead>

@@ -93,7 +93,6 @@
     <p><?php echo get_phrase("The_user_must_create_an_account_by_providing_accurate_and_up-to-date_information."); ?></p>
     <p><?php echo get_phrase("The_minimum_age_required_is"); ?> <strong><?php echo get_phrase("18_years"); ?></strong> <?php echo get_phrase("or_parental_authorization_for_minors."); ?></p>
     <p><?php echo get_phrase("The_user_is_responsible_for_keeping_their_login_details_confidential._Any_unauthorized_use_must_be_reported_immediately."); ?></p>
-     <p><?php echo get_phrase("The_platform_is_an_edtech_platform_and_is_intened_to_commercialize_coaching_and_mentoring."); ?></p>
   </div>
 </section>
 

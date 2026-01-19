@@ -994,11 +994,11 @@
                             <?php $active_lang = get_user_language(); ?>
                             <select id="communityLang" name="communityLang" required aria-required="true"
                                     data-msg="<?php echo get_phrase('Please_select_a_language'); ?>">
-                                <option value="french" <?php if($active_lang == 'french') echo 'selected'; ?>><?php echo get_phrase("French_(FR)") ?></option>
-                                <option value="english" <?php if($active_lang == 'english') echo 'selected'; ?>><?php echo get_phrase("Anglais_(EN)") ?></option>
-                                <option value="deutsch" <?php if($active_lang == 'dutch') echo 'selected'; ?>><?php echo get_phrase("Allemand_(DE)") ?></option>
-                                <option value="arabe" <?php if($active_lang == 'arabic') echo 'selected'; ?>><?php echo get_phrase("Arabic_(AR)") ?></option>
-                                <option value="spanish" <?php if($active_lang == 'spanish') echo 'selected'; ?>><?php echo get_phrase("Spanish_(ES)") ?></option>
+                                <option value="french" <?php if($active_lang == 'french') echo 'selected'; ?>>Français</option>
+                                <option value="english" <?php if($active_lang == 'english') echo 'selected'; ?>>English</option>
+                                <option value="deutsch" <?php if($active_lang == 'dutch') echo 'selected'; ?>>Nederlands</option>
+                                <option value="arabe" <?php if($active_lang == 'arabic') echo 'selected'; ?>>العربية</option>
+                                <option value="spanish" <?php if($active_lang == 'spanish') echo 'selected'; ?>>Español</option>
                             </select>
                             <div class="error" data-for="communityLang"></div>
                         </label>
@@ -1119,7 +1119,17 @@
                                     <textarea id="communityDesc" class="form-control shadow-none" rows="6" name="school_description"
                                               placeholder="<?php echo get_phrase("Describe_the_goal_and_the_value…") ?>" required
                                               data-msg="<?php echo get_phrase("Please enter a description") ?>"></textarea>
-                                    <small class="help"><?php echo get_phrase("At_least_40_characters.") ?></small>
+                                    <div style="margin-top: 10px; width: 100%;">
+                                        <small class="help" style="margin: 0; color: #6b7280; font-size: 0.85rem; display: block;">
+                                            <?php echo get_phrase("At_least_40_characters.") ?>
+                                        </small>
+                                        <div style="margin-top: 10px; display: flex; gap: 5px; width:100%;">
+                                            <span id="charCount" style="font-weight: 800; color: #dc3545; font-size: 1rem; line-height: 1;">0</span>
+                                            <small class="help" style="margin: 0; color: #9ca3af; font-size: 0.8rem;">
+                                                <?php echo get_phrase("characters"); ?>
+                                            </small>
+                                        </div>
+                                    </div>
                                     <div class="error" data-for="communityDesc"></div>
                                 </label>
                             </fieldset>
@@ -1251,7 +1261,7 @@
                             </div>
                             
                             <div class="sub-price-big">
-                                790 <small>MAD/m</small>
+                                790 <small><?php echo get_phrase('MAD_/_month'); ?></small>
                             </div>
                             
                             <div class="sub-price-sub">
@@ -1606,6 +1616,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSummary();
     });
 
+    // Character counter logic
+    const descInput = $('#communityDesc');
+    const countSpan = $('#charCount');
+    if (descInput && countSpan) {
+        const updateCharCount = () => {
+            const count = descInput.value.length;
+            countSpan.textContent = count;
+            if (count < 40) {
+                countSpan.style.color = '#dc3545';
+            } else {
+                countSpan.style.color = '#28a745';
+            }
+        };
+        ['input', 'change', 'keyup', 'focus'].forEach(ev => {
+            descInput.addEventListener(ev, updateCharCount);
+        });
+        updateCharCount(); // Initial count
+    }
+
     // ========================
     // Validation step par step
     // ========================
@@ -1823,7 +1852,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const profileName   = $('#profileName')?.value || '—';
         const profileEmail  = $('#profileEmail')?.value || '—';
         const phone         = $('#profilePhone')?.value || '—';
-        const lang          = $('#communityLang')?.value || '—';
+        const langValue     = $('#communityLang')?.value || '—';
+        
+        // Map language values to native names
+        const langMap = {
+            'french': 'Français',
+            'english': 'English',
+            'deutsch': 'Nederlands',
+            'arabe': 'العربية',
+            'spanish': 'Español'
+        };
+        const lang = langMap[langValue] || langValue;
+        
         const i_am          = $('#i_am_id')?.value || '—';
         const communityName = $('#communityName')?.value || '—';
         const desc          = $('#communityDesc')?.value || '—';

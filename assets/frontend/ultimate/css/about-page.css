@@ -1,13 +1,15 @@
-.mission h2, .histoire h2, .contact h2{
-  text-align: center;
+.mission h2,
+.histoire h2,
+.contact h2 {
+    text-align: center;
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 700;
     color: #000;
-    margin-bottom: 2rem;
     line-height: 1.2;
 }
 
-.mission p .histoire p, .contact p {
+.mission p .histoire p,
+.contact p {
     font-size: 0.95rem;
     color: #333333;
 }
@@ -17,353 +19,384 @@
     margin-bottom: 0.75rem;
     color: #000;
 }
+
 .value-card p {
     font-size: 0.95rem;
     color: #333333 !important;
 }
-.p-cta{
-  font-size: 23px;
+
+.p-cta {
+    font-size: 23px;
 }
 
-.section-timeline{
-background: #f6f7fb; 
+.section-timeline {
+    background: #f6f7fb;
 }
 
 .timeline {
-  position: relative;
-  /* margin: 2rem auto;
+    position: relative;
+    /* margin: 2rem auto;
   padding: 2rem 0; */
 }
 
 /* ligne centrale */
 .timeline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  background: #eee;
-  transform: translateX(-50%);
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: #eee;
+    transform: translateX(-50%);
+}
+
+/* Arrow at the bottom of the timeline line */
+.timeline::after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 12px solid #ff6600;
+    /* Match orange dots */
+    z-index: 1;
 }
 
 .timeline-item {
-  position: relative;
-  margin-bottom: 3rem;
+    position: relative;
+    margin-bottom: 3rem;
 }
 
 /* pastille orange */
 .timeline-item::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  background: #ff6600;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
-  transform: translateX(-50%);
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    background: #ff6600;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    transform: translateX(-50%);
+    z-index: 1;
 }
 
 /* carte */
 .card-timeline {
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  background: #fff;
-  padding: 1.2rem 1.5rem;
-  position: relative;
-  z-index: 2;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    z-index: 2;
 }
 
 .card-timeline h5 {
-  font-weight: 700;
+    font-weight: 700;
 }
 
 .card-timeline p {
-  margin: 0;
-  color: #555;
+    margin: 0;
+    color: #555;
 }
 
 .highlight {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 /* alignement gauche */
 .timeline-left {
-  text-align: right;
-  padding-right: 2rem;
+    text-align: right;
+    padding-right: 2rem;
 }
 
 /* alignement droite */
 .timeline-right {
-  padding-left: 2rem;
+    padding-left: 2rem;
 }
 
 
 /* responsive */
 @media (max-width: 768px) {
-  .timeline::before {
-    left: 8px;
-  }
-  .timeline-item::before {
-    left: 8px;
-    transform: none;
-  }
-  .timeline-left,
-  .timeline-right {
-    text-align: left;
-    padding: 0 0 0 2.5rem;
-  }
+    .timeline::before {
+        left: 8px;
+    }
+
+    .timeline-item::before {
+        left: 8px;
+        transform: none;
+    }
+
+    .timeline::after {
+        left: 8px;
+        transform: none;
+    }
+
+    .timeline-left,
+    .timeline-right {
+        text-align: left;
+        padding: 0 0 0 2.5rem;
+    }
 }
 
 /* caroussel */
-  .team-section {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.team-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-            color:#000;
-        }
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+    color: #000;
+}
 
-        .section-title h2 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+.section-title h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
 
-        .section-title p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
+.section-title p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
 
-        .slider-container {
-            position: relative;
-            overflow: hidden;
-            padding: 20px 0;
-        }
+.slider-container {
+    position: relative;
+    overflow: hidden;
+    padding: 20px 0;
+}
 
-        .slider-wrapper {
-            display: flex;
-            transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
-            gap: 30px;
-        }
+.slider-wrapper {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+    gap: 30px;
+}
 
-        .team-card {
-            min-width: calc(33.333% - 20px);
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
+.team-card {
+    min-width: calc(33.333% - 20px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
 
-        .team-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
+.team-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
 
-        .card-image {
-            width: 100%;
-            height: 438px;
-            background: linear-gradient(135deg, #FC7B30 0%, #e86a20 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .team-card .card-image img {
-          max-width:100%; height:auto; display:block; 
-        }
+.card-image {
+    width: 100%;
+    height: 438px;
+    background: linear-gradient(135deg, #FC7B30 0%, #e86a20 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
 
-        .card-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            /* background: linear-gradient(135deg, rgb(252 123 48 / 32%) 0%, rgb(232 106 32 / 26%) 100%); */
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
+.team-card .card-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
 
-        .team-card:hover .card-image::before {
-            opacity: 1;
-        }
+.card-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* background: linear-gradient(135deg, rgb(252 123 48 / 32%) 0%, rgb(232 106 32 / 26%) 100%); */
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
 
-        .card-image i {
-            font-size: 100px;
-            color: rgba(255, 255, 255, 0.9);
-            z-index: 1;
-        }
+.team-card:hover .card-image::before {
+    opacity: 1;
+}
 
-        .card-content {
-            padding: 30px;
-            text-align: center;
-        }
+.card-image i {
+    font-size: 100px;
+    color: rgba(255, 255, 255, 0.9);
+    z-index: 1;
+}
 
-        .card-content h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
-        }
+.card-content {
+    padding: 30px;
+    text-align: center;
+}
 
-        .card-content .position {
-            color: #FC7B30;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.card-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
 
-        .card-content p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+.card-content .position {
+    color: #FC7B30;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
+.card-content p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
 
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #FC7B30 0%, #e86a20 100%);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
 
-        .social-links a:hover {
-            transform: scale(1.1) rotate(360deg);
-            box-shadow: 0 5px 15px rgba(252, 123, 48, 0.4);
-        }
+.social-links a {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #FC7B30 0%, #e86a20 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
 
-        .slider-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 40px;
-        }
+.social-links a:hover {
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 5px 15px rgba(252, 123, 48, 0.4);
+}
 
-        .slider-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            color: #FC7B30;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
+.slider-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
 
-        .slider-btn:hover {
-            background: white;
-            transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        }
+.slider-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: #FC7B30;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
 
-        .slider-btn:active {
-            transform: scale(0.95);
-        }
+.slider-btn:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
 
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
-        }
+.slider-btn:active {
+    transform: scale(0.95);
+}
 
-        .dot {
-            width: 14px;
-            height: 14px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
 
-        .dot::before {
-            content: '\f111';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 14px;
-            color: #efefef;
-            transition: all 0.3s ease;
-        }
+.dot {
+    width: 14px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .dot.active {
-            background: white;
-            width: 14px;
-            transform: scale(1.4);
-        }
+.dot::before {
+    content: '\f111';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 14px;
+    color: #efefef;
+    transition: all 0.3s ease;
+}
 
-        .dot.active::before {
-            color: #FC7B30;
-        }
+.dot.active {
+    background: white;
+    width: 14px;
+    transform: scale(1.4);
+}
 
-        .dot:hover {
-            transform: scale(1.2);
-        }
+.dot.active::before {
+    color: #FC7B30;
+}
 
-        @media (max-width: 992px) {
-            .team-card {
-                min-width: calc(50% - 15px);
-            }
-        }
+.dot:hover {
+    transform: scale(1.2);
+}
 
-        @media (max-width: 768px) {
-            .team-card {
-                min-width: 100%;
-                background: none;
-            }
+@media (max-width: 992px) {
+    .team-card {
+        min-width: calc(50% - 15px);
+    }
+}
 
-            .section-title h2 {
-                font-size: 2rem;
-            }
-             .card-image {
-            height: 338px;
-           
-        }
-        }
-         @media (max-width: 1180px) {
-           .card-image {
-                background: none;
-            }
-         }
-         @media screen and (max-width: 1366px) {
-            .card-image {
-                height: 388px;
-            }
-            .content {
-                width: 100%;
-            }
-        }
-   
+@media (max-width: 768px) {
+    .team-card {
+        min-width: 100%;
+        background: none;
+    }
+
+    .section-title h2 {
+        font-size: 2rem;
+    }
+
+    .card-image {
+        height: 338px;
+
+    }
+}
+
+@media (max-width: 1180px) {
+    .card-image {
+        background: none;
+    }
+}
+
+@media screen and (max-width: 1366px) {
+    .card-image {
+        height: 388px;
+    }
+
+    .content {
+        width: 100%;
+    }
+}

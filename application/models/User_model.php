@@ -2388,8 +2388,30 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 					}
 				}
 
-				$this->db->insert('students', $data);
-				$user_email = $this->db->get_where('users', array('id' => $user_id))->row('email');
+		$this->db->insert('students', $data);
+			
+		// Ajouter dans user_schools pour suivre les communautés de l'étudiant
+		// Même logique que pour admin et mentor
+		$this->db->replace('user_schools', [
+			'user_id' => $user_id,
+			'school_id' => $school_id,
+			'role' => 'student'
+		]);
+		
+		// Mettre à jour le school_id de l'utilisateur s'il est null
+		// avec le school_id de user_schools
+		$user_schools_row = $this->db->get_where('user_schools', [
+			'user_id' => $user_id,
+			'school_id' => $school_id,
+			'role' => 'student'
+		])->row();
+		
+		if ($user_schools_row) {
+			$this->db->where('id', $user_id);
+			$this->db->update('users', ['school_id' => $school_id]);
+		}
+		
+		$user_email = $this->db->get_where('users', array('id' => $user_id))->row('email');
 				$user_name = $this->db->get_where('users', array('id' => $user_id))->row('name');
 				$this->db->where('school_id', $school_id);
 				$this->db->where_in('role', array('admin', 'superadmin'));

@@ -42,25 +42,7 @@
                                 <?php for ($year = 2015; $year <= date('Y'); $year++) { ?>
                                     <option value="<?php echo $year; ?>" <?php if (date('Y') == $year) echo 'selected'; ?>><?php echo $year; ?></option>
                                 <?php } ?>
-
                             </select>
-                        </div>
-                        <div class="col-md-2 mb-1">
-                            <select class="form-control" name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
-                                <option value=""><?php echo get_phrase('select_a_schools'); ?></option>
-                                <?php
-                                $user_id   = $this->session->userdata('user_id');
-                                $schools =  $this->db->select('*,schools.id as id');
-                                $this->db->from('schools');
-                                $this->db->join('students', 'schools.id = students.school_id', 'left');
-                                $this->db->where('students.user_id', $user_id);
-                                $query = $this->db->get()->result_array();
-                                ?>
-                                <?php foreach ($query as $school): ?>
-                                    <option value="<?php echo $school['id']; ?>" <?php if ($selected_school_id == $school['id']) echo 'selected'; ?>> <?php echo  $school['name']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-
                         </div>
                         <div class="col-md-2 mb-1">
                             <select name="class" id="class_id_attendance" class="form-control" required>
@@ -85,12 +67,16 @@
     </div>
 </div>
 <script>
-    $('document').ready(function() {
+    $(document).ready(function() {
         $('select.select2:not(.normal)').each(function() {
             $(this).select2({
                 dropdownParent: '#right-modal'
             });
-        }); //initSelect2(['#month', '#year', '#class_id']);
+        });
+        //initSelect2(['#month', '#year', '#class_id']);
+        
+        // Charger les classes de l'école active au chargement de la page
+        loadClassesForActiveSchool();
     });
 
 
@@ -102,7 +88,7 @@
         if (class_id != "" && month != "" && year != "") {
             getDailtyAttendance();
         } else {
-            toastr.error('<?php echo get_phrase('please_select_in_all_fields !'); ?>');
+            toastr.error('<?php echo get_phrase('please_select_in_all_fields!'); ?>');
         }
     }
 
@@ -110,15 +96,14 @@
         var month = $('#month').val();
         var year = $('#year').val();
         var class_id = $('#class_id_attendance').val();
-
-        var school_id = $('#school_id').val();
+        var school_id = <?php echo $this->session->userdata('active_school_id'); ?>; // Utiliser l'école active
         // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
         var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
         var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
         if (class_id != "" && month != "" && year != "") {
             $.ajax({
                 type: 'POST',
-                url: '<?php echo route('attendance/filter') ?>',
+                url: '<?php echo site_url('student/attendance/filter'); ?>',
                 data: {
                     month: month,
                     year: year,
@@ -139,12 +124,23 @@
         }
     }
 
-    function schoolWiseClasse(school_id) {
-        $.ajax({
-            url: "<?php echo route('academy/list/'); ?>" + school_id,
-            success: function(response) {
-                $('#class_id_attendance').html(response);
-            }
-        });
+    // Charger les classes de l'école active
+    function loadClassesForActiveSchool() {
+        var school_id = <?php echo $this->session->userdata('active_school_id'); ?>;
+        if (school_id) {
+            var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+            var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+            
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo site_url('student/academy/list/'); ?>' + school_id,
+                data: {
+                    [csrfName]: csrfHash
+                },
+                success: function(response) {
+                    $('#class_id_attendance').html(response);
+                }
+            });
+        }
     }
 </script>
