@@ -40,7 +40,6 @@
       <div class="container reveal">
         <div class="sec-title" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
           <h3><?php echo get_phrase("Who is Wayo for?") ?></h3>
-          <span class="pill"><?php echo get_phrase("General") ?></span>
         </div>
         <div class="grid-2">
           <div class="card">
@@ -69,7 +68,6 @@
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("How to use Wayo") ?></h3>
-          <span class="pill"><?php echo get_phrase("Guide") ?></span>
         </div>
         <div class="grid-2">
           <div class="card">
@@ -99,7 +97,6 @@
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("Why choose Wayo?") ?></h3>
-          <span class="pill"><?php echo get_phrase("AvantagesWhy choose Wayo?") ?></span>
         </div>
         <div class="grid-3">
             <div class="card feat">
@@ -164,7 +161,6 @@
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("Training categories") ?></h3>
-          <span class="pill"><?php echo get_phrase("Catalog") ?></span>
         </div>
         <div class="grid-4">
           <div class="card"><h4><?php echo get_phrase("Business & Entrepreneurship") ?></h4><p><?php echo get_phrase("Strategy, operations, sales, finance.") ?></p></div>
@@ -204,7 +200,6 @@
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("Simple Pricing") ?></h3>
-          <span class="pill"><?php echo get_phrase("Pricing") ?></span>
         </div>
         <div class="pricing">
           <div class="price">
@@ -239,27 +234,21 @@
       <div class="container reveal">
         <div class="sec-title">
           <h3><?php echo get_phrase("FAQ — Frequently Asked Questions") ?></h3>
-          <span class="pill"><?php echo get_phrase("Help") ?></span>
         </div>
         <div class="grid-2">
           <div>
-            <details class="faq"><summary><?php echo get_phrase("What is Wayo Academy ?") ?><span>+</span></summary>
-              <div><?php echo get_phrase("Moroccan e-learning & mentoring platform connecting experts and learners through practical learning paths") ?></div>
-            </details>
-            <details class="faq"><summary><?php echo get_phrase("Who is Wayo for?") ?> <span>+</span></summary>
-              <div><?php echo get_phrase("For mentors/experts who want to monetize their knowledge, and for learners seeking practical skills.") ?></div>
-            </details>
             <details class="faq"><summary><?php echo get_phrase("Available languages ?") ?> <span>+</span></summary>
               <div><?php echo get_phrase("French and/or Arabic depending on the mentor (indicated on each course).") ?></div>
             </details>
             <details class="faq"><summary><?php echo get_phrase("Refund policy ?") ?> <span>+</span></summary>
               <div><?php echo get_phrase("Depends on the format (on-demand, live, coaching) and is indicated before payment") ?></div>
             </details>
-          </div>
-          <div>
-            <details class="faq"><summary><?php echo get_phrase("Mentor commissions & payments ?") ?> <span>+</span></summary>
+             <details class="faq"><summary><?php echo get_phrase("Mentor commissions & payments ?") ?> <span>+</span></summary>
               <div><?php echo get_phrase("Transparent commission at publication. Scheduled payouts.") ?></div>
             </details>
+          </div>
+          <div>
+           
             <details class="faq"><summary><?php echo get_phrase("Certificate of completion ?") ?> <span>+</span></summary>
               <div><?php echo get_phrase("Available for certain courses (noted on the course page).") ?></div>
             </details>

@@ -41,7 +41,7 @@
     .bg-alt{ background:var(--card-alt); }
 
     /* Values */
-    .value-card{ background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); transition:transform .2s, box-shadow .2s; height:100%; }
+    .value-card{ background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); transition:transform .2s, box-shadow .2s; height:100%; text-align: center; }
     .value-card:hover{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,.12) }
 
    
@@ -66,6 +66,31 @@
     /* Back to top */
     #scrollTopBtn{ position:fixed; right:16px; bottom:16px; width:44px; height:44px; border:none; border-radius:999px; background:var(--accent); color:#fff; display:grid; place-items:center; box-shadow:0 8px 18px rgba(0,0,0,.16); opacity:0; visibility:hidden; transition:opacity .2s, visibility .2s, transform .2s; }
     #scrollTopBtn.show{ opacity:1; visibility:visible; transform:translateY(0); }
+
+    /* Timeline arrow & progression */
+    .timeline {
+      position: relative;
+      padding-bottom: 60px !important;
+    }
+    .timeline::after {
+      content: "" !important;
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 0 !important;
+      height: 0 !important;
+      border-left: 10px solid transparent !important;
+      border-right: 10px solid transparent !important;
+      border-top: 15px solid #ff6600 !important;
+      z-index: 10 !important;
+    }
+    @media (max-width: 768px) {
+      .timeline::after {
+          left: 8px !important;
+          transform: none !important;
+      }
+    }
   </style>
 
 
@@ -95,8 +120,8 @@
     <!-- MISSION & VALEURS -->
     <section id="mission" class="py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container">
-        <header class="text-center mission mb-4" data-animate>
-          <h2 class="h2 mb-2"><?php echo get_phrase("Our Mission") ?></h2>
+        <header class="text-center mission unified-title-container mb-4" data-animate>
+          <h2 class="h2"><?php echo get_phrase("Our Mission") ?></h2>
           <p class="section-subtitle m-0"><?php echo get_phrase("Helping those with skills to") ?> 
           <strong><?php echo get_phrase("monetize their expertise") ?></strong>
           <?php echo get_phrase("through e-learning and to") ?>  
@@ -129,7 +154,7 @@
           <div class="col-12 col-sm-6 col-lg-3" role="listitem" data-animate>
             <article class="value-card h-100">
               <div class="fs-3 mb-1">🕊️</div>
-              <h3 class="h6 m-0"><?php echo get_phrase("Freedom") ?></p></h3>
+              <h3 class="h6 m-0"><?php echo get_phrase("Freedom") ?></h3>
               <p class="mb-0 text-secondary"><?php echo get_phrase("Create your path: courses, community, income… your way.") ?></p>
             </article>
           </div>
@@ -140,7 +165,7 @@
     <!-- HISTOIRE -->
      <section class="section-timeline py-5" id="histoire" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <div class="container">
-          <div class="text-center histoire mb-5">
+          <div class="text-center histoire unified-title-container mb-5">
             <h2 class="social-media-main-text">
                <?php echo get_phrase("The story of") ?>
                 <span style="color: #FC7B30;"><?php echo get_phrase("Wayo academy") ?></span>
@@ -196,7 +221,7 @@
     <!-- caroussel -->
 
      <section class="team-section py-5">
-        <div class="histoire">
+        <div class="histoire unified-title-container">
             <h2 class="social-media-main-text">
                <?php echo get_phrase("Our_teams") ?>
             </h2>
@@ -440,51 +465,6 @@
         <div class="slider-dots" id="dotsContainer"></div>
   </section>
 
-   
-
-    <!-- OÙ NOUS TROUVER -->
-    <section id="contact" class="contact py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-      <div class="container">
-        <header class="text-center mb-4" data-animate>
-          <h2 class="h2 mb-2"><?php echo get_phrase("Where to find us?") ?></h2>
-          <p class="section-subtitle"><?php echo get_phrase("Visit us, or get in touch — we respond quickly 🎯") ?></p>
-        </header>
-
-        <div class="row g-3 align-items-stretch">
-          <div class="col-12 col-lg-8" data-animate>
-            <article class="p-3 bg-white rounded-4 shadow-sm h-100">
-              <div class="map-embed rounded-3">
-                <!-- <iframe title="Wayo Academy – R320 Um Hurair 2, Dubai, UAE" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen src="https://www.google.com/maps?q=R320%20Um%20Hurair%202,%20Dubai,%20UAE&output=embed"></iframe> -->
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.773591177115!2d55.306372586657815!3d25.24454967224629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42d392745e8d%3A0x263aa4ef8ed1cdb8!2sUmm%20Hurair%20Rd%20-%20Dubai%20-%20%C3%89mirats%20arabes%20unis!5e0!3m2!1sfr!2sma!4v1759136094142!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-              </div>
-              <!-- <div class="d-flex justify-content-end mt-2">
-                <a class="btn btn-accent btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=R320%20Um%20Hurair%202%2C%20Dubai%2C%20UAE">Ouvrir dans Google Maps</a>
-              </div> -->
-            </article>
-          </div>
-          <div class="col-12 col-lg-4" data-animate>
-            <aside class="contact-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
-              <h3 class="h5 mb-3"><?php echo get_phrase("Contact details") ?></h3>
-              <ul class="list-unstyled d-grid gap-2 m-0">
-                <li class="d-grid" style="grid-template-columns:22px 1fr; gap:8px;">
-                  <span>📍</span><span><?php echo get_phrase("R320 Um Hurair 2, Dubai, UAE") ?></span>
-                </li>
-                <li class="d-grid" style="grid-template-columns:22px 1fr; gap:8px;">
-                  <span>✉️</span><a class="fw-semibold" href="mailto:info@wayo.cloud" style="color:var(--accent)"><?php echo get_phrase("info@wayo.cloud") ?></a>
-                </li>
-                <li class="d-grid" style="grid-template-columns:22px 1fr; gap:8px;">
-                  <span>📞</span><a class="fw-semibold" href="tel:+971501548923" style="color:var(--accent)"><?php echo get_phrase("+971 50 154 8923") ?></a>
-                </li>
-              </ul>
-              <div class="mt-3 d-grid gap-2">
-                <p class="m-0"><?php echo get_phrase("Need a demo? Write to us and we’ll schedule a slot.") ?></p>
-                <a class="btn btn-outline-secondary btn-pill" href="#cta"><?php echo get_phrase("Request a demo") ?></a>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- CTA FINAL -->
     <section id="cta" class="py-5 bg-alt" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>

@@ -123,8 +123,8 @@
   </section>
   <!-- Comparaison Avant et Après Wayo ----->
    <section class="position-relative bg-light py-5 min-vh-100 comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-    <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7" style="z-index: 1;">
-      <h2 class="text-center mb-4 mt-5"><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
+    <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7 unified-title-container" style="z-index: 1;">
+      <h2><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
       <p class="text-center text-dark mb-5 fs-6"><?php echo get_phrase("Wayo Academy brings together everything needed to create, sell, and run your training courses without stress.") ?></p>
       <div class="row g-4 ">
             <!-- Sans Wayo Column -->
@@ -173,8 +173,8 @@
   <!-------->
   <!-- Choose your plan -->
   <section class="py-3 position-relative pricing" style="padding-bottom:75px !important">
-    <div class="container position-relative" style="z-index: 1;">
-      <h2 class="text-center mb-5 mt-5" style=" "><?php echo get_phrase("A unique offer for maximum impact") ?></h2>
+    <div class="container position-relative unified-title-container" style="z-index: 1;">
+      <h2><?php echo get_phrase("A unique offer for maximum impact") ?></h2>
       <p class="subtitle"><?php echo get_phrase("Everything you need to build, manage, and monetize your community from A to Z.") ?></p>
       <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         
@@ -374,25 +374,10 @@
     </div>
   </section> -->
   <!-- Mobile section -->
-    <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-      <div class="app-frame">
-        <div class="app-inner">
-          <div class="app-media"><img src="https://i.postimg.cc/Z5nbcDC6/app.png" alt="Wayo app mockup"/></div>
-          <div class="app-copy">
-            <p class="app-kicker"><?php echo get_phrase("EASIER, FASTER AND MORE ACCESSIBLE MENTORING"); ?></p>
-            <p class="app-kicker"><?php echo get_phrase("Take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere."); ?></p>
-            <h2 class="app-title"><?php echo get_phrase("Coming soon "); ?>!</h2>
-            <div class="stores">
-              <a href="#" class="store"><img src="https://i.postimg.cc/QFpGF7SJ/app-store-badge.png" alt="App Store"/></a>
-              <a href="#" class="store"><img src="https://i.postimg.cc/CBxWrQ0c/google-play-badge.png" alt="Google Play"/></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+
   <!-- Meet Our Mentors -->
   <section class="meet-mentors">
-    <div class="container">
+    <div class="container unified-title-container">
       <h2><?php echo get_phrase("Meet Our Mentors") ?></h2>
       <p class="subtitle"><?php echo get_phrase("Passionate professionals to guide you") ?></p>
       <div class="mentors-grid">
@@ -423,6 +408,23 @@
       </div>
     </div>
   </section>
+
+      <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+      <div class="app-frame">
+        <div class="app-inner">
+          <div class="app-media"><img src="https://i.postimg.cc/Z5nbcDC6/app.png" alt="Wayo app mockup"/></div>
+          <div class="app-copy">
+            <p class="app-kicker"><?php echo get_phrase("EASIER, FASTER AND MORE ACCESSIBLE MENTORING"); ?></p>
+            <p class="app-kicker"><?php echo get_phrase("Take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere."); ?></p>
+            <h2 class="app-title"><?php echo get_phrase("Coming soon "); ?>!</h2>
+            <div class="stores">
+              <a href="#" class="store"><img src="https://i.postimg.cc/QFpGF7SJ/app-store-badge.png" alt="App Store"/></a>
+              <a href="#" class="store"><img src="https://i.postimg.cc/CBxWrQ0c/google-play-badge.png" alt="Google Play"/></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   <!------------------------------------------------------------------------------------------------>
 </main>
 <!-- ========== END MAIN ========== -->
