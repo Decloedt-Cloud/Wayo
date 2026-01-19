@@ -3582,5 +3582,17 @@
     "lesson_updated_successfully": "Les succesvol bijgewerkt",
     "what_will_students_achieve?": "Wat zullen studenten bereiken?",
     "list_specific_skills_and_knowledge_students_will_gain": "Lijst specifieke vaardigheden en kennis op die studenten zullen verwerven",
-    "please_review_all_information_before_submitting._your_course_details_will_be_updated.": "Controleer alle informatie voordat u verzendt. Uw cursusdetails worden bijgewerkt."
+    "please_review_all_information_before_submitting._your_course_details_will_be_updated.": "Controleer alle informatie voordat u verzendt. Uw cursusdetails worden bijgewerkt.",
+    "loading_error": "Laadfout",
+    "json_error": "JSON-fout",
+    "no_community": "Geen community",
+    "no_result": "Geen resultaat",
+    "search_for_a_community": "Zoek een community",
+    "my_communities": "Mijn communities",
+    "member_communities": "Lidmaatschapscommunities",
+    "gemeenschappen": "Gemeenschappen",
+    "dynamic_communities_+_quality_classes_=_learning_that_takes_off!": "Dynamische communities + kwaliteitslessen = leren dat écht van de grond komt!",
+    "language_": "Taal ",
+    "join_as_member": "Word lid",
+    "arabic": "Arabic"
 }

@@ -191,26 +191,27 @@ foreach ($classes as $key => $class) {
                           <?php echo htmlspecialchars($class['nombre_max_membre']); ?> <?php echo get_phrase("Maximum_number") ?>
                         </div>
                         <div class="d-flex gap-2 mt-2">
-                     <button 
-                        class="btn btn-outline-wayo btn-sm flex-fill openClassModal" 
-                        data-bs-toggle="modal" 
+                     <button
+                        class="btn btn-outline-wayo btn-sm flex-fill openClassModal"
+                        data-bs-toggle="modal"
                         data-bs-target="#classModal"
                         data-class-id="<?php echo $class['id']; ?>"
                         data-student-id="<?php echo $student_id; ?>"
                         data-currency="<?php echo $currencies; ?>"
                         data-class-price="<?php echo $class['price']; ?>"
-                        data-class-enrolled="<?php 
+                        data-class-enrolled="<?php
                             echo $this->db->get_where('enrols', [
                                 'student_id' => $student_id,
                                 'school_id' => $school_id,
                                 'class_id' => $class['id']
-                            ])->num_rows(); 
+                            ])->num_rows();
                         ?>"
                         data-school-id="<?php echo $school_id; ?>"
                         data-community-status="<?php echo $community_status; ?>"
                         data-school-price="<?php echo $school_price_ttc; ?>"
                         data-school-currency="<?php echo $settings_data['system_currency']; ?>"
                         data-is-logged-in="<?php echo $is_logged_in ? '1' : '0'; ?>"
+                        data-user-role="<?php echo $this->session->userdata('admin_login') == 1 ? 'admin' : ($this->session->userdata('teacher_login') == 1 ? 'teacher' : ''); ?>"
                       >
                         <?php echo get_phrase("See more"); ?>
                       </button>
@@ -359,11 +360,12 @@ foreach ($classes as $key => $class) {
               <a id="dashboard-community-app-button" href="<?php echo route('dashboard'); ?>" class="join-button text-uppercase text-center" style="display:none; text-decoration:none; padding: 10px 20px;"> <?php echo htmlspecialchars(get_phrase("community_app")); ?> </a>
             </div>
 
-            <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
+            <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post" id="join-community-form">
               <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
               <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
               <input type="hidden" name="price" value="<?php echo $school_price_ttc; ?>" />
               <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
+              <input type="hidden" name="user_role" value="" id="user_role_hidden" />
               <button id="join-button" type="submit" class="join-button text-uppercase btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
             </form>
             <button id="login-join-button" class="join-button text-uppercase  btn btn-wayo-join y w-100" style="display:none"> <?php echo htmlspecialchars(get_phrase("join_community")); ?> </button>
@@ -466,17 +468,24 @@ document.addEventListener("DOMContentLoaded", function() {
       const schoolPrice = parseFloat(this.dataset.schoolPrice);
       const schoolCurrency = this.dataset.schoolCurrency;
       const isLoggedIn = this.dataset.isLoggedIn === '1';
+      const userRole = this.dataset.userRole || "<?php echo $this->session->userdata('admin_login') == 1 ? 'admin' : ($this->session->userdata('teacher_login') == 1 ? 'teacher' : ''); ?>";
 
-      if (communityStatus === -1) {
+          if (communityStatus === -1) {
           // Not a member -> Join Community
+          // Toujours utiliser student/join_school (même pour admin/teacher qui rejoignent en tant que member)
           const form = document.createElement('form');
-          form.action = base_url + "student/join_school/assigned/" + schoolId;
-          // form.action = base_url + "Student/payment/community/" + schoolId;
+          let joinUrl = base_url + "student/join_school/assigned/" + schoolId;
+          form.action = joinUrl;
           form.method = 'post';
-          
+
           let btnClass = "btn btn-wayo fw-bold";
           if (!isLoggedIn) {
              btnClass += " join-community-login-popup";
+          }
+          // Changer le texte selon le rôle
+          let buttonText = "<?php echo get_phrase('join_community'); ?>";
+          if (userRole === 'admin' || userRole === 'teacher') {
+            buttonText = "<?php echo get_phrase('join_as_member'); ?>";
           }
 
           form.innerHTML = `
@@ -484,7 +493,8 @@ document.addEventListener("DOMContentLoaded", function() {
             <input type="hidden" name="school_id" value="${schoolId}">
             <input type="hidden" name="price" value="${schoolPrice}">
             <input type="hidden" name="currency" value="${schoolCurrency}">
-            <button type="submit" class="${btnClass}"><?php echo get_phrase('join_community'); ?></button>
+            <input type="hidden" name="user_role" value="${userRole}">
+            <button type="submit" class="${btnClass}">${buttonText}</button>
           `;
           container.appendChild(form);
           
@@ -615,7 +625,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
   }
-
   // l’événement sur tous les boutons
   popupBtns.forEach(btn => {
     btn.addEventListener("click", function(e) {
@@ -684,6 +693,9 @@ document.querySelectorAll('.class-card').forEach(card => {
 
 <script>
   $(document).ready(function() {
+    // Variable pour stocker le rôle de l'utilisateur dans cette communauté
+    var userRoleInThisSchool = null;
+    
     function updateButton() {
       $.ajax({
         url: "<?php echo base_url('home/check_student_status_ajax/' . $school_id); ?>",
@@ -695,6 +707,8 @@ document.querySelectorAll('.class-card').forEach(card => {
 
           var loginButton = $("#login-join-button");
           var dashboardCommunityAppButton = $("#dashboard-community-app-button");
+          var form = $("#join-community-form");
+          var userRoleHidden = $("#user_role_hidden");
 
           if (response.status === null) {
             loginButton.show();
@@ -704,20 +718,32 @@ document.querySelectorAll('.class-card').forEach(card => {
             loginButton.hide();
             button.show();
             if (response.status == 1) {
-              button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('enrolled')); ?>");
+              // L'utilisateur fait partie de cette communauté (admin, teacher ou membre approuvé)
+              button.hide(); // Cacher le bouton join
               dashboardCommunityAppButton.show();
+              
+              // Stocker le rôle pour le clic sur Community App
+              userRoleInThisSchool = response.role_in_this_school || response.user_role || 'student';
+              
             } else {
               button.show();
               dashboardCommunityAppButton.hide();
               if (response.status == 0) {
                 button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('pending')); ?>");
               } else if (response.status == 2) {
-                button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
+                // Si admin ou teacher d'une AUTRE communauté, montrer "join as a member"
+                if (response.user_role === 'admin' || response.user_role === 'teacher') {
+                  button.prop("disabled", false)
+                        .text("<?php echo htmlspecialchars(get_phrase('join_as_member')); ?>")
+                        .data("join-as-member", true);
+                  // Garder l'action vers student/join_school
+                  form.attr("action", base_url + "student/join_school/assigned/<?php echo $school_id; ?>");
+                  userRoleHidden.val(response.user_role);
+                } else {
+                  button.prop("disabled", true).text("<?php echo htmlspecialchars(get_phrase('no_student_account')); ?>");
+                }
               } else {
                 button.prop("disabled", false).text("<?php echo htmlspecialchars(get_phrase('join_community')); ?>");
-                // button_paye.prop("disabled", false).text("<?php // echo htmlspecialchars(get_phrase('join_community')); 
-                                                              ?>");
-
 
                 $(".btn-outline-wayo-join, #paye-button").each(function() {
                   $(this).prop("disabled", false)
@@ -732,6 +758,39 @@ document.querySelectorAll('.class-card').forEach(card => {
         }
       });
     }
+    
+    // Gérer le clic sur le bouton Community App pour switcher vers cette communauté
+    $("#dashboard-community-app-button").on("click", function(e) {
+      e.preventDefault();
+      
+      var schoolId = "<?php echo $school_id; ?>";
+      var role = userRoleInThisSchool || 'student';
+      
+      // Switcher vers cette communauté puis rediriger
+      $.ajax({
+        url: "<?php echo site_url('home/switch_community_role'); ?>",
+        method: "POST",
+        dataType: "json",
+        data: {
+          school_id: schoolId,
+          role: role,
+          <?php echo $this->security->get_csrf_token_name(); ?>: "<?php echo $this->security->get_csrf_hash(); ?>"
+        },
+        success: function(response) {
+          if (response.status === 'success') {
+            window.location.href = response.redirect_url;
+          } else {
+            // En cas d'erreur, rediriger quand même vers le dashboard
+            window.location.href = "<?php echo route('dashboard'); ?>";
+          }
+        },
+        error: function() {
+          // En cas d'erreur, rediriger vers le dashboard
+          window.location.href = "<?php echo route('dashboard'); ?>";
+        }
+      });
+    });
+    
     updateButton();
     setInterval(updateButton, 5000);
   });

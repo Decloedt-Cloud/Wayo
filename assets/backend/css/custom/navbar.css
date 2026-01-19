@@ -667,6 +667,11 @@ body[data-leftbar-compact-mode=condensed]:not(.authentication-bg)
         color: #10B981;
     }
 
+    .role-badge.student {
+        background-color: #E3F2FD !important;
+        color: #1976D2;
+    }
+
     .menu-divider {
         border: none;
         border-top: 1px solid #eeeeee;

@@ -859,21 +859,22 @@ class Crud_model extends CI_Model
 		$user_id = $this->session->userdata('user_id');
 		$role = $this->db->get_where('users', array('id' => $user_id))->row('role');
 		if ($role == "student") {
-			$student_datas = $this->db->get_where('students', array('user_id' => $user_id))->result_array();
-			$all_event_calendars = array();
-
-			foreach ($student_datas as $student_data) {
-				$enrols_datas = $this->db->get_where('enrols', array('student_id' => $student_data['id'], 'school_id' => $student_data['school_id']))->num_rows();
-				if ($enrols_datas > 0) {
+			// Use active school_id from session (users.school_id)
+			$school_id = $this->school_id;
+			// Verify student is enrolled in this school
+			$student = $this->db->get_where('students', array('user_id' => $user_id, 'school_id' => $school_id))->row();
+			if ($student) {
+				$enrols_count = $this->db->get_where('enrols', array('student_id' => $student->id, 'school_id' => $school_id))->num_rows();
+				if ($enrols_count > 0) {
 					$event_calendars = $this->db->get_where('announcement', array(
-						'school_id' => $student_data['school_id'],
+						'school_id' => $school_id,
 						'session' => $this->active_session
 					))->result_array();
-
-					$all_event_calendars = array_merge($all_event_calendars, $event_calendars);
+					return json_encode($event_calendars);
 				}
 			}
-			return json_encode($all_event_calendars);
+			// If not enrolled in active school, return empty array
+			return json_encode(array());
 		} else {
 			$school_id = $this->db->get_where('users', array('id' => $user_id))->row('school_id');
 			$event_calendars = $this->db->get_where('announcement', array('school_id' => $school_id, 'session' => $this->active_session))->result_array();

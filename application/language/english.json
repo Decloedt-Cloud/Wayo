@@ -3570,7 +3570,7 @@
     "pets": "Pets",
     "travel": "Travel",
     "other_": "Other ",
-    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ your calendar is empty<br>to see events, join a class or wait for your registration to be validated.",
+    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Your calendar is empty<br>to see events, join a class or wait for your registration to be validated.",
     "add_first_section": "Add first section",
     "import_from_pdf": "Import from pdf",
     "add_manually": "Add manually",
@@ -3889,5 +3889,13 @@
     "warning_lesson_has_content": "Warning lesson has content",
     "generating_ai_content_will_overwrite_current_lesson_content": "Generating ai content will overwrite current lesson content",
     "yes_overwrite_it": "Yes overwrite it",
-    "lesson_updated_successfully": "Lesson updated successfully"
+    "lesson_updated_successfully": "Lesson updated successfully",
+    "loading_error": "Loading error",
+    "json_error": "Json error",
+    "no_community": "No community",
+    "no_result": "No result",
+    "search_for_a_community": "Search for a community",
+    "my_communities": "My communities",
+    "member_communities": "Member communities",
+    "join_as_member": "Join as member"
 }

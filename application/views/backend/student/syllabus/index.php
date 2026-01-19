@@ -18,27 +18,9 @@
                 <div class="card-body">
                     <div class="row mt-3">
                         <div class="row mb-3">
-                    <div class="col-md-2 mb-1"></div>
-                    
+                    <div class="col-md-4 mb-1"></div>
+
                 <div class="col-md-3 mb-1">
-                            <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
-                                    <option value=""><?php echo get_phrase('select_a_schools'); ?></option>                                      
-                                      <?php 
-                                        $user_id   = $this->session->userdata('user_id');
-                          
-                                        $schools =  $this->db->select('*,schools.id as id');
-                                        $this->db->from('schools');
-                                        $this->db->join('students', 'schools.id = students.school_id', 'left');
-                                        $this->db->where('students.user_id', $user_id);
-                                        $query = $this->db->get()->result_array();
-                                        ?>
-                                        <?php foreach ($query as $school): ?>
-                                            <option value="<?php echo $school['id']; ?>" <?php if($selected_school_id == $school['id']) echo 'selected'; ?>>   <?php echo  $school['name']; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                
-                </div>
-                    <div class="col-md-3 mb-1">
                         <select name="class" id="class_id_syllabus" class="form-control"   required>
 
                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
@@ -63,6 +45,12 @@
 
 $('document').ready(function(){
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id']);
+
+    // Charger automatiquement les classes de l'école active et sélectionner "all"
+    var active_school_id = '<?php echo school_id(); ?>';
+    if(active_school_id) {
+        schoolWiseClasse(active_school_id);
+    }
 });
 
 
@@ -96,6 +84,9 @@ function schoolWiseClasse(school_id) {
         url: "<?php echo route('academy/list/'); ?>"+school_id,
         success: function(response){
             $('#class_id_syllabus').html(response);
+            // Sélectionner automatiquement "all" et charger les syllabus
+            $('#class_id_syllabus').val('all');
+            showAllSyllabuses();
         }
     });
 }

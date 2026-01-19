@@ -3539,5 +3539,13 @@
     "warning_lesson_has_content": "تحذير: الدرس يحتوي على محتوى",
     "generating_ai_content_will_overwrite_current_lesson_content": "إنشاء محتوى بالذكاء الاصطناعي سيؤدي إلى الكتابة فوق محتوى الدرس الحالي",
     "yes_overwrite_it": "نعم، استبدله",
-    "lesson_updated_successfully": "تم تحديث الدرس بنجاح"
+    "lesson_updated_successfully": "تم تحديث الدرس بنجاح",
+    "loading_error": "خطأ في التحميل",
+    "json_error": "خطأ في JSON",
+    "no_community": "لا يوجد مجتمع",
+    "no_result": "لا توجد نتائج",
+    "search_for_a_community": "ابحث عن مجتمع",
+    "my_communities": "مجتمعاتي",
+    "member_communities": "مجتمعات العضوية",
+    "join_as_member": "الانضمام كعضو"
 }

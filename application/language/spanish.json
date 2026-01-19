@@ -3577,5 +3577,13 @@
     "warning_lesson_has_content": "Advertencia: la lección ya tiene contenido",
     "generating_ai_content_will_overwrite_current_lesson_content": "Generar contenido con IA sobrescribirá el contenido actual de la lección",
     "yes_overwrite_it": "Sí, sobrescribir",
-    "lesson_updated_successfully": "Lección actualizada con éxito"
+    "lesson_updated_successfully": "Lección actualizada con éxito",
+    "loading_error": "Error de carga",
+    "json_error": "Error de JSON",
+    "no_community": "No hay comunidad",
+    "no_result": "Sin resultados",
+    "search_for_a_community": "Buscar una comunidad",
+    "my_communities": "Mis comunidades",
+    "member_communities": "Comunidades de las que soy miembro",
+    "join_as_member": "Unirse como miembro"
 }

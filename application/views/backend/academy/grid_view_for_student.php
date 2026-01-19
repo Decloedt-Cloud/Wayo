@@ -1,6 +1,8 @@
 <?php
 $user_id = $this->session->userdata('user_id');
-$selected_school_id = $selected_school_id ?? 'all';
+$active_school_id = $this->session->userdata('active_school_id');
+// Forcer l'utilisation de l'école active pour l'étudiant
+$selected_school_id = $active_school_id ?? $selected_school_id ?? 'all';
 $selected_class_id = $selected_class_id ?? 'all';
 $selected_user_id = $selected_user_id ?? 'all';
 ?>
@@ -21,27 +23,6 @@ $selected_user_id = $selected_user_id ?? 'all';
         <div class="main-card mb-3">
             <div class="card-body">
                 <form class="row justify-content-center mb-4" action="javascript:void(0)">
-                    <!-- Sélection école -->
-                    <div class="col-md-2 mb-1">
-                        <label><?= get_phrase('schools'); ?></label>
-                        <select class="form-control" name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
-                            <option value="all" <?= $selected_school_id == 'all' ? 'selected' : ''; ?>><?= get_phrase('all'); ?></option>
-                            <?php
-                            $schools = $this->db->select('schools.id, schools.name')
-                                ->from('schools')
-                                ->join('students', 'students.school_id = schools.id', 'left')
-                                ->where('students.user_id', $user_id)
-                                ->group_by('schools.id')
-                                ->get()->result_array();
-
-                            foreach ($schools as $school): ?>
-                                <option value="<?= $school['id']; ?>" <?= $selected_school_id == $school['id'] ? 'selected' : ''; ?>>
-                                    <?= $school['name']; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
                     <!-- Sélection classe -->
                     <div class="col-md-2 mb-1">
                         <label><?= get_phrase('classes'); ?></label>

@@ -10,6 +10,68 @@
 }
 </style>
 
+<style>
+.menu-section-title {
+    padding: 10px 15px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.menu-section-title i {
+    font-size: 12px;
+}
+
+.menu-section {
+    padding-bottom: 4px;
+}
+
+.community-count {
+    margin-left: auto;
+    background: #e9ecef;
+    color: #6c757d;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.menu-search {
+    padding: 10px 15px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 35px 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    border-color: #FF8A3D;
+    box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 12px;
+    pointer-events: none;
+}
+</style>
+
 <?php
 $user_id = $this->session->userdata('user_id');
 $active_school_id = $this->session->userdata('active_school_id');
@@ -18,8 +80,18 @@ $active_role = $this->session->userdata('role');
 $current_name = '';
 $current_role = '';
 
-// Récupère le nom de la communauté
-if ($active_school_id) {
+// Vérifier si l'utilisateur appartient vraiment à l'école active
+$user_belongs_to_school = false;
+if ($active_school_id && $user_id) {
+    $user_school_check = $this->db->where('user_id', $user_id)
+        ->where('school_id', $active_school_id)
+        ->get('user_schools')
+        ->row();
+    $user_belongs_to_school = !empty($user_school_check);
+}
+
+// Récupère le nom de la communauté SEULEMENT si l'utilisateur y appartient
+if ($active_school_id && $user_belongs_to_school) {
     $school = $this->db->select('name as community_name')->from('schools')->where('id', $active_school_id)->get()->row();
     if ($school) {
         $current_name = $school->community_name;
@@ -30,6 +102,12 @@ if ($active_school_id) {
         $current_role = ucfirst($user_school->role);
     } elseif ($active_role) {
         $current_role = ucfirst($active_role);
+    }
+} else {
+    // L'utilisateur n'appartient pas à cette école, réinitialiser active_school_id
+    if ($active_school_id && !$user_belongs_to_school && strtolower($active_role) === 'student') {
+        $this->session->set_userdata('active_school_id', null);
+        $active_school_id = null;
     }
 }
 ?>
@@ -158,28 +236,63 @@ if ($active_school_id) {
 
         <div class="app-search d-flex align-items-center flex-wrap gap-3 pt-1 mt-2">
             <!-- Community Switcher -->
-            <?php if (strtolower($this->session->userdata('role')) !== 'superadmin'): ?>
+            <?php 
+            // Vérifier si l'utilisateur a rejoint au moins une communauté APPROUVÉE
+            $user_has_community = false;
+            if ($user_id) {
+                // Récupérer TOUTES les communautés de l'utilisateur
+                $user_schools = $this->db->where('user_id', $user_id)
+                    ->where('school_id IS NOT NULL', null, false)
+                    ->get('user_schools')
+                    ->result();
+                
+                if (!empty($user_schools)) {
+                    foreach ($user_schools as $user_school) {
+                        $role_in_school = strtolower($user_school->role ?? 'student');
+                        
+                        if ($role_in_school === 'admin' || $role_in_school === 'teacher') {
+                            // Admin ou Teacher - pas besoin de vérifier le status
+                            $user_has_community = true;
+                            break; // Une communauté valide trouvée, on arrête
+                        } else if ($role_in_school === 'student') {
+                            // Vérifier si le student est approuvé (status = 1) dans cette communauté
+                            $student_approved = $this->db->where('user_id', $user_id)
+                                ->where('school_id', $user_school->school_id)
+                                ->where('status', 1)
+                                ->get('students')
+                                ->row();
+                            if (!empty($student_approved)) {
+                                $user_has_community = true;
+                                break; // Une communauté valide trouvée, on arrête
+                            }
+                        }
+                    }
+                }
+            }
+            ?>
+            <?php if (strtolower($this->session->userdata('role')) !== 'superadmin' && $user_has_community): ?>
                 <div class="community-switcher" id="community-switcher">
                     <button class="switcher-trigger" id="community-trigger">
                         <span class="current-community" id="current-community-display">
                             <?php
-                            $role = strtolower($this->session->userdata('role'));
-                            $school_id = $this->session->userdata('active_school_id');
+                            // Utiliser les variables déjà calculées
+                            $display_name = !empty($current_name) ? $current_name : get_phrase('select_community');
+                            $display_role = !empty($current_role) ? $current_role : '';
                             ?>
-                            <?php if ($role === 'student'): ?>
-                                <span class="current-role"><?php echo get_phrase("member"); ?></span>
-                            <?php else: ?>
+                            <?php echo htmlspecialchars($display_name); ?>
+                            <?php if (!empty($display_role)): ?>
+                            <span class="current-role">
                                 <?php
-                                $school_name = 'Communauté inconnue';
-                                if ($active_school_id) {
-                                    $school = $this->db->select('name')->get_where('schools', ['id' => $active_school_id])->row();
-                                    if ($school) $school_name = $school->name;
+                                $role_lower = strtolower($display_role);
+                                if ($role_lower === 'student') {
+                                    echo get_phrase("member");
+                                } elseif ($role_lower === 'teacher') {
+                                    echo get_phrase("Mentor");
+                                } else {
+                                    echo $display_role;
                                 }
                                 ?>
-                                <?php echo htmlspecialchars($school_name); ?>
-                                <span class="current-role">
-                                    <?php echo $role === 'teacher' ? 'Mentor' : ucfirst($role); ?>
-                                </span>
+                            </span>
                             <?php endif; ?>
                         </span>
                         <i class="fas fa-chevron-down arrow-icon"></i>
@@ -189,10 +302,6 @@ if ($active_school_id) {
                         <div class="menu-list" id="community-list">
                         </div>
                         <hr class="menu-divider">
-                        <button class="menu-item action-item" id="switch-member-btn">
-                            <i class="fas fa-user-circle"></i>
-                            <?php echo get_phrase("switch_to_member_account"); ?>
-                        </button>
                         <button class="menu-item action-item create-item" id="open-create-modal-sidebar">
                             <i class="fas fa-plus"></i>
                             <?php echo get_phrase("create_community"); ?>
@@ -258,6 +367,24 @@ if ($active_school_id) {
 <script type="text/javascript">
     let CURRENT_USER_ROLE = '<?php echo strtolower($this->session->userdata('role')); ?>';
     const ACTIVE_SCHOOL_ID = '<?php echo $active_school_id; ?>';
+    
+    // Traductions
+    const TRANSLATIONS = {
+        mentor: '<?php echo get_phrase("Mentor"); ?>',
+        admin: '<?php echo get_phrase("Admin"); ?>',
+        superadmin: '<?php echo get_phrase("Superadmin"); ?>',
+        member: '<?php echo get_phrase("member"); ?>',
+        loadingError: '<?php echo get_phrase("loading_error"); ?>',
+        serverError: '<?php echo get_phrase("server_error"); ?>',
+        accessDenied: '<?php echo get_phrase("access_denied"); ?>',
+        jsonError: '<?php echo get_phrase("json_error"); ?>',
+        invalidResponse: '<?php echo get_phrase("invalid_server_response"); ?>',
+        noCommunity: '<?php echo get_phrase("No_community"); ?>',
+        noResult: '<?php echo get_phrase("No_result"); ?>'
+    };
+    
+    // Stocker toutes les communautés pour la recherche
+    let allCommunities = [];
 
     let csrfName = '<?= $this->security->get_csrf_token_name(); ?>';
     let csrfHash = '<?= $this->security->get_csrf_hash(); ?>';
@@ -368,51 +495,162 @@ document.addEventListener('DOMContentLoaded', function() {
             success: function(response) {
                 let res = typeof response === 'string' ? JSON.parse(response) : response;
                 if (res.status === 'success' && res.data.length > 0) {
-                    renderCommunities(res.data);
+                    // Stocker toutes les communautés pour la recherche
+                    allCommunities = res.data;
+                    // Créer la structure initiale avec la barre de recherche
+                    createMenuStructure();
+                    // Afficher les communautés
+                    renderCommunitiesList(allCommunities);
                 } else {
-                    listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
+                    allCommunities = [];
+                    listContainer.innerHTML = '<div class="p-3 text-center text-muted">' + TRANSLATIONS.noCommunity + '</div>';
                 }
             },
             error: function() {
-                listContainer.innerHTML = '<div class="p-3 text-center text-danger">Erreur de chargement</div>';
+                listContainer.innerHTML = '<div class="p-3 text-center text-danger">' + TRANSLATIONS.loadingError + '</div>';
             }
         });
     }
 
-    // Rendu HTML des communautés
-    function renderCommunities(communities) {
-        const validRoles = ['admin', 'teacher', 'superadmin'];
-        const filtered = communities.filter(c => validRoles.includes(c.role.toLowerCase()));
+    // Créer la structure du menu avec la barre de recherche (une seule fois)
+    function createMenuStructure() {
+        listContainer.innerHTML = `
+            <div class="menu-search">
+                <input type="text" 
+                       class="search-input" 
+                       placeholder="<?php echo get_phrase("Search_for_a_community"); ?>..." 
+                       id="community-search-input"
+                       autocomplete="off">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="communities-content"></div>
+        `;
+        
+        // Attacher l'événement de recherche
+        setupSearchInput();
+    }
 
-        if (filtered.length === 0) {
-            listContainer.innerHTML = '<div class="p-3 text-center text-muted">Aucune communauté</div>';
-            return;
+    // Rendu de la liste des communautés (sans recréer la barre de recherche)
+    function renderCommunitiesList(communities, searchTerm = '') {
+        const contentContainer = document.getElementById('communities-content');
+        if (!contentContainer) return;
+
+        const validRoles = ['admin', 'teacher', 'superadmin', 'student'];
+        const filtered = communities.filter(c => validRoles.includes(c.role.toLowerCase()));
+        
+        // Filtrer par terme de recherche
+        const searchFiltered = searchTerm 
+            ? filtered.filter(c => c.community_name.toLowerCase().includes(searchTerm.toLowerCase()))
+            : filtered;
+
+        let html = '';
+
+        if (searchFiltered.length === 0) {
+            html = '<div class="p-3 text-center text-muted">' + 
+                   (searchTerm ? TRANSLATIONS.noResult : TRANSLATIONS.noCommunity) + 
+                   '</div>';
+        } else {
+            // Séparer les communautés en deux groupes
+            const adminTeacherCommunities = searchFiltered.filter(c => 
+                ['admin', 'teacher', 'superadmin'].includes(c.role.toLowerCase())
+            );
+            const studentCommunities = searchFiltered.filter(c => 
+                c.role.toLowerCase() === 'student'
+            );
+
+            // Section Admin/Teacher/Mentor
+            if (adminTeacherCommunities.length > 0) {
+                html += `
+                    <div class="menu-section">
+                        <div class="menu-section-title">
+                            <i class="fas fa-briefcase"></i> <?php echo get_phrase("My_communities"); ?>
+                            <span class="community-count">${adminTeacherCommunities.length}</span>
+                        </div>
+                `;
+                
+                html += adminTeacherCommunities.map(c => {
+                    const roleLower = c.role.toLowerCase();
+
+                    let roleClass = roleLower;
+                    if (roleLower === 'teacher') roleClass = 'teacher';
+                    if (roleLower === 'admin') roleClass = 'admin';
+                    if (roleLower === 'superadmin') roleClass = 'superadmin';
+
+                    let roleLabel = roleLower === 'teacher' ? TRANSLATIONS.mentor :
+                                    roleLower === 'admin' ? TRANSLATIONS.admin :
+                                    roleLower === 'superadmin' ? TRANSLATIONS.superadmin :
+                                    c.role;
+
+                    const isSelected = c.is_active === true;
+
+                    return `
+                        <button class="menu-item community-item ${isSelected ? 'selected' : ''}" 
+                                data-school-id="${c.school_id}" 
+                                data-role="${c.role}">
+                            <span>${c.community_name}</span>
+                            <span class="role-badge ${roleClass}">${roleLabel}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                html += '</div>';
+
+                // Ajouter un séparateur s'il y a aussi des communautés student
+                if (studentCommunities.length > 0) {
+                    html += '<hr class="menu-divider">';
+                }
+            }
+
+            // Section Membre (Student)
+            if (studentCommunities.length > 0) {
+                html += `
+                    <div class="menu-section">
+                        <div class="menu-section-title">
+                            <i class="fas fa-user"></i> <?php echo get_phrase("Member_communities"); ?>
+                            <span class="community-count">${studentCommunities.length}</span>
+                        </div>
+                `;
+
+            html += studentCommunities.map(c => {
+                const roleLower = c.role.toLowerCase();
+
+                let roleClass = 'student';
+                let roleLabel = TRANSLATIONS.member;
+
+                const isSelected = c.is_active === true;
+
+                    return `
+                        <button class="menu-item community-item ${isSelected ? 'selected' : ''}" 
+                                data-school-id="${c.school_id}" 
+                                data-role="${c.role}">
+                            <span>${c.community_name}</span>
+                            <span class="role-badge ${roleClass}">${roleLabel}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                html += '</div>';
+            }
         }
 
-        listContainer.innerHTML = filtered.map(c => {
-            const roleLower = c.role.toLowerCase();
+        contentContainer.innerHTML = html;
+    }
 
-            let roleClass = roleLower;
-            if (roleLower === 'teacher') roleClass = 'teacher';
-            if (roleLower === 'admin') roleClass = 'admin';
-            if (roleLower === 'superadmin') roleClass = 'superadmin';
+    // Configuration de l'input de recherche
+    function setupSearchInput() {
+        const searchInput = document.getElementById('community-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value;
+                // Filtrer les communautés sans recréer la barre de recherche
+                renderCommunitiesList(allCommunities, searchTerm);
+            });
+        }
+    }
 
-            let roleLabel = roleLower === 'teacher' ? 'Mentor' :
-                            roleLower === 'admin' ? 'Admin' :
-                            roleLower === 'superadmin' ? 'Superadmin' :
-                            c.role;
-
-            const isSelected = c.is_active === true;
-
-            return `
-                <button class="menu-item community-item ${isSelected ? 'selected' : ''}" 
-                        data-school-id="${c.school_id}" 
-                        data-role="${c.role}">
-                    <span>${c.community_name}</span>
-                    <span class="role-badge ${roleClass}">${roleLabel}</span>
-                </button>
-            `;
-        }).join('');
+    // Ancienne fonction pour compatibilité (maintenant utilise renderCommunitiesList)
+    function renderCommunities(communities, searchTerm = '') {
+        renderCommunitiesList(communities, searchTerm);
     }
 
     // Ouvrir / fermer le dropdown
@@ -446,39 +684,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.removeEventListener('scroll', closeMenuOnScroll);
     }
 
-    // Switch to Member
-    document.getElementById('switch-member-btn')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: '<?php echo site_url("home/switch_to_member_account"); ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: getCsrfData(),
-            success: function(response) {
-                if (typeof response === 'string') {
-                    try { response = JSON.parse(response); } 
-                    catch (e) { alert('Réponse invalide du serveur'); return; }
-                }
-
-                if (response.csrf?.csrfHash) updateCsrfHash(response.csrf.csrfHash);
-
-                if (response.status === 'success') {
-                    document.getElementById('current-community-display').innerHTML =
-                        '<span class="current-role">Member</span>';
-
-                    CURRENT_USER_ROLE = 'student';
-                    window.dispatchEvent(new Event('roleSwitched'));
-                    updateSwitchToMemberButtonVisibility();
-                    window.location.replace(response.redirect_url);
-                } else {
-                    toastr.error(response.message);
-                }
-            },
-            error: function(xhr, status, err) {
-                toastr.error('Error');
-            }
-        });
-    });
+    // Switch to Member - L'ancien gestionnaire est remplacé par updateSwitchToMemberButton
+    // qui est appelé automatiquement lors du chargement des communautés
 
     // Clic sur une communauté
     listContainer.addEventListener('click', function(e) {
@@ -496,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function() {
             success: function(response) {
                 if (typeof response === 'string') {
                     try { response = JSON.parse(response); } 
-                    catch (e) { alert('Erreur JSON'); return; }
+                    catch (e) { alert(TRANSLATIONS.jsonError); return; }
                 }
 
                 if (response.csrf?.csrfHash) updateCsrfHash(response.csrf.csrfHash);
@@ -504,19 +711,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.status === 'success') {
                     window.location.replace(response.redirect_url);
                 } else {
-                    toastr.error(response.message || 'Accès refusé');
+                    toastr.error(response.message || TRANSLATIONS.accessDenied);
                 }
             },
-            error: function() { toastr.error('Erreur serveur'); }
+            error: function() { toastr.error(TRANSLATIONS.serverError); }
         });
 
         menu.classList.remove('show');
         isOpen = false;
-    });
+    }, true); // Utiliser le mode capture pour gérer les événements dans le contenu dynamique
 
     // Fermer si clic dehors
     document.addEventListener('click', function(e) {
         const switcher = document.getElementById('community-switcher');
+        
+        // Fermer le menu principal
         if (!switcher.contains(e.target)) {
             if (isOpen) {
                 menu.classList.remove('show');
@@ -531,18 +740,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         document.getElementById('createCommunityModal').classList.add('show');
     });
-
-    function updateSwitchToMemberButtonVisibility() {
-        const switchBtn = document.getElementById('switch-member-btn');
-        if (!switchBtn) return;
-
-        const currentRole = CURRENT_USER_ROLE.toLowerCase();
-        const isMember = currentRole === 'student';
-
-        switchBtn.style.display = isMember ? 'none' : 'flex';
-    }
-
-    updateSwitchToMemberButtonVisibility();
 
 });
 
