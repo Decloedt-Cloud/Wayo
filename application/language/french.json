@@ -3728,5 +3728,7 @@
     "edit_invoice": "Edit invoice",
     "enter_invoice_title": "Enter invoice title",
     "amounts": "Amounts",
-    "une_erreur_s&#039;est_produite_lors_de_la_soumission": "Une erreur s&#039;est produite lors de la soumission"
+    "une_erreur_s&#039;est_produite_lors_de_la_soumission": "Une erreur s&#039;est produite lors de la soumission",
+    "manage_meeting_recordings": "Gérer les enregistrements de réunion",
+    "recording_info": "Info enregistrement"
 }

@@ -3626,5 +3626,9 @@
     "generated_by": "Gegenereerd door",
     "price_excl_tax": "Prijs excl. BTW",
     "excl_tax": "Excl. BTW",
-    "incl_tax": "Incl. BTW"
+    "incl_tax": "Incl. BTW",
+    "manage_meeting_recordings": "Beheer vergaderopnames",
+    "recording_info": "Opname info",
+    "no_recordings_found": "Geen opnames gevonden",
+    "history": "Geschiedenis"
 }

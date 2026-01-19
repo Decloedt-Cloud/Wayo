@@ -1,93 +1,187 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
-
 <?php $grade = $this->db->get_where('grades', array('id' => $param1))->row_array(); ?>
-<form method="POST" class="d-block ajaxForm" action="<?php echo route('grade/update/'.$grade['id']); ?>">
-    <!-- Champ caché pour le jeton CSRF -->
-    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-    
-    <div class="form-row">
-        <div class="form-group mb-2">
-            <label for="grade"><?php echo get_phrase('grade'); ?></label>
-            <input type="text" class="form-control" id="grade" name = "grade" placeholder="<?php echo get_phrase('grade'); ?>" value="<?php echo $grade['name']; ?>" required>
-        </div>
 
-        <div class="form-group mb-2">
-            <label for="grade_point"><?php echo get_phrase('grade_point'); ?></label>
-            <input type="number" class="form-control" id="grade_point" name = "grade_point" placeholder="<?php echo get_phrase('grade_point'); ?>" value="<?php echo $grade['grade_point']; ?>" required>
-        </div>
+<style>
+:root {
+    --form-primary: #6366f1;
+    --form-primary-rgb: 99, 102, 241;
+    --form-success: #10b981;
+    --form-danger: #ef4444;
+    --form-dark: #1e293b;
+    --form-gray: #64748b;
+    --form-light: #f8fafc;
+    --form-border: #e2e8f0;
+    --form-white: #ffffff;
+}
 
-        <div class="form-group mb-2">
-            <label for="mark_from"><?php echo get_phrase('mark_from'); ?></label>
-            <input type="number" class="form-control" id="mark_from" name = "mark_from" placeholder="<?php echo get_phrase('mark_from'); ?>" value="<?php echo $grade['mark_from']; ?>" required>
-        </div>
+.grade-form-container { padding: 0.5rem; }
+.grade-form-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 2px solid var(--form-border); }
+.grade-form-icon { width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--form-primary), #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: white; box-shadow: 0 6px 16px rgba(var(--form-primary-rgb), 0.3); }
+.grade-form-title { flex: 1; }
+.grade-form-title h3 { margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--form-dark); }
+.grade-form-title p { margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--form-gray); }
 
-        <div class="form-group mb-2">
-            <label for="mark_upto"><?php echo get_phrase('mark_upto'); ?></label>
-            <input type="number" class="form-control" id="mark_upto" name = "mark_upto" placeholder="<?php echo get_phrase('mark_upto'); ?>" value="<?php echo $grade['mark_upto']; ?>" required>
-        </div>
+.grade-form-group { margin-bottom: 1.25rem; }
+.grade-form-label { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--form-dark); }
+.grade-form-label i { color: var(--form-primary); font-size: 1rem; }
+.grade-form-label .required { color: var(--form-danger); }
 
-        <div class="form-group  mb-2">
-            <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_grade'); ?></button>
+.grade-input-wrapper { position: relative; }
+.grade-form-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid var(--form-border); border-radius: 10px; font-size: 0.9375rem; background: var(--form-light); color: var(--form-dark); transition: all 0.2s; }
+.grade-form-input:focus { outline: none; border-color: var(--form-primary); background: var(--form-white); box-shadow: 0 0 0 4px rgba(var(--form-primary-rgb), 0.1); }
+.grade-form-input.is-invalid { border-color: var(--form-danger); background: #fef2f2; }
+.grade-input-icon { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: var(--form-gray); font-size: 1.125rem; }
+
+.grade-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.grade-form-actions { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 2px solid var(--form-border); }
+.grade-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.875rem 1.5rem; border-radius: 12px; font-size: 0.9375rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+.grade-btn-primary { background: linear-gradient(135deg, var(--form-primary), #8b5cf6); color: white; box-shadow: 0 4px 12px rgba(var(--form-primary-rgb), 0.3); }
+.grade-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--form-primary-rgb), 0.4); }
+.grade-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.invalid-feedback { display: block; margin-top: 0.375rem; padding: 0.375rem 0.625rem; background: #fef2f2; border-radius: 6px; font-size: 0.8rem; color: var(--form-danger); }
+
+@media (max-width: 480px) { .grade-form-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="grade-form-container">
+    <div class="grade-form-header">
+        <div class="grade-form-icon">
+            <i class="mdi mdi-pencil"></i>
+        </div>
+        <div class="grade-form-title">
+            <h3><?php echo get_phrase('update_grade'); ?></h3>
+            <p><?php echo get_phrase('edit_grade_details'); ?></p>
         </div>
     </div>
-</form>
+    
+    <form method="POST" class="d-block ajaxForm" action="<?php echo route('grade/update/'.$grade['id']); ?>">
+        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+        
+        <div class="grade-form-group">
+            <label class="grade-form-label">
+                <i class="mdi mdi-alphabet-latin"></i>
+                <span><?php echo get_phrase('grade'); ?></span>
+                <span class="required">*</span>
+            </label>
+            <div class="grade-input-wrapper">
+                <i class="mdi mdi-school-outline grade-input-icon"></i>
+                <input type="text" class="grade-form-input" id="grade" name="grade" value="<?php echo $grade['name']; ?>" required>
+            </div>
+        </div>
+
+        <div class="grade-form-group">
+            <label class="grade-form-label">
+                <i class="mdi mdi-star-circle"></i>
+                <span><?php echo get_phrase('grade_point'); ?></span>
+                <span class="required">*</span>
+            </label>
+            <div class="grade-input-wrapper">
+                <i class="mdi mdi-numeric grade-input-icon"></i>
+                <input type="number" step="0.01" class="grade-form-input" id="grade_point" name="grade_point" value="<?php echo $grade['grade_point']; ?>" required>
+            </div>
+        </div>
+
+        <div class="grade-form-row">
+            <div class="grade-form-group">
+                <label class="grade-form-label">
+                    <i class="mdi mdi-arrow-collapse-right"></i>
+                    <span><?php echo get_phrase('mark_from'); ?></span>
+                    <span class="required">*</span>
+                </label>
+                <div class="grade-input-wrapper">
+                    <i class="mdi mdi-percent grade-input-icon"></i>
+                    <input type="number" class="grade-form-input" id="mark_from" name="mark_from" value="<?php echo $grade['mark_from']; ?>" required>
+                </div>
+            </div>
+
+            <div class="grade-form-group">
+                <label class="grade-form-label">
+                    <i class="mdi mdi-arrow-expand-right"></i>
+                    <span><?php echo get_phrase('mark_upto'); ?></span>
+                    <span class="required">*</span>
+                </label>
+                <div class="grade-input-wrapper">
+                    <i class="mdi mdi-percent grade-input-icon"></i>
+                    <input type="number" class="grade-form-input" id="mark_upto" name="mark_upto" value="<?php echo $grade['mark_upto']; ?>" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grade-form-actions">
+            <button class="grade-btn grade-btn-primary" id="update-btn" type="submit">
+                <i class="mdi mdi-content-save"></i>
+                <span><?php echo get_phrase('update_grade'); ?></span>
+            </button>
+        </div>
+    </form>
+</div>
 
 <script>
-    $(".ajaxForm").validate({}); // Jquery form validation initialization
-    $(".ajaxForm").submit(function(e) {
-        var form = $(this);
-        ajaxSubmit(e, form, showAllGrades);
-        function getCsrfToken() {
-         // Récupérer le nom du token CSRF depuis le champ input caché
-          var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-         // Récupérer la valeur (hash) du token CSRF depuis le champ input caché
-           var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-         // Retourner un objet contenant le nom du token et sa valeur
-         return { csrfName: csrfName, csrfHash: csrfHash };
-      }
+$(document).ready(function() {
+    const gradeInput = $('#grade');
+    const gradePointInput = $('#grade_point');
+    const markFromInput = $('#mark_from');
+    const markUptoInput = $('#mark_upto');
+    const gradeRegex = /^[a-zA-Z0-9 ]+$/;
 
-
- // Soumission du formulaire de logo
- $(".ajaxForm").submit(function(e) {
-    e.preventDefault();
-
-           // Cible uniquement le bouton de ce formulaire
-        var submitButton = $(this).find('button[type="submit"]');
-        var updating_text = "<?php echo get_phrase('updating'); ?>...";
-        
-        // Désactive et met à jour uniquement ce bouton
-        submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+updating_text);
-         // Récupérer le token CSRF avant l'envoi
-         var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
-         const formData = new FormData(this);// Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
-
-    $.ajax({
-        url: $(this).attr('action'),
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'json',
-        success: function (response) {
-            if (response.status) { // Vérifie si la mise à jour a réussi
-                // Met à jour le token CSRF
-                $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-
-                // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
-                setTimeout(function() {
-                  location.reload();
-                }, 3500);// Attendre 3500ms avant de recharger la page
-            } else {
-              error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
-                
-            }
-        },
-        error: function () {
-          error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
+    function showError(input, message) {
+        input.addClass('is-invalid');
+        if (input.parent().find('.invalid-feedback').length === 0) {
+            input.after('<div class="invalid-feedback">' + message + '</div>');
         }
-      });
+    }
+
+    function hideError(input) {
+        input.removeClass('is-invalid');
+        input.parent().find('.invalid-feedback').remove();
+    }
+
+    // Form submission
+    $(".ajaxForm").on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        let isValid = true;
+
+        const gradeVal = gradeInput.val().trim();
+        const gradePointVal = parseFloat(gradePointInput.val());
+        const markFromVal = parseInt(markFromInput.val());
+        const markUptoVal = parseInt(markUptoInput.val());
+
+        if (!gradeVal || !gradeRegex.test(gradeVal)) { showError(gradeInput, '<?php echo addslashes(get_phrase("Invalid_grade")); ?>'); isValid = false; } else { hideError(gradeInput); }
+        if (isNaN(gradePointVal) || gradePointVal < 0) { showError(gradePointInput, '<?php echo addslashes(get_phrase("Invalid_grade_point")); ?>'); isValid = false; } else { hideError(gradePointInput); }
+        if (isNaN(markFromVal) || markFromVal < 0 || markFromVal >= markUptoVal) { showError(markFromInput, '<?php echo addslashes(get_phrase("Invalid_mark_range")); ?>'); isValid = false; } else { hideError(markFromInput); }
+        if (isNaN(markUptoVal) || markUptoVal <= markFromVal) { showError(markUptoInput, '<?php echo addslashes(get_phrase("Invalid_mark_range")); ?>'); isValid = false; } else { hideError(markUptoInput); }
+
+        if (!isValid) return;
+
+        const $btn = $form.find('button[type="submit"]');
+        $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo addslashes(get_phrase("updating")); ?>...');
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    $btn.css({'background': 'linear-gradient(135deg, #10b981, #34d399)'})
+                        .html('<i class="mdi mdi-check-circle"></i> <?php echo addslashes(get_phrase("updated")); ?>!');
+                    toastr.success(response.notification);
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    $btn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo addslashes(get_phrase("update_grade")); ?>');
+                    toastr.error(response.notification || '<?php echo addslashes(get_phrase("action_not_allowed")); ?>');
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo addslashes(get_phrase("update_grade")); ?>');
+                toastr.error('<?php echo addslashes(get_phrase("an_error_occurred")); ?>');
+            }
+        });
     });
-  });
+});
 </script>
-
-

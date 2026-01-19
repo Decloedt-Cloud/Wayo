@@ -1,65 +1,100 @@
 <?php $school_id = school_id(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.css">
-<form method="POST" class="col-md-12 ajaxForm" action="<?php echo route('student/create_excel'); ?>" id = "student_admission_form" enctype="multipart/form-data">
-    <!-- Champ caché pour le jeton CSRF -->
+<form method="POST" class="d-block ajaxForm" action="<?php echo route('student/create_excel'); ?>" id="student_admission_form" enctype="multipart/form-data">
+    <!-- CSRF Token -->
     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
     
-    <div class="row justify-content-md-center">
+    <!-- Info Card -->
+    <div class="ec-info-card">
+        <div class="ec-info-card-icon">
+            <i class="mdi mdi-file-excel"></i>
+        </div>
+        <div class="ec-info-card-content">
+            <h4><?php echo get_phrase('bulk_import_from_excel'); ?></h4>
+            <p><?php echo get_phrase('upload_a_csv_file_to_import_students_in_bulk'); ?></p>
+        </div>
+    </div>
 
-
-        <div class="col-md-8 mt-4">
-            <div class="row">
-                <div class="col-6">
-                    <select name="class_id" id="class_id_excel" class="form-control"  required>
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Class Selection -->
+            <div class="ec-form-group">
+                <label class="ec-form-label">
+                    <i class="mdi mdi-google-classroom"></i>
+                    <span><?php echo get_phrase('class'); ?></span>
+                    <span class="ec-required">*</span>
+                </label>
+                <div class="ec-input-wrapper">
+                    <select name="class_id" id="class_id_excel" class="ec-form-input" required>
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                         <?php foreach($classes as $class){ ?>
                             <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                         <?php } ?>
                     </select>
-                </div>
-                <div class="col-6">
-                    <a href="<?php echo base_url('assets/csv_file/student.generate.csv'); ?>" class="btn btn-success btn-sm mb-1" download><?php echo get_phrase('generate_csv_file'); ?><i class="mdi mdi-download"></i></a>
-                    <button href="#" class="btn1 btn btn-dark btn-sm mb-1 mdi mdi-eye-outline" onclick="largeModal('<?php echo site_url('modal/popup/student/csv_preview'); ?>', 'CSV Format');" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo get_phrase('preview_csv_format'); ?>"></button>
-
+                    <i class="mdi mdi-school ec-input-icon"></i>
                 </div>
             </div>
-            <br>
-            <div class="form-group">
-                <label class="m-0"><?php echo get_phrase('upload').' CSV'; ?></label>
-                <div class="custom-file-upload d-block">
-                    <input type="file" id="csv_file" class="form-control" name="csv_file" required>
+        </div>
+        
+        <div class="col-md-6">
+            <!-- Tools -->
+            <div class="ec-form-group">
+                <label class="ec-form-label">
+                    <i class="mdi mdi-tools"></i>
+                    <span><?php echo get_phrase('tools'); ?></span>
+                </label>
+                <div class="d-flex gap-2">
+                    <a href="<?php echo base_url('assets/csv_file/student.generate.csv'); ?>" class="ec-btn ec-btn-secondary" download style="min-width: auto; flex: 1;">
+                        <i class="mdi mdi-download"></i>
+                        <span><?php echo get_phrase('generate_csv'); ?></span>
+                    </a>
+                    <button type="button" class="ec-btn ec-btn-secondary" onclick="largeModal('<?php echo site_url('modal/popup/student/csv_preview'); ?>', 'CSV Format');" style="min-width: auto;">
+                        <i class="mdi mdi-eye"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-<div class="text-center mt-4">
-                <button type="submit" class="action-btn btn btn-primary btn-modern col-md-4 col-sm-12">
-                    <i class="bi bi-check-circle mdi mdi-file-excel-outline action-btnmdi"></i> <?php echo get_phrase('add_students'); ?>
-                </button>
-            </div>
-</form>
 
+    <!-- File Upload -->
+    <div class="ec-form-group">
+        <label class="ec-form-label">
+            <i class="mdi mdi-cloud-upload"></i>
+            <span><?php echo get_phrase('upload_csv_file'); ?></span>
+            <span class="ec-required">*</span>
+        </label>
+        <div class="ec-input-wrapper">
+            <input type="file" id="csv_file" class="ec-form-input" name="csv_file" required accept=".csv" style="padding-left: 1rem;">
+            <!-- Removed icon for file input as it interferes with the native file picker text -->
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="ec-form-actions justify-content-center">
+        <button type="submit" class="ec-btn ec-btn-primary" id="submit-btn">
+            <i class="mdi mdi-database-import"></i>
+            <span><?php echo get_phrase('import_students'); ?></span>
+        </button>
+    </div>
+</form>
 
 <script>
 $(document).ready(function(){
     initCustomFileUploader();
 
-    // Nouveau code pour gérer la soumission
     $('#student_admission_form').on('submit', function(e) {
         e.preventDefault();
-        var form = $(this);
-        var submitBtn = form.find('button[type="submit"]');
-        var originalText = submitBtn.html();
         
-        // Afficher le spinner
-        submitBtn.html('<i class="mdi mdi-loading mdi-spin"></i> ' + originalText).prop('disabled', true);
+        const btn = $('#submit-btn');
+        const originalBtnHtml = btn.html();
+        
+        btn.prop('disabled', true)
+           .html('<i class="mdi mdi-loading mdi-spin"></i> <span><?php echo get_phrase('importing'); ?>...</span>');
 
-        // Créer FormData pour l'envoi de fichier
         var formData = new FormData(this);
 
         $.ajax({
-            url: form.attr('action'),
+            url: $(this).attr('action'),
             type: 'POST',
             data: formData,
             processData: false,
@@ -67,26 +102,25 @@ $(document).ready(function(){
             dataType: 'json',
             success: function(response) {
                 if(response.type === 'error') {
+                    btn.prop('disabled', false).html(originalBtnHtml);
                     error_notify(response.notification);
                 } else {
+                    btn.removeClass('ec-btn-primary')
+                        .addClass('ec-btn-success')
+                        .html('<i class="mdi mdi-check-circle"></i> <span><?php echo get_phrase('imported'); ?>!</span>');
+                    
                     success_notify(response.notification);
+                    
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
                 }
             },
-            error: function(xhr, status, error) {
-            error_notify("<?php echo get_phrase('an_error_occurred_please_try_again'); ?>");
-               // Debug: afficher l'erreur dans la console
-              // console.error(xhr.responseText);
-             },
-            complete: function() {
-                // Réinitialiser après 3 secondes
-                setTimeout(function() {
-                    submitBtn.html(originalText).prop('disabled', false);
-                    form.trigger("reset");
-                    $('#class_id_excel').val('').trigger('change');
-                }, 3300);
+            error: function(xhr) {
+                btn.prop('disabled', false).html(originalBtnHtml);
+                error_notify("<?php echo get_phrase('an_error_occurred'); ?>");
             }
         });
     });
 });
-
 </script>

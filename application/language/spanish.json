@@ -3617,5 +3617,7 @@
     "generated_by": "Generado por",
     "price_excl_tax": "Precio excl. impuestos",
     "excl_tax": "Excl. impuestos",
-    "incl_tax": "Incl. impuestos"
+    "incl_tax": "Incl. impuestos",
+    "manage_meeting_recordings": "Gestionar grabaciones de reuniones",
+    "recording_info": "Información de grabación"
 }
