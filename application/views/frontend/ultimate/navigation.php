@@ -2,6 +2,41 @@
 <?php
 $logo_light = $this->settings_model->get_logo_light();
 $system_name = get_frontend_settings('website_title');
+
+// Vérifier si l'utilisateur a rejoint au moins une communauté APPROUVÉE (pour afficher ou non le bouton Community App)
+$user_has_community = false;
+$current_user_id = $this->session->userdata('user_id');
+
+if ($current_user_id) {
+    // Récupérer TOUTES les communautés de l'utilisateur
+    $user_schools = $this->db->where('user_id', $current_user_id)
+        ->where('school_id IS NOT NULL', null, false)
+        ->get('user_schools')
+        ->result();
+    
+    if (!empty($user_schools)) {
+        foreach ($user_schools as $user_school) {
+            $role_in_school = strtolower($user_school->role ?? 'student');
+            
+            if ($role_in_school === 'admin' || $role_in_school === 'teacher') {
+                // Admin ou Teacher - pas besoin de vérifier le status
+                $user_has_community = true;
+                break; // Une communauté valide trouvée, on arrête
+            } else if ($role_in_school === 'student') {
+                // Vérifier si le student est approuvé (status = 1) dans cette communauté
+                $student_approved = $this->db->where('user_id', $current_user_id)
+                    ->where('school_id', $user_school->school_id)
+                    ->where('status', 1)
+                    ->get('students')
+                    ->row();
+                if (!empty($student_approved)) {
+                    $user_has_community = true;
+                    break; // Une communauté valide trouvée, on arrête
+                }
+            }
+        }
+    }
+}
 ?>
 <?php include 'application/views/create_community_modal.php'; ?>
 <style>
@@ -860,13 +895,13 @@ $system_name = get_frontend_settings('website_title');
                 <button class="navbar-toggler ms-auto" id="nav-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
                 </button>
-                <?php if ($this->session->userdata('user_id')) { ?>
+                <?php if ($this->session->userdata('user_id') && $user_has_community) { ?>
                     <li class="nav-item navbar-user d-lg-none" style="margin:0 2px; list-style: none;">
                         <a href="<?php echo route('dashboard'); ?>" target="" class="btn btn-login btn-ghost login-toggle w-100 mb-2" style="cursor:pointer !important;">
                             <?php echo get_phrase('community_app'); ?>
                         </a>
                     </li>
-                <?php } else { ?>
+                <?php } elseif (!$this->session->userdata('user_id')) { ?>
                     <li class="nav-item navbar-user" style="list-style: none;">
                         <a id="openLoginBtnM" class="btn btn-login btn-ghost btn-custom w-100 mb-2 login-toggle" style="cursor:pointer !important; text-align:center;">
                             <?php echo get_phrase('Login'); ?>
@@ -950,10 +985,6 @@ $system_name = get_frontend_settings('website_title');
                                         <!-- Rôles injectés par JS -->
                                     </div>
                                     <hr class="menu-divider">
-                                    <button class="menu-item action-item create-item" onclick="switchToMemberAccount()">
-                                        <i class="fas fa-user-circle"></i>
-                                        <span><?php echo get_phrase("switch_to_member_account"); ?></span>
-                                    </button>
                                     <button class="menu-item action-item create-item" id="open-create-community-btn">
                                         <i class="fas fa-plus"></i>
                                         <span><?php echo get_phrase("create_community"); ?></span>
@@ -962,10 +993,11 @@ $system_name = get_frontend_settings('website_title');
                             </div>
                         <?php } ?>
                         <?php if ($this->session->userdata('user_id')) { ?>
-
+                            <?php if ($user_has_community) { ?>
                             <li class="nav-item navbar-user" style="margin:0 2px ; list-style:none">
                                 <a href="<?php echo route('dashboard'); ?>" target="" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"> <?php echo get_phrase('community_app'); ?> </a>
                             </li>
+                            <?php } ?>
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
                                 <div class="user-section">
                                     <span class="text-capitalize align-content-center"><?php echo $this->session->user_name; ?></span>
@@ -1370,7 +1402,6 @@ $system_name = get_frontend_settings('website_title');
                         if (res.status === 'success') {
                             renderRoles(res.roles);
                             updateCurrentLabel(res.roles);
-                            updateSwitchToMemberButton();
                         }
                     }
                 });
@@ -1448,31 +1479,6 @@ $system_name = get_frontend_settings('website_title');
 
             window.addEventListener('resize', positionMenu);
 
-            // === Switch to Member ===
-            window.switchToMemberAccount = function() {
-                const currentUrl = window.location.href;
-
-                $.ajax({
-                    url: '<?php echo site_url("home/switch_to_member_account_front"); ?>',
-                    type: 'POST',
-                    data: {
-                        return_url: currentUrl, // ENVOIE L'URL ACTUELLE
-                        <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
-                    },
-                    success: function(response) {
-                        let res = typeof response === 'string' ? JSON.parse(response) : response;
-                        if (res.status === 'success') {
-                            setTimeout(() => {
-                                window.dispatchEvent(new Event('roleSwitched')); // Met à jour le switcher
-                                window.location.href = res.redirect_url; // Reste sur la page
-                            });
-                        } else {
-                            toastr.error(res.message || 'Erreur');
-                        }
-                    }
-                });
-            };
-
             // === Modal Communauté ===
             const communityModal = new bootstrap.Modal(document.getElementById('communityRoleModal'));
             const communityList = document.getElementById('communityRoleList');
@@ -1534,7 +1540,8 @@ $system_name = get_frontend_settings('website_title');
                     badge.className = `role-badge ${role}`;
                     const roleLabels = {
                         'admin': '<?php echo get_phrase('admin'); ?>',
-                        'teacher': '<?php echo get_phrase('mentor'); ?>'
+                        'teacher': '<?php echo get_phrase('mentor'); ?>',
+                        'student': '<?php echo get_phrase('member'); ?>'
                     };
                     badge.textContent = roleLabels[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1);
 
@@ -1585,22 +1592,8 @@ $system_name = get_frontend_settings('website_title');
 
             // === Recharger après switch ===
             window.addEventListener('roleSwitched', loadUserRoles);
-            window.addEventListener('roleSwitched', updateSwitchToMemberButton);
             document.getElementById('open-create-community-btn')?.addEventListener('click', () => {
                 document.getElementById('createCommunityModal').classList.add('show');
             });
-
-            function updateSwitchToMemberButton() {
-                const switchToMemberBtn = document.querySelector('#community-menu .action-item:first-of-type'); // 1er bouton d'action
-                if (!switchToMemberBtn) return;
-
-                const currentRole = '<?php echo strtolower($this->session->userdata("role")); ?>';
-
-                if (currentRole === 'student') {
-                    switchToMemberBtn.style.display = 'none';
-                } else {
-                    switchToMemberBtn.style.display = 'flex';
-                }
-            }
         });
     </script>

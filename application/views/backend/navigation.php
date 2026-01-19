@@ -8,18 +8,23 @@ if ($user_type == 'parent') {
 // Récupérer le nombre total d'examens non passés pour l'étudiant connecté
 $user_id = $this->session->userdata('user_id');
 $session = active_session();
+// IMPORTANT: Récupérer school_id AVANT de commencer la requête avec jointures
+// pour éviter l'erreur "Column 'id' in where clause is ambiguous"
+$current_school_id = school_id();
 $this->db->select('exams.id');
 $this->db->from('exams');
 $this->db->join('enrols', 'enrols.class_id = exams.class_id ', 'left');
 $this->db->join('students', 'students.id = enrols.student_id', 'left');
 $this->db->where('students.user_id', $user_id);
 $this->db->where('enrols.session', $session);
+// Filtrer par l'école active
+$this->db->where('exams.school_id', $current_school_id);
 // Exclure les examens déjà soumis
 $this->db->where('exams.id NOT IN (SELECT exam_id FROM exam_responses WHERE user_id = ' . $this->db->escape($user_id) . ')', NULL, FALSE);
 $total_exams = $this->db->count_all_results();
-log_message('debug', 'Total exams not yet taken calculated: ' . $total_exams);
+log_message('debug', 'Total exams not yet taken calculated for school_id ' . $current_school_id . ': ' . $total_exams);
 $unread_messages = $this->user_model->get_unread_messages_count($this->session->userdata('user_id'));
-$pending_students = $this->db->get_where('students', ['status' => 0, 'school_id' => school_id()])->num_rows();
+$pending_students = $this->db->get_where('students', ['status' => 0, 'school_id' => $current_school_id])->num_rows();
 $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])->num_rows();
 ?>
 

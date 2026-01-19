@@ -619,14 +619,64 @@ function community_details($school_id = '')
 	{
 		$user_id = $this->session->userdata('user_id');
 		$user_type = $this->session->userdata('user_type');
+		$admin_login = $this->session->userdata('admin_login');
+		$teacher_login = $this->session->userdata('teacher_login');
 
-		if ($user_id && $user_type == "student") {
+		if (!$user_id) {
+			echo json_encode(array('status' => null));
+			return;
+		}
+		
+		// 1. Vérifier si l'utilisateur a un rôle dans CETTE communauté spécifique
+		$user_role_in_school = $this->db->where('user_id', $user_id)
+			->where('school_id', $school_id)
+			->get('user_schools')
+			->row();
+		
+		if ($user_role_in_school) {
+			$role_lower = strtolower($user_role_in_school->role);
+			
+			if ($role_lower === 'admin') {
+				// L'utilisateur est admin de cette communauté → afficher Community App
+				echo json_encode(array('status' => 1, 'user_role' => 'admin', 'role_in_this_school' => 'admin'));
+				return;
+			}
+			
+			if ($role_lower === 'teacher') {
+				// L'utilisateur est teacher de cette communauté → afficher Community App
+				echo json_encode(array('status' => 1, 'user_role' => 'teacher', 'role_in_this_school' => 'teacher'));
+				return;
+			}
+		}
+		
+		// 3. Vérifier si l'utilisateur est membre (student) de CETTE communauté spécifique
+		$student_record = $this->db->get_where('students', [
+			'user_id' => $user_id,
+			'school_id' => $school_id
+		])->row();
+		
+		if ($student_record) {
+			if ($student_record->status == 1) {
+				// Membre approuvé → afficher Community App
+				echo json_encode(array('status' => 1, 'user_role' => 'student', 'role_in_this_school' => 'student'));
+			} else {
+				// En attente d'approbation
+				$current_role = $admin_login ? 'admin' : ($teacher_login ? 'teacher' : 'student');
+				echo json_encode(array('status' => 0, 'user_role' => $current_role));
+			}
+			return;
+		}
+		
+		// 4. L'utilisateur n'est pas membre de cette communauté
+		// Déterminer son rôle actuel pour afficher le bon bouton
+		if ($admin_login || $teacher_login) {
+			// C'est un admin/teacher d'une AUTRE communauté → "Join as member"
+			$user_role = $admin_login ? 'admin' : 'teacher';
+			echo json_encode(array('status' => 2, 'user_role' => $user_role));
+		} else if ($user_type == "student") {
+			// Utilisateur est student mais pas inscrit à cette école
 			$status = $this->user_model->check_student_status($school_id);
 			echo json_encode(array('status' => $status));
-		}
-		else if ($user_id && $user_type !== "student") {
-
-			echo json_encode(array('status' => 2));
 		} else {
 			echo json_encode(array('status' => null));
 		}
@@ -671,28 +721,81 @@ function community_details($school_id = '')
 		$current_role = $this->session->userdata('role'); // Rôle actif
 		$current_school_id = $this->session->userdata('active_school_id');
 
-		$this->db->select('us.school_id, COALESCE(s.name, "Communauté supprimée") as community_name, us.role');
+		// Récupérer toutes les entrées user_schools
+		$this->db->select('us.school_id, s.name as community_name, us.role');
 		$this->db->from('user_schools us');
-		$this->db->join('schools s', 's.id = us.school_id', 'left');
+		$this->db->join('schools s', 's.id = us.school_id', 'inner');
 		$this->db->where('us.user_id', $user_id);
+		$this->db->where('us.school_id IS NOT NULL');
+		$this->db->where('s.id IS NOT NULL');
 		$query = $this->db->get();
 
-		$communities = $query->result_array();
+		$all_communities = $query->result_array();
+		$communities = [];
 
-		// Ajouter un flag "active" pour le frontend
-		foreach ($communities as &$community) {
-			$community['is_active'] = (
-				$community['school_id'] == $current_school_id &&
-				strtolower($community['role']) === strtolower($current_role)
-			);
+		// Filtrer : pour les students, vérifier que le status est 1 (approuvé)
+		foreach ($all_communities as $community) {
+			$role_lower = strtolower($community['role']);
+			
+			if ($role_lower === 'student') {
+				// Vérifier si le student est approuvé dans cette communauté
+				$student_approved = $this->db->where('user_id', $user_id)
+					->where('school_id', $community['school_id'])
+					->where('status', 1)
+					->get('students')
+					->row();
+				
+				if (!empty($student_approved)) {
+					$community['is_active'] = (
+						$community['school_id'] == $current_school_id &&
+						$role_lower === strtolower($current_role)
+					);
+					$communities[] = $community;
+				}
+			} else {
+				// Admin ou Teacher - pas de vérification de status
+				$community['is_active'] = (
+					$community['school_id'] == $current_school_id &&
+					$role_lower === strtolower($current_role)
+				);
+				$communities[] = $community;
+			}
 		}
-		unset($community);
 
 		echo json_encode([
 			'status' => 'success',
 			'data' => $communities,
 			'active_school_id' => $current_school_id,
 			'active_role' => $current_role
+		]);
+	}
+
+	public function get_student_communities()
+	{
+		$user_id = $this->session->userdata('user_id');
+		
+		if (!$user_id) {
+			echo json_encode(['status' => 'error', 'message' => 'not_logged_in']);
+			return;
+		}
+
+		// Récupérer les communautés où l'utilisateur est membre APPROUVÉ (student avec status = 1)
+		$this->db->select('us.school_id, s.name as community_name');
+		$this->db->from('user_schools us');
+		$this->db->join('schools s', 's.id = us.school_id', 'inner');
+		$this->db->join('students st', 'st.school_id = us.school_id AND st.user_id = us.user_id', 'inner');
+		$this->db->where('us.user_id', $user_id);
+		$this->db->where('us.role', 'student');
+		$this->db->where('us.school_id IS NOT NULL');
+		$this->db->where('st.status', 1); // Seulement les étudiants approuvés
+		$query = $this->db->get();
+
+		$student_communities = $query->result_array();
+
+		echo json_encode([
+			'status' => 'success',
+			'data' => $student_communities,
+			'count' => count($student_communities)
 		]);
 	}
 
@@ -1045,7 +1148,8 @@ function community_details($school_id = '')
 			return;
 		}
 
-		$this->db->select('us.role, COUNT(*) as count');
+		// Récupérer les rôles distincts de l'utilisateur
+		$this->db->select('us.role');
 		$this->db->from('user_schools us');
 		$this->db->where('us.user_id', $user_id);
 		$this->db->group_by('us.role');
@@ -1057,19 +1161,35 @@ function community_details($school_id = '')
 			$label = $role_key === 'teacher' ? get_phrase('Mentor') : ucfirst($role_key);
 			if ($role_key === 'student') $label = get_phrase('member');
 
-			$this->db->select('s.id as school_id, s.name as community_name');
-			$this->db->from('user_schools us');
-			$this->db->join('schools s', 's.id = us.school_id');
-			$this->db->where('us.user_id', $user_id);
-			$this->db->where('us.role', $r['role']);
-			$communities = $this->db->get()->result_array();
+			// Pour les students, vérifier que le status est 1 (approuvé)
+			if ($role_key === 'student') {
+				$this->db->select('s.id as school_id, s.name as community_name');
+				$this->db->from('user_schools us');
+				$this->db->join('schools s', 's.id = us.school_id');
+				$this->db->join('students st', 'st.school_id = us.school_id AND st.user_id = us.user_id', 'inner');
+				$this->db->where('us.user_id', $user_id);
+				$this->db->where('us.role', $r['role']);
+				$this->db->where('st.status', 1); // Seulement les étudiants approuvés
+				$communities = $this->db->get()->result_array();
+			} else {
+				// Pour admin/teacher, pas de vérification de status
+				$this->db->select('s.id as school_id, s.name as community_name');
+				$this->db->from('user_schools us');
+				$this->db->join('schools s', 's.id = us.school_id');
+				$this->db->where('us.user_id', $user_id);
+				$this->db->where('us.role', $r['role']);
+				$communities = $this->db->get()->result_array();
+			}
 
-			$result[] = [
-				'role' => $role_key,
-				'label' => $label,
-				'count' => (int)$r['count'],
-				'communities' => $communities
-			];
+			// Ne pas ajouter le rôle si aucune communauté valide
+			if (count($communities) > 0) {
+				$result[] = [
+					'role' => $role_key,
+					'label' => $label,
+					'count' => count($communities),
+					'communities' => $communities
+				];
+			}
 		}
 
 		$current_role = strtolower($this->session->userdata('role') ?? 'student');
@@ -1091,12 +1211,27 @@ function community_details($school_id = '')
 			return;
 		}
 
-		$this->db->select('s.id as school_id, s.name as community_name, us.role');
-		$this->db->from('user_schools us');
-		$this->db->join('schools s', 's.id = us.school_id');
-		$this->db->where('us.user_id', $user_id);
-		$this->db->where('us.role', ucfirst($role));
-		$communities = $this->db->get()->result_array();
+		$role_key = strtolower($role);
+		
+		// Pour les students, vérifier que le status est 1 (approuvé)
+		if ($role_key === 'student') {
+			$this->db->select('s.id as school_id, s.name as community_name, us.role');
+			$this->db->from('user_schools us');
+			$this->db->join('schools s', 's.id = us.school_id');
+			$this->db->join('students st', 'st.school_id = us.school_id AND st.user_id = us.user_id', 'inner');
+			$this->db->where('us.user_id', $user_id);
+			$this->db->where('us.role', ucfirst($role));
+			$this->db->where('st.status', 1); // Seulement les étudiants approuvés
+			$communities = $this->db->get()->result_array();
+		} else {
+			// Pour admin/teacher, pas de vérification de status
+			$this->db->select('s.id as school_id, s.name as community_name, us.role');
+			$this->db->from('user_schools us');
+			$this->db->join('schools s', 's.id = us.school_id');
+			$this->db->where('us.user_id', $user_id);
+			$this->db->where('us.role', ucfirst($role));
+			$communities = $this->db->get()->result_array();
+		}
 
 		foreach ($communities as &$c) {
 			$c['role_label'] = $c['role'] === 'teacher' ? get_phrase('Mentor') : ucfirst($c['role']);
