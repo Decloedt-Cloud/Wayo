@@ -742,7 +742,14 @@ class Settings_model extends CI_Model
       } else {
         return base_url('uploads/system/logo/logo-dark-sm.svg');
       }
-    } else {
+    } elseif($type == 'white'){
+      if (file_exists('uploads/system/logo/logo-light.png')) {
+        return base_url('uploads/system/logo/logo-light.png');
+      } else {
+        return base_url('uploads/system/logo/logo-light.svg');
+      }
+
+    }else {
       if (file_exists('uploads/system/logo/logo-dark.png')) {
         return base_url('uploads/system/logo/logo-dark.png');
       } else {

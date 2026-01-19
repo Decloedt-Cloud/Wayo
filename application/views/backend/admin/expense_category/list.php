@@ -114,6 +114,12 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
                 <i class="mdi mdi-unfold-more-horizontal"></i>
             </div>
         </div>
+        <div class="ec-col-department ec-sortable-col" data-sort="department">
+            <span><?php echo get_phrase('department'); ?></span>
+            <div class="ec-sort-icon">
+                <i class="mdi mdi-unfold-more-horizontal"></i>
+            </div>
+        </div>
         <div class="ec-col-date ec-sortable-col" data-sort="date">
             <span><?php echo get_phrase('created'); ?></span>
             <div class="ec-sort-icon">
@@ -132,6 +138,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
              data-id="<?php echo $category['id']; ?>"
              data-name="<?php echo strtolower($category['name']); ?>"
              data-cost="<?php echo strtolower($category['cost_center'] ?? ''); ?>"
+             data-department="<?php echo strtolower($category['department'] ?? ''); ?>"
              data-has-cost="<?php echo !empty($category['cost_center']) ? '1' : '0'; ?>"
              data-date="<?php echo strtotime($category['date_added'] ?? 'now'); ?>"
              style="--delay: <?php echo $index * 0.03; ?>s">
@@ -157,6 +164,17 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
                         <span class="ec-cost-configured"><?php echo $category['cost_center']; ?></span>
                     <?php else: ?>
                         <span class="ec-cost-empty"><?php echo get_phrase('not_defined'); ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+            <!-- Department Column -->
+            <div class="ec-col-department">
+                <div class="ec-department-value">
+                    <?php if (!empty($category['department'])): ?>
+                        <span class="ec-department-configured"><?php echo $category['department']; ?></span>
+                    <?php else: ?>
+                        <span class="ec-department-empty"><?php echo get_phrase('not_defined'); ?></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -365,6 +383,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
             id: item.dataset.id,
             name: item.dataset.name || '',
             cost: item.dataset.cost || '',
+            department: item.dataset.department || '',
             hasCost: item.dataset.hasCost === '1',
             date: parseInt(item.dataset.date) || 0
         }));
@@ -485,7 +504,8 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
             // Search filter
             const matchesSearch = !state.searchTerm ||
                 item.name.includes(state.searchTerm) ||
-                item.cost.includes(state.searchTerm);
+                item.cost.includes(state.searchTerm) ||
+                item.department.includes(state.searchTerm);
 
             // Status filter
             let matchesFilter = true;
@@ -508,6 +528,10 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
                 case 'cost_center':
                     aVal = a.cost;
                     bVal = b.cost;
+                    break;
+                case 'department':
+                    aVal = a.department;
+                    bVal = b.department;
                     break;
                 case 'date':
                     aVal = a.date;
@@ -1049,7 +1073,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
 
 .ec-list-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 120px;
+    grid-template-columns: 2fr 1.5fr 1.25fr 1fr 120px;
     gap: 1rem;
     padding: 1rem 1.5rem;
     background: linear-gradient(135deg, var(--ec-dark) 0%, #334155 100%);
@@ -1097,7 +1121,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
 
 .ec-list-item {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 120px;
+    grid-template-columns: 2fr 1.5fr 1.25fr 1fr 120px;
     gap: 1rem;
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--ec-border);
@@ -1146,9 +1170,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: linear-gradient(135deg, 
-        hsl(var(--hue, 250), 80%, 60%), 
-        hsl(calc(var(--hue, 250) + 30), 80%, 50%));
+    background: var(--ec-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1156,7 +1178,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
     font-weight: 700;
     font-size: 1rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px hsla(var(--hue, 250), 80%, 50%, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--ec-primary-rgb), 0.3);
 }
 
 .ec-item-info {
@@ -1200,6 +1222,26 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
 }
 
 .ec-cost-empty {
+    color: var(--ec-gray);
+    font-style: italic;
+}
+
+/* Department Column */
+.ec-col-department {
+    display: flex;
+    align-items: center;
+}
+
+.ec-department-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ec-department-configured {
+    color: var(--ec-primary);
+}
+
+.ec-department-empty {
     color: var(--ec-gray);
     font-style: italic;
 }
@@ -1605,7 +1647,7 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
 
     .ec-list-header,
     .ec-list-item {
-        grid-template-columns: 2fr 1.5fr 100px;
+        grid-template-columns: 2fr 1.5fr 1.25fr 100px;
     }
 
     .ec-col-date {
@@ -1650,7 +1692,8 @@ $with_cost_center = count(array_filter($expense_categories, function($cat) { ret
         grid-template-columns: 1fr 80px;
     }
 
-    .ec-col-cost {
+    .ec-col-cost,
+    .ec-col-department {
         display: none;
     }
 

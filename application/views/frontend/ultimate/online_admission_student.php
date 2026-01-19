@@ -174,6 +174,123 @@
       }
     }
 
+    /* ================= SUMMARY REDESIGN ================= */
+    .summary-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 1.5rem;
+    }
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid #ECEEF3;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1 1 300px; /* Allow growth, min-width 300px */
+    }
+
+    .summary-card:hover {
+        border-color: #f47a1f;
+        box-shadow: 0 4px 12px rgba(244, 122, 31, 0.08);
+    }
+
+    .summary-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-card-icon {
+        width: 36px;
+        height: 36px;
+        background: #fff5ec;
+        color: #f47a1f;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .summary-card-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e1e4b;
+        margin: 0;
+    }
+
+    .summary-card-body {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #4b5563;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-label {
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 12px;
+    }
+
+    .summary-value {
+        color: #1e293b;
+        text-align: right;
+    }
+
+    .status-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        text-transform: uppercase;
+    }
+
+    /* Info Alert Box */
+    .info-alert-box {
+        background: #e8f4fd;
+        border: 1px solid #b3d9f2;
+        border-left: 4px solid #3b82f6;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .info-alert-icon {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        flex-shrink: 0;
+        width: 28px;
+        text-align: center;
+    }
+
+    .info-alert-text {
+        font-size: 0.95rem;
+        color: #1e40af;
+        line-height: 1.5;
+        font-weight: 500;
+    }
+
 </style>
 
 <main>
@@ -187,7 +304,7 @@
 
   <section class="container py">
     <!-- Stepper (2 étapes) -->
-    <ol class="stepper" role="list" aria-label="Étapes">
+    <ol class="stepper" role="list" aria-label="Étapes" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <li class="step-create-commaunaute is-active"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
       <li class="step-create-commaunaute"><span class="num">2</span><span class="lbl"><?php echo get_phrase("Summary") ?></span></li>
     </ol>
@@ -196,7 +313,7 @@
       class="js-validate studentform realtime-form container" enctype="multipart/form-data">
       <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
       <!-- === STEP 1 : PROFIL MEMBRE === -->
-      <section class="card panel step-pane is-visible" data-step="1">
+      <section class="card panel step-pane is-visible" data-step="1" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <div class="panel-head">
           <h2><?php echo get_phrase("Profile_information") ?></h2>
           <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
@@ -263,18 +380,24 @@
         <div class="grid-2">
           <label class="field">
             <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
-            <input id="password" type="password"  class="form-control rounded-end shadow-none"
-                name="password-student" required aria-required="true" data-msg="Please enter a password" data-error-class="u-has-error"
-                data-success-class="u-has-success">
-            <div class="error" data-for="password"></div>
+            <div style="position:relative; width: 100%;">
+                <input id="password" type="password"  class="form-control rounded-end shadow-none"
+                    name="password-student" required aria-required="true" data-msg="Please enter a password" data-error-class="u-has-error"
+                    data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('password', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+            </div>
+            <div class="error" data-for="password" style="margin-top: 45px;"></div>
           </label>
 
           <label class="field">
             <span class="field-label"><?php echo get_phrase("Confirm_password") ?> <span class="req">*</span></span>
-            <input id="confirmPassword" type="password"  class="form-control rounded-end shadow-none"
-                name="repeat-password-student"  minlength="6" required aria-required="true" data-msg="Please repeat your password"
-                data-error-class="u-has-error" data-success-class="u-has-success">
-            <div class="error" data-for="confirmPassword"></div>
+            <div style="position:relative; width: 100%;">
+                <input id="confirmPassword" type="password"  class="form-control rounded-end shadow-none"
+                    name="repeat-password-student"  minlength="6" required aria-required="true" data-msg="Please repeat your password"
+                    data-error-class="u-has-error" data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('confirmPassword', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+            </div>
+            <div class="error" data-for="confirmPassword" style="margin-top: 45px;"></div>
           </label>
         </div>
 
@@ -285,34 +408,29 @@
       </section>
 
       <!-- === STEP 2 : RÉSUMÉ === -->
-      <section class="card panel step-pane" data-step="2">
+      <section class="card panel step-pane" data-step="2" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <div class="panel-head"><h2><?php echo get_phrase("Summary_&_Account_Creation") ?></h2></div>
 
-        <div class="grid-2">
-          <div class="summary-member">
-            <h3 class="summary-title"><?php echo get_phrase("Your_information") ?></h3>
-            <dl id="summaryMember" class="summary-list"></dl>
-          </div>
-
-          <aside class="publish">
-            <div class="card soft">
-              <h3><?php echo get_phrase("Checklist") ?></h3>
-              <ul class="checklist">
-                <li><i class="fa-regular fa-circle-check"></i> <?php echo get_phrase("Full_name") ?></li>
-                <li><i class="fa-regular fa-circle-check"></i> <?php echo get_phrase("Valid_Gmail") ?></li>
-                <li><i class="fa-regular fa-circle-check"></i> <?php echo get_phrase("Date_of_birth") ?></li>
-                <li><i class="fa-regular fa-circle-check"></i> <?php echo get_phrase("Password_confirmed") ?></li>
-              </ul>
-              <button id="submitBtn" type="submit" class="btn btn-primary w-100">
-                <i class="fa-solid fa-user-plus"></i> <?php echo get_phrase("Create_account") ?>
-              </button>
-              <p class="muted small mt"><?php echo get_phrase("You_can_complete_your_information_later.") ?></p>
-            </div>
-          </aside>
+        <div class="summary">
+          <!-- Card grid will be injected here by JS -->
+          <p><?php echo get_phrase("Check_your_information_and_click_on") ?> <strong><?php echo get_phrase("Create_account") ?></strong>.</p>
         </div>
 
-        <div class="panel-actions">
+        <!-- Info Alert Box -->
+        <div class="info-alert-box">
+          <div class="info-alert-icon">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div class="info-alert-text">
+            <?php echo get_phrase("After_creation_you_can_complete_your_profile_directly_from_your_dashboard"); ?>
+          </div>
+        </div>
+
+        <div class="panel-actions mt-4">
           <button type="button" class="btn btn-secondary prev"><?php echo get_phrase("Back") ?></button>
+          <button id="submitBtn" type="submit" class="btn btn-primary-custom">
+            <i class="fa-solid fa-user-plus"></i> <?php echo get_phrase("Create_account") ?>
+          </button>
         </div>
       </section>
     </form>
@@ -400,34 +518,75 @@
           goTo(Math.max(0, current - 1));
         }));
 
+        // ✅ Navigation par clic sur le stepper
+        steps.forEach((s, idx) => {
+          s.style.cursor = 'pointer';
+          s.addEventListener('click', () => {
+            if (idx < current) {
+              // Retour en arrière : toujours autorisé
+              goTo(idx);
+            } else if (idx > current) {
+              // Avancement : valide l'étape actuelle (et les intermédiaires si besoin)
+              // Pour 2 étapes, on valide juste l'étape 0 pour aller à l'étape 1
+              if (validate()) {
+                goTo(idx);
+              }
+            }
+          });
+        });
+
         // Initialisation intelligente avec persistance
         const saved = sessionStorage.getItem('wayo_student_form_state');
         if (!saved) {
             goTo(0);
         }
 
-    // ===== Résumé =====
-    function dd(parent, t, v) {
-      const DT = document.createElement('dt');
-      DT.textContent = t;
-      const DD = document.createElement('dd');
-      DD.textContent = v;
-      parent.appendChild(DT);
-      parent.appendChild(DD);
-    }
-
     function updateSummary() {
-      const s = qs('#summaryMember');
-      if (!s) return;
-      s.innerHTML = '';
+      const summaryDiv = qs('.summary');
+      if (!summaryDiv) return;
+
       const last  = qs('#lastName')?.value?.trim() || '—';
       const first = qs('#firstName')?.value?.trim() || '—';
       const mail  = qs('#gmail')?.value?.trim() || '—';
       const birth = qs('#birthdate')?.value || '—';
-      dd(s, '<?php echo get_phrase("Last_name") ?>', last);
-      dd(s, '<?php echo get_phrase("First_name") ?>', first);
-      dd(s, '<?php echo get_phrase("Gmail") ?>', mail);
-      dd(s, '<?php echo get_phrase("Date_of_birth") ?>', birth);
+
+      summaryDiv.innerHTML = `
+          <div class="summary-grid">
+              <!-- Profile Card -->
+              <div class="summary-card" style="cursor: pointer;" onclick="goToStudent(0)">
+                  <div class="summary-card-header">
+                      <div class="summary-card-icon"><i class="fa-solid fa-user"></i></div>
+                      <h3><?php echo get_phrase("Profile"); ?></h3>
+                  </div>
+                  <div class="summary-card-body">
+                      <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Name"); ?>:</span><span class="summary-value">${last} ${first}</span></div>
+                      <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Email"); ?>:</span><span class="summary-value">${mail}</span></div>
+                      <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Date_of_birth"); ?>:</span><span class="summary-value">${birth}</span></div>
+                  </div>
+              </div>
+
+              <!-- Account Status Card -->
+              <div class="summary-card">
+                  <div class="summary-card-header">
+                      <div class="summary-card-icon"><i class="fa-solid fa-circle-info"></i></div>
+                      <h3><?php echo get_phrase("Account_Status"); ?></h3>
+                  </div>
+                  <div class="summary-card-body">
+                      <div class="summary-item">
+                          <span class="summary-label"><?php echo get_phrase("Status"); ?>:</span>
+                          <span class="summary-value">
+                              <span class="status-badge"><?php echo get_phrase("Account_ready_to_create"); ?></span>
+                          </span>
+                      </div>
+                      <div class="summary-item">
+                          <span class="summary-label"><?php echo get_phrase("Type"); ?>:</span>
+                          <span class="summary-value"><?php echo get_phrase("Member"); ?></span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <p class="mt-4"><?php echo get_phrase("Check_your_information_and_click_on") ?> <strong><?php echo get_phrase("Create_account") ?></strong>.</p>
+      `;
     }
 
     // ===== Duplication email =====
@@ -476,7 +635,10 @@
       if (!el) return false;
       el.classList.add('is-invalid');
       const err = document.querySelector(`.error[data-for="${el.id}"]`);
-      if (err) err.textContent = msg || '';
+      if (err) {
+        err.textContent = msg || '';
+        err.style.setProperty('display', 'block', 'important');
+      }
       return false;
     }
 
@@ -484,7 +646,10 @@
       if (!el) return;
       el.classList.remove('is-invalid');
       const err = document.querySelector(`.error[data-for="${el.id}"]`);
-      if (err) err.textContent = '';
+      if (err) {
+        err.textContent = '';
+        err.style.setProperty('display', 'none', 'important');
+      }
     }
 
     function isEmail(addr) {
@@ -568,6 +733,27 @@
     });
   }
 })();
+
+function toggleStudentPassword(inputId, icon, e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const input = document.getElementById(inputId);
+  if (input && icon) {
+    const isPassword = input.getAttribute("type") === "password";
+    input.setAttribute("type", isPassword ? "text" : "password");
+    if (isPassword) {
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+      icon.style.color = "#F47A1F"; // Orange
+    } else {
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+      icon.style.color = "#6b7280"; // Gray
+    }
+  }
+}
 </script>
 
 

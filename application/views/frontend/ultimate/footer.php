@@ -50,6 +50,9 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
         <a href="https://www.linkedin.com/company/wayoacademy/" target="_blank" class="social-btn">
             <i class="fa-brands fa-linkedin-in"></i>
         </a>
+        <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">
+            <i class="fa-brands fa-youtube"></i>
+        </a>
       </div>
     </div>
     <div class="container footer-bottom">
@@ -60,7 +63,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
                 <a href="tel:+971501548923">+971 50 154 8923</a>
                 <a href="mailto:info@wayo.cloud">info@wayo.cloud</a>
                 <a href="https://maps.google.com/?q=R320+Um+Hurair+2,+Dubai,+UAE" target="_blank">
-                    R320 Um Hurair 2, Dubai, UAE
+                    R320 Um Hurair 2, Dubai, EAU
                 </a>
           </div>
         </p>
@@ -68,6 +71,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
       <div class="footer-links">
         <p><strong><?php echo get_phrase('Useful Links'); ?></strong></p>
           <div class="infolinks">
+            <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
               <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('FAQ'); ?></a>
               <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('CGU'); ?></a>
               <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>

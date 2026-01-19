@@ -3960,6 +3960,91 @@ class Admin extends CI_Controller
 			$this->load->view('backend/admin/expense/list', $page_data);
 		}
 
+		// Export expenses (CSV or PDF)
+		if ($param1 == 'export') {
+			$type = htmlspecialchars($this->input->get('type'));
+			$dateRange = $this->input->get('date');
+			$expense_category_id = htmlspecialchars($this->input->get('expense_category_id'));
+			
+			// Parse date range - support multiple separators
+			if (strpos($dateRange, ' — ') !== false) {
+				$date = explode(' — ', $dateRange);
+			} elseif (strpos($dateRange, ' - ') !== false) {
+				$date = explode(' - ', $dateRange);
+			} else {
+				$date = explode('-', $dateRange);
+			}
+			
+			$date_from = isset($date[0]) ? strtotime(trim($date[0]) . ' 00:00:00') : strtotime('-30 days');
+			$date_to = isset($date[1]) ? strtotime(trim($date[1]) . ' 23:59:59') : time();
+			
+			// Get expenses
+			if ($expense_category_id != 'all' && $expense_category_id > 0) {
+				$expenses = $this->crud_model->get_expense($date_from, $date_to, $expense_category_id)->result_array();
+			} else {
+				$expenses = $this->crud_model->get_expense($date_from, $date_to)->result_array();
+			}
+			
+			// Get school currency
+			$school_currency = $this->db->get_where('settings_school', array('school_id' => school_id()))->row('system_currency') ?? 'EUR';
+			
+			// Export as CSV
+			if ($type == 'csv') {
+				// Create CSV file
+				$csv_file = fopen("assets/csv_file/expenses.csv", "w");
+				
+				// UTF-8 BOM for Excel compatibility
+				fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
+				
+				// Header row
+				$header = array('ID', 'Date', 'Category', 'Amount (' . $school_currency . ')');
+				fputcsv($csv_file, $header);
+				
+				// Data rows
+				foreach ($expenses as $expense) {
+					$category = $this->db->get_where('expense_categories', array('id' => $expense['expense_category_id']))->row_array();
+					$category_name = isset($category['name']) ? $category['name'] : get_phrase('unknown');
+					
+					$row = array(
+						sprintf('EXP-%04d', $expense['id']),
+						date('d-M-Y', $expense['date']),
+						$category_name,
+						$expense['amount']
+					);
+					fputcsv($csv_file, $row);
+				}
+				
+				fclose($csv_file);
+				
+				// Download file
+				$fileName = 'Expenses-' . date('d-M-Y', $date_from) . '-to-' . date('d-M-Y', $date_to) . '.csv';
+				$this->download_file('assets/csv_file/expenses.csv', $fileName);
+			}
+			
+			// Export as PDF
+			if ($type == 'pdf') {
+				$page_data['expenses'] = $expenses;
+				$page_data['date_from'] = $date_from;
+				$page_data['date_to'] = $date_to;
+				$page_data['school_currency'] = $school_currency;
+				$page_data['expense_category_id'] = $expense_category_id;
+				
+				// Render HTML
+				ob_start();
+				$this->load->view('backend/admin/expense/export_pdf', $page_data);
+				$html = ob_get_clean();
+				
+				try {
+					$mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4']);
+					$mpdf->WriteHTML($html);
+					$fileName = 'Expenses-' . date('d-M-Y', $date_from) . '-to-' . date('d-M-Y', $date_to) . '.pdf';
+					$mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+				} catch (\Mpdf\MpdfException $e) {
+					echo $e->getMessage();
+				}
+			}
+		}
+
 		// showing the index file
 		if (empty($param1)) {
 			$page_data['folder_name'] = 'expense';

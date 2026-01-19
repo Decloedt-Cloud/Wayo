@@ -1648,6 +1648,7 @@ class Crud_model extends CI_Model
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
+		$data['department'] = htmlspecialchars($this->input->post('department'));
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('expense_categories', $data);
@@ -1662,6 +1663,7 @@ class Crud_model extends CI_Model
 	{
 		$data['name'] = htmlspecialchars($this->input->post('name'));
 		$data['cost_center'] = htmlspecialchars($this->input->post('cost_center'));
+		$data['department'] = htmlspecialchars($this->input->post('department'));
 		$this->db->where('id', $id);
 		$this->db->update('expense_categories', $data);
 		$response = array(

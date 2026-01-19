@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+ <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
 
 <style>
 /* ============================================================================
@@ -71,26 +71,97 @@
 .exp-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    gap: 0.625rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    text-transform: uppercase;
 }
 
 .exp-btn-primary {
-    background: linear-gradient(135deg, #1e293b, #334155);
+    background: linear-gradient(135deg, var(--exp-primary), #8b5cf6);
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.exp-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease-in-out;
+    z-index: 1;
+}
+
+.exp-btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.exp-btn-primary span,
+.exp-btn-primary i {
+    position: relative;
+    z-index: 2;
+}
+
+.exp-btn-primary i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
 }
 
 .exp-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.4);
-    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 12px 30px rgba(99, 102, 241, 0.6),
+        0 4px 15px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #8b5cf6, var(--exp-primary));
+}
+
+.exp-btn-primary:hover::before {
+    left: 100%;
+}
+
+.exp-btn-primary:hover::after {
+    opacity: 1;
+}
+
+.exp-btn-primary:hover i {
+    transform: scale(1.15);
+}
+
+.exp-btn-primary:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 
+        0 6px 20px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.exp-btn-primary:focus {
+    outline: none;
+    box-shadow: 
+        0 0 0 3px rgba(99, 102, 241, 0.3),
+        0 12px 30px rgba(99, 102, 241, 0.6);
 }
 
 /* Content Card */
@@ -386,5 +457,16 @@ var showAllExpenses = function () {
             $('.expense_content').html('<div class="exp-loading" style="color: #dc2626;"><i class="mdi mdi-alert-circle"></i> <?php echo get_phrase('error_loading_data'); ?></div>');
         }
     });
+}
+
+var exportExpenses = function (type) {
+    var dateRange = $('#selectedValue').text();
+    var categoryId = $('#expense_category_id').val();
+    
+    // Build export URL
+    var url = '<?php echo route('expense/export'); ?>?type=' + type + '&date=' + encodeURIComponent(dateRange) + '&expense_category_id=' + categoryId;
+    
+    // Open in new window/tab to download without affecting current page
+    window.open(url, '_blank');
 }
 </script>

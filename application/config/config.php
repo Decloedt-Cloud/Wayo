@@ -593,7 +593,8 @@ $config['csrf_exclude_uris'] = array(
     'api/fx/.*',
     'cron/fx_.*',
     'StripeWebhook',
-    'StripeWebhook/index'
+    'StripeWebhook/index',
+    'addons/courses/extract_pdf_structure'
 );
  
 /*

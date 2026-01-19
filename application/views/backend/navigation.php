@@ -29,16 +29,51 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
 ?>
 
 <style>
+    /* ========== MODERN NAVIGATION - Matching Dashboard Design ========== */
     .sidebar {
-        width: 300px;
-        background-color: #FFFFFF;
-        border-right: 1px solid #E2E8F0;
+        --nav-primary: #6366f1;
+        --nav-primary-light: #818cf8;
+        --nav-secondary: #10b981;
+        --nav-accent: #f59e0b;
+        --nav-danger: #ef4444;
+        --nav-bg-main: #f8fafc;
+        --nav-bg-card: #ffffff;
+        --nav-text-dark: #1e293b;
+        --nav-text-muted: #64748b;
+        --nav-border: #e2e8f0;
+        --nav-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --nav-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+        --nav-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+        
+        width: 280px;
+        background: linear-gradient(180deg, var(--nav-bg-card) 0%, #fafbfc 100%);
+        border-right: 1px solid var(--nav-border);
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
     }
 
+    .sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(129, 140, 248, 0.02) 100%);
+        pointer-events: none;
+    }
+
+    /* ===== Header Profile Section ===== */
     .sidebar-header {
-        padding: 25px 20px 15px;
+        padding: 24px 20px;
         text-align: center;
-        border-bottom: 1px solid #E2E8F0;
+        border-bottom: 1px solid var(--nav-border);
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+        position: relative;
+        z-index: 1;
     }
 
     .sidebar-header a {
@@ -47,33 +82,340 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-header a:hover {
+        transform: translateY(-2px);
     }
 
     .avatar {
-        width: 60px;
-        height: 60px;
-        border: 1px solid #E2E8F0;
+        width: 72px;
+        height: 72px;
+        border: 3px solid var(--nav-bg-card);
         border-radius: 50%;
         object-fit: cover;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 
+            0 0 0 3px rgba(99, 102, 241, 0.15),
+            0 8px 20px rgba(99, 102, 241, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header a:hover .avatar {
+        box-shadow: 
+            0 0 0 4px rgba(99, 102, 241, 0.25),
+            0 12px 28px rgba(99, 102, 241, 0.3);
+        transform: scale(1.05);
     }
 
     .sidebar-header h3 {
-        font-size: 1rem;
+        font-family: 'Outfit', 'DM Sans', sans-serif;
+        font-size: 1.0625rem;
         font-weight: 600;
-        color: #1E293B;
+        color: var(--nav-text-dark);
+        margin: 0;
+        letter-spacing: -0.01em;
     }
 
+    .sidebar-header .user-role {
+        font-size: 0.75rem;
+        color: var(--nav-text-muted);
+        background: var(--nav-bg-main);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    /* ===== Navigation Container ===== */
+    .sidebar-nav {
+        padding: 16px 12px;
+        flex-grow: 1;
+        overflow-y: auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        background: var(--nav-border);
+        border-radius: 10px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: var(--nav-text-muted);
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* ===== Category Headers ===== */
+    .nav-category {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.6875rem;
+        color: var(--nav-text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 20px 16px 10px;
+        letter-spacing: 0.08em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-category::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--nav-border) 0%, transparent 100%);
+    }
+
+    /* ===== Menu Items ===== */
+    .sidebar-nav ul li a {
+        display: flex;
+        align-items: center;
+        padding: 11px 14px;
+        color: var(--nav-text-dark);
+        text-decoration: none;
+        border-radius: 12px;
+        margin: 3px 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sidebar-nav ul li a::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-light));
+        border-radius: 12px 0 0 12px;
+        transition: width 0.25s ease;
+    }
+
+    .sidebar-nav ul li a:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(129, 140, 248, 0.05) 100%);
+        color: var(--nav-primary);
+        transform: translateX(4px);
+    }
+
+    .sidebar-nav ul li a:hover::before {
+        width: 4px;
+    }
+
+    .sidebar-nav ul li.active > a {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(129, 140, 248, 0.08) 100%);
+        color: var(--nav-primary);
+        font-weight: 600;
+        box-shadow: var(--nav-shadow-sm);
+    }
+
+    .sidebar-nav ul li.active > a::before {
+        width: 4px;
+    }
+
+    /* ===== Menu Icons ===== */
+    .sidebar-nav .fa-fw {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-size: 1rem;
+        color: var(--nav-text-muted);
+        background: var(--nav-bg-main);
+        border-radius: 10px;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+    }
+
+    .sidebar-nav ul li a:hover .fa-fw,
+    .sidebar-nav ul li.active > a .fa-fw {
+        color: white;
+        background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-light));
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    /* ===== Badges ===== */
+    .badge-nav {
+        background: linear-gradient(135deg, var(--nav-danger), #f87171);
+        color: white;
+        font-size: 0.6875rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-left: auto;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+        animation: pulse-badge 2s infinite;
+    }
+
+    @keyframes pulse-badge {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    /* ===== Submenu Indicators ===== */
+    .has-submenu .indicator {
+        margin-left: auto;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.65em;
+        color: var(--nav-text-muted);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--nav-bg-main);
+        border-radius: 6px;
+    }
+
+    .has-submenu.open > a .indicator {
+        transform: rotate(90deg);
+        color: var(--nav-primary);
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    .has-submenu > a:hover .indicator {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--nav-primary);
+    }
+
+    /* ===== Submenus ===== */
+    .submenu {
+        display: none;
+        list-style: none;
+        padding-left: 24px;
+        margin-left: 18px;
+        border-left: 2px solid var(--nav-border);
+        margin-top: 6px;
+        margin-bottom: 6px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .has-submenu.open > .submenu {
+        display: block;
+    }
+
+    .submenu li a {
+        font-size: 0.8125rem !important;
+        font-weight: 500 !important;
+        color: var(--nav-text-muted) !important;
+        padding: 9px 14px !important;
+        margin: 2px 0 !important;
+        border-radius: 10px !important;
+    }
+
+    .submenu li a::before {
+        display: none !important;
+    }
+
+    .submenu li a::after {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 2px;
+        background: var(--nav-border);
+        transition: background 0.25s ease;
+    }
+
+    .submenu li a:hover {
+        color: var(--nav-primary) !important;
+        background: rgba(99, 102, 241, 0.06) !important;
+        transform: translateX(4px);
+    }
+
+    .submenu li a:hover::after {
+        background: var(--nav-primary);
+    }
+
+    .submenu li.active > a {
+        color: var(--nav-primary) !important;
+        background: rgba(99, 102, 241, 0.08) !important;
+        font-weight: 600 !important;
+    }
+
+    .submenu li.active > a::after {
+        background: var(--nav-primary);
+    }
+
+    .submenu a .fa-fw {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 0.8rem !important;
+        margin-right: 10px !important;
+    }
+
+    /* ===== Website Button (Mobile - Only in Sidebar) ===== */
+    .sidebar-nav .website-button {
+        background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-light)) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
+        margin-bottom: 8px !important;
+    }
+
+    .sidebar-nav .website-button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45) !important;
+    }
+
+    .sidebar-nav .website-button .fa-fw,
+    .sidebar-nav .website-button i {
+        background: transparent !important;
+        color: white !important;
+        box-shadow: none !important;
+    }
+
+    .sidebar-nav .arrow-animate {
+        animation: arrowBounce 1.5s infinite;
+    }
+
+    @keyframes arrowBounce {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(4px); }
+    }
+
+    /* ===== Responsive Design ===== */
     @media (min-width: 768px) {
         .sidebar {
-            width: 300px;
-            background-color: #FFFFFF;
-            border-right: 1px solid #E2E8F0;
+            width: 280px;
         }
 
         .sidebar-nav {
-            width: 250px !important;
+            width: auto !important;
             display: block !important;
         }
     }
@@ -90,12 +432,11 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         .sidebar-nav {
             min-width: 300px;
             max-width: 300px;
-            background: #fff;
-            /* Ajustez selon votre thème */
+            background: linear-gradient(180deg, var(--nav-bg-card) 0%, #fafbfc 100%);
             z-index: 1000;
-            /* Assurez-vous que le sidebar est au-dessus du contenu */
-            transition: transform 0.3s ease-in-out;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: none !important;
+            box-shadow: var(--nav-shadow-lg);
         }
 
         .sidebar-nav.show-sidebar {
@@ -103,147 +444,15 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
             position: fixed;
             top: 70px;
             left: 0;
-            height: 95%;
+            height: calc(100vh - 70px);
             z-index: 999;
             transform: translateX(0);
+            overflow-y: auto;
         }
 
         .side-nav-item {
             margin-top: 10px;
         }
-    }
-
-    .sidebar-nav {
-        padding: 16px;
-        flex-grow: 1;
-        overflow-y: auto;
-    }
-
-    .sidebar-nav ul {
-        list-style: none;
-    }
-
-    .nav-category {
-        font-size: 0.7rem;
-        color: #64748B;
-        font-weight: 700;
-        text-transform: uppercase;
-        padding: 20px 12px 8px;
-        letter-spacing: 0.05em;
-    }
-
-    .sidebar-nav ul li a {
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        color: #334155;
-        text-decoration: none;
-        border-radius: 6px;
-        margin: 4px 0;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: background-color 0.2s ease, color 0.2s ease;
-        position: relative;
-    }
-
-    .sidebar-nav ul li a:hover {
-        background-color: #EEF2FF;
-        color: #4F46E5;
-    }
-
-    .sidebar-nav ul li.active>a {
-        background-color: #EEF2FF;
-        color: #4F46E5;
-        font-weight: 600;
-    }
-
-    .sidebar-nav ul li.active>a::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 20px;
-        width: 4px;
-        background-color: #4F46E5;
-        border-radius: 0 4px 4px 0;
-    }
-
-    .sidebar-nav .fa-fw {
-        width: 20px;
-        margin-right: 12px;
-        text-align: center;
-        font-size: 1.1em;
-        color: #64748B;
-    }
-
-    .sidebar-nav ul li a:hover .fa-fw,
-    .sidebar-nav ul li.active>a .fa-fw {
-        color: #4F46E5;
-    }
-
-    .badge-nav {
-        background-color: #EF4444;
-        color: white;
-        font-size: 0.7rem;
-        padding: 1px 9px 0px 9px;
-        border-radius: 10px;
-        margin-left: auto;
-        font-weight: 700;
-    }
-
-    /* Sous-menus */
-    .has-submenu .indicator {
-        margin-left: auto;
-        transition: transform 0.3s ease;
-        font-size: 0.7em;
-        color: #64748B;
-    }
-
-    .has-submenu.open>a .indicator {
-        transform: rotate(90deg);
-        color: #4F46E5;
-    }
-
-    .submenu {
-        display: none;
-        list-style: none;
-        padding-left: 20px;
-        margin-left: 10px;
-        border-left: 1px solid #E2E8F0;
-        margin-top: 4px;
-    }
-
-    .submenu li a::before {
-        content: '';
-        position: absolute;
-        left: -20px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 12px;
-        height: 1px;
-        background-color: #E2E8F0;
-    }
-
-    .has-submenu.open>.submenu {
-        display: block;
-    }
-
-    .submenu a {
-        font-size: 0.88rem !important;
-        font-weight: 400 !important;
-        color: #64748B !important;
-        padding: 8px 12px !important;
-    }
-
-    .submenu a:hover {
-        color: #4F46E5 !important;
-        background-color: #EEF2FF;
-    }
-
-    .submenu a .fa-fw {
-        font-size: 0.9em !important;
-        color: #64748B !important;
     }
 
     @media (max-width: 992px) {
@@ -252,33 +461,52 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         }
     }
 
-    /* RTL Support */
+    /* ===== RTL Support ===== */
     body[dir="rtl"] .sidebar {
         left: auto;
         right: 0;
-        border-left: 1px solid #E2E8F0;
+        border-left: 1px solid var(--nav-border);
         border-right: none;
     }
 
+    body[dir="rtl"] .sidebar::before {
+        background: linear-gradient(-135deg, rgba(99, 102, 241, 0.03) 0%, rgba(129, 140, 248, 0.02) 100%);
+    }
+
     body[dir="rtl"] .nav-category {
-        font-size: 1rem;
+        font-size: 0.8125rem;
+    }
+
+    body[dir="rtl"] .nav-category::after {
+        background: linear-gradient(-90deg, var(--nav-border) 0%, transparent 100%);
     }
 
     body[dir="rtl"] .has-submenu .text-rtl-menu {
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
     }
 
-    .has-submenu .indicator {
-        transform: rotate(0deg);
+    body[dir="rtl"] .sidebar-nav ul li a {
+        transform-origin: right center;
     }
 
-    .has-submenu.open .indicator {
-        transform: rotate(90deg);
+    body[dir="rtl"] .sidebar-nav ul li a:hover {
+        transform: translateX(-4px);
+    }
+
+    body[dir="rtl"] .sidebar-nav ul li a::before {
+        left: auto;
+        right: 0;
+        border-radius: 0 12px 12px 0;
+    }
+
+    body[dir="rtl"] .sidebar-nav .fa-fw {
+        margin-right: 0;
+        margin-left: 12px;
     }
 
     body[dir="rtl"] .has-submenu .indicator {
         margin-right: auto;
-        margin-left: 8px;
+        margin-left: 0;
         transform: rotate(180deg);
     }
 
@@ -286,56 +514,55 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         transform: rotate(90deg);
     }
 
-    body[dir="rtl"] .has-submenu .fa-fw {
-        width: 20px;
-        margin-left: 12px;
-        text-align: center;
-        font-size: 1.1em;
-        color: #64748B;
-    }
-
     body[dir="rtl"] .badge-nav {
-        background-color: #EF4444;
-        color: white;
-        font-size: 0.7rem;
-        padding: 1px 9px 0px 9px;
-        border-radius: 10px;
-        margin-left: auto;
-        font-weight: 700;
-        margin-right: 1px;
+        margin-left: 0;
+        margin-right: auto;
     }
 
     body[dir="rtl"] .submenu {
-        display: none;
-        list-style: none;
-        padding-left: 20px;
-        margin-left: 10px;
-        border-right: 1px solid #E2E8F0;
+        padding-left: 0;
+        padding-right: 24px;
+        margin-left: 0;
+        margin-right: 18px;
         border-left: none;
-        margin-top: 4px;
+        border-right: 2px solid var(--nav-border);
     }
 
-    body[dir="rtl"] .submenu li a::before {
-        content: '';
-        position: absolute;
-        right: -41px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 12px;
-        height: 1px;
-        background-color: #E2E8F0;
+    body[dir="rtl"] .submenu li a::after {
+        left: auto;
+        right: -24px;
     }
 
-    body[dir="rtl"] .sidebar-nav ul li.active>a::before {
-        content: '';
-        position: absolute;
+    body[dir="rtl"] .submenu li a:hover {
+        transform: translateX(-4px);
+    }
+
+    body[dir="rtl"] .submenu a .fa-fw {
+        margin-right: 0 !important;
+        margin-left: 10px !important;
+    }
+
+    body[dir="rtl"] .sidebar-nav ul li.active > a::before {
+        left: auto;
         right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 20px;
-        width: 4px;
-        background-color: #4F46E5;
-        border-radius: 0 4px 4px 0;
+    }
+
+    /* ===== Disabled State (pending approval) ===== */
+    .sidebar.sidebar-disabled {
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .sidebar.sidebar-disabled::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.3);
+        z-index: 100;
     }
 </style>
 
@@ -377,16 +604,13 @@ if ($this->session->userdata('user_type') == 'admin') {
     }
 }
 ?>
-<aside class="sidebar" id="sidebar"
-    <?php if (!$school_approved || $trial_expired): ?>
-    style="opacity: 0.5; pointer-events: none; user-select: none;"
-    onclick="event.preventDefault(); return false;"
-    <?php endif; ?>>
+<aside class="sidebar <?php echo (!$school_approved || $trial_expired) ? 'sidebar-disabled' : ''; ?>" id="sidebar">
     <div class="sidebar-header">
         <a href="<?php echo route('profile'); ?>">
             <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="avatar">
             <?php $user_details = $this->user_model->get_user_details($this->session->userdata('user_id')); ?>
             <h3><?php echo $user_details['name']; ?></h3>
+            <span class="user-role"><?php echo get_phrase($this->session->userdata('user_type')); ?></span>
         </a>
     </div>
 
