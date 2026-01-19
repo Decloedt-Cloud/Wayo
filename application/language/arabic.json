@@ -3554,5 +3554,7 @@
     "generated_by": "مولد بواسطة",
     "price_excl_tax": "السعر بدون الضريبة",
     "excl_tax": "بدون الضريبة",
-    "incl_tax": "مع الضريبة"
+    "incl_tax": "مع الضريبة",
+    "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
+    "recording_info": "معلومات التسجيل"
 }

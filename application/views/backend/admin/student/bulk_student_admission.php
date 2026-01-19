@@ -1,88 +1,118 @@
 <?php $school_id = school_id(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.css">
 
-<div class="container">
-    <div class="modern-card">
+<form method="POST" class="d-block ajaxForm" action="<?php echo route('student/create_bulk_student'); ?>" id="student_admission_form">
+    <!-- CSRF Token -->
+    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
 
-        <form method="POST" class="col-md-12 ajaxForm" action="<?php echo route('student/create_bulk_student'); ?>" id="student_admission_form">
-            <!-- Champ caché pour le jeton CSRF -->
-            <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
+    <!-- Info Card -->
+    <div class="ec-info-card">
+        <div class="ec-info-card-icon">
+            <i class="mdi mdi-account-multiple-plus"></i>
+        </div>
+        <div class="ec-info-card-content">
+            <h4><?php echo get_phrase('bulk_student_admission'); ?></h4>
+            <p><?php echo get_phrase('add_multiple_students_at_once'); ?></p>
+        </div>
+    </div>
 
-            <div class="row justify-content-md-center">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0">
-                    <select name="class_id" id="class_id_bulk" class="form-control" required>
+    <!-- Class Selection -->
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="ec-form-group">
+                <label class="ec-form-label justify-content-center">
+                    <i class="mdi mdi-google-classroom"></i>
+                    <span><?php echo get_phrase('select_class_for_all_students'); ?></span>
+                    <span class="ec-required">*</span>
+                </label>
+                <div class="ec-input-wrapper">
+                    <select name="class_id" id="class_id_bulk" class="ec-form-input" required>
                         <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                         <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
                         <?php foreach ($classes as $class) { ?>
                             <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                         <?php } ?>
                     </select>
-                </div>
-            </div>
-      
-            <div id="first-row">
-                <div class="row student-row mt-1">
-                    <div class="student-row row align-items-center">
-                        <div class="col-md-3">
-                            <input type="text" name="name[]" class="form-control"
-                                placeholder="<?php echo get_phrase('Name'); ?>" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="email" name="email[]" class="form-control"
-                                placeholder="<?php echo get_phrase('Email'); ?>" required>
-                        </div>
-                        <div class="col-md-3">
-                            <select name="gender[]" class="form-control" required>
-                                <option value=""><?php echo get_phrase('select_gender'); ?></option>
-                                <option value="Male"><?php echo get_phrase('male'); ?></option>
-                                <option value="Female"><?php echo get_phrase('female'); ?></option>
-                                <option value="Others"><?php echo get_phrase('others'); ?></option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <button type="button" class=" btn btn-success btn-icon" onclick="appendRow()">
-                                <i class="mdi mdi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit -->
-            <div class="text-center mt-4">
-                <button type="submit" class="action-btn btn btn-primary btn-modern col-md-4 col-sm-12">
-                    <i class="bi bi-check-circle mdi mdi-account-multiple-plus-outline action-btnmdi"></i> <?php echo get_phrase('add_students'); ?>
-                </button>
-            </div>
-        </form>
-
-        <div id="blank-row" style="display: none;">
-            <div class="row student-row mt-1">
-                <div class="student-row row align-items-center">
-                    <div class="col-md-3">
-                        <input type="text" name="name[]" class="form-control"
-                            placeholder="<?php echo get_phrase('Name'); ?>" required>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="email" name="email[]" class="form-control"
-                            placeholder="<?php echo get_phrase('Email'); ?>" required>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="gender[]" class="form-control" required>
-                            <option value=""><?php echo get_phrase('select_gender'); ?></option>
-                            <option value="Male"><?php echo get_phrase('male'); ?></option>
-                            <option value="Female"><?php echo get_phrase('female'); ?></option>
-                            <option value="Others"><?php echo get_phrase('others'); ?></option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <button type="button" class="btn btn btn-icon btn-danger" onclick="removeRow(this)"> <i class="mdi mdi-window-close"></i> </button>
-                    </div>
+                    <i class="mdi mdi-school ec-input-icon"></i>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div id="first-row">
+        <div class="student-row row align-items-center mb-3">
+            <div class="col-md-4">
+                <div class="ec-input-wrapper">
+                    <input type="text" name="name[]" class="ec-form-input" placeholder="<?php echo get_phrase('Name'); ?>" required>
+                    <i class="mdi mdi-account ec-input-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ec-input-wrapper">
+                    <input type="email" name="email[]" class="ec-form-input" placeholder="<?php echo get_phrase('Email'); ?>" required>
+                    <i class="mdi mdi-email ec-input-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="ec-input-wrapper">
+                    <select name="gender[]" class="ec-form-input" required>
+                        <option value=""><?php echo get_phrase('Gender'); ?></option>
+                        <option value="Male"><?php echo get_phrase('male'); ?></option>
+                        <option value="Female"><?php echo get_phrase('female'); ?></option>
+                        <option value="Others"><?php echo get_phrase('others'); ?></option>
+                    </select>
+                    <i class="mdi mdi-gender-male-female ec-input-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-1 text-center">
+                <button type="button" class="ec-btn ec-btn-success p-2" onclick="appendRow()" style="min-width: auto; width: 42px; height: 42px; border-radius: 50%;">
+                    <i class="mdi mdi-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="ec-form-actions justify-content-center">
+        <button type="submit" class="ec-btn ec-btn-primary" id="submit-btn">
+            <i class="mdi mdi-account-multiple-check"></i>
+            <span><?php echo get_phrase('add_students'); ?></span>
+        </button>
+    </div>
+</form>
+
+<div id="blank-row" style="display: none;">
+    <div class="student-row row align-items-center mb-3">
+        <div class="col-md-4">
+            <div class="ec-input-wrapper">
+                <input type="text" name="name[]" class="ec-form-input" placeholder="<?php echo get_phrase('Name'); ?>" required>
+                <i class="mdi mdi-account ec-input-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="ec-input-wrapper">
+                <input type="email" name="email[]" class="ec-form-input" placeholder="<?php echo get_phrase('Email'); ?>" required>
+                <i class="mdi mdi-email ec-input-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="ec-input-wrapper">
+                <select name="gender[]" class="ec-form-input" required>
+                    <option value=""><?php echo get_phrase('Gender'); ?></option>
+                    <option value="Male"><?php echo get_phrase('male'); ?></option>
+                    <option value="Female"><?php echo get_phrase('female'); ?></option>
+                    <option value="Others"><?php echo get_phrase('others'); ?></option>
+                </select>
+                <i class="mdi mdi-gender-male-female ec-input-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-1 text-center">
+            <button type="button" class="ec-btn ec-btn-danger p-2" onclick="removeRow(this)" style="min-width: auto; width: 42px; height: 42px; border-radius: 50%;">
+                <i class="mdi mdi-close"></i>
+            </button>
+        </div>
+    </div>
 </div>
+
 <script>
     var blank_field = $('#blank-row').html();
 
@@ -97,41 +127,46 @@
     $(".ajaxForm").submit(function(e) {
         e.preventDefault();
         var form = $(this);
+        var submitBtn = $('#submit-btn');
+        var originalBtnHtml = submitBtn.html();
 
-        // Afficher le spinner et désactiver le bouton
-        var adding_text = "<?php echo get_phrase('adding'); ?>";
-        var submitBtn = $('button[type="submit"]', form);
-        var original_text = submitBtn.html();
+        // Show loading state
+        submitBtn.prop('disabled', true)
+                 .html('<i class="mdi mdi-loading mdi-spin"></i> <span><?php echo get_phrase('adding'); ?>...</span>');
 
-        submitBtn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> ' + adding_text);
-
-        // Soumettre le formulaire en AJAX
+        // Submit form via AJAX
         $.ajax({
             url: form.attr('action'),
             type: 'POST',
             data: form.serialize(),
             dataType: 'json',
             success: function(response) {
-                form.trigger("reset");
-
-                // Afficher la notification appropriée
                 if (response.type === 'error') {
+                    submitBtn.prop('disabled', false).html(originalBtnHtml);
                     error_notify(response.notification);
                 } else {
+                    submitBtn.removeClass('ec-btn-primary')
+                             .addClass('ec-btn-success')
+                             .html('<i class="mdi mdi-check-circle"></i> <span><?php echo get_phrase('students_added'); ?>!</span>');
+                    
                     success_notify(response.notification);
-                }
 
-                // Réactiver le bouton après délai
-                setTimeout(function() {
-                    submitBtn.prop('disabled', false).html(original_text);
-                }, 3300);
+                    // Reset after delay
+                    setTimeout(function() {
+                        submitBtn.prop('disabled', false)
+                                 .removeClass('ec-btn-success')
+                                 .addClass('ec-btn-primary')
+                                 .html(originalBtnHtml);
+                        form.trigger("reset");
+                        // Remove all dynamic rows except the first one (if we want to reset completely)
+                        // But usually just resetting values is enough. 
+                        // To be safe, let's keep it simple.
+                    }, 2000);
+                }
             },
             error: function(xhr, status, error) {
-                error_notify("<?php echo get_phrase('an_error_occurred_please_try_again'); ?>");
-                submitBtn.prop('disabled', false).html(original_text);
-
-                // Debug: afficher l'erreur dans la console
-                // console.error(xhr.responseText);
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+                error_notify("<?php echo get_phrase('an_error_occurred'); ?>");
             }
         });
     });

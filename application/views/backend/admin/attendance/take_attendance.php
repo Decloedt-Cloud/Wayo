@@ -1,50 +1,270 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<style>
+/* ============================================================================
+   PREMIUM FORM DESIGN - TAKE ATTENDANCE
+   ============================================================================ */
+
+:root {
+    --form-primary: #6366f1;
+    --form-primary-rgb: 99, 102, 241;
+    --form-success: #10b981;
+    --form-danger: #ef4444;
+    --form-warning: #f59e0b;
+    --form-dark: #1e293b;
+    --form-gray: #64748b;
+    --form-light: #f8fafc;
+    --form-border: #e2e8f0;
+    --form-white: #ffffff;
+}
+
+.exp-form-container {
+    padding: 0.5rem;
+}
+
+/* Form Header */
+.exp-form-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--form-border);
+}
+
+.exp-form-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--form-primary), #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(var(--form-primary-rgb), 0.3);
+}
+
+.exp-form-title {
+    flex: 1;
+}
+
+.exp-form-title h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--form-dark);
+}
+
+.exp-form-title p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--form-gray);
+}
+
+/* Form Groups */
+.exp-form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.exp-form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--form-dark);
+}
+
+.exp-form-label i {
+    color: var(--form-primary);
+    font-size: 1rem;
+}
+
+.exp-form-label .exp-required {
+    color: var(--form-danger);
+    font-weight: 700;
+}
+
+/* Input Wrapper */
+.exp-input-wrapper {
+    position: relative;
+}
+
+.exp-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--form-gray);
+    font-size: 1.25rem;
+    z-index: 1;
+    transition: all 0.2s;
+    pointer-events: none;
+}
+
+.exp-form-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid var(--form-border);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    background: var(--form-light);
+    color: var(--form-dark);
+    transition: all 0.2s;
+}
+
+.exp-form-input:hover {
+    border-color: #cbd5e1;
+}
+
+.exp-form-input:focus {
+    outline: none;
+    border-color: var(--form-primary);
+    background: var(--form-white);
+    box-shadow: 0 0 0 4px rgba(var(--form-primary-rgb), 0.1);
+}
+
+.exp-form-input:focus + .exp-input-icon,
+.exp-form-input:not(:placeholder-shown) + .exp-input-icon {
+    color: var(--form-primary);
+}
+
+/* Select Styling */
+.exp-form-select {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid var(--form-border);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    background: var(--form-light);
+    color: var(--form-dark);
+    transition: all 0.2s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.exp-form-select:hover {
+    border-color: #cbd5e1;
+}
+
+.exp-form-select:focus {
+    outline: none;
+    border-color: var(--form-primary);
+    background-color: var(--form-white);
+    box-shadow: 0 0 0 4px rgba(var(--form-primary-rgb), 0.1);
+}
+
+/* Buttons */
+.exp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.exp-btn-primary {
+    background: linear-gradient(135deg, var(--form-primary), #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.exp-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.exp-btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+</style>
 
 <?php $school_id = school_id(); ?>
-<form method="POST" class="d-block ajaxForm responsive_media_query" action="<?php echo route('attendance/take_attendance'); ?>" style="min-width: 300px; max-width: 400px;">
-    <!-- Champ caché pour le jeton CSRF -->
-    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-    
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label for="date_on_taking_attendance"><?php echo get_phrase('date'); ?></label>
-            <input type="text" class="form-control date" id="date_on_taking_attendance" data-bs-toggle="date-picker" data-single-date-picker="true" name = "date" value="" required>
+
+<div class="exp-form-container">
+    <div class="exp-form-header">
+        <div class="exp-form-icon">
+            <i class="mdi mdi-account-check"></i>
+        </div>
+        <div class="exp-form-title">
+            <h3><?php echo get_phrase('take_attendance'); ?></h3>
+            <p><?php echo get_phrase('select_date_and_class'); ?></p>
         </div>
     </div>
 
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label  for="class_id_on_taking_attendance"><?php echo get_phrase('class'); ?></label>
-            <select name="class_id" id="class_id_on_taking_attendance" class="form-control"   required>
-                <option value=""><?php echo get_phrase('select_a_class'); ?></option>
-                <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
-                <?php foreach($classes as $class): ?>
-                    <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
-                <?php endforeach; ?>
-            </select>
+    <form method="POST" class="d-block ajaxForm" action="<?php echo route('attendance/take_attendance'); ?>">
+        <!-- Champ caché pour le jeton CSRF -->
+        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+        
+        <div class="exp-form-group">
+            <label class="exp-form-label" for="date_on_taking_attendance">
+                <i class="mdi mdi-calendar"></i>
+                <?php echo get_phrase('date'); ?>
+                <span class="exp-required">*</span>
+            </label>
+            <div class="exp-input-wrapper">
+                <input type="text" class="exp-form-input date" id="date_on_taking_attendance" data-bs-toggle="date-picker" data-single-date-picker="true" name="date" value="" required placeholder="<?php echo get_phrase('select_date'); ?>">
+                <i class="mdi mdi-calendar-range exp-input-icon"></i>
+            </div>
         </div>
-    </div>
 
-
-
-
-    <div class="row" id = "student_content" style="margin-left: 2px;">
-    </div>
-
-    <div class='row'>
-        <div class="form-group col-md-12" id="showStudentDiv">
-            <a class="btn btn-primary btn-l px-4" id="update-btn"  onclick="getStudentList()" style="color: #fff;" disabled><i class="mdi mdi-eye"></i><?php echo get_phrase('show_student_list'); ?></a>
+        <div class="exp-form-group">
+            <label class="exp-form-label" for="class_id_on_taking_attendance">
+                <i class="mdi mdi-google-classroom"></i>
+                <?php echo get_phrase('class'); ?>
+                <span class="exp-required">*</span>
+            </label>
+            <div class="exp-input-wrapper">
+                <select name="class_id" id="class_id_on_taking_attendance" class="exp-form-select" required>
+                    <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                    <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
+                    <?php foreach($classes as $class): ?>
+                        <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <i class="mdi mdi-school exp-input-icon"></i>
+            </div>
         </div>
-    </div>
-    <div class="form-group col-md-12 mt-4" id = "updateAttendanceDiv" style="display: none;">
-        <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_attendance'); ?></button>
-    </div>
-</form>
+
+        <div id="student_content"></div>
+
+        <div class="exp-form-group" id="showStudentDiv">
+            <a href="javascript:void(0);" class="exp-btn exp-btn-primary" id="update-btn" onclick="getStudentList()">
+                <i class="mdi mdi-eye"></i> <span><?php echo get_phrase('show_student_list'); ?></span>
+            </a>
+        </div>
+
+        <div class="exp-form-group mt-4" id="updateAttendanceDiv" style="display: none;">
+            <button class="exp-btn exp-btn-primary" id="update-btn" type="submit">
+                <i class="mdi mdi-check-circle"></i> <span><?php echo get_phrase('update_attendance'); ?></span>
+            </button>
+        </div>
+    </form>
+</div>
 
 <script>
 
     $('document').ready(function(){
-        $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2(['#class_id_on_taking_attendance']);
+        $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); 
 
         $('#date_on_taking_attendance').change(function(){
             $('#showStudentDiv').show();
@@ -57,71 +277,79 @@
             $('#student_content').hide();
         });
 
+        // Auto-open calendar on click
+        $('#date_on_taking_attendance').on('click', function() {
+             if (this.showPicker) {
+                 this.showPicker();
+             }
+         });
 
-$(".ajaxForm").validate({}); // Jquery form validation initialization
-  $(".ajaxForm").submit(function(e) {
-      
-      e.preventDefault(); // Bloque le comportement normal
-      var form = $(this);
-      //ajaxSubmit(e, form, showAllGrades);
-      function getCsrfToken() {
-       // Récupérer le nom du token CSRF depuis le champ input caché
-        var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-       // Récupérer la valeur (hash) du token CSRF depuis le champ input caché
-         var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-       // Retourner un objet contenant le nom du token et sa valeur
-       return { csrfName: csrfName, csrfHash: csrfHash };
-    }
-         // Cible uniquement le bouton de ce formulaire
-      var submitButton = $(this).find('button[type="submit"]');
-      var adding_text = "<?php echo get_phrase('updating'); ?>...";
-      
-      // Désactive et met à jour uniquement ce bouton
-      submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+adding_text);
-       // Récupérer le token CSRF avant l'envoi
-       var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
-       const formData = new FormData(this);// Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
 
-  $.ajax({
-      url: $(this).attr('action'),
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      dataType: 'json',
-      success: function (response) {
-          if (response.status) { // Vérifie si la mise à jour a réussi
-              success_notify(response.notification);
-              // Met à jour le token CSRF
-              $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+        $(".ajaxForm").validate({}); // Jquery form validation initialization
+        $(".ajaxForm").submit(function(e) {
+            
+            e.preventDefault(); // Bloque le comportement normal
+            var form = $(this);
+            
+            function getCsrfToken() {
+                var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+                var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+                return { csrfName: csrfName, csrfHash: csrfHash };
+            }
+            
+            // Cible uniquement le bouton de ce formulaire
+            var submitButton = $(this).find('button[type="submit"]');
+            var adding_text = "<?php echo get_phrase('updating'); ?>...";
+            var original_text = submitButton.html();
+            
+            // Désactive et met à jour uniquement ce bouton
+            submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> '+adding_text);
+            
+            // Récupérer le token CSRF avant l'envoi
+            var csrf = getCsrfToken(); 
+            const formData = new FormData(this);
 
-              // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
-              setTimeout(function() {
-                location.reload();
-              }, 3500);// Attendre 3500ms avant de recharger la page
-          } else {
-            error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
-              
-          }
-      },
-      error: function () {
-        error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
-      }
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status) { // Vérifie si la mise à jour a réussi
+                        success_notify(response.notification);
+                        // Met à jour le token CSRF
+                        if(response.csrf){
+                            $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                        }
+
+                        // Rafraîchissement de la page
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>');
+                        submitButton.prop('disabled', false).html(original_text);
+                    }
+                },
+                error: function () {
+                    error_notify('<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>');
+                    submitButton.prop('disabled', false).html(original_text);
+                }
+            });
+        });
     });
-  });
-});
 
     $('#date_on_taking_attendance').daterangepicker();
-
- 
 
     function getStudentList() {
         var date = $('#date_on_taking_attendance').val();
         var class_id = $('#class_id_on_taking_attendance').val();
        
-        // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
-        var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-        var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+        // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché (Scoped to modal)
+        var csrfName = $('#right-modal input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+        var csrfHash = $('#right-modal input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
 
         if(date != '' && class_id != '' ){
             $.ajax({
@@ -134,10 +362,24 @@ $(".ajaxForm").validate({}); // Jquery form validation initialization
                     $('#student_content').html(response.status);
                     $('#showStudentDiv').hide();
                     $('#updateAttendanceDiv').show();
-                        // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-                    var newCsrfName = response.csrfName;
-                    var newCsrfHash = response.csrfHash;
-                    $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+                    
+                    // 1. Try to get CSRF from JSON response
+                    if(response.csrf && response.csrf.csrfName && response.csrf.csrfHash){
+                        $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                    } 
+                    else if(response.csrfName && response.csrfHash){
+                        $('input[name="' + response.csrfName + '"]').val(response.csrfHash);
+                    } 
+                    // 2. Fallback: Try to get CSRF from the injected HTML (fresh-csrf-token)
+                    else {
+                        var freshToken = $('#student_content .fresh-csrf-token');
+                        if (freshToken.length > 0) {
+                            var csrfName = freshToken.attr('name');
+                            var csrfHash = freshToken.val();
+                            $('input[name="' + csrfName + '"]').val(csrfHash);
+                            freshToken.remove(); // Remove to prevent duplicates
+                        }
+                    }
                 }
             });
         }else{

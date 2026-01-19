@@ -7,3 +7,5 @@ CHANGE COLUMN `cost_center` `cost_center` VARCHAR(255) NULL DEFAULT NULL COMMENT
 
 ALTER TABLE `expense_categories` 
 ADD COLUMN `department` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Département associé à la catégorie' AFTER `cost_center`;
+
+ALTER TABLE `announcement` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);

@@ -174,7 +174,7 @@ class Settings_model extends CI_Model
     $tax_residence_input = htmlspecialchars_decode($this->input->post('tax_residence'));
     // Tax_residence est maintenant stocké dans schools.country (source unique de vérité)
     $data_settings_school['type'] = htmlspecialchars_decode($this->input->post('i_am'));
-    $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('vat_number'));
+    $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('num_vat'));
 
     // Normaliser le country code
     $country_code = null;

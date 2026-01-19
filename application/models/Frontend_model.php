@@ -850,8 +850,8 @@ class Frontend_model extends CI_Model
         'language' => 'english',
         'type' => htmlspecialchars($this->input->post('i_am')),
         'Tax_residence' => $country_code,
-        'vat' => 1, // TVA activée par défaut ou selon besoin
-        'vat_rat' => $rate
+        'vat_enabled' => 1, // TVA activée par défaut ou selon besoin
+        'vat_rate' => $rate
     ];
     $this->db->insert('settings_school', $settings_school);
 
