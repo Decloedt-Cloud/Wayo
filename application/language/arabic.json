@@ -3566,6 +3566,13 @@
     "take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere.": "تحكّم في مجتمعك وابقَ قريبًا من أعضائك في أي وقت ومن أي مكان",
     "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "سيتم إرسال رسالة تحقق إليك خلال مدة أقصاها",
     "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
+    "recording_info": "معلومات التسجيل",
+    "no_teachers_found": "لم يتم العثور على معلمين",
+    "teacher_details": "تفاصيل المعلم",
+    "search_teachers": "البحث عن المعلمين",
+    "teacher_list": "قائمة المعلمين",
+    "active_teachers": "المعلمون النشطون",
+    "total_teachers": "إجمالي المعلمين",
     "recording_info": "معلومات التسجيل"
 
 }

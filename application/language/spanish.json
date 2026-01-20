@@ -3635,5 +3635,11 @@
     "engaged_communities_and_high-quality_courses_for_sustainable_progress.": "Comunidades comprometidas y cursos de alta calidad para un progreso sostenible",
     "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "Se le enviará un correo electrónico de validación en un plazo máximo de",
     "manage_meeting_recordings": "Gestionar grabaciones de reuniones",
-    "recording_info": "Información de grabación"
+    "recording_info": "Información de grabación",
+    "no_teachers_found": "No se encontraron profesores",
+    "teacher_details": "Detalles del profesor",
+    "search_teachers": "Buscar profesores",
+    "teacher_list": "Lista de profesores",
+    "active_teachers": "Profesores activos",
+    "total_teachers": "Total de profesores"
 }

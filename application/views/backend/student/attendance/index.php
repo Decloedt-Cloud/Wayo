@@ -1,26 +1,186 @@
-<?php $student_data = $this->user_model->get_logged_in_student_details(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
-<!--title-->
-<div class="col-xl-12">
-    <div class="header-card">
-        <div class="card-body">
-            <h4 class="page-title d-inline-block">
-                <i class="fas fa-clipboard-user fa-fw"></i> <?php echo get_phrase('daily_attendance'); ?>
-            </h4>
-        </div> <!-- end card body-->
-    </div> <!-- end card -->
-</div><!-- end col-->
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+/* ========== MODERN DASHBOARD STYLES ========== */
+.modern-dashboard {
+  /* MONOCHROMATIC THEME (INDIGO) */
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-lighter: #e0e7ff;
+  --primary-dark: #4338ca;
+  --secondary: #10b981; /* Green for success */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-main);
+  min-height: 100vh;
+  padding: 1.5rem;
+  margin: -15px -15px 0 -15px;
+}
 
-<div class="row">
-    <div class="col-12">
-        <div class="mb-3">
-            <div class="main-card">
-                <div class="card-body">
-                    <div class="row mt-4 d-print-none">
-                        <div class="col-md-1 mb-2"></div>
-                        <div class="col-md-2 mb-1">
-                            <select name="month" id="month" class="form-control" required>
+/* Header */
+.dash-header {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dash-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dash-header h1 .icon-box {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+/* Modern Cards */
+.modern-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.modern-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #fafbfc, transparent);
+}
+
+.modern-card-header h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.modern-card-header h3 i {
+  color: var(--primary);
+  font-size: 1.125rem;
+}
+
+.modern-card-body {
+  padding: 1.5rem;
+}
+
+/* Form Elements */
+.modern-select {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    transition: all 0.2s;
+    background-color: white;
+}
+.modern-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-lighter);
+    outline: none;
+}
+
+.modern-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    transition: all 0.2s ease;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+}
+.modern-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+.empty-state img {
+    max-width: 200px;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+}
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+</style>
+
+<div class="modern-dashboard">
+    <!-- Header -->
+    <div class="dash-header">
+        <h1>
+            <div class="icon-box">
+                <i class="fas fa-clipboard-user"></i>
+            </div>
+            <?php echo get_phrase('daily_attendance'); ?>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h3><i class="fas fa-filter"></i> <?php echo get_phrase('filter_attendance'); ?></h3>
+                </div>
+                <div class="modern-card-body">
+                    <div class="row align-items-end d-print-none">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label text-muted fw-bold mb-2"><?php echo get_phrase('Month'); ?></label>
+                            <select name="month" id="month" class="form-control modern-select" required>
                                 <option value=""><?php echo get_phrase('select_a_month'); ?></option>
                                 <option value="Jan" <?php if (date('M') == 'Jan') echo 'selected'; ?>><?php echo get_phrase('january'); ?></option>
                                 <option value="Feb" <?php if (date('M') == 'Feb') echo 'selected'; ?>><?php echo get_phrase('february'); ?></option>
@@ -36,29 +196,33 @@
                                 <option value="Dec" <?php if (date('M') == 'Dec') echo 'selected'; ?>><?php echo get_phrase('december'); ?></option>
                             </select>
                         </div>
-                        <div class="col-md-2 mb-1">
-                            <select name="year" id="year" class="form-control" required>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label text-muted fw-bold mb-2"><?php echo get_phrase('Year'); ?></label>
+                            <select name="year" id="year" class="form-control modern-select" required>
                                 <option value=""><?php echo get_phrase('select_a_year'); ?></option>
                                 <?php for ($year = 2015; $year <= date('Y'); $year++) { ?>
                                     <option value="<?php echo $year; ?>" <?php if (date('Y') == $year) echo 'selected'; ?>><?php echo $year; ?></option>
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col-md-2 mb-1">
-                            <select name="class" id="class_id_attendance" class="form-control" required>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label text-muted fw-bold mb-2"><?php echo get_phrase('Class'); ?></label>
+                            <select name="class" id="class_id_attendance" class="form-control modern-select" required>
                                 <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                             </select>
                         </div>
 
-                        <div class="col-md-1 btncol">
-                            <button class="btn btn-block btn-secondary" onclick="filter_attendance()"><?php echo get_phrase('filter'); ?></button>
+                        <div class="col-md-3 mb-3">
+                            <button class="modern-btn w-100" onclick="filter_attendance()">
+                                <i class="mdi mdi-filter"></i> <?php echo get_phrase('filter'); ?>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body attendance_content">
-                        <div class="empty_box text-center">
-                            <img class="mb-3" width="150px" src="<?php echo base_url('assets/backend/images/empty_box.png'); ?>" />
-                            <br>
-                            <span class=""><?php echo get_phrase('no_data_found'); ?></span>
+                    
+                    <div class="attendance_content mt-4">
+                        <div class="empty-state">
+                            <img src="<?php echo base_url('assets/backend/images/empty_box.png'); ?>" alt="No Data" />
+                            <p><?php echo get_phrase('no_data_found'); ?></p>
                         </div>
                     </div>
                 </div>

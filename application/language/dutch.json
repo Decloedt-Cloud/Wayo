@@ -3652,5 +3652,12 @@
     "manage_meeting_recordings": "Beheer vergaderopnames",
     "recording_info": "Opname info",
     "no_recordings_found": "Geen opnames gevonden",
+    "history": "Geschiedenis",
+    "no_teachers_found": "Geen leraren gevonden",
+    "teacher_details": "Details van de leraar",
+    "search_teachers": "Leraren zoeken",
+    "teacher_list": "Lerarenlijst",
+    "active_teachers": "Actieve leraren",
+    "total_teachers": "Totaal aantal leraren",
     "history": "Geschiedenis"
 }
