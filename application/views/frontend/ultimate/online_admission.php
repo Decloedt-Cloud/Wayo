@@ -10,7 +10,7 @@
 
     .hero {
         position: relative;
-        min-height: 68vh;
+        min-height: 50vh;
         display: grid;
         place-items: center;
         color: #fff;
@@ -53,7 +53,7 @@
     @media (max-width: 992px) {
         .hero {
             position: relative;
-            min-height: 68vh;
+            min-height: 50vh;
             display: grid;
             place-items: center;
             color: #fff;
@@ -809,7 +809,7 @@
         box-shadow: 0 10px 30px rgba(244, 122, 31, 0.1);
         margin-top: 15px;
     }
-
+    
     .sub-header-badge {
         background-color: #111;
         color: #fff;
@@ -858,7 +858,7 @@
         justify-content: center;
         gap: 2px;
     }
-
+    
     .sub-price-big small {
         font-size: 1.5rem;
         font-weight: 700;
@@ -933,7 +933,7 @@
     <section class="">
         <div class="container py-5 mb-5">
             <!-- Stepper -->
-            <ol class="stepper" role="list" aria-label="<?php echo get_phrase('Steps'); ?>">
+            <ol class="stepper" role="list" aria-label="<?php echo get_phrase('Steps'); ?>" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                 <li class="step-create-commaunaute is-active" data-stepnav="1"><span class="num">1</span><span class="lbl"><?php echo get_phrase("Profile") ?></span></li>
                 <li class="step-create-commaunaute" data-stepnav="2"><span class="num">2</span><span class="lbl"><?php echo get_phrase("Community") ?></span></li>
                 <li class="step-create-commaunaute" data-stepnav="3"><span class="num">3</span><span class="lbl"><?php echo get_phrase("subscription") ?></span></li>
@@ -948,7 +948,7 @@
                 <input type="hidden" name="currency" id="currency_hidden" value="MAD">
 
                 <!-- STEP 1 : PROFIL -->
-                <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1">
+                <section class="card panel step-pane is-visible" data-step="1" aria-labelledby="title-step1" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <div class="panel-head">
                         <h2 id="title-step1"><?php echo get_phrase("Profile_creation") ?></h2>
                         <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
@@ -1005,6 +1005,17 @@
                     </div>
 
                     <div class="grid-2">
+                        <?php
+                            $is_rtl = (get_user_language() === 'arabic');
+                            $input_padding_style = $is_rtl 
+                                ? 'width:100%; padding-left: 45px; box-sizing: border-box;' 
+                                : 'width:100%; padding-right: 45px; box-sizing: border-box;';
+                            
+                            $icon_pos_style = $is_rtl
+                                ? 'position:absolute; left:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;'
+                                : 'position:absolute; right:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;';
+                        ?>
+
                         <label class="field">
                             <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
                             <div style="position:relative; width: 100%;">
@@ -1013,8 +1024,8 @@
                                     class="form-control rounded-end shadow-none" name="password"
                                     data-msg="<?php echo get_phrase("Please enter a password with at least 8 characters") ?>"
                                     data-error-class="u-has-error" data-success-class="u-has-success"
-                                    style="width:100%; padding-right: 45px; box-sizing: border-box;">
-                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass', this, event)" style="position:absolute; right:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;"></i>
+                                    style="<?php echo $input_padding_style; ?>">
+                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass', this, event)" style="<?php echo $icon_pos_style; ?>"></i>
                             </div>
                             <div class="error" data-for="profilePass" style="margin-top: 45px;"></div>
                         </label>
@@ -1027,8 +1038,8 @@
                                     name="repeat-password"
                                     data-msg="<?php echo get_phrase("Please repeat your password (min. 8 characters)") ?>"
                                     data-error-class="u-has-error" data-success-class="u-has-success"
-                                    style="width:100%; padding-right: 45px; box-sizing: border-box;">
-                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass2', this, event)" style="position:absolute; right:40px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none; background: transparent;"></i>
+                                    style="<?php echo $input_padding_style; ?>">
+                                <i class="fa-regular fa-eye-slash" onclick="toggleAdmissionPassword('profilePass2', this, event)" style="<?php echo $icon_pos_style; ?>"></i>
                             </div>
                             <div class="error" data-for="profilePass2" style="margin-top: 45px;"></div>
                         </label>
@@ -1041,7 +1052,7 @@
                 </section>
 
                 <!-- STEP 2 : COMMUNAUTÉ -->
-                <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2">
+                <section class="card panel step-pane panel--community" data-step="2" aria-labelledby="title-step2" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <div class="panel-head">
                         <h2 id="title-step2"><?php echo get_phrase("Community_details") ?></h2>
                         <span class="legend-required"><span class="req">*</span> <?php echo get_phrase("Required_fields") ?></span>
@@ -1299,7 +1310,7 @@
                 </section>
 
                 <!-- STEP 4 : RÉSUMÉ -->
-                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step5">
+                <section class="card panel step-pane" data-step="4" aria-labelledby="title-step5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <div class="panel-head">
                         <h2 id="title-step5"><?php echo get_phrase("Summary_&_publishing") ?></h2>
                     </div>
@@ -1549,6 +1560,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     taxResSelect?.addEventListener('change', () => {
+        console.log('TAX_RESIDENCE CHANGED to:', taxResSelect.value, 'index:', taxResSelect.selectedIndex);
         updateCurrencyUI();
         updateContinueButton();
     });
@@ -1873,7 +1885,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const city          = $('#communityCity')?.value || '—';
         const postal        = $('#communityPostalCode')?.value || '—';
 
-        const tax           = $('#Tax_residence')?.value || '—';
+        // Get the DISPLAYED TEXT from Tax_residence dropdown
+        const taxEl = document.getElementById('Tax_residence');
+        let tax = '—';
+        let taxValue = taxEl ? taxEl.value : '';
+        
+        // DEBUG: Log to console
+        console.log('DEBUG Tax_residence element:', taxEl);
+        console.log('DEBUG Tax_residence value:', taxValue);
+        console.log('DEBUG Tax_residence selectedIndex:', taxEl ? taxEl.selectedIndex : 'NULL');
+        
+        // If DOM value is empty, try to get from sessionStorage
+        if (!taxValue) {
+            try {
+                const saved = sessionStorage.getItem('wayo_admission_form_state');
+                if (saved) {
+                    const savedData = JSON.parse(saved);
+                    taxValue = savedData.Tax_residence || savedData._taxResidence || '';
+                    console.log('DEBUG Using sessionStorage Tax_residence:', taxValue);
+                }
+            } catch (e) {
+                console.error('Error reading sessionStorage:', e);
+            }
+        }
+        
+        if (taxValue) {
+            // Map value to display text
+            const taxTextMap = {
+                'MA': '<?php echo get_phrase("Morocco"); ?>',
+                'UAE': '<?php echo get_phrase("United_Arab_Emirates"); ?>'
+            };
+            tax = taxTextMap[taxValue] || taxValue;
+            console.log('DEBUG Mapped tax value:', tax);
+        }
         const currency      = $('#currencyCode')?.value || 'MAD';
         const isPrivate     = privateToggle?.checked;
         const visibilityText = isPrivate
@@ -1909,6 +1953,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="summary-card-body">
                         <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Type"); ?>:</span><span class="summary-value">${i_am}</span></div>
                         <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Name"); ?>:</span><span class="summary-value">${communityName}</span></div>
+                        <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Tax_residence"); ?>:</span><span class="summary-value">${tax}</span></div>
                         <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Category"); ?>:</span><span class="summary-value">${cat}</span></div>
                         <div class="summary-item"><span class="summary-label"><?php echo get_phrase("Visibility"); ?>:</span><span class="summary-value">${visibilityText}</span></div>
                     </div>
@@ -2189,6 +2234,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const countryInput = document.getElementById('countrySelect');
         if (countryInput) data._country = countryInput.value;
 
+        // Explicit Tax_residence save
+        const taxResEl = document.getElementById('Tax_residence');
+        if (taxResEl && taxResEl.value) {
+            data._taxResidence = taxResEl.value;
+            console.log('SAVE Tax_residence:', taxResEl.value);
+        }
+
         // Visual previews (Base64)
         const logoImg = document.querySelector('#logoPreview img');
         const coverImg = document.querySelector('#coverPreview img');
@@ -2233,6 +2285,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 // Update internal logic if exposed (optional but safer)
                 if (typeof previousCode !== 'undefined') window.previousCode = data._country;
+            }
+
+            // Restore Tax_residence explicitly
+            if (data._taxResidence) {
+                const taxResEl = document.getElementById('Tax_residence');
+                if (taxResEl) {
+                    taxResEl.value = data._taxResidence;
+                    console.log('RESTORE Tax_residence:', data._taxResidence);
+                }
             }
 
             // Restore Previews
