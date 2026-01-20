@@ -1,3 +1,4 @@
+
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -161,12 +162,20 @@ class User_model extends CI_Model
 
 			$response = array(
 				'status' => true,
-				'notification' => $notification
+				'notification' => $notification,
+				'csrf' => array(
+					'name' => $this->security->get_csrf_token_name(),
+					'hash' => $this->security->get_csrf_hash()
+				)
 			);
 		} else {
 			$response = array(
 				'status' => false,
-				'notification' => get_phrase('sorry_this_email_has_been_taken')
+				'notification' => get_phrase('sorry_this_email_has_been_taken'),
+				'csrf' => array(
+					'name' => $this->security->get_csrf_token_name(),
+					'hash' => $this->security->get_csrf_hash()
+				)
 			);
 		}
 
@@ -582,8 +591,10 @@ class User_model extends CI_Model
 			);
 		}
 
-		return json_encode($response);
+		return $response;
 	}
+
+
 
 	public function delete_teacher($param1 = '', $param2 = '')
 	{
@@ -619,7 +630,7 @@ class User_model extends CI_Model
 			'status' => true,
 			'notification' => get_phrase('teacher_has_been_deleted_successfully')
 		);
-		return json_encode($response);
+		return $response;
 	}
 
 
@@ -1407,6 +1418,11 @@ class User_model extends CI_Model
 				// Insert new selected classes
 				$class_ids = $this->input->post('class_id');
 
+				// FIX: Ensure class_ids is an array to avoid enrollment deletion
+				if (!is_array($class_ids)) {
+					$class_ids = array($class_ids);
+				}
+
 				if (!empty($class_ids)) {
 					foreach ($class_ids as $class_id) {
 
@@ -1454,6 +1470,15 @@ class User_model extends CI_Model
 					// Transaction OK -> essayer mise à jour HumHub
 					$notification = get_phrase('student_updated_successfully');
 
+					// 1. Upload local image (Moved outside HumHub block)
+					$image_uploaded = false;
+					if (isset($_FILES['student_image']) && is_uploaded_file($_FILES['student_image']['tmp_name'])) {
+						$sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
+						if (move_uploaded_file($_FILES['student_image']['tmp_name'], $sourceLocal)) {
+							$image_uploaded = true;
+						}
+					}
+
 					// Récupérer l'utilisateur pour humhub_id
 					$user = $this->db->get_where('users', ['id' => $user_id])->row();
 					if (!empty($user->humhub_id)) {
@@ -1476,20 +1501,23 @@ class User_model extends CI_Model
 
 						$humhubResponse = $this->humhub_sso->updateUser($user->humhub_id, $humhubData);
 						log_message('debug', 'Réponse HumHub updateUser depuis student_update: ' . json_encode($humhubResponse));
-						if (isset($_FILES['student_image']) && is_uploaded_file($_FILES['student_image']['tmp_name'])) {
+
+						// 2. Copier vers HumHub if image was uploaded locally
+						if ($image_uploaded) {
 							$sourceLocal  = 'uploads/users/' . $user_id . '.jpg';
-							move_uploaded_file($_FILES['student_image']['tmp_name'], $sourceLocal);
-							// 2. Copier vers HumHub
 							$sourceImage = FCPATH . $sourceLocal;
 							$humhubUploadsPath = 'C:/xampp/htdocs/humhub/humhub-1.17.2/uploads/profile_image/';
-							$guid = $humhubResponse['guid'];
-							$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
-							$destImage = $humhubUploadsPath . $guid . '.jpg';
 
-							if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
-								log_message('debug', ' Image copiée vers HumHub avec succès.');
-							} else {
-								log_message('error', ' Erreur lors de la copie de l\'image vers HumHub.');
+							if (isset($humhubResponse['guid'])) {
+								$guid = $humhubResponse['guid'];
+								$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
+								$destImage = $humhubUploadsPath . $guid . '.jpg';
+
+								if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
+									log_message('debug', ' Image copiée vers HumHub avec succès.');
+								} else {
+									log_message('error', ' Erreur lors de la copie de l\'image vers HumHub.');
+								}
 							}
 						}
 						if (!$humhubResponse || isset($humhubResponse['code'])) {
@@ -2063,6 +2091,22 @@ class User_model extends CI_Model
 		}
 	}
 
+	public function update_teacher_status($user_id = '', $status = '')
+	{
+		if ($user_id > 0) {
+			$this->db->where('id', $user_id);
+			$this->db->update('users', array('status' => $status));
+			return array(
+				'status' => true,
+				'notification' => get_phrase('status_updated_successfully')
+			);
+		}
+		return array(
+			'status' => false,
+			'notification' => get_phrase('failed_to_update_status')
+		);
+	}
+
 public function get_unread_messages_count($wayo_user_id)//user_model
 {
     // 1. Récupérer le HumHub ID
@@ -2344,8 +2388,30 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 					}
 				}
 
-				$this->db->insert('students', $data);
-				$user_email = $this->db->get_where('users', array('id' => $user_id))->row('email');
+		$this->db->insert('students', $data);
+			
+		// Ajouter dans user_schools pour suivre les communautés de l'étudiant
+		// Même logique que pour admin et mentor
+		$this->db->replace('user_schools', [
+			'user_id' => $user_id,
+			'school_id' => $school_id,
+			'role' => 'student'
+		]);
+		
+		// Mettre à jour le school_id de l'utilisateur s'il est null
+		// avec le school_id de user_schools
+		$user_schools_row = $this->db->get_where('user_schools', [
+			'user_id' => $user_id,
+			'school_id' => $school_id,
+			'role' => 'student'
+		])->row();
+		
+		if ($user_schools_row) {
+			$this->db->where('id', $user_id);
+			$this->db->update('users', ['school_id' => $school_id]);
+		}
+		
+		$user_email = $this->db->get_where('users', array('id' => $user_id))->row('email');
 				$user_name = $this->db->get_where('users', array('id' => $user_id))->row('name');
 				$this->db->where('school_id', $school_id);
 				$this->db->where_in('role', array('admin', 'superadmin'));

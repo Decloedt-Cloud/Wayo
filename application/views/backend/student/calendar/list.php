@@ -1,3 +1,4 @@
+<?php $active_school_id = school_id(); ?>
 <div class="card-calendar px-4 py-3">
     <div class="calendar-header">
         <div class="row align-items-center">
@@ -14,9 +15,7 @@
                 </div>
             </div>
             <div class="text-end">
-                  <select class="school-filter school-filter-student me-3" id="schoolFilter">
-                        <option value=""><?php echo get_phrase('All schools'); ?></option>
-                    </select>
+
                     <select class="view-filter view-filter-student me-3" id="viewFilter">
                         <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
                         <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
@@ -91,7 +90,7 @@
 const CalendarApp = {
   calendar: null,
   currentView: 'dayGridMonth',
-  selectedSchool: '',
+  selectedSchool: '<?php echo $active_school_id; ?>',
   selectedClass: '',
   isLoading: false,
   selectedDays: [],
@@ -129,7 +128,8 @@ const CalendarApp = {
       sessionStorage.removeItem(key);
     }
   });
-  this.loadSchools();
+  this.initCalendar();
+  this.pollActiveMeetings();
   this.bindGlobalEvents();
   this.setupResizeListener();
 
@@ -160,6 +160,7 @@ const CalendarApp = {
 },
 
   initCalendar() {
+    console.log('CalendarApp initialized with selectedSchool:', this.selectedSchool);
     const calendarEl = document.getElementById('calendar');
     const now = new Date();
     const isMobile = window.innerWidth <= 576;
@@ -526,9 +527,7 @@ const CalendarApp = {
 
 
   loadClassesWithEvents(start, end) {
-  if (!this.selectedSchool) {
-    return;
-  }
+  // No school selection needed - using active school
 },
 
   showNotification(type, message, duration = 3000) {
@@ -1620,11 +1619,7 @@ const CalendarApp = {
     const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
     const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
 
-    if (!this.selectedSchool) {
-        this.hasActiveMeetings = false;
-        this.stopActiveMeetingsPolling();
-        return;
-    }
+
 
     $.ajax({
         url: '<?php echo site_url('student/get_events'); ?>',
@@ -1768,19 +1763,7 @@ stopActiveMeetingsPolling() {
   goToToday() { this.calendar.today(); },
 
   bindGlobalEvents() {
-  $('#schoolFilter').on('change', () => {
-    this.selectedSchool = $('#schoolFilter').val();
-    this.selectedClass = '';
-    $('#classFilter').empty().append('<option value=""><?php echo get_phrase("All classes"); ?></option>').val('');
-    this.clearEventCache(); // Clear event cache when school changes
-    if (this.selectedSchool) {
-      const view = this.calendar.view;
-      const start = view.activeStart;
-      const end = view.activeEnd;
-      this.loadClassesWithEvents(start, end);
-    }
-    this.calendar.refetchEvents();
-  });
+
 
   $('#classFilter').on('change', () => {
     this.selectedClass = $('#classFilter').val();

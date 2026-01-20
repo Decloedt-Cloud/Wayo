@@ -10,6 +10,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 class Student extends CI_Controller {
+	
+	// Liste des méthodes accessibles SANS avoir rejoint une école
+	private $allowed_without_school = [
+		'join_school',
+		'payment',
+		'invoice',
+		'invoice_pdf',
+		'paypal_checkout',
+		'stripe_checkout',
+		'payment_success',
+		'payment_failed',
+		'mollie_checkout',
+		'xendit_checkout',
+		'midtrans_checkout',
+		'flutterwave_checkout',
+		'paytm_checkout',
+		'razorpay_checkout',
+		'paystack_checkout',
+		'sslcommerz_checkout',
+		'skrill_checkout',
+		'instamojo_checkout',
+		'toyyibpay_checkout',
+		'payumoney_checkout'
+	];
+	
 	public function __construct(){
 
 		parent::__construct();
@@ -42,10 +67,67 @@ class Student extends CI_Controller {
 		/*SET DEFAULT TIMEZONE*/
 		timezone();
 
-		// CHECK WHETHER student IS LOGGED IN
-		if($this->session->userdata('student_login') != 1){
+		$current_method = $this->router->fetch_method();
+		
+		// CHECK ACCESS - Autoriser admin/teacher pour join_school et paiement
+		$is_student_logged = ($this->session->userdata('student_login') == 1);
+		$is_admin_logged = ($this->session->userdata('admin_login') == 1);
+		$is_teacher_logged = ($this->session->userdata('teacher_login') == 1);
+		$is_allowed_method = in_array($current_method, $this->allowed_without_school);
+		
+		// Si admin ou teacher accède à join_school ou paiement, les switcher en mode student
+		if (!$is_student_logged && ($is_admin_logged || $is_teacher_logged) && $is_allowed_method) {
+			$user_id = $this->session->userdata('user_id');
+			$current_role = $this->session->userdata('role');
+			
+			// Sauvegarder l'ancien rôle pour pouvoir revenir si besoin
+			$this->session->set_userdata('previous_role', $current_role);
+			$this->session->set_userdata('previous_admin_login', $is_admin_logged ? 1 : 0);
+			$this->session->set_userdata('previous_teacher_login', $is_teacher_logged ? 1 : 0);
+			
+			// Switcher en mode student dans la session
+			$this->session->set_userdata('role', 'student');
+			$this->session->set_userdata('user_type', 'student');
+			$this->session->set_userdata('student_login', 1);
+			$this->session->unset_userdata('admin_login');
+			$this->session->unset_userdata('teacher_login');
+			
+			// Mettre à jour le rôle dans la table users
+			$this->db->where('id', $user_id);
+			$this->db->update('users', ['role' => 'student']);
+		} elseif (!$is_student_logged) {
+			// Si pas connecté du tout, rediriger vers login
 			redirect(site_url('login'), 'refresh');
 		}
+		
+		// VÉRIFIER SI L'ÉTUDIANT A REJOINT UNE ÉCOLE
+		// Sauf pour les pages de paiement et factures
+		if ($is_student_logged && !$this->has_joined_school() && !$is_allowed_method) {
+			// Stocker un flag pour indiquer que l'étudiant n'a pas d'école
+			$this->session->set_userdata('student_has_no_school', true);
+			// Rediriger vers la page des communautés
+			redirect(site_url('home/communities'), 'refresh');
+		} else {
+			$this->session->set_userdata('student_has_no_school', false);
+		}
+	}
+	
+	/**
+	 * Vérifie si l'étudiant connecté a rejoint au moins une école
+	 * @return bool
+	 */
+	private function has_joined_school() {
+		$user_id = $this->session->userdata('user_id');
+		
+		// Vérifier dans la table students si l'utilisateur a au moins un enregistrement
+		// avec school_id non null et status = 1 (approuvé)
+		$student = $this->db->where('user_id', $user_id)
+			->where('school_id IS NOT NULL', null, false)
+			->where('status', 1)
+			->get('students')
+			->row();
+		
+		return !empty($student);
 	}
 
 	// INDEX FUNCTION
@@ -247,7 +329,7 @@ class Student extends CI_Controller {
     $this->db->where_in('enrols.student_id', $student_ids);
     $this->db->where('enrols.school_id IS NOT NULL');
     $enrols = $this->db->get()->result_array();
-    $permitted_class_ids = array_map('strval', array_column($enrols, 'class_id'));
+    $permitted_class_ids = array_map('strval', array_unique(array_column($enrols, 'class_id')));
     $permitted_school_ids = array_map('strval', array_unique(array_column($enrols, 'school_id')));
 
     if (empty($enrols)) {
@@ -815,6 +897,7 @@ class Student extends CI_Controller {
 
 	//START TEACHER section
 	public function teacher($param1 = '', $param2 = '', $param3 = ''){
+		$page_data['working_page'] = 'filter';
 		$page_data['folder_name'] = 'teacher';
 		$page_data['page_title'] = 'techers';
 		$this->load->view('backend/index', $page_data);
@@ -846,7 +929,8 @@ class Student extends CI_Controller {
 			$page_data['attendance_date'] = strtotime($date);
 			$page_data['class_id'] = htmlspecialchars($this->input->post('class_id'));
 			
-			$page_data['school_id'] = htmlspecialchars($this->input->post('school_id'));
+			// Utiliser l'école active depuis la session
+			$page_data['school_id'] = $this->session->userdata('active_school_id');
 			$page_data['month'] = htmlspecialchars($this->input->post('month'));
 			$page_data['year'] = htmlspecialchars($this->input->post('year'));
 			// $this->load->view('backend/student/attendance/list', $page_data);
@@ -854,10 +938,10 @@ class Student extends CI_Controller {
 			$response_html = $this->load->view('backend/student/attendance/list', $page_data, TRUE);
 		    // Préparer le nouveau jeton CSRF
 			$csrf = array(
-					 'csrfName' => $this->security->get_csrf_token_name(),
-					 'csrfHash' => $this->security->get_csrf_hash(),
+				 'csrfName' => $this->security->get_csrf_token_name(),
+				 'csrfHash' => $this->security->get_csrf_hash(),
 				 );
-			
+		
 			// Renvoyer la réponse JSON avec le HTML mis à jour et le nouveau jeton CSRF
 			echo json_encode(array('status' => $response_html, 'csrf' => $csrf));
 		}
@@ -964,6 +1048,8 @@ class Student extends CI_Controller {
   public function join_school($param1, $school_id)
 {
     if ($param1 == 'assigned') {
+        
+        // Note: Le switch admin/teacher -> student est fait dans le constructeur
         
         // 🔹 1. Récupération des données envoyées par le formulaire
         $data['student_id'] = $this->session->userdata('user_id'); 
@@ -3211,7 +3297,7 @@ public function get_user_school() {
     $this->db->where('enrols.school_id IS NOT NULL'); // Exclure les school_id NULL
     $enrols = $this->db->get()->result_array();
     $permitted_school_ids = array_map('strval', array_unique(array_column($enrols, 'school_id')));
-    $permitted_class_ids = array_map('strval', array_column($enrols, 'class_id'));
+    $permitted_class_ids = array_map('strval', array_unique(array_column($enrols, 'class_id')));
 
     if (empty($enrols)) {
         $csrf = [
@@ -3223,14 +3309,14 @@ public function get_user_school() {
     }
 
     // Récupérer les paramètres
-    $school_id = $this->input->get('school_id', true);
+    $school_id = school_id();
     $start_date = $this->input->get('start_date', true);
     $end_date = $this->input->get('end_date', true);
     $event_id = $this->input->get('id', true);
     $class_id = $this->input->get('class_id', true);
 
-    // Valider school_id si fourni
-    if ($school_id && !in_array((string)$school_id, $permitted_school_ids, true)) {
+    // Valider school_id (école active)
+    if (!in_array((string)$school_id, $permitted_school_ids, true)) {
         $csrf = [
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash(),
@@ -3283,18 +3369,14 @@ public function get_user_school() {
     $bbb_secret = $this->config->item('bbb_secret');
 
     // Construction de la requête pour les événements
-    $this->db->select('event_calendars.id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
+    $this->db->select('event_calendars.id AS event_id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('users', 'event_calendars.created_by = users.id', 'left');
     $this->db->join('participants', 'event_calendars.id = participants.event_id', 'inner');
     $this->db->join('classes', 'participants.guest = classes.id AND participants.type = "class"', 'left');
-    // Filtrer par les écoles auxquelles l'étudiant est inscrit si school_id n'est pas fourni
-    if ($school_id) {
-        $this->db->where('event_calendars.school_id', $school_id);
-        } else {
-        $this->db->where_in('event_calendars.school_id', $permitted_school_ids);
-    }
+    // Filtrer par l'école active
+    $this->db->where('event_calendars.school_id', $school_id);
     $this->db->where('
         (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
         OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
@@ -3326,7 +3408,7 @@ public function get_user_school() {
 
         // Ajouter les informations des participants
         $event['participants'] = [];
-        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
+        $participants = $this->db->get_where('participants', ['event_id' => $event['event_id']])->result_array();
         foreach ($participants as $participant) {
             $participant_data = [
                 'id' => $participant['guest'],
@@ -3425,7 +3507,7 @@ public function get_user_school() {
         if ($event['visio'] == 1) {
             $this->db->select('start_date, meeting_id');
             $this->db->from('appointments');
-            $this->db->where('event_id', $event['id']);
+            $this->db->where('event_id', $event['event_id']);
             $this->db->where('Etat', 1);
             $this->db->where('DATE(start_date) >=', $start_date);
             $this->db->where('DATE(start_date) <=', $end_date);
@@ -3784,7 +3866,7 @@ public function start_meeting() {
         $this->db->insert('sessions_meetings', $meeting_data);
 
         // Mettre à jour l'appointment avec le nouveau meeting_id
-        $this->db->where('id', $appointment_id);
+        $this->db->where('appointments.id', $appointment_id);
         $this->db->update('appointments', ['meeting_id' => $new_meeting_id]);
 
         // Vérifier si le meeting est en cours

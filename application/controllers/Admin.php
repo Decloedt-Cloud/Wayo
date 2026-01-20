@@ -2482,11 +2482,11 @@ class Admin extends CI_Controller
 
 		if ($param1 == 'create') {
 			$modelResponse = $this->user_model->create_teacher();
-      // Préparer la réponse avec un nouveau jeton CSRF
-      $csrf = array(
-        'name' => $this->security->get_csrf_token_name(),
-        'hash' => $this->security->get_csrf_hash()
-    );
+			// Préparer la réponse avec un nouveau jeton CSRF
+			$csrf = array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash()
+			);
     
     // Fusionner la réponse du modèle avec le CSRF
     $response = array(
@@ -2499,7 +2499,7 @@ class Admin extends CI_Controller
 		}
 
 		if ($param1 == 'update') {
-			$response = $this->user_model->update_teacher($param2);
+			$modelResponse = $this->user_model->update_teacher($param2);
 			// echo $response;
 				// Préparer la réponse avec un nouveau jeton CSRF
 				$csrf = array(
@@ -2507,22 +2507,53 @@ class Admin extends CI_Controller
 					'csrfHash' => $this->security->get_csrf_hash(),
 					);
 				
+			$response = array(
+				'status' => $modelResponse['status'],
+				'notification' => $modelResponse['notification'],
+				'csrf' => $csrf
+			);
+			
 			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
+			echo json_encode($response);
+		}
+
+		if ($param1 == 'status') {
+			$user_id = $param2;
+			$status = $param3;
+			$modelResponse = $this->user_model->update_teacher_status($user_id, $status);
+			
+			$csrf = array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+			);
+			
+			$response = array(
+				'status' => $modelResponse['status'],
+				'notification' => $modelResponse['notification'],
+				'csrf' => $csrf
+			);
+			
+			echo json_encode($response);
 		}
 
 		if ($param1 == 'delete') {
 			$teacher_id = $this->db->get_where('teachers', array('user_id' => $param2))->row('id');
-			$response = $this->user_model->delete_teacher($param2, $teacher_id);
+			$modelResponse = $this->user_model->delete_teacher($param2, $teacher_id);
 			// echo $response;
 			     // Préparer la réponse avec un nouveau jeton CSRF
 				 $csrf = array(
 					'csrfName' => $this->security->get_csrf_token_name(),
 					 'csrfHash' => $this->security->get_csrf_hash(),
 					 );
-				 
+			
+			$response = array(
+				'status' => $modelResponse['status'],
+				'notification' => $modelResponse['notification'],
+				'csrf' => $csrf
+			);
+
 		   // Renvoyer la réponse avec un nouveau jeton CSRF
-		   echo json_encode(array('status' => $response, 'csrf' => $csrf));
+		   echo json_encode($response);
 		}
 
 		if ($param1 == 'list') {
@@ -2530,6 +2561,7 @@ class Admin extends CI_Controller
 		}
 
 		if (empty($param1)) {
+			$page_data['working_page'] = 'filter';
 			$page_data['folder_name'] = 'teacher';
 			$page_data['page_title'] = 'techers';
 			$this->load->view('backend/index', $page_data);
@@ -2628,6 +2660,26 @@ class Admin extends CI_Controller
 			// Renvoyer la réponse avec un nouveau jeton CSRF
 			echo json_encode(array('status' => $response, 'csrf' => $csrf));
 
+		}
+
+		if ($param1 == 'status') {
+			$accountant_id = $param2;
+			$status = $param3;
+			$this->db->where('id', $accountant_id);
+			$this->db->update('users', array('status' => $status));
+			
+			// Préparer la réponse avec un nouveau jeton CSRF
+			$csrf = array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+			);
+			
+			$response = array(
+				'status' => true,
+				'notification' => get_phrase('status_updated'),
+				'csrf' => $csrf
+			);
+			echo json_encode($response);
 		}
 
 		// show data from database
@@ -2864,29 +2916,31 @@ class Admin extends CI_Controller
 		}
 
 		if ($param1 == 'update') {
-			$response = $this->crud_model->event_calendar_update($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
+			$modelResponse = json_decode($this->crud_model->event_calendar_update($param2), true);
 			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
+				'name' => $this->security->get_csrf_token_name(),
+				'hash' => $this->security->get_csrf_hash()
+			);
 			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
+			echo json_encode(array(
+				'status' => $modelResponse['status'], 
+				'notification' => $modelResponse['notification'], 
+				'csrf' => $csrf
+			));
 		}
 
 		if ($param1 == 'delete') {
-			$response = $this->crud_model->event_calendar_delete($param2);
-			// echo $response;
-			// Préparer la réponse avec un nouveau jeton CSRF
+			$modelResponse = json_decode($this->crud_model->event_calendar_delete($param2), true);
 			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
+				'name' => $this->security->get_csrf_token_name(),
+				'hash' => $this->security->get_csrf_hash()
+			);
 			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
+			echo json_encode(array(
+				'status' => $modelResponse['status'], 
+				'notification' => $modelResponse['notification'], 
+				'csrf' => $csrf
+			));
 		}
 
 		if ($param1 == 'all_events') {
@@ -3024,7 +3078,8 @@ class Admin extends CI_Controller
                 );
               
       // Renvoyer la réponse avec un nouveau jeton CSRF
-      echo json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+      $response['csrf'] = $csrf;
+      echo json_encode($response);
     }
 
     //updated to database
@@ -6239,11 +6294,16 @@ public function get_school_data() {
         $email = $this->input->post('email');
         $school_id = school_id();
 
+        $csrf = array(
+            'csrfName' => $this->security->get_csrf_token_name(),
+            'csrfHash' => $this->security->get_csrf_hash()
+        );
+
         $this->db->where('email', $email);
         $user = $this->db->get('users')->row_array();
 
         if (!$user) {
-            echo json_encode(['status' => 'new']);
+            echo json_encode(['status' => 'new', 'csrf' => $csrf]);
             return;
         }
 
@@ -6255,7 +6315,8 @@ public function get_school_data() {
         if ($existing_teacher) {
             echo json_encode([
                 'status' => 'exists_in_school',
-                'message' => get_phrase("this_email_already_exists_as_teacher_in_this_community")
+                'message' => get_phrase("this_email_already_exists_as_teacher_in_this_community"),
+                'csrf' => $csrf
             ]);
             return;
         }
@@ -6266,7 +6327,8 @@ public function get_school_data() {
                 'id' => $user['id'],
                 'name' => html_entity_decode($user['name']),
                 'email' => $user['email']
-            ]
+            ],
+            'csrf' => $csrf
         ]);
     }
 

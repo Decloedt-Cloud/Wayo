@@ -1,946 +1,526 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/schoolSettings.css">
 
-
 <?php 
 $school_data = $this->settings_model->get_current_school_data();
 $settings_school = $this->settings_model->get_current_settings_school_data();
-
 ?>
 
+<style>
+:root {
+    --set-primary: #6366f1;
+    --set-primary-rgb: 99, 102, 241;
+    --set-success: #10b981;
+    --set-danger: #ef4444;
+    --set-dark: #1e293b;
+    --set-gray: #64748b;
+    --set-light: #f8fafc;
+    --set-border: #e2e8f0;
+    --set-white: #ffffff;
+}
 
+.set-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3); }
+.set-header-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
+.set-header-text h4 { margin: 0; color: white; font-size: 1.35rem; font-weight: 700; }
+.set-header-text p { margin: 0.25rem 0 0; color: rgba(255,255,255,0.7); font-size: 0.85rem; }
 
-<div class="mb-3">
-    <div class="main-card">
-        <div class="card-body">
-            <h4 class="header-title"><?php echo get_phrase('school_settings'); ?></h4>
-            <form method="POST" class="col-12 schoolForm" action="<?php echo route('school_settings/update'); ?>" id="schoolForm">
-                <!-- Champ caché pour le jeton CSRF -->
-                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
-                <div class="col-12">
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="school_name"> <?php echo get_phrase('school_name'); ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="school_name" name="school_name" class="form-control" value="<?php echo $school_data['name']; ?>" required>
-                             <small id="school-name-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="description"><?php echo get_phrase('description'); ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <textarea class="form-control" id="description" name="description" rows="5" required><?php echo $school_data['description']; ?></textarea>
-                            <small id="description-error" class="form-text text-muted"><?php echo get_phrase('provide_admin_description'); ?></small>
-                        </div>
-                    </div>
+.set-card { background: var(--set-white); border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: 1px solid var(--set-border); overflow: hidden; margin-bottom: 1.5rem; }
+.set-card-header { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1rem 1.5rem; border-bottom: 1px solid var(--set-border); display: flex; align-items: center; gap: 0.75rem; }
+.set-card-header i { color: var(--set-primary); font-size: 1.25rem; }
+.set-card-header h5 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--set-dark); }
+.set-card-body { padding: 1.5rem; }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="phone"><?php echo get_phrase('phone'); ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $school_data['phone']; ?>" required>
-                             <small id="phone-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
+.set-form-group { margin-bottom: 1.25rem; }
+.set-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.set-form-label { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--set-dark); }
+.set-form-label i { color: var(--set-primary); font-size: 1rem; }
+.set-form-label .required { color: var(--set-danger); margin-left: 0.25rem; }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="access"><?php echo get_phrase('Access'); ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <select name="access" id="access" class="form-control" required>
-                                <option value=""><?php echo get_phrase('select_a_access'); ?></option>
-                                <option <?php if ($school_data['access'] == 1): ?> selected <?php endif; ?> value="1"><?php echo get_phrase('public'); ?></option>
-                                <option <?php if ($school_data['access'] == 0): ?> selected <?php endif; ?> value="0"><?php echo get_phrase('privé'); ?></option>
+.set-input { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--set-border); border-radius: 10px; font-size: 0.9375rem; background: var(--set-light); color: var(--set-dark); transition: all 0.2s; }
+.set-input:focus { outline: none; border-color: var(--set-primary); background: var(--set-white); box-shadow: 0 0 0 4px rgba(var(--set-primary-rgb), 0.1); }
+.set-input.is-invalid { border-color: var(--set-danger); }
+.set-textarea { min-height: 100px; resize: vertical; }
 
-                            </select>
-                            <small id="" class="form-text text-muted"><?php echo get_phrase('provide_admin_access'); ?></small>
-                        </div>
-                    </div>
+.set-form-hint { font-size: 0.75rem; color: var(--set-gray); margin-top: 0.375rem; }
+.set-form-error { font-size: 0.75rem; color: var(--set-danger); margin-top: 0.375rem; display: none; }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="access"><?php echo get_phrase('Category'); ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <select name="category" id="category" class="form-control" required>
-                                <option value=""><?php echo get_phrase('select_a_category'); ?></option>
-                                <?php $categories = $this->db->get_where('categories', array())->result_array(); ?>
-                                <?php foreach ($categories as $categorie): ?>
-                                    <option <?php if ($school_data['category'] == $categorie['name']): ?> selected <?php endif; ?> value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <small id="" class="form-text text-muted"><?php echo get_phrase('provide_admin_category'); ?></small>
-                        </div>
-                    </div>
+.set-upload-card { border: 2px dashed var(--set-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+.set-upload-card:hover { border-color: var(--set-primary); background: rgba(var(--set-primary-rgb), 0.02); }
+.set-upload-preview { width: 120px; height: 120px; border-radius: 12px; overflow: hidden; margin: 0 auto 1rem; border: 2px solid var(--set-border); background: var(--set-light); }
+.set-upload-preview img { width: 100%; height: 100%; object-fit: cover; }
+.set-upload-preview.cover { width: 100%; max-width: 300px; height: 100px; border-radius: 8px; }
+.set-upload-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.25rem; background: var(--set-light); border: 2px solid var(--set-border); border-radius: 10px; font-size: 0.875rem; font-weight: 600; color: var(--set-dark); cursor: pointer; transition: all 0.2s; }
+.set-upload-btn:hover { border-color: var(--set-primary); color: var(--set-primary); }
+.set-upload-btn i { font-size: 1.125rem; }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="communityStreet"><?php echo get_phrase("Rue") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="communityStreet" name="communityStreet" class="form-control" value="<?php echo $school_data['Rue']; ?>" required>
-                            <small id="communityStreet-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
+.set-doc-card { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(var(--set-primary-rgb), 0.05); border: 1px solid rgba(var(--set-primary-rgb), 0.2); border-radius: 12px; }
+.set-doc-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--set-success); display: flex; align-items: center; justify-content: center; color: white; }
+.set-doc-info { flex: 1; }
+.set-doc-name { font-weight: 600; color: var(--set-dark); font-size: 0.875rem; }
+.set-doc-meta { font-size: 0.75rem; color: var(--set-gray); }
+.set-doc-actions { display: flex; gap: 0.5rem; }
+.set-doc-btn { padding: 0.375rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+.set-doc-btn.view { background: var(--set-light); color: var(--set-primary); }
+.set-doc-btn.replace { background: var(--set-light); color: var(--set-dark); border: 1px solid var(--set-border); }
+.set-doc-btn.delete { background: rgba(239, 68, 68, 0.1); color: var(--set-danger); }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="communityNumber"><?php echo get_phrase("Numéro") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="communityNumber" name="communityNumber" class="form-control" value="<?php echo $school_data['Numero']; ?>" required>
-                            <small id="communityNumber-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
+.set-form-actions { margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--set-border); text-align: center; }
+.set-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 2rem; border-radius: 12px; font-size: 0.9375rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+.set-btn-primary { background: linear-gradient(135deg, var(--set-primary), #8b5cf6); color: white; box-shadow: 0 4px 12px rgba(var(--set-primary-rgb), 0.3); }
+.set-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--set-primary-rgb), 0.4); }
+.set-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="communityCity"><?php echo get_phrase("Ville") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="communityCity" name="communityCity" class="form-control" value="<?php echo $school_data['Ville']; ?>" required>
-                            <small id="communityCity-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
+@media (max-width: 768px) {
+    .set-form-row { grid-template-columns: 1fr; }
+}
+</style>
 
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="communityPostalCode"><?php echo get_phrase("code_postal") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="communityPostalCode" name="communityPostalCode" class="form-control" value="<?php echo $school_data['Codepostal']; ?>" required>
-                            <small id="communityPostalCode-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="communityPostalCode"><?php echo get_phrase("I_am") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <select id="i_am" aria-required="true" name="i_am" class="form-control shadow-none" required
-                            data-msg="Please select your tax residence." data-error-class="u-has-error" data-success-class="u-has-success">
-                            <option value=""><?php echo get_phrase('select_a_status'); ?></option>
-
-                            <option value="Entreprise" <?php if ($settings_school['type'] == 'Entreprise'): ?> selected <?php endif; ?>> <?php echo get_phrase("Entreprise") ?></option>
-                            <option value="Freelancer" <?php if ($settings_school['type'] == 'Freelancer'): ?> selected <?php endif; ?>> <?php echo get_phrase("Freelancer") ?> </option>
-                            <option value="Autoentrepreneur" <?php if ($settings_school['type'] == 'Autoentrepreneur'): ?> selected <?php endif; ?>> <?php echo get_phrase("Autoentrepreneur") ?> </option>
-                            <option value="Particulier" <?php if ($settings_school['type'] == 'Particulier'): ?> selected <?php endif; ?>> <?php echo get_phrase("Particulier") ?> </option>
-                        
-                            </select>                       
-                        </div>
-                    </div>
-                    
-                    
-
-                    <div class="form-group row mb-3" id="row_vat_number">
-                        <label class="col-md-3 col-form-label" for="vat_number"><?php echo get_phrase("Numero_de_TVA") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <input type="text" id="vat_number" name="vat_number" value="<?php echo $settings_school['num_vat']; ?>" class="form-control" required>
-                            <small id="vat_number-error" class="text-danger" style="display:none;"></small>
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="tax_residence"><?php echo get_phrase("Pays_de_résidence_fiscale") ?><span class="required"> * </span></label>
-                        <div class="col-md-9">
-                            <?php 
-                            // Utiliser country depuis schools table (source unique de vérité)
-                            $tax_residence = $school_data['country'] ?? '';
-                            // Mapper AE vers UAE pour la compatibilité de l'interface
-                            if ($tax_residence === 'AE') $tax_residence = 'UAE';
-                            ?>
-                            <select name="tax_residence" id="tax_residence" class="form-control" required onchange="handleTaxResidenceChange(this.value)">
-                                <option value=""><?php echo get_phrase("Sélectionnez_un_pays") ?></option>
-                                <option value="MA" <?php if ($tax_residence == 'MA'): ?> selected <?php endif; ?>><?php echo get_phrase("Morocco") ?></option>
-                                <option value="UAE" <?php if ($tax_residence == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="document_upload" style="display: <?php echo ($tax_residence == 'MA' || $tax_residence == 'UAE') ? 'block' : 'none'; ?>;">
-                        <div class="form-group row mb-3">
-                            <label class="col-md-3 col-form-label" for="tax_document">
-                                <i class="mdi mdi-file-document-outline"></i> <?php echo get_phrase("Document_justificatif") ?><span class="required"> * </span>
-                            </label>
-                            <div class="col-md-9">
-                                <!-- État: Document chargé -->
-                                <?php if (!empty($settings_school['file']) && file_exists('uploads/community_tax/' . $settings_school['file'])): ?>
-                                    <?php
-                                        $docPath   = 'uploads/community_tax/' . $settings_school['file'];
-                                        $fileUrl   = base_url($docPath);
-                                        $fileName  = basename($docPath);
-                                        $fileSizeK = file_exists($docPath) ? round(filesize($docPath) / 1024) : 0;
-                                        $fileMTime = file_exists($docPath) ? filemtime($docPath) : 0;
-                                    ?>
-                                    <div id="document-loaded-state" class="mb-3">
-                                        <div class="doc-card border rounded p-3">
-                                            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
-                                                <div class="d-flex align-items-center">
-                                                    <i class="mdi mdi-cloud-check-outline text-success me-2 fs-4"></i>
-                                                    <div class="fw-semibold"><?php echo get_phrase("Document chargé"); ?></div>
-                                                </div>
-                                                <a href="<?php echo $fileUrl; ?>" target="_blank" class="text-primary fw-semibold small" title="<?php echo get_phrase("Voir le document"); ?>"><?php echo get_phrase("Voir le document"); ?></a>
-                                            </div>
-
-                                            <div class="text-muted small mt-1">
-                                                <span class="me-2"><?php echo htmlspecialchars($fileName); ?></span>
-                                                <?php if ($fileSizeK): ?><span class="me-2"><?php echo $fileSizeK; ?> Ko</span><?php endif; ?>
-                                                <?php if ($fileMTime): ?><span>maj <?php echo date('d M. Y', $fileMTime); ?></span><?php endif; ?>
-                                            </div>
-
-                                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                                <button type="button" id="replace-document-btn" class="btn btn-sm btn-light border" title="<?php echo get_phrase("Remplacer"); ?>">
-                                                    <?php echo get_phrase("Remplacer"); ?>
-                                                </button>
-                                                <button type="button" id="delete-document-btn" class="btn btn-sm btn-outline-danger" title="<?php echo get_phrase("Supprimer"); ?>">
-                                                    <?php echo get_phrase("Supprimer"); ?>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <style>
-                                      .doc-card{background:#fff}
-                                      @media (prefers-color-scheme:dark){.doc-card{background:var(--bs-body-bg)}}
-                                    </style>
-                                    <!-- Input file caché quand document chargé -->
-                                    <div id="document-upload-section" style="display: none;">
-                                        <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
-                                        <small id="document_hint" class="form-text text-muted mt-1">
-                                            <?php if ($tax_residence == 'MA'): ?>
-                                                <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
-                                            <?php elseif ($tax_residence == 'UAE'): ?>
-                                                <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
-                                            <?php endif; ?>
-                                        </small>
-                                        <small id="document-help" class="form-text text-muted">
-                                            <i class="mdi mdi-information-outline"></i> PDF, PNG, JPG (max 4 Mo)
-                                        </small>
-                                        <!-- Zone d'erreur -->
-                                        <div id="tax-document-error" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
-                                    </div>
-                                    <input type="hidden" id="delete_tax_document" name="delete_tax_document" value="0">
-                                <?php else: ?>
-                                    <!-- État: Pas de document -->
-                                    <div id="document-upload-section">
-                                        <input type="file" id="tax_document" name="tax_document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
-                                        <small id="document_hint" class="form-text text-muted mt-1">
-                                            <?php if ($tax_residence == 'MA'): ?>
-                                                <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
-                                            <?php elseif ($tax_residence == 'UAE'): ?>
-                                                <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
-                                            <?php endif; ?>
-                                        </small>
-                                        <small id="document-help" class="form-text text-muted">
-                                            <i class="mdi mdi-information-outline"></i> PDF, PNG, JPG (max 4 Mo)
-                                        </small>
-                                        <!-- Zone d'erreur -->
-                                        <div id="tax-document-error" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
-                                    </div>
-                                    <input type="hidden" id="delete_tax_document" name="delete_tax_document" value="0">
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                    <div class="form-group row mb-3">
-                        <label class="col-md-3 col-form-label" for="example-fileinput">
-                            <?php echo get_phrase('Community_profile_logo'); ?>
-                        </label>
-
-                        <div class="col-md-5 logo-upload-container">
-                            <div class="logo-card">
-                                <div class="logo-header">
-                                <h5><?php echo get_phrase('Community_profile_logo'); ?></h5>
-                            </div>
-
-                            <div class="logo-preview" id="school-image-preview">
-                                <img 
-                                src="<?php echo $this->user_model->get_school_image($school_data['id']) . '?v=' . time(); ?>" 
-                                alt="Community profile logo" 
-                                class="preview-image"
-                                >
-                            </div>
-                                    <div class="logo-upload-btn mt-2">
-                                <label 
-                                for="school_image" 
-                                class="btn btn-outline-primary"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="<?php echo get_phrase('Upload_a square_image_(512×512_recommended),_PNG_or_JPEG,_max_size_2_MB'); ?>"
-                                >
-                                <i class="mdi mdi-cloud-upload" style="pointer-events: none;"></i> 
-                                <?php echo get_phrase('upload_an_image'); ?>
-                                </label>
-
-                                <input 
-                                id="school_image" 
-                                type="file" 
-                                class="image-upload d-none" 
-                                name="school_image" 
-                                accept="image/*" 
-                                data-preview="school-image-preview"
-                                >
-                                <!-- 🔹 Zone d’erreur -->
-                                <div id="image-error" class="text-danger mt-2 small fw-bold"></div>
-                            </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row mb-3">
-                    <label class="col-md-3 col-form-label" for="school_cover">
-                        <?php echo get_phrase('Community_cover_image'); ?>
-                    </label>
-
-                    <div class="col-md-5 logo-upload-container">
-                        <div class="logo-card">
-                        <div class="logo-header">
-                            <h5><?php echo get_phrase('Community_cover_image'); ?></h5>
-                        </div>
-
-                        <div class="logo-preview" id="school-cover-preview">
-                            <img 
-                            src="<?php echo $this->user_model->get_school_cover($school_data['id']) . '?v=' . time(); ?>" 
-                            alt="Community_cover_image" 
-                            class="preview-image"
-                            >
-                            <div class="logo-overlay">
-                            <i class="fas fa-camera"></i>
-                            </div>
-                        </div>
-
-                        <div class="logo-upload-btn mt-2">
-                            <label 
-                            for="school_cover" 
-                            class="btn btn-outline-primary tooltip-label"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title="<?php echo get_phrase('Upload_an_image_(1920×600_recommended),_PNG_or_JPEG,_max_size_2_MB'); ?>"
-                            >
-                            <i class="mdi mdi-cloud-upload" style="pointer-events: none;"></i> 
-                            <?php echo get_phrase('upload_an_image'); ?>
-                            </label>
-
-                            <input 
-                            id="school_cover" 
-                            type="file" 
-                            class="image-upload d-none" 
-                            name="school_cover" 
-                            accept="image/png, image/jpeg" 
-                            data-preview="school-cover-preview"
-                            >
-
-                            <!-- 🔹 Zone d’erreur -->
-                            <div id="cover-error" class="text-danger mt-2 small fw-bold"></div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-
-
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-l px-4" id="update-logos-btn" id="update-logos-btn" >
-                            <i class="mdi mdi-account-check"></i>
-                            <?php echo get_phrase('update_settings'); ?>
-                        </button>
-                    </div>
-
-            </form>
-
-        </div> <!-- end card body-->
-    </div> <!-- end card -->
+<!-- Header -->
+<div class="set-header">
+    <div class="set-header-icon">
+        <i class="mdi mdi-cog"></i>
+    </div>
+    <div class="set-header-text">
+        <h4><?php echo get_phrase('school_settings'); ?></h4>
+        <p><?php echo get_phrase('manage_your_community_settings'); ?></p>
+    </div>
 </div>
 
+<form method="POST" class="schoolForm" action="<?php echo route('school_settings/update'); ?>" id="schoolForm" enctype="multipart/form-data">
+    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
+
+    <!-- General Information Card -->
+    <div class="set-card">
+        <div class="set-card-header">
+            <i class="mdi mdi-information-outline"></i>
+            <h5><?php echo get_phrase('general_information'); ?></h5>
+        </div>
+        <div class="set-card-body">
+            <div class="set-form-group">
+                <label class="set-form-label">
+                    <i class="mdi mdi-office-building"></i>
+                    <span><?php echo get_phrase('school_name'); ?></span>
+                    <span class="required">*</span>
+                </label>
+                <input type="text" id="school_name" name="school_name" class="set-input" value="<?php echo $school_data['name']; ?>" required>
+                <small id="school-name-error" class="set-form-error"></small>
+            </div>
+
+            <div class="set-form-group">
+                <label class="set-form-label">
+                    <i class="mdi mdi-text"></i>
+                    <span><?php echo get_phrase('description'); ?></span>
+                    <span class="required">*</span>
+                </label>
+                <textarea id="description" name="description" class="set-input set-textarea" required><?php echo $school_data['description']; ?></textarea>
+                <div class="set-form-hint"><?php echo get_phrase('provide_admin_description'); ?></div>
+            </div>
+
+            <div class="set-form-row">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-phone"></i>
+                        <span><?php echo get_phrase('phone'); ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="phone" name="phone" class="set-input" value="<?php echo $school_data['phone']; ?>" required>
+                    <small id="phone-error" class="set-form-error"></small>
+                </div>
+
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-tag"></i>
+                        <span><?php echo get_phrase('Category'); ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <select name="category" id="category" class="set-input" required>
+                        <option value=""><?php echo get_phrase('select_a_category'); ?></option>
+                        <?php $categories = $this->db->get_where('categories', array())->result_array();
+                        foreach ($categories as $categorie): ?>
+                        <option <?php if ($school_data['category'] == $categorie['name']): ?> selected <?php endif; ?> value="<?php echo $categorie['name']; ?>"><?php echo $categorie['name']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="set-form-group">
+                <label class="set-form-label">
+                    <i class="mdi mdi-eye"></i>
+                    <span><?php echo get_phrase('Access'); ?></span>
+                    <span class="required">*</span>
+                </label>
+                <select name="access" id="access" class="set-input" required>
+                    <option value=""><?php echo get_phrase('select_a_access'); ?></option>
+                    <option <?php if ($school_data['access'] == 1): ?> selected <?php endif; ?> value="1"><?php echo get_phrase('public'); ?></option>
+                    <option <?php if ($school_data['access'] == 0): ?> selected <?php endif; ?> value="0"><?php echo get_phrase('privé'); ?></option>
+                </select>
+                <div class="set-form-hint"><?php echo get_phrase('provide_admin_access'); ?></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Card -->
+    <div class="set-card">
+        <div class="set-card-header">
+            <i class="mdi mdi-map-marker"></i>
+            <h5><?php echo get_phrase('address'); ?></h5>
+        </div>
+        <div class="set-card-body">
+            <div class="set-form-row">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-road"></i>
+                        <span><?php echo get_phrase("Rue") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="communityStreet" name="communityStreet" class="set-input" value="<?php echo $school_data['Rue']; ?>" required>
+                    <small id="communityStreet-error" class="set-form-error"></small>
+                </div>
+
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-numeric"></i>
+                        <span><?php echo get_phrase("Numéro") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="communityNumber" name="communityNumber" class="set-input" value="<?php echo $school_data['Numero']; ?>" required>
+                    <small id="communityNumber-error" class="set-form-error"></small>
+                </div>
+            </div>
+
+            <div class="set-form-row">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-city"></i>
+                        <span><?php echo get_phrase("Ville") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="communityCity" name="communityCity" class="set-input" value="<?php echo $school_data['Ville']; ?>" required>
+                    <small id="communityCity-error" class="set-form-error"></small>
+                </div>
+
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-mailbox"></i>
+                        <span><?php echo get_phrase("code_postal") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="communityPostalCode" name="communityPostalCode" class="set-input" value="<?php echo $school_data['Codepostal']; ?>" required>
+                    <small id="communityPostalCode-error" class="set-form-error"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Information Card -->
+    <div class="set-card">
+        <div class="set-card-header">
+            <i class="mdi mdi-briefcase"></i>
+            <h5><?php echo get_phrase('business_information'); ?></h5>
+        </div>
+        <div class="set-card-body">
+            <div class="set-form-row">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-account-tie"></i>
+                        <span><?php echo get_phrase("I_am") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <select id="i_am" name="i_am" class="set-input" required>
+                        <option value=""><?php echo get_phrase('select_a_status'); ?></option>
+                        <option value="Entreprise" <?php if (($settings_school['type'] ?? '') == 'Entreprise'): ?> selected <?php endif; ?>><?php echo get_phrase("Entreprise") ?></option>
+                        <option value="Freelancer" <?php if (($settings_school['type'] ?? '') == 'Freelancer'): ?> selected <?php endif; ?>><?php echo get_phrase("Freelancer") ?></option>
+                        <option value="Autoentrepreneur" <?php if (($settings_school['type'] ?? '') == 'Autoentrepreneur'): ?> selected <?php endif; ?>><?php echo get_phrase("Autoentrepreneur") ?></option>
+                        <option value="Particulier" <?php if (($settings_school['type'] ?? '') == 'Particulier'): ?> selected <?php endif; ?>><?php echo get_phrase("Particulier") ?></option>
+                    </select>
+                </div>
+
+                <div class="set-form-group" id="row_vat_number">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-file-document"></i>
+                        <span><?php echo get_phrase("Numero_de_TVA") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="vat_number" name="num_vat" class="set-input" value="<?php echo $settings_school['num_vat'] ?? ''; ?>">
+                    <small id="vat_number-error" class="set-form-error"></small>
+                </div>
+            </div>
+
+            <?php 
+            $tax_residence = $school_data['country'] ?? '';
+            if ($tax_residence === 'AE') $tax_residence = 'UAE';
+            ?>
+
+            <div class="set-form-group">
+                <label class="set-form-label">
+                    <i class="mdi mdi-earth"></i>
+                    <span><?php echo get_phrase("Pays_de_résidence_fiscale") ?></span>
+                    <span class="required">*</span>
+                </label>
+                <select name="tax_residence" id="tax_residence" class="set-input" required onchange="handleTaxResidenceChange(this.value)">
+                    <option value=""><?php echo get_phrase("Sélectionnez_un_pays") ?></option>
+                    <option value="MA" <?php if ($tax_residence == 'MA'): ?> selected <?php endif; ?>><?php echo get_phrase("Morocco") ?></option>
+                    <option value="UAE" <?php if ($tax_residence == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
+                </select>
+            </div>
+
+            <!-- Document Upload Section -->
+            <div id="document_upload" style="display: <?php echo ($tax_residence == 'MA' || $tax_residence == 'UAE') ? 'block' : 'none'; ?>;">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-file-upload"></i>
+                        <span><?php echo get_phrase("Document_justificatif") ?></span>
+                        <span class="required">*</span>
+                    </label>
+                    
+                    <?php if (!empty($settings_school['file']) && file_exists('uploads/community_tax/' . $settings_school['file'])): 
+                        $docPath = 'uploads/community_tax/' . $settings_school['file'];
+                        $fileUrl = base_url($docPath);
+                        $fileName = basename($docPath);
+                        $fileSizeK = file_exists($docPath) ? round(filesize($docPath) / 1024) : 0;
+                    ?>
+                    <div id="document-loaded-state">
+                        <div class="set-doc-card">
+                            <div class="set-doc-icon"><i class="mdi mdi-check"></i></div>
+                            <div class="set-doc-info">
+                                <div class="set-doc-name"><?php echo htmlspecialchars($fileName); ?></div>
+                                <div class="set-doc-meta"><?php echo $fileSizeK; ?> Ko</div>
+                            </div>
+                            <div class="set-doc-actions">
+                                <a href="<?php echo $fileUrl; ?>" target="_blank" class="set-doc-btn view"><?php echo get_phrase("Voir"); ?></a>
+                                <button type="button" id="replace-document-btn" class="set-doc-btn replace"><?php echo get_phrase("Remplacer"); ?></button>
+                                <button type="button" id="delete-document-btn" class="set-doc-btn delete"><?php echo get_phrase("Supprimer"); ?></button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div id="document-upload-section" style="<?php echo (!empty($settings_school['file']) && file_exists('uploads/community_tax/' . $settings_school['file'])) ? 'display:none;' : ''; ?>">
+                        <input type="file" id="tax_document" name="tax_document" class="set-input" accept=".pdf,.png,.jpg,.jpeg">
+                        <div class="set-form-hint" id="document_hint">
+                            <?php if ($tax_residence == 'MA'): ?>
+                                <?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine.") ?>
+                            <?php elseif ($tax_residence == 'UAE'): ?>
+                                <?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale.") ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="set-form-hint"><i class="mdi mdi-information-outline"></i> PDF, PNG, JPG (max 4 Mo)</div>
+                        <div id="tax-document-error" class="set-form-error"></div>
+                    </div>
+                    <input type="hidden" id="delete_tax_document" name="delete_tax_document" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Images Card -->
+    <div class="set-card">
+        <div class="set-card-header">
+            <i class="mdi mdi-image-multiple"></i>
+            <h5><?php echo get_phrase('images'); ?></h5>
+        </div>
+        <div class="set-card-body">
+            <div class="set-form-row">
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-image"></i>
+                        <span><?php echo get_phrase('Community_profile_logo'); ?></span>
+                    </label>
+                    <div class="set-upload-card">
+                        <div class="set-upload-preview" id="school-image-preview">
+                            <img src="<?php echo $this->user_model->get_school_image($school_data['id']) . '?v=' . time(); ?>" class="preview-image" alt="Logo">
+                        </div>
+                        <label for="school_image" class="set-upload-btn">
+                            <i class="mdi mdi-cloud-upload"></i>
+                            <?php echo get_phrase('upload_an_image'); ?>
+                        </label>
+                        <input id="school_image" type="file" class="d-none image-upload" name="school_image" accept="image/*" data-preview="school-image-preview">
+                        <div class="set-form-hint">512×512 px recommandé, max 2 Mo</div>
+                        <div id="image-error" class="set-form-error"></div>
+                    </div>
+                </div>
+
+                <div class="set-form-group">
+                    <label class="set-form-label">
+                        <i class="mdi mdi-panorama"></i>
+                        <span><?php echo get_phrase('Community_cover_image'); ?></span>
+                    </label>
+                    <div class="set-upload-card">
+                        <div class="set-upload-preview cover" id="school-cover-preview">
+                            <img src="<?php echo $this->user_model->get_school_cover($school_data['id']) . '?v=' . time(); ?>" class="preview-image" alt="Cover">
+                        </div>
+                        <label for="school_cover" class="set-upload-btn">
+                            <i class="mdi mdi-cloud-upload"></i>
+                            <?php echo get_phrase('upload_an_image'); ?>
+                        </label>
+                        <input id="school_cover" type="file" class="d-none image-upload" name="school_cover" accept="image/png, image/jpeg" data-preview="school-cover-preview">
+                        <div class="set-form-hint">1920×600 px recommandé, max 2 Mo</div>
+                        <div id="cover-error" class="set-form-error"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="set-form-actions">
+        <button type="submit" class="set-btn set-btn-primary" id="update-logos-btn">
+            <i class="mdi mdi-content-save"></i>
+            <?php echo get_phrase('update_settings'); ?>
+        </button>
+    </div>
+</form>
 
 <script>
 $(document).ready(function() {
-    const phoneInput = $('#phone');
-    const phoneError = $('#phone-error');
+    // Validation patterns
     const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{9,10}$/;
+    const validations = {
+        school_name: { min: 3, msg: '<?php echo get_phrase('The_name_of_the_school_must_contain_at_least_3_characters'); ?>' },
+        description: { min: 10, msg: '<?php echo get_phrase('The_description_must_contain_at_least_10_characters'); ?>' },
+        communityStreet: { min: 3, msg: '<?php echo get_phrase('Invalid_street_(minimum_3_characters)'); ?>' },
+        communityCity: { min: 2, msg: '<?php echo get_phrase('Invalid_city_(minimum_2_characters)'); ?>' }
+    };
 
-    const schoolNameInput = $('#school_name');
-    const schoolNameError = $('#school-name-error');
+    // Real-time validation
+    Object.keys(validations).forEach(id => {
+        $(`#${id}`).on('input', function() {
+            const val = $(this).val().trim();
+            const $error = $(`#${id.replace('community', '').toLowerCase()}-error, #${id}-error`);
+            if (val.length < validations[id].min) {
+                $(this).addClass('is-invalid');
+                $error.text(validations[id].msg).show();
+            } else {
+                $(this).removeClass('is-invalid');
+                $error.hide();
+            }
+        });
+    });
 
-    const descriptionInput = $('#description');
-    const descriptionError = $('#description-error');
+    $('#phone').on('input', function() {
+        const val = $(this).val().trim();
+        if (!phoneRegex.test(val)) {
+            $(this).addClass('is-invalid');
+            $('#phone-error').text('<?php echo get_phrase('Numéro_invalide'); ?>').show();
+        } else {
+            $(this).removeClass('is-invalid');
+            $('#phone-error').hide();
+        }
+    });
 
-    const streetInput = $('#communityStreet');
-    const streetError = $('#communityStreet-error');
+    $('#communityNumber').on('input', function() {
+        if (!/^[0-9]+$/.test($(this).val().trim())) {
+            $(this).addClass('is-invalid');
+            $('#communityNumber-error').text('<?php echo get_phrase('Invalid_number_(digits_only)'); ?>').show();
+        } else {
+            $(this).removeClass('is-invalid');
+            $('#communityNumber-error').hide();
+        }
+    });
 
-    const numberInput = $('#communityNumber');
-    const numberError = $('#communityNumber-error');
+    $('#communityPostalCode').on('input', function() {
+        if (!/^[0-9]{4,5}$/.test($(this).val().trim())) {
+            $(this).addClass('is-invalid');
+            $('#communityPostalCode-error').text('<?php echo get_phrase('Invalid_postal_code_(4_or_5_digits)'); ?>').show();
+        } else {
+            $(this).removeClass('is-invalid');
+            $('#communityPostalCode-error').hide();
+        }
+    });
 
-    const cityInput = $('#communityCity');
-    const cityError = $('#communityCity-error');
-
-    const postalCodeInput = $('#communityPostalCode');
-    const postalCodeError = $('#communityPostalCode-error');
-
-    const vatInput = $('#vat_number');
-    const vatError = $('#vat_number-error');
-
-    const selectStatus = $('#i_am'); // Particulier ou Entreprise
-
-    // Fonction pour activer/désactiver VAT
+    // Toggle VAT field
     function toggleVat() {
-        const isParticulier = (selectStatus.val() === 'Particulier');
-        const rowVat = $('#row_vat_number');
-
-        rowVat.toggleClass('d-none', isParticulier);
-
+        const isParticulier = $('#i_am').val() === 'Particulier';
+        $('#row_vat_number').toggleClass('d-none', isParticulier);
         if (isParticulier) {
-            vatInput.val('');
-            vatInput.prop('disabled', true);
-            vatInput.removeAttr('required');
+            $('#vat_number').val('').prop('disabled', true).removeAttr('required');
         } else {
-            vatInput.prop('disabled', false);
+            $('#vat_number').prop('disabled', false);
         }
     }
-
     toggleVat();
-    selectStatus.on('change', toggleVat);
+    $('#i_am').on('change', toggleVat);
 
-    // Validation en temps réel
-    phoneInput.on('input', function() {
-        const value = $(this).val().trim();
-        if (!phoneRegex.test(value)) {
-            phoneError.text('<?php echo get_phrase('Numéro_invalide'); ?>').show();
-            $(this).addClass('is-invalid');
-        } else {
-            phoneError.hide();
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-    schoolNameInput.on('input', function() {
-        const value = $(this).val().trim();
-        if (value.length < 3) {
-            schoolNameError.text('<?php echo get_phrase('The_name_of_the_school_must_contain_at_least_3_characters'); ?>').show();
-            $(this).addClass('is-invalid');
-        } else {
-            schoolNameError.hide();
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-    descriptionInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (value.length < 10) {
-        descriptionError.text('<?php echo get_phrase('The_description_must_contain_at_least_10_characters'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        descriptionError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-streetInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (value.length < 3) {
-        streetError.text('<?php echo get_phrase('Invalid_street_(minimum_3_characters)'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        streetError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-numberInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (!/^[0-9]+$/.test(value)) {
-        numberError.text('<?php echo get_phrase('Invalid_number_(digits_only)'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        numberError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-cityInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (value.length < 2) {
-        cityError.text('<?php echo get_phrase('Invalid_city_(minimum_2_characters)'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        cityError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-postalCodeInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (!/^[0-9]{4,5}$/.test(value)) {
-        postalCodeError.text('<?php echo get_phrase('Invalid_postal_code_(4_or_5_digits)'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        postalCodeError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-vatInput.on('input', function() {
-    const value = $(this).val().trim();
-    if (!vatInput.prop('disabled') && value.length < 5) {
-        vatError.text('<?php echo get_phrase('Invalid_VAT_number_(minimum_5_characters)'); ?>').show();
-        $(this).addClass('is-invalid');
-    } else {
-        vatError.hide();
-        $(this).removeClass('is-invalid');
-    }
-});
-
-// Validation avant submit
-$('#schoolForm').submit(function(e) {
-    let isValid = true;
-
-    if (!phoneRegex.test(phoneInput.val().trim())) {
-        phoneError.text('Invalid_number').show();
-        phoneInput.addClass('is-invalid');
-        isValid = false;
-    } else phoneError.hide(), phoneInput.removeClass('is-invalid');
-
-    if (schoolNameInput.val().trim().length < 3) {
-        schoolNameError.text('<?php echo get_phrase('The_name_of_the_school_must_contain_at_least_3_characters'); ?>').show();
-        schoolNameInput.addClass('is-invalid');
-        isValid = false;
-    } else schoolNameError.hide(), schoolNameInput.removeClass('is-invalid');
-
-    if (descriptionInput.val().trim().length < 10) {
-        descriptionError.text('<?php echo get_phrase('The_description_must_contain_at_least_10_characters'); ?>').show();
-        descriptionInput.addClass('is-invalid');
-        isValid = false;
-    } else descriptionError.hide(), descriptionInput.removeClass('is-invalid');
-
-    if (streetInput.val().trim().length < 3) {
-        streetError.text('<?php echo get_phrase('Invalid_street_(minimum_3_characters)'); ?>').show();
-        streetInput.addClass('is-invalid');
-        isValid = false;
-    } else streetError.hide(), streetInput.removeClass('is-invalid');
-
-    if (!/^[0-9]+$/.test(numberInput.val().trim())) {
-        numberError.text('<?php echo get_phrase('Invalid_number_(digits_only)'); ?>').show();
-        numberInput.addClass('is-invalid');
-        isValid = false;
-    } else numberError.hide(), numberInput.removeClass('is-invalid');
-
-    if (cityInput.val().trim().length < 2) {
-        cityError.text('<?php echo get_phrase('Invalid_city_(minimum_2_characters)'); ?>').show();
-        cityInput.addClass('is-invalid');
-        isValid = false;
-    } else cityError.hide(), cityInput.removeClass('is-invalid');
-
-    if (!/^[0-9]{4,5}$/.test(postalCodeInput.val().trim())) {
-        postalCodeError.text('<?php echo get_phrase('Invalid_postal_code_(4_or_5_digits)'); ?>').show();
-        postalCodeInput.addClass('is-invalid');
-        isValid = false;
-    } else postalCodeError.hide(), postalCodeInput.removeClass('is-invalid');
-
-    if (!vatInput.prop('disabled') && vatInput.val().trim().length < 5) {
-        vatError.text('<?php echo get_phrase('Invalid_VAT_number_(minimum_5_characters)'); ?>').show();
-        vatInput.addClass('is-invalid');
-        isValid = false;
-    } else vatError.hide(), vatInput.removeClass('is-invalid');
-        if (!isValid) {
-            e.preventDefault();
-            return false;
-        }
-    });
-});
-</script>
-
-
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        // Initialisation Select2
-        $('select.select2:not(.normal)').each(function() {
-            $(this).select2({
-                dropdownParent: '#right-modal'
-            });
-        });
-
-        // Gestionnaire de prévisualisation d'image
-        // Image preview handlers
-        $('.image-upload').each(function() {
-            const input = $(this); // Sélectionne chaque champ d'upload d'image individuellement
-            const previewId = input.data('preview'); // Récupère l'ID du conteneur de prévisualisation depuis l'attribut data-preview
-
-            input.on('change', function() { // Ajoute un événement de changement lorsque l'utilisateur sélectionne un fichier
-                const file = this.files[0]; // Récupère le premier fichier sélectionné
-                if (file) {
-                    const reader = new FileReader(); // Crée un objet FileReader pour lire le fichier
-                    const previewContainer = $('#' + previewId); // Sélectionne le conteneur de prévisualisation
-                    const previewImage = previewContainer.find('.preview-image'); // Sélectionne l'image de prévisualisation à l'intérieur du conteneur
-
-                    reader.onload = function(e) { // Exécute cette fonction lorsque le fichier est lu avec succès
-                        previewImage.attr('src', e.target.result); // Met à jour la source de l'image avec l'URL du fichier chargé
-
-                        // Ajoute un effet d'animation visuelle pour signaler l'upload
-                        previewContainer.addClass('upload-highlight');
-                        setTimeout(function() {
-                            previewContainer.removeClass('upload-highlight'); // Supprime l'effet après 1,5 seconde
-                        }, 1500);
-                    };
-
-                    reader.readAsDataURL(file); // Lit le fichier sous forme d'URL de données (base64)
-                }
-            });
-        });
-        // Fonction pour récupérer and retourner le token CSRF
-        function getCsrfToken() {
-            var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-            var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-            return {
-                csrfName: csrfName,
-                csrfHash: csrfHash
-            };
-        }
-
-        // Soumission AJAX du formulaire
-        $('#schoolForm').submit(function(e) {
-            e.preventDefault();
-
-            // Obtenez le texte de mise à jour traduit
-            var updating_text = "<?php echo get_phrase('updating'); ?>...";
-            // Afficher un indicateur de chargement
-            $('button[type="submit"]').prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>' + updating_text);
-            // Récupérer le token CSRF avant l'envoi
-            var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
-            const formData = new FormData(this); // Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
-
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-
-                success: function(response) {
-                    if (response.status) {
-                        //success_notify(response.notification);
-                        // Mise à jour du token CSRF
-                        $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-
-                        // Mise à jour dynamique des images avec cache-buster (pour forcer le rechargement des images)
-                        $('.preview-image').each(function() {
-                            var originalSrc = $(this).attr('src').split('?')[0]; // Récupère l'URL d'origine de l'image sans la chaîne de requête
-                            // $(this).attr('src', originalSrc + '?v=' + Date.now()); // Ajoute un timestamp pour éviter la mise en cache cette ligne affiche alt du l'image avant affichage du l'image apres update
-                        });
-
-                        // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
-                        setTimeout(function() {
-                            location.reload();
-                        }, 3500); // Attendre 3500ms avant de recharger la page
-                    } else {
-                        error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
-
-                    }
-                },
-                error: function() {
-                    error_notify(<?= js_phrase('an_error_occurred_during_submission'); ?>)
-                }
-            });
+    // Image preview
+    $('.image-upload').each(function() {
+        $(this).on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                const previewId = $(this).data('preview');
+                reader.onload = e => $(`#${previewId} .preview-image`).attr('src', e.target.result);
+                reader.readAsDataURL(file);
+            }
         });
     });
 
-    function handleTaxResidenceChange(country) {
-        const documentUpload = document.getElementById('document_upload');
-        const documentHint = document.getElementById('document_hint');
-
-        if (country === 'MA') {
-            documentUpload.style.display = 'block';
-            if (documentHint) {
-                documentHint.textContent = 'Veuillez télécharger une attestation fiscale marocaine.';
-            }
-        } else if (country === 'UAE') {
-            documentUpload.style.display = 'block';
-            if (documentHint) {
-                documentHint.textContent = 'Veuillez télécharger une licence commerciale.';
-            }
-        } else {
-            documentUpload.style.display = 'none';
-            if (documentHint) {
-                documentHint.textContent = '';
-            }
-        }
-    }
-</script>
-
-<!-- Script de gestion du document justificatif -->
-<script>
-$(document).ready(function() {
-    const maxFileSizeMB = 4;
-    const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
-    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg'];
-    const errorDiv = $('#tax-document-error');
-    const fileInput = $('#tax_document');
-    const deleteInput = $('#delete_tax_document');
-    const documentUploadSection = $('#document-upload-section');
-    const documentLoadedState = $('#document-loaded-state');
-    const replaceBtn = $('#replace-document-btn');
-    const deleteBtn = $('#delete-document-btn');
-
-    // Fonction de validation du fichier
-    function validateTaxDocument(file) {
-        errorDiv.hide().text('');
-
-        if (!file) {
-            return false;
-        }
-
-        // Vérification de la taille
-        if (file.size > maxFileSizeBytes) {
-            errorDiv.text('⚠️ <?php echo get_phrase("Fichier trop volumineux (4Mo max)"); ?>').show();
-            fileInput.val('');
-            return false;
-        }
-
-        // Vérification de l'extension
-        const fileExtension = file.name.split('.').pop().toLowerCase();
-        if (!allowedExtensions.includes(fileExtension)) {
-            errorDiv.text('⚠️ <?php echo get_phrase("Format non supporté"); ?>').show();
-            fileInput.val('');
-            return false;
-        }
-
-        return true;
-    }
-
-    // Validation lors de la sélection du fichier
-    fileInput.on('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (validateTaxDocument(file)) {
-                errorDiv.hide();
-            }
-        }
-    });
-
-    // Bouton "Remplacer"
-    if (replaceBtn.length) {
-        replaceBtn.on('click', function() {
-            documentLoadedState.hide();
-            documentUploadSection.show();
-            fileInput.val('');
-            deleteInput.val('0');
-        });
-    }
-
-    // Bouton "Supprimer"
-    if (deleteBtn.length) {
-        deleteBtn.on('click', function() {
-            if (confirm('<?php echo get_phrase("Êtes-vous sûr de vouloir supprimer ce document ?"); ?>')) {
-                deleteTaxDocument();
-            }
-        });
-    }
-
-    // Fonction de suppression du document via AJAX
-    function deleteTaxDocument() {
-        const btn = deleteBtn;
-        const originalText = btn.html();
-        
-        btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin me-1"></i><?php echo get_phrase("Suppression..."); ?>');
+    // Form submission
+    $('#schoolForm').submit(function(e) {
+        e.preventDefault();
+        const $btn = $('#update-logos-btn');
+        $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase('updating'); ?>...');
 
         $.ajax({
-            url: '<?php echo base_url("admin/school_settings/delete_tax_document"); ?>',
+            url: $(this).attr('action'),
             type: 'POST',
-            data: {
-                <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
-            },
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(response) {
                 if (response.status) {
-                    // Mise à jour du token CSRF
+                    $btn.css({'background': 'linear-gradient(135deg, #10b981, #34d399)'})
+                        .html('<i class="mdi mdi-check-circle"></i> <?php echo get_phrase('updated'); ?>!');
                     $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-                    
-                    // Masquer l'état "Document chargé" et afficher l'input file
-                    documentLoadedState.hide();
-                    documentUploadSection.show();
-                    fileInput.val('');
-                    deleteInput.val('0');
-                    
-                    success_notify(response.notification || '<?php echo get_phrase("Document supprimé avec succès"); ?>');
+                    setTimeout(() => location.reload(), 1500);
                 } else {
-                    error_notify(response.notification || '<?php echo get_phrase("Suppression impossible"); ?>');
-                    btn.prop('disabled', false).html(originalText);
+                    $btn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo get_phrase('update_settings'); ?>');
+                    toastr.error('<?php echo get_phrase('action_not_allowed'); ?>');
                 }
             },
             error: function() {
-                error_notify('<?php echo get_phrase("Suppression impossible"); ?>');
-                btn.prop('disabled', false).html(originalText);
+                $btn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo get_phrase('update_settings'); ?>');
+                toastr.error('<?php echo get_phrase('an_error_occurred'); ?>');
+            }
+        });
+    });
+});
+
+function handleTaxResidenceChange(country) {
+    const documentUpload = document.getElementById('document_upload');
+    const documentHint = document.getElementById('document_hint');
+    if (country === 'MA' || country === 'UAE') {
+        documentUpload.style.display = 'block';
+        if (documentHint) {
+            documentHint.textContent = country === 'MA' 
+                ? '<?php echo get_phrase("Veuillez_télécharger_une_attestation_fiscale_marocaine."); ?>'
+                : '<?php echo get_phrase("Veuillez_télécharger_une_licence_commerciale."); ?>';
+        }
+    } else {
+        documentUpload.style.display = 'none';
+    }
+}
+
+// Document management
+$('#replace-document-btn').on('click', function() {
+    $('#document-loaded-state').hide();
+    $('#document-upload-section').show();
+});
+
+$('#delete-document-btn').on('click', function() {
+    if (confirm('<?php echo get_phrase("Êtes-vous sûr de vouloir supprimer ce document ?"); ?>')) {
+        $.ajax({
+            url: '<?php echo base_url("admin/school_settings/delete_tax_document"); ?>',
+            type: 'POST',
+            data: { <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>' },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    $('#document-loaded-state').hide();
+                    $('#document-upload-section').show();
+                    toastr.success('<?php echo get_phrase("Document supprimé avec succès"); ?>');
+                }
             }
         });
     }
-
-    // Validation avant soumission du formulaire
-    $('#schoolForm').on('submit', function(e) {
-        const taxResidence = $('#tax_residence').val();
-        const hasDocument = documentLoadedState.is(':visible');
-        const hasFileSelected = fileInput[0] && fileInput[0].files.length > 0;
-        const isDeleteRequested = deleteInput.val() === '1';
-
-        // Si résidence fiscale requiert un document
-        if ((taxResidence === 'MA' || taxResidence === 'UAE')) {
-            // Vérifier qu'un document existe OU qu'un nouveau fichier est sélectionné
-            if (!hasDocument && !hasFileSelected && !isDeleteRequested) {
-                error_notify('<?php echo get_phrase("Veuillez télécharger un document justificatif"); ?>');
-                e.preventDefault();
-                return false;
-            }
-
-            // Si un fichier est sélectionné, le valider
-            if (hasFileSelected) {
-                const file = fileInput[0].files[0];
-                if (!validateTaxDocument(file)) {
-                    e.preventDefault();
-                    return false;
-                }
-            }
-        }
-    });
-
-    // Réinitialiser le champ delete_tax_document si un nouveau fichier est sélectionné
-    fileInput.on('change', function() {
-        if (this.files.length > 0) {
-            deleteInput.val('0');
-        }
-    });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const selectStatus = document.getElementById('i_am');
-  const rowVat = document.getElementById('row_vat_number');
-  const vatInput = document.getElementById('vat_number');
-
-  function toggleVat() {
-    const isParticulier = (selectStatus.value === 'Particulier');
-    // Cache/affiche le bloc
-    rowVat.classList.toggle('d-none', isParticulier);
-
-    // Gère les contraintes du champ
-    if (isParticulier) {
-      vatInput.value = '';
-      vatInput.setAttribute('disabled', 'disabled');
-      vatInput.removeAttribute('required');
-      vatInput.setAttribute('aria-required', 'false');
-    } else {
-      vatInput.removeAttribute('disabled');
-      // Décommentez si le champ doit être obligatoire pour non-Particulier
-      // vatInput.setAttribute('required', 'required');
-      // vatInput.setAttribute('aria-required', 'true');
-    }
-  }
-
-  toggleVat();                   // État initial (pré-sélection serveur)
-  selectStatus.addEventListener('change', toggleVat);
-});
-</script>
-</script>
-<!-- condition logo photo -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const fileInput = document.getElementById("school_image");
-  const errorDiv = document.getElementById("image-error");
-  const maxWidth = 512;
-  const maxHeight = 512;
-  const maxSizeMB = 2;
-
-  fileInput.addEventListener("change", function (e) {
-    errorDiv.textContent = ""; // réinitialiser le message
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Vérification du poids
-    const fileSizeMB = file.size / 1024 / 1024;
-    if (fileSizeMB > maxSizeMB) {
-      errorDiv.textContent = `⚠️ <?php echo get_phrase("The_file_is_too_large!_Maximum") ?> ${maxSizeMB} MB <?php echo get_phrase("allowed") ?>.`;
-      fileInput.value = "";
-      return;
-    }
-
-    // Vérification des dimensions
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    img.onload = function () {
-      if (img.width > maxWidth || img.height > maxHeight) {
-        errorDiv.textContent = `⚠️ <?php echo get_phrase("The_logo_is_too_large!_Maximum") ?> ${maxWidth}×${maxHeight} pixels.`;
-        fileInput.value = "";
-      } else {
-        errorDiv.textContent = ""; // OK
-      }
-      URL.revokeObjectURL(objectUrl);
-    };
-
-    img.onerror = function() {
-      errorDiv.textContent = "⚠️ <?php echo get_phrase("Unable_to_upload_this_image._Check_the_format_(PNG/JPEG)..") ?>";
-      fileInput.value = "";
-      URL.revokeObjectURL(objectUrl);
-    }
-
-    img.src = objectUrl;
-  });
-
-  // Tooltip Bootstrap
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.forEach(function (el) {
-    const tooltipInstance = bootstrap.Tooltip.getInstance(el);
-    if (tooltipInstance) tooltipInstance.dispose();
-    new bootstrap.Tooltip(el, { trigger: 'hover', delay: { show: 200, hide: 0 } });
-  });
-});
-</script>
-
-
-<!-- condition cover photo -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const fileInput = document.getElementById("school_cover");
-  const errorDiv = document.getElementById("cover-error");
-
-  const maxWidth = 1600;   // largeur max
-  const maxHeight = 900;   // hauteur max
-  const maxSizeMB = 2;     // poids max
-
-  fileInput.addEventListener("change", function (e) {
-    errorDiv.textContent = "";
-    errorDiv.style.display = "none";
-
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Vérification du poids
-    const fileSizeMB = file.size / 1024 / 1024;
-    if (fileSizeMB > maxSizeMB) {
-      errorDiv.textContent = `⚠️ <?php echo get_phrase("The file is too large! Maximum") ?> ${maxSizeMB} MB <?php echo get_phrase("allowed") ?>.`;
-      errorDiv.style.display = "block";
-      fileInput.value = "";
-      return;
-    }
-
-    // Vérification des dimensions
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    img.onload = function () {
-      if (img.width > maxWidth || img.height > maxHeight) {
-        errorDiv.textContent = `⚠️ <?php echo get_phrase("Cover_image_is_too_large!_Maximum") ?> ${maxWidth}×${maxHeight} pixels.`;
-        errorDiv.style.display = "block";
-        fileInput.value = "";
-      } else {
-        errorDiv.textContent = "";
-        errorDiv.style.display = "none";
-      }
-      URL.revokeObjectURL(objectUrl);
-    };
-
-    img.onerror = function() {
-      errorDiv.textContent = "⚠️ <?php echo get_phrase("Unable_to_upload_this_image._Please_check_the_format_(PNG/JPEG).") ?>";
-      errorDiv.style.display = "block";
-      fileInput.value = "";
-      URL.revokeObjectURL(objectUrl);
-    }
-
-    img.src = objectUrl;
-  });
-
-  // Initialisation tooltip Bootstrap
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('.tooltip-label'));
-  tooltipTriggerList.forEach(function(el){
-    const tooltipInstance = bootstrap.Tooltip.getInstance(el);
-    if (tooltipInstance) tooltipInstance.dispose();
-    new bootstrap.Tooltip(el, { trigger: 'hover', delay: { show: 200, hide: 0 } });
-  });
 });
 </script>

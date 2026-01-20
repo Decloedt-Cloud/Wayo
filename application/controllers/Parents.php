@@ -90,6 +90,7 @@ class Parents extends CI_Controller
 	//START TEACHER section
 	public function teacher($param1 = '', $param2 = '', $param3 = '')
 	{
+		$page_data['working_page'] = 'filter';
 		$page_data['folder_name'] = 'teacher';
 		$page_data['page_title'] = 'techers';
 		$this->load->view('backend/index', $page_data);

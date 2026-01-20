@@ -450,9 +450,18 @@
 					// Montant à payer selon le type de paiement
 					$form_amount = $is_subscription_admin ? $grand_total : $amount_to_pay;
 					$form_currency = $is_subscription_admin ? $display_currency : ($currency ?? 'MAD');
+					
+					// Pour les paiements school_join ou community, toujours utiliser student/payment_success
+					// car admin/teacher utilisent le flux student pour rejoindre une communauté
+					$is_community_payment = ($payment_type === 'school_join' || $type === 'community');
+					if ($is_community_payment) {
+						$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+					} else {
+						$stripe_action_url = route('payment_success/stripe/' . $invoice_id.'/'.$form_amount);
+					}
 					?>
 					<form id="card-form" class="payment-form <?php echo ($stripe_enabled && !$paypal_enabled) || ($stripe_enabled && $paypal_enabled) ? 'active' : ''; ?>" method="post"
-						action="<?php echo route('payment_success/stripe/' . $invoice_id.'/'.$form_amount);?>">
+						action="<?php echo $stripe_action_url; ?>">
 
 												<input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 												<input type="hidden" name="currency" value="<?php echo $form_currency;?>" />
@@ -1852,8 +1861,19 @@
                             console.log("Payment executed successfully:", payment);
                             
                             // Make AJAX call to save payment info
+                            <?php 
+                            // Pour les paiements school_join ou community, toujours utiliser student/payment_success
+                            $is_community_payment = ($payment_type === 'school_join' || $type === 'community');
+                            if ($is_community_payment) {
+                                $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                            } else {
+                                $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);
+                                $paypal_redirect_url = route('invoice');
+                            }
+                            ?>
                             $.ajax({
-                                url: '<?php echo route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type); ?>',
+                                url: '<?php echo $paypal_success_url; ?>',
                                 method: 'POST',
                                 data: {
                                     '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>',
@@ -1868,7 +1888,7 @@
                                 }
                             }).done(function(result) {
                                 console.log("AJAX success response:", result);
-                                window.location = '<?php echo route('invoice'); ?>';
+                                window.location = '<?php echo $paypal_redirect_url; ?>';
                             }).fail(function(xhr, status, error) {
                                 console.error("AJAX error:", status, error);
                                 console.error("Response:", xhr.responseText);

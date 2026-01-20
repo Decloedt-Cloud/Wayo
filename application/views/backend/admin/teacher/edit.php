@@ -1,154 +1,498 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
 <?php
 $users = $this->db->get_where('users', array('id' => $param1))->result_array();
 foreach($users as $user):
   $teacher = $this->db->get_where('teachers', array('user_id' => $user['id']))->row_array();
   $social_links = json_decode($teacher['social_links'], true);
-  ?>
-  <form method="POST" class="d-block ajaxForm" action="<?php echo route('teacher/update/'.$param1); ?>">
-    <!-- Champ caché pour le jeton CSRF -->
-    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-    
-    <div class="form-row">
-      <div class="form-group mb-1">
-        <input type="hidden" name="school_id" value="<?php echo school_id(); ?>">
-        <label for="name"><?php echo get_phrase('name'); ?><span class="required"> * </span></label>
-        <input type="text" value="<?php echo $user['name']; ?>" class="form-control" id="name" name = "name" required>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_name'); ?></small>
-      </div>
+?>
 
-      <div class="form-group mb-1">
-        <label for="email"><?php echo get_phrase('email'); ?><span class="required"> * </span></label>
-        <input type="email" value="<?php echo $user['email']; ?>" class="form-control" id="email" name = "email" required>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_email'); ?></small>
-      </div>
+<style>
+/* ============================================================================
+   PREMIUM FORM DESIGN
+   ============================================================================ */
 
-      <div class="form-group mb-1">
-        <label for="designation"><?php echo get_phrase('designation'); ?><span class="required"> * </span></label>
-        <input type="text" value="<?php echo $teacher['designation']; ?>" class="form-control" id="designation" name = "designation" required>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_designation'); ?></small>
-      </div>
+:root {
+    --form-primary: #6366f1;
+    --form-primary-rgb: 99, 102, 241;
+    --form-success: #10b981;
+    --form-danger: #ef4444;
+    --form-warning: #f59e0b;
+    --form-dark: #1e293b;
+    --form-gray: #64748b;
+    --form-light: #f8fafc;
+    --form-border: #e2e8f0;
+    --form-white: #ffffff;
+}
 
+.ec-form-container {
+    padding: 0.5rem;
+}
 
+/* Form Header */
+.ec-form-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--form-border);
+}
 
-      <div class="form-group mb-1">
-        <label for="phone"><?php echo get_phrase('phone_number'); ?><span class="required"> * </span></label>
-        <input type="text" value="<?php echo $user['phone']; ?>" class="form-control" id="phone" name = "phone" required>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_phone_number'); ?></small>
-      </div>
+.ec-form-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--form-primary), #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(var(--form-primary-rgb), 0.3);
+}
 
-      <div class="form-group mb-1">
-        <label for="gender"><?php echo get_phrase('gender'); ?></label>
-        <select name="gender" id="gender" class="form-control" >
-          <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
-          <option value="Male" <?php if($user['gender'] == 'Male') echo 'selected'; ?>><?php echo get_phrase('male'); ?></option>
-          <option value="Female" <?php if($user['gender'] == 'Female') echo 'selected'; ?>><?php echo get_phrase('female'); ?></option>
-          <option value="Others" <?php if($user['gender'] == 'Others') echo 'selected'; ?>><?php echo get_phrase('others'); ?></option>
-        </select>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_gender'); ?></small>
-      </div>
+.ec-form-title {
+    flex: 1;
+}
 
+.ec-form-title h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--form-dark);
+}
 
-      <!-- <div class="form-group mb-1">
-        <label><?php // echo get_phrase('facebook_profile_link'); ?></label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="mdi mdi-facebook"></i></span>
-          </div>
-          <input type="text" class="form-control" name="facebook_link" value="<?php //echo $social_links['facebook']; ?>">
+.ec-form-title p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--form-gray);
+}
+
+/* Form Groups */
+.ec-form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.ec-form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--form-dark);
+}
+
+.ec-form-label i {
+    color: var(--form-primary);
+    font-size: 1rem;
+}
+
+.ec-form-label .ec-required {
+    color: var(--form-danger);
+    font-weight: 700;
+}
+
+/* Input Wrapper */
+.ec-input-wrapper {
+    position: relative;
+}
+
+.ec-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--form-gray);
+    font-size: 1.25rem;
+    z-index: 1;
+    transition: all 0.2s;
+}
+
+.ec-form-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid var(--form-border);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    background: var(--form-light);
+    color: var(--form-dark);
+    transition: all 0.2s;
+}
+
+.ec-form-input:hover {
+    border-color: #cbd5e1;
+}
+
+.ec-form-input:focus {
+    outline: none;
+    border-color: var(--form-primary);
+    background: var(--form-white);
+    box-shadow: 0 0 0 4px rgba(var(--form-primary-rgb), 0.1);
+}
+
+.ec-form-input:focus + .ec-input-icon,
+.ec-form-input:not(:placeholder-shown) + .ec-input-icon {
+    color: var(--form-primary);
+}
+
+/* Form Actions */
+.ec-form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--form-border);
+}
+
+.ec-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    min-width: 140px;
+    text-decoration: none;
+}
+
+.ec-btn-primary {
+    background: linear-gradient(135deg, var(--form-primary), #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(var(--form-primary-rgb), 0.3);
+}
+
+.ec-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--form-primary-rgb), 0.4);
+    color: white;
+}
+
+.ec-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Image Upload Section Styles */
+.image-upload-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--form-light);
+    border-radius: 16px;
+    border: 2px dashed var(--form-border);
+    transition: all 0.2s;
+}
+
+.image-upload-section:hover {
+    border-color: var(--form-primary);
+    background: rgba(var(--form-primary-rgb), 0.05);
+}
+
+.image-preview {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.logo-upload-btn label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid var(--form-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--form-dark);
+    transition: all 0.2s;
+}
+
+.logo-upload-btn label:hover {
+    border-color: var(--form-primary);
+    color: var(--form-primary);
+}
+
+.image-upload {
+    display: none;
+}
+
+/* Info Card */
+.ec-info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--form-light);
+    border-radius: 12px;
+    border: 1px solid var(--form-border);
+    margin-bottom: 1.5rem;
+}
+
+.ec-info-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(var(--form-primary-rgb), 0.1);
+    color: var(--form-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ec-info-card-content h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--form-dark);
+}
+
+.ec-info-card-content p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--form-gray);
+}
+</style>
+
+<div class="ec-form-container">
+    <!-- Form Header -->
+    <div class="ec-form-header">
+        <div class="ec-form-icon">
+            <i class="mdi mdi-account-edit"></i>
         </div>
-        <small id="" class="form-text text-muted"><?php //echo get_phrase('facebook_profile_link'); ?></small>
-      </div>
-
-      <div class="form-group mb-1">
-        <label><?php //echo get_phrase('twitter_profile_link'); ?></label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="mdi mdi-twitter"></i></span>
-          </div>
-          <input type="text" class="form-control" name="twitter_link" value="<?php echo $social_links['twitter']; ?>">
+        <div class="ec-form-title">
+            <h3><?php echo get_phrase('update_teacher'); ?></h3>
+            <p><?php echo get_phrase('update_teacher_information'); ?></p>
         </div>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('twitter_profile_link'); ?></small>
-      </div> -->
-
-      <div class="form-group mb-1">
-        <label><?php echo get_phrase('linkedin_profile_link'); ?></label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="mdi mdi-linkedin"></i></span>
-          </div>
-          <input type="text" class="form-control" name="linkedin_link" value="<?php echo $social_links['linkedin']; ?>">
-        </div>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('linkedin_profile_link'); ?></small>
-      </div>
-
-      <div class="form-group mb-1">
-        <label for="phone"><?php echo get_phrase('address'); ?></label>
-        <textarea class="form-control" id="address" name = "address" rows="5" ><?php echo $user['address']; ?></textarea>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_teacher_address'); ?></small>
-      </div>
-
-      <div class="form-group mb-1">
-        <label for="about"><?php echo get_phrase('about'); ?></label>
-        <textarea class="form-control" id="about" name = "about" rows="5" required><?php echo $teacher['about']; ?></textarea>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('provide_a_small_about'); ?></small>
-      </div>
-
-      <!-- <div class="form-group mb-1">
-        <label for="show_on_website"><?php echo get_phrase('show_on_website'); ?></label>
-        <select name="show_on_website" id="show_on_website" class="form-control" >
-          <option value="1" <?php if($teacher['show_on_website'] == 1) echo 'selected'; ?>><?php echo get_phrase('show'); ?></option>
-          <option value="0" <?php if($teacher['show_on_website'] == 0) echo 'selected'; ?>><?php echo get_phrase('do_not_need_to_show'); ?></option>
-        </select>
-        <small id="" class="form-text text-muted"><?php echo get_phrase('show_this_teacher_on_website'); ?></small>
-      </div> -->
-
-      <div class="form-group mb-1">
-          <label for="image_file"><?php echo get_phrase('upload_image'); ?></label>
-          <input type="file" class="form-control" id="image_file" name = "image_file">
-      </div>
-
-      <div class="form-group mt-2 col-md-12">
-        <button class="btn btn-primary btn-l px-4" id="update-btn" type="submit"><i class="mdi mdi-account-check"></i><?php echo get_phrase('update_teacher'); ?></button>
-      </div>
     </div>
-  </form>
+
+    <form method="POST" class="d-block ajaxForm" action="<?php echo route('teacher/update/'.$param1); ?>" enctype="multipart/form-data">
+        <!-- Champ caché pour le jeton CSRF -->
+        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+        <input type="hidden" name="school_id" value="<?php echo school_id(); ?>">
+
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+            <div class="image-preview" id="image-preview">
+                <img src="<?php echo $this->user_model->get_user_image($user['id']); ?>" alt="Profile Image">
+            </div>
+            <div class="logo-upload-btn">
+                <label for="image_file">
+                    <i class="mdi mdi-camera"></i> <?php echo get_phrase('change_profile_photo'); ?>
+                </label>
+                <input type="file" class="image-upload" id="image_file" name="image_file" accept="image/*">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Name -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-account"></i>
+                        <span><?php echo get_phrase('name'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <input type="text" value="<?php echo $user['name']; ?>" class="ec-form-input" id="name" name="name" required>
+                        <i class="mdi mdi-format-letter-case ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Email -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-email"></i>
+                        <span><?php echo get_phrase('email'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <input type="email" value="<?php echo $user['email']; ?>" class="ec-form-input" id="email" name="email" required>
+                        <i class="mdi mdi-at ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                 <!-- Designation -->
+                 <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-briefcase"></i>
+                        <span><?php echo get_phrase('designation'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <input type="text" value="<?php echo $teacher['designation']; ?>" class="ec-form-input" id="designation" name="designation" required>
+                        <i class="mdi mdi-badge-account-horizontal ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Phone -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-phone"></i>
+                        <span><?php echo get_phrase('phone_number'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <input type="text" value="<?php echo $user['phone']; ?>" class="ec-form-input" id="phone" name="phone" required>
+                        <i class="mdi mdi-cellphone ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Gender -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-gender-male-female"></i>
+                        <span><?php echo get_phrase('gender'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <select name="gender" id="gender" class="ec-form-input" required>
+                            <option value=""><?php echo get_phrase('select_a_gender'); ?></option>
+                            <option value="Male" <?php if($user['gender'] == 'Male') echo 'selected'; ?>><?php echo get_phrase('male'); ?></option>
+                            <option value="Female" <?php if($user['gender'] == 'Female') echo 'selected'; ?>><?php echo get_phrase('female'); ?></option>
+                            <option value="Others" <?php if($user['gender'] == 'Others') echo 'selected'; ?>><?php echo get_phrase('others'); ?></option>
+                        </select>
+                        <i class="mdi mdi-gender-male-female ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                 <!-- LinkedIn -->
+                 <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-linkedin"></i>
+                        <span><?php echo get_phrase('linkedin_profile_link'); ?></span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <input type="text" class="ec-form-input" name="linkedin_link" value="<?php echo $social_links['linkedin']; ?>">
+                        <i class="mdi mdi-link ec-input-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Info Card -->
+        <div class="ec-info-card mt-3">
+            <div class="ec-info-card-icon">
+                <i class="mdi mdi-map-marker-radius"></i>
+            </div>
+            <div class="ec-info-card-content">
+                <h4><?php echo get_phrase('address_details'); ?></h4>
+                <p><?php echo get_phrase('provide_teacher_address_information'); ?></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Address -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-map-marker"></i>
+                        <span><?php echo get_phrase('address'); ?></span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <textarea class="ec-form-input" id="address" name="address" rows="2" style="height: auto;"><?php echo $user['address']; ?></textarea>
+                        <i class="mdi mdi-map-marker-outline ec-input-icon" style="top: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Info Card -->
+        <div class="ec-info-card mt-3">
+            <div class="ec-info-card-icon">
+                <i class="mdi mdi-information-outline"></i>
+            </div>
+            <div class="ec-info-card-content">
+                <h4><?php echo get_phrase('about_teacher'); ?></h4>
+                <p><?php echo get_phrase('provide_a_small_about_description'); ?></p>
+            </div>
+        </div>
+
+        <div class="row">
+             <div class="col-md-12">
+                <!-- About -->
+                <div class="ec-form-group">
+                    <label class="ec-form-label">
+                        <i class="mdi mdi-text-box-outline"></i>
+                        <span><?php echo get_phrase('about'); ?></span>
+                        <span class="ec-required">*</span>
+                    </label>
+                    <div class="ec-input-wrapper">
+                        <textarea class="ec-form-input" id="about" name="about" rows="3" required style="height: auto;"><?php echo $teacher['about']; ?></textarea>
+                        <i class="mdi mdi-comment-text-outline ec-input-icon" style="top: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ec-form-actions">
+            <button class="ec-btn ec-btn-primary" id="update-btn" type="submit">
+                <i class="mdi mdi-account-check"></i>
+                <?php echo get_phrase('update_teacher'); ?>
+            </button>
+        </div>
+    </form>
+</div>
+
 <?php endforeach; ?>
 
 <script>
-
 $(document).ready(function () {
-  $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); }); //initSelect2([, '#gender', '#show_on_website']);
+    $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); });
 });
-$(".ajaxForm").validate({}); // Jquery form validation initialization
+
+// Image preview
+$('#image_file').change(function(){
+    let reader = new FileReader();
+    reader.onload = (e) => {
+        $('#image-preview img').attr('src', e.target.result);
+    }
+    reader.readAsDataURL(this.files[0]);
+});
+
 $(".ajaxForm").submit(function(e) {
-  var form = $(this);
-  ajaxSubmit(e, form, showAllTeachers);
-// initCustomFileUploader();
-// Fonction pour récupérer et retourner le token CSRF
-function getCsrfToken() {
-         // Récupérer le nom du token CSRF depuis le champ input caché
-          var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-         // Récupérer la valeur (hash) du token CSRF depuis le champ input caché
-           var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-         // Retourner un objet contenant le nom du token et sa valeur
-         return { csrfName: csrfName, csrfHash: csrfHash };
-      }
-
-
- // Soumission du formulaire de logo
- $(".ajaxForm").submit(function(e) {
     e.preventDefault();
-
-           // Cible uniquement le bouton de ce formulaire
-        var submitButton = $(this).find('button[type="submit"]');
-        var updating_text = "<?php echo get_phrase('updating'); ?>...";
-        
-        // Désactive et met à jour uniquement ce bouton
-        submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+updating_text);
-         // Récupérer le token CSRF avant l'envoi
-         var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
-         const formData = new FormData(this);// Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
+    var form = $(this);
+    var submitButton = form.find('button[type="submit"]');
+    var originalBtnHtml = submitButton.html();
+    var updating_text = "<?php echo get_phrase('updating'); ?>...";
+    
+    submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> '+updating_text);
+    
+    const formData = new FormData(this);
 
     $.ajax({
         url: $(this).attr('action'),
@@ -158,24 +502,50 @@ function getCsrfToken() {
         contentType: false,
         dataType: 'json',
         success: function (response) {
-            if (response.status) { // Vérifie si la mise à jour a réussi
-                // Met à jour le token CSRF
-                $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
-
-                // Rafraîchissement de la page après un léger délai pour s'assurer que les modifications sont appliquées
-                setTimeout(function() {
-                  location.reload();
-                }, 3500);// Attendre 3500ms avant de recharger la page
-            } else {
-              error_notify('<?= js_phrase(get_phrase('action_not_allowed')); ?>')
+            if (response.status) {
+                if(typeof showNotification === 'function') {
+                    showNotification('success', response.notification);
+                } else if(typeof toastr !== 'undefined') {
+                    toastr.success(response.notification);
+                }
                 
+                // Update CSRF token
+                if(response.csrf) {
+                    $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                }
+
+                setTimeout(function() {
+                    // Close modal first to ensure UI feedback
+                    $('#right-modal').modal('hide');
+                    $('.modal').modal('hide');
+                    
+                    if(typeof showAllTeachers === 'function') {
+                        showAllTeachers();
+                    } else {
+                        location.reload();
+                    }
+                }, 1000);
+            } else {
+                if(typeof showNotification === 'function') {
+                    showNotification('error', response.notification || '<?php echo get_phrase('action_not_allowed'); ?>');
+                } else if(typeof toastr !== 'undefined') {
+                    toastr.error(response.notification || '<?php echo get_phrase('action_not_allowed'); ?>');
+                }
+                
+                if(response.csrf) {
+                    $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                }
+                submitButton.prop('disabled', false).html(originalBtnHtml);
             }
         },
         error: function () {
-          error_notify(<?= js_phrase(get_phrase('an_error_occurred_during_submission')); ?>)
+            if(typeof showNotification === 'function') {
+                showNotification('error', '<?php echo get_phrase('an_error_occurred_during_submission'); ?>');
+            } else if(typeof toastr !== 'undefined') {
+                toastr.error('<?php echo get_phrase('an_error_occurred_during_submission'); ?>');
+            }
+            submitButton.prop('disabled', false).html(originalBtnHtml);
         }
-      });
     });
-  });
+});
 </script>
-

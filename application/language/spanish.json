@@ -3373,7 +3373,7 @@
     "english": "English",
     "spanish": "Español",
     "german": "Alemán",
-    "arabic": "العربية",
+    "arabic": "árabe",
     "tone": "Tono",
     "include_introduction_section": "Incluir sección de introducción",
     "include_conclusion_section": "Incluir sección de conclusión",
@@ -3611,6 +3611,14 @@
     "generating_ai_content_will_overwrite_current_lesson_content": "Generar contenido con IA sobrescribirá el contenido actual de la lección",
     "yes_overwrite_it": "Sí, sobrescribir",
     "lesson_updated_successfully": "Lección actualizada con éxito",
+    "loading_error": "Error de carga",
+    "json_error": "Error de JSON",
+    "no_community": "No hay comunidad",
+    "no_result": "Sin resultados",
+    "search_for_a_community": "Buscar una comunidad",
+    "my_communities": "Mis comunidades",
+    "member_communities": "Comunidades de las que soy miembro",
+    "join_as_member": "Unirse como miembro",
     "nederlands_(nl)": "Nederlands (NL)",
     "mad_/_month": "MAD / mes",
     "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "Después de la creación, puedes completar tu perfil directamente desde tu panel de control",
@@ -3625,5 +3633,7 @@
     "excl_tax": "Excl. impuestos",
     "incl_tax": "Incl. impuestos",
     "engaged_communities_and_high-quality_courses_for_sustainable_progress.": "Comunidades comprometidas y cursos de alta calidad para un progreso sostenible",
-    "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "Se le enviará un correo electrónico de validación en un plazo máximo de"
+    "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "Se le enviará un correo electrónico de validación en un plazo máximo de",
+    "manage_meeting_recordings": "Gestionar grabaciones de reuniones",
+    "recording_info": "Información de grabación"
 }

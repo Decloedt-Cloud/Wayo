@@ -1,35 +1,30 @@
-<div class="card-calendar px-4 py-3">
-    <div class="calendar-header">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center">
-                    <button class="today-btn me-3" onclick="CalendarApp.goToToday()"><?php echo get_phrase('TODAY'); ?></button>
-                    <button class="nav-btn me-2" onclick="CalendarApp.previousPeriod()">
-                        <i class="mdi mdi-chevron-left" style="font-size: 25px;"></i>
-                    </button>
-                    <button class="nav-btn me-3" onclick="CalendarApp.nextPeriod()">
-                        <i class="mdi mdi-chevron-right" style="font-size: 25px;"></i>
-                    </button>
-                    <h2 class="month-nav mb-0" id="monthYear"></h2>
-                </div>
-            </div>
-            <div class="text-end">
-                    <select class="view-filter me-3" id="viewFilter">
-                        <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
-                        <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
-                        <option value="timeGridDay"><?php echo get_phrase('Day'); ?></option>
-                        <option value="listMonth"><?php echo get_phrase('List'); ?></option>
-                    </select>
-                    <button class="add-event-btn" data-bs-toggle="modal" data-bs-target="#createEventModal"><i class="mdi mdi-plus"></i><?php echo get_phrase('New_Event'); ?></button>
-            </div>
+
+    <div class="exp-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div class="exp-toolbar-left" style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="exp-btn" style="padding: 0.5rem 1rem; background: var(--exp-light); border: 1px solid var(--exp-border);" onclick="CalendarApp.goToToday()"><?php echo get_phrase('TODAY'); ?></button>
+            <button class="exp-btn" style="padding: 0.5rem; width: 40px; justify-content: center; background: var(--exp-light); border: 1px solid var(--exp-border);" onclick="CalendarApp.previousPeriod()">
+                <i class="mdi mdi-chevron-left" style="font-size: 20px;"></i>
+            </button>
+            <button class="exp-btn" style="padding: 0.5rem; width: 40px; justify-content: center; background: var(--exp-light); border: 1px solid var(--exp-border);" onclick="CalendarApp.nextPeriod()">
+                <i class="mdi mdi-chevron-right" style="font-size: 20px;"></i>
+            </button>
+            <h2 class="month-nav mb-0" id="monthYear" style="margin-left: 1rem; font-size: 1.5rem; font-weight: 700; color: var(--exp-dark);"></h2>
+        </div>
+        <div class="exp-toolbar-right" style="display: flex; gap: 1rem; align-items: center;">
+             <select class="form-control" id="viewFilter" style="width: auto; border-radius: 10px; border: 1px solid var(--exp-border); padding: 0.5rem 2rem 0.5rem 1rem;">
+                <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
+                <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
+                <option value="timeGridDay"><?php echo get_phrase('Day'); ?></option>
+                <option value="listMonth"><?php echo get_phrase('List'); ?></option>
+            </select>
         </div>
     </div>
     <!-- FullCalendar container -->
     <div id="calendar"></div>
     <div class="modal fade mt-5" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header">
+            <div class="modal-content exp-modal-content">
+                <div class="modal-header exp-modal-header">
                     <h5 class="modal-title" id="createEventModalLabel"><?php echo get_phrase('New_Event'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -38,88 +33,94 @@
                         <input type="hidden" id="createRecurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="createRecurrenceEndDate" name="recurrence_end_date">
                         <input type="hidden" id="createCustomRecurrence" name="custom_recurrence">
-                        <div class="form-group-calendar">
-                            <span class="mdi mdi-format-title"></span>
-                            <label for="createeventTitle"><span class="required required-input"> * </span></label>
-                            <input type="text" class="form-control" id="createeventTitle" name="title" placeholder="<?php echo get_phrase('Title'); ?>" required>
+                        
+                        <div class="exp-form-group">
+                            <label for="createeventTitle" class="exp-form-label"><span class="mdi mdi-format-title"></span> <?php echo get_phrase('Title'); ?> <span class="required text-danger">*</span></label>
+                            <input type="text" class="exp-form-control" id="createeventTitle" name="title" placeholder="<?php echo get_phrase('enter_title'); ?>" required>
                         </div>
-                        <div class="form-group-calendar mt-3">
-                            <span class="mdi mdi-text"></span>
-                            <label for="createeventDescription"></label>
-                            <textarea class="form-control" id="createeventDescription" name="description" rows="3" placeholder="<?php echo get_phrase('Description'); ?>"></textarea>
+
+                        <div class="exp-form-group">
+                            <label for="createeventDescription" class="exp-form-label"><span class="mdi mdi-text"></span> <?php echo get_phrase('Description'); ?></label>
+                            <textarea class="exp-form-control" id="createeventDescription" name="description" rows="3" placeholder="<?php echo get_phrase('enter_description'); ?>"></textarea>
                         </div>
-                        <div class="form-group-calendar-community-class mt-3">
-                            <span class="mdi mdi-account-multiple"></span>
-                            <div class="input-container">
-                                <div hidden class="form-group-calendar">
-                                    <label for="createSchoolId"><span class="required"> * </span></label>
-                                    <select class="form-control" id="createSchoolId" name="school_id" required>
+
+                        <div class="exp-form-group">
+                            <label class="exp-form-label"><span class="mdi mdi-account-multiple"></span> <?php echo get_phrase('participants'); ?> <span class="required text-danger">*</span></label>
+                            
+                            <div hidden class="mb-2">
+                                <select class="exp-form-control" id="createSchoolId" name="school_id" required></select>
+                            </div>
+                            
+                            <div class="multi-select-search-dropdown">
+                                <div class="search-container">
+                                    <input type="text" class="exp-form-control search-input" id="participantsSearchInput" placeholder="<?php echo get_phrase('invite_attendees'); ?>">
+                                    <div class="badges-container mt-2" id="participantsBadges"></div>
+                                </div>
+                                <div class="dropdown-menu" id="participantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
+                            </div>
+                            <input type="hidden" name="participants" id="participantsInput">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="createeventDate" class="exp-form-label"><span class="mdi mdi-calendar"></span> <?php echo get_phrase('start_date'); ?> <span class="required text-danger">*</span></label>
+                                    <input type="date" class="exp-form-control" id="createeventDate" name="start" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="createeventStartTime" class="exp-form-label"><span class="mdi mdi-clock-outline"></span> <?php echo get_phrase('start_time'); ?> <span class="required text-danger">*</span></label>
+                                    <select class="exp-form-control" id="createeventStartTime" name="start_time" required>
+                                        <option value=""><?php echo get_phrase('select_time'); ?></option>
                                     </select>
                                 </div>
-                                <div class="form-group-calendar">
-                                   <label for="createParticipants"><span class="required"> * </span></label>
-                                    <div id="createParticipants" class="multi-select-search-dropdown">
-                                        <div class="search-container">
-                                            <input type="text-area" class="form-control search-input" id="participantsSearchInput" placeholder="<?php echo get_phrase('Invite_attendees'); ?>">
-                                            <div class="badges-container" id="participantsBadges"></div>
-                                        </div>
-                                        <div class="dropdown-menu" id="participantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
-                                    </div>
-                                    <input type="hidden" name="participants" id="participantsInput">
-                                </div>
                             </div>
                         </div>
-                        <div class="form-group-calendar-date-time mt-3">
-                            <span class="mdi mdi-clock-time-three-outline"></span>
-                            <div class="input-container">
-                                <div class="form-group-calendar">
-                                    <label for="createeventDate"><span class="required"> * </span></label>
-                                    <input type="date" class="form-control" id="createeventDate" name="start" required min="">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="createeventEndDate" class="exp-form-label"><span class="mdi mdi-calendar"></span> <?php echo get_phrase('end_date'); ?></label>
+                                    <input type="date" class="exp-form-control" id="createeventEndDate" name="end_date">
                                 </div>
-                                <div class="form-group-calendar">
-                                    <label for="createeventStartTime"><span class="required"> * </span></label>
-                                    <select class="form-control" id="createeventStartTime" name="start_time" required>
-                                        <option value=""><?php echo get_phrase('Start time'); ?></option>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="createeventEndTime" class="exp-form-label"><span class="mdi mdi-clock-outline"></span> <?php echo get_phrase('end_time'); ?> <span class="required text-danger">*</span></label>
+                                    <select class="exp-form-control" id="createeventEndTime" name="end_time" required>
+                                        <option value=""><?php echo get_phrase('select_time'); ?></option>
+                                        <?php
+                                        for ($h = 0; $h < 24; $h++) {
+                                            for ($m = 0; $m < 60; $m += 15) {
+                                                $time = sprintf("%02d:%02d", $h, $m);
+                                                echo "<option value=\"$time\">$time</option>";
+                                            }
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-calendar-date-time mt-3">
-                            <span class="mdi mdi-clock-time-three-outline"></span>
-                            <div class="input-container">
-                                    <div class="form-group-calendar">
-                                        <input type="date" class="form-control" id="createeventEndDate" name="end_date" min="">
-                                    </div>
-                                        <div class="form-group-calendar">
-                                            <label for="createeventEndTime"><span class="required"> * </span></label>
-                                            <select class="form-control" id="createeventEndTime" name="end_time" required>
-                                                <option value=""><?php echo get_phrase('End time'); ?></option>
-                                                <?php
-                                                for ($h = 0; $h < 24; $h++) {
-                                                    for ($m = 0; $m < 60; $m += 15) {
-                                                        $time = sprintf("%02d:%02d", $h, $m);
-                                                        echo "<option value=\"$time\">$time</option>";
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" data-bs-toggle="modal" data-bs-target="#recurrenceModal">
+                                <i class="mdi mdi-repeat"></i> <?php echo get_phrase('repeat'); ?>
+                            </button>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="createVisio" class="mb-0" style="font-weight: 600; color: var(--exp-dark);"><?php echo get_phrase('visio_conference'); ?></label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="createVisio" name="visio">
+                                    <span class="slider"></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="form-group-calendar mt-2">
-                            <span class="mdi mdi-repeat"></span>
-                            <button type="button" class="btn recurrence-btn" data-bs-toggle="modal" data-bs-target="#recurrenceModal"><?php echo get_phrase('Repeat') ?></button>
-                        </div>
-                        <div class="form-group-calendar mt-2">
-                            <span class="mdi mdi-video"></span>
-                            <label for="createVisio" style="margin-left: 15px;"><?php echo get_phrase('Visio'); ?></label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="createVisio" name="visio">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group-calendar mt-3 col-md-12">
-                            <button type="submit" class="btn btn-primary" style="border-radius: 6px;"><?php echo get_phrase('Save') ?></button>
+
+                        <div class="exp-modal-footer mt-4">
+                            <button type="submit" class="exp-btn exp-btn-primary">
+                                <i class="mdi mdi-check"></i> <?php echo get_phrase('save_event'); ?>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -128,116 +129,127 @@
     </div>
     <div class="modal fade" id="eventEditModal" tabindex="-1" role="dialog" aria-labelledby="eventEditModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header">
+            <div class="modal-content exp-modal-content">
+                <div class="modal-header exp-modal-header">
                     <h5 class="modal-title" id="eventEditModalLabel"><?php echo get_phrase('event_details'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="eventDetailsView" style="display: none;">
-                      <div class="mb-2">
-                            <h6><?php echo get_phrase('Created By'); ?></h6>
-                            <p id="eventCreator" class="mb-0"></p>
+                    <div id="eventDetailsView" style="display: none; padding: 1rem;">
+                      <div class="mb-3">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Created By'); ?></h6>
+                            <p id="eventCreator" class="mb-0 fw-bold"></p>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Title'); ?></h6>
-                            <p id="eventTitle" class="mb-0"></p>
+                        <div class="mb-3">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Title'); ?></h6>
+                            <p id="eventTitle" class="mb-0 fw-bold"></p>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Description'); ?></h6>
+                        <div class="mb-3">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Description'); ?></h6>
                             <p id="eventDescriptionView" class="mb-0"></p>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Community'); ?></h6>
+                        <div class="mb-3">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Community'); ?></h6>
                             <p id="eventSchool" class="mb-0"></p>
                         </div>
-                        <div class="mb-2">
-                           <h6><?php echo get_phrase('Participants'); ?></h6>
+                        <div class="mb-3">
+                           <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Participants'); ?></h6>
                             <div id="eventParticipants" class="badges-container"></div>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('From'); ?></h6>
-                            <p id="eventStart" class="mb-0"></p>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('From'); ?></h6>
+                                <p id="eventStart" class="mb-0"></p>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('To'); ?></h6>
+                                <p id="eventEnd" class="mb-0"></p>
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('To'); ?></h6>
-                            <p id="eventEnd" class="mb-0"></p>
-                        </div>
-                        <div class="mb-2" id="eventRecurrenceSection" style="display: none;">
-                            <h6><?php echo get_phrase('Recurrence'); ?></h6>
+                        <div class="mb-3" id="eventRecurrenceSection" style="display: none;">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('Recurrence'); ?></h6>
                             <p id="eventRecurrence" class="mb-0"></p>
                         </div>
-                        <div><?php echo get_phrase('number of participants'); ?>
-                             <span id="participantCount">0</span>
+                        <div class="mb-3">
+                            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?php echo get_phrase('number of participants'); ?></h6>
+                             <span id="participantCount" class="badge bg-light text-dark border">0</span>
                         </div>
-                        <div class="form-group-calendar mt-3 btn-group-1">
-                            <button type="button" class="btn btn-primary" id="editEventBtn" style="border-radius: 7px;"><?php echo get_phrase('Edit') ?></button>
-                            <button type="button" class="btn btn-danger" id="deleteevent" style="border-radius: 7px;"><?php echo get_phrase('Delete') ?></button>
-                            <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Start Meeting') ?></button>
+                        
+                        <div class="exp-modal-footer">
+                            <button type="button" class="exp-btn exp-btn-primary" id="editEventBtn">
+                                <i class="mdi mdi-pencil"></i> <?php echo get_phrase('Edit') ?>
+                            </button>
+                            <button type="button" class="exp-btn" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;" id="deleteevent">
+                                <i class="mdi mdi-trash-can"></i> <?php echo get_phrase('Delete') ?>
+                            </button>
+                            <button type="button" class="exp-btn" style="background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; display: none;" id="joinMeetingBtn">
+                                <i class="mdi mdi-video"></i> <?php echo get_phrase('Start Meeting') ?>
+                            </button>
                         </div>
                     </div>
+                    
                     <div class="modal-body-calendar-edit">
                     <form id="eventForm" style="display: none;">
                         <input type="hidden" id="eventId" name="id">
                         <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
                         <input type="hidden" id="recurrenceEndDate" name="recurrence_end_date">
                         <input type="hidden" id="customRecurrence" name="custom_recurrence">
-                        <div class="form-group-calendar">
-                            <span class="mdi mdi-format-title"></span>
-                            <label for="eventTitleInput"><span class="required"> * </span></label>
-                            <input type="text" class="form-control" id="eventTitleInput" name="title" placeholder="<?php echo get_phrase('Title') ?>" required>
+                        
+                        <div class="exp-form-group">
+                            <label for="eventTitleInput" class="exp-form-label"><span class="mdi mdi-format-title"></span> <?php echo get_phrase('Title') ?> <span class="required text-danger">*</span></label>
+                            <input type="text" class="exp-form-control" id="eventTitleInput" name="title" placeholder="<?php echo get_phrase('Title') ?>" required>
                         </div>
-                        <div class="form-group-calendar mt-3">
-                            <span class="mdi mdi-text"></span>
-                            <label for="eventDescription"></label>
-                            <textarea class="form-control" id="eventDescription" name="description" rows="3" placeholder="<?php echo get_phrase("Description") ?>"></textarea>
+
+                        <div class="exp-form-group">
+                            <label for="eventDescription" class="exp-form-label"><span class="mdi mdi-text"></span> <?php echo get_phrase("Description") ?></label>
+                            <textarea class="exp-form-control" id="eventDescription" name="description" rows="3" placeholder="<?php echo get_phrase("Description") ?>"></textarea>
                         </div>
-                        <div class="form-group-calendar-community-class mt-3">
-                            <span class="mdi mdi-account-multiple"></span>
-                            <div class="input-container">
-                                <div hidden class="form-group-calendar">
-                                    <label for="school_id"><span class="required"> * </span></label>
-                                    <select class="form-control" id="school_id" name="school_id" required>
-                                    </select>
-                                </div>
-                                <div class="form-group-calendar">
-                                   <label for="editParticipantsInput"><span class="required"> * </span></label>
-                                    <div id="editParticipantsContainer" class="multi-select-search-dropdown">
-                            <div class="search-container">
-                                <input type="text" class="form-control search-input" id="editParticipantsSearchInput" placeholder="<?php echo get_phrase('Search classes or users'); ?>">
-                                <div class="badges-container" id="editParticipantsBadges"></div>
+
+                        <div class="exp-form-group">
+                            <label class="exp-form-label"><span class="mdi mdi-account-multiple"></span> <?php echo get_phrase('participants'); ?> <span class="required text-danger">*</span></label>
+                            
+                            <div hidden class="mb-2">
+                                <select class="exp-form-control" id="school_id" name="school_id" required></select>
+                            </div>
+                            
+                            <div class="multi-select-search-dropdown">
+                                <div class="search-container">
+                                    <input type="text" class="exp-form-control search-input" id="editParticipantsSearchInput" placeholder="<?php echo get_phrase('Search classes or users'); ?>">
+                                    <div class="badges-container mt-2" id="editParticipantsBadges"></div>
                                 </div>
                                 <div class="dropdown-menu" id="editParticipantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
                             </div>
-                        <input type="hidden" name="participants" id="editParticipantsInput">
-                                    </div>
-                            </div>
+                            <input type="hidden" name="participants" id="editParticipantsInput">
                         </div>
-                        <div class="form-group-calendar-date-time mt-3">
-                            <span class="mdi mdi-clock-time-three-outline"></span>
-                            <div class="input-container">
-                                <div class="form-group-calendar">
-                                    <label for="eventDate"><span class="required"> * </span></label>
-                                    <input type="date" class="form-control" id="eventDate" name="start" required min="">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="eventDate" class="exp-form-label"><span class="mdi mdi-calendar"></span> <?php echo get_phrase('start_date'); ?> <span class="required text-danger">*</span></label>
+                                    <input type="date" class="exp-form-control" id="eventDate" name="start" required>
                                 </div>
-                                <div class="form-group-calendar">
-                                    <label for="eventStartTime"><span class="required"> * </span></label>
-                                    <select class="form-control" id="eventStartTime" name="start_time" required>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="eventStartTime" class="exp-form-label"><span class="mdi mdi-clock-outline"></span> <?php echo get_phrase('start_time'); ?> <span class="required text-danger">*</span></label>
+                                    <select class="exp-form-control" id="eventStartTime" name="start_time" required>
                                         <option value=""><?php echo get_phrase('start time'); ?></option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-calendar-date-time mt-3">
-                            <span class="mdi mdi-clock-time-three-outline"></span>
-                            <div class="input-container">
-                                     <div class="form-group-calendar">
-                                    <label for="eventEndDate"></label>
-                                    <input type="date" class="form-control" id="eventEndDate" name="end_date" min="">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="eventEndDate" class="exp-form-label"><span class="mdi mdi-calendar"></span> <?php echo get_phrase('end_date'); ?></label>
+                                    <input type="date" class="exp-form-control" id="eventEndDate" name="end_date">
                                 </div>
-                                <div class="form-group-calendar">
-                                    <label for="eventEndTime"><span class="required"> * </span></label>
-                                    <select class="form-control" id="eventEndTime" name="end_time" required>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="exp-form-group">
+                                    <label for="eventEndTime" class="exp-form-label"><span class="mdi mdi-clock-outline"></span> <?php echo get_phrase('end_time'); ?> <span class="required text-danger">*</span></label>
+                                    <select class="exp-form-control" id="eventEndTime" name="end_time" required>
                                         <option value=""><?php echo get_phrase('End time'); ?></option>
                                         <?php
                                         for ($h = 0; $h < 24; $h++) {
@@ -251,21 +263,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-calendar mt-2">
-                            <span class="mdi mdi-repeat"></span>
-                            <button type="button" class="btn recurrence-btn" data-bs-toggle="modal" data-bs-target="#recurrenceModal"><?php echo get_phrase('Repeat') ?></button>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" data-bs-toggle="modal" data-bs-target="#recurrenceModal">
+                                <i class="mdi mdi-repeat"></i> <?php echo get_phrase('Repeat') ?>
+                            </button>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="visio" class="mb-0" style="font-weight: 600; color: var(--exp-dark);"><?php echo get_phrase('visio_conference'); ?></label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="visio" name="visio">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-group-calendar mt-2">
-                            <span class="mdi mdi-video"></span>
-                            <label for="visio" style="margin-left: 15px;"><?php echo get_phrase('Visio'); ?></label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="visio" name="visio">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group-calendar mt-3 col-md-12 btn-group-1">
-                            <button type="submit" class="btn btn-primary"><?php echo get_phrase('Save') ?></button>
-                            <button type="button" class="btn btn-secondary" id="cancelEditBtn"><?php echo get_phrase('Cancel') ?></button>
+
+                        <div class="exp-modal-footer mt-4">
+                            <button type="submit" class="exp-btn exp-btn-primary">
+                                <i class="mdi mdi-check"></i> <?php echo get_phrase('Save') ?>
+                            </button>
+                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" id="cancelEditBtn">
+                                <?php echo get_phrase('Cancel') ?>
+                            </button>
                         </div>
                     </form>
                     </div>
@@ -275,17 +294,16 @@
     </div>
     <div class="modal fade" style="top:20%; z-index: 1070;" id="recurrenceModal" tabindex="-1" role="dialog" aria-labelledby="recurrenceModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header">
+            <div class="modal-content exp-modal-content">
+                <div class="modal-header exp-modal-header">
                     <h5 class="modal-title" id="recurrenceModalLabel"><?php echo get_phrase('repeat') ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body modal-body-calendar">
                     <form id="recurrenceForm">
-                        <div class="form-group-calendar mb-2">
-                            <span class="mdi mdi-calendar-sync"></span>
-                            <label for="recurrenceTypePopup"></label>
-                            <select class="form-control" id="recurrenceTypePopup" name="recurrence_type">
+                        <div class="exp-form-group">
+                            <label for="recurrenceTypePopup" class="exp-form-label"><span class="mdi mdi-calendar-sync"></span> <?php echo get_phrase('Recurrence Type'); ?></label>
+                            <select class="exp-form-control" id="recurrenceTypePopup" name="recurrence_type">
                                 <option value="does_not_repeat"><?php echo get_phrase('does_not_repeat'); ?></option>
                                 <option value="daily"><?php echo get_phrase('day'); ?></option>
                                 <option value="weekly"><?php echo get_phrase('week'); ?></option>
@@ -293,40 +311,40 @@
                                 <option value="yearly"><?php echo get_phrase('year'); ?></option>
                             </select>
                         </div>
-                        <div class="form-group-calendar mb-2" id="recurrenceStartDateSection" style="display: none;">
-                        <span class="mdi mdi-calendar-start"></span>
-                        <label for="recurrenceStartDatePopup"></label>
-                        <input type="date" class="form-control" id="recurrenceStartDatePopup" name="recurrence_start_date">
+                        <div class="exp-form-group" id="recurrenceStartDateSection" style="display: none;">
+                            <label for="recurrenceStartDatePopup" class="exp-form-label"><span class="mdi mdi-calendar-start"></span> <?php echo get_phrase('Start Date'); ?></label>
+                            <input type="date" class="exp-form-control" id="recurrenceStartDatePopup" name="recurrence_start_date">
                         </div>
-                        <div class="form-group-calendar mb-2" id="daySelection" style="display: none;">
-                            <span class="mdi mdi-calendar-week"></span>
-                            <label></label>
-                            <div class="d-flex justify-content-between gap-3">
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Monday">M</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Tuesday">T</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Wednesday">W</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Thursday">T</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Friday">F</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Saturday">S</button>
-                                <button type="button" class="btn btn-outline-primary day-btn" data-day="Sunday">S</button>
+                        <div class="exp-form-group" id="daySelection" style="display: none;">
+                            <label class="exp-form-label"><span class="mdi mdi-calendar-week"></span> <?php echo get_phrase('Select Days'); ?></label>
+                            <div class="d-flex justify-content-between gap-2 flex-wrap">
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Monday">M</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Tuesday">T</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Wednesday">W</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Thursday">T</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Friday">F</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Saturday">S</button>
+                                <button type="button" class="exp-btn exp-btn-outline day-btn" style="padding: 0.5rem; width: 40px; justify-content: center;" data-day="Sunday">S</button>
                             </div>
                         </div>
-                        <div class="form-group-calendar">
-                        <div style="display: flex; align-items: center;">
-                            <span class="mdi mdi-calendar-end"></span>
-                            <input type="date" class="form-control" id="recurrenceEndDatePopup" name="recurrence_end_date">
+                        <div class="exp-form-group">
+                            <label for="recurrenceEndDatePopup" class="exp-form-label"><span class="mdi mdi-calendar-end"></span> <?php echo get_phrase('End Date'); ?></label>
+                            <input type="date" class="exp-form-control" id="recurrenceEndDatePopup" name="recurrence_end_date">
+                            <small class="text-muted mt-1 d-block"><?php echo get_phrase('leave_blank_for_default_one_year'); ?></small>
                         </div>
+                        
+                        <div hidden class="exp-form-group hidden">
+                            <label for="customRecurrencePopup" class="exp-form-label"><?php echo get_phrase('Day_selected'); ?></label>
+                            <input type="text" class="exp-form-control" id="customRecurrencePopup" name="custom_recurrence" readonly>
                         </div>
-                        <label for="recurrenceEndDatePopup" style="display: block; margin-top: 5px; margin-left: 32px; font-size: 0.8rem; color: #6c757d;">
-                            <small><?php echo get_phrase('leave_blank_for_default_one_year'); ?></small>
-                        </label>
-                        <div hidden class="form-group-calendar mb-2 hidden">
-                            <label for="customRecurrencePopup"><?php echo get_phrase('Day_selected'); ?></label>
-                            <input  type="text" class="form-control" id="customRecurrencePopup" name="custom_recurrence" readonly>
-                        </div>
-                        <div class="form-group-calendar mt-2 btn-group-1">
-                            <button type="button" class="btn btn-primary" id="saveRecurrence"><?php echo get_phrase('save') ?></button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo get_phrase('Annuler') ?></button>
+                        
+                        <div class="exp-modal-footer mt-4">
+                            <button type="button" class="exp-btn exp-btn-primary" id="saveRecurrence">
+                                <i class="mdi mdi-check"></i> <?php echo get_phrase('save') ?>
+                            </button>
+                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" data-bs-dismiss="modal">
+                                <?php echo get_phrase('Cancel') ?>
+                            </button>
                         </div>
                     </form>
                 </div>
