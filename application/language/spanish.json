@@ -3373,7 +3373,7 @@
     "english": "English",
     "spanish": "Español",
     "german": "Alemán",
-    "arabic": "árabe",
+    "arabic": "العربية",
     "tone": "Tono",
     "include_introduction_section": "Incluir sección de introducción",
     "include_conclusion_section": "Incluir sección de conclusión",
@@ -3554,7 +3554,6 @@
     "set_the_price_of_your_community": "Definir el precio de tu comunidad",
     "monthly_membership_amount_(mad/month)": "Importe de la membresía mensual (MAD/mes)",
     "14_day_free_trial": "Prueba gratuita de 14 días",
-    "price_to_pay_:_790_mad": "Precio a pagar: 790 MAD",
     "you_benefit_from_a_14_day_free_trial_to_test_all_features": "Disfrutas de una prueba gratuita de 14 días para probar todas las funciones",
     "unlimited_classes_&_trainings": "Clases y formaciones ilimitadas",
     "3%_commission_excluding_tax_the_cheapest_on_the_market*": "Comisión del 3 % sin impuestos, la más barata del mercado*",
@@ -3620,7 +3619,6 @@
     "member_communities": "Comunidades de las que soy miembro",
     "join_as_member": "Unirse como miembro",
     "nederlands_(nl)": "Nederlands (NL)",
-    "mad_/_month": "MAD / mes",
     "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "Después de la creación, puedes completar tu perfil directamente desde tu panel de control",
     "your_profile_has_been_successfully_created_on_wayo.": "Tu perfil ha sido creado con éxito en Wayo.",
     "account_status": "Estado de la cuenta",
@@ -3633,5 +3631,7 @@
     "excl_tax": "Excl. impuestos",
     "incl_tax": "Incl. impuestos",
     "manage_meeting_recordings": "Gestionar grabaciones de reuniones",
-    "recording_info": "Información de grabación"
+    "recording_info": "Información de grabación",
+    "/_month": "/ mes",
+    "price_to_pay_:": "Precio a pagar:"
 }

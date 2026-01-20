@@ -67,15 +67,7 @@
         </ul>
       </div>
 
-      <!-- Step 4 -->
-      <div class="onb-step">
-        <h2 class="h4"><?php echo get_phrase("Choose_the_price_emoji"); ?> 💳</h2>
-        <p><?php echo get_phrase("Set_your_price_one_time_subscription_or_stay_free"); ?></p>
-        <ul style="padding-left:1.2rem;margin-bottom:0;">
-          <li class="mb-2"><strong><?php echo get_phrase("Free"); ?>:</strong> <?php echo get_phrase("Ideal_for_getting_started_and_attracting_audience"); ?></li>
-          <li class="mb-2"><?php echo get_phrase("Coming_soon_payment"); ?> <strong><?php echo get_phrase("One_time"); ?></strong> <?php echo get_phrase("and"); ?> <strong><?php echo get_phrase("Subscription"); ?></strong></li>
-        </ul>
-      </div>
+      
 
       <!-- Step 5 -->
       <div class="onb-step">

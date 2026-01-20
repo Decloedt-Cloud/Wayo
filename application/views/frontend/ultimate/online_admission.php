@@ -1260,12 +1260,12 @@
                                 <i class="fa-solid fa-gift"></i> <?php echo get_phrase('14_day_free_trial'); ?>
                             </div>
                             
-                            <div class="sub-price-big">
-                                790 <small><?php echo get_phrase('MAD_/_month'); ?></small>
+                            <div class="sub-price-big plan-price-split">
+                                <span class="price-value"></span> <small><span class="price-currency"> </span><?php echo get_phrase('/_month'); ?></small>
                             </div>
                             
-                            <div class="sub-price-sub">
-                                <?php echo get_phrase('price_to_pay_:_790_MAD'); ?>
+                            <div class="sub-price-sub plan-price-split">
+                                <?php echo get_phrase('price_to_pay_:'); ?> <span class="price-value"></span> <span class="price-currency"></span>
                             </div>
                             
                             <p class="sub-desc">
@@ -1347,6 +1347,47 @@
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
+<script>
+       // Mettre à jour les prix affichés
+  async function updatePrices() {
+    try {
+      // Détection du pays de l’utilisateur
+      const response = await fetch('https://api.country.is/');
+      const data = await response.json();
+      const country = data.country;
+
+      // Définition des prix fixes
+      const prices = {
+        'MA': {
+          value: 790,
+          currency: 'DH'
+        },
+        'AE': {
+          value: 299, 
+          currency: 'AED'
+        }
+      };
+
+      // Fallback par défaut (Maroc)
+      const priceData = prices[country] || prices['MA'];
+
+      // Mise à jour des éléments prix
+      const priceElements = document.querySelectorAll('.plan-price-split');
+
+      priceElements.forEach(element => {
+        const priceValue = element.querySelector('.price-value');
+        const priceCurrency = element.querySelector('.price-currency');
+
+        if (priceValue) priceValue.textContent = priceData.value;
+        if (priceCurrency) priceCurrency.textContent = priceData.currency;
+      });
+
+    } catch (error) {
+      console.error('Error updating prices:', error);
+    }
+  }
+</script>
+
 <!-- Script principal unifié & optimisé -->
 <script>
 function toggleAdmissionPassword(inputId, icon, e) {
@@ -1372,6 +1413,9 @@ function toggleAdmissionPassword(inputId, icon, e) {
 
     
 document.addEventListener('DOMContentLoaded', function() {
+    // Appeler la fonction de mise à jour des prix
+    updatePrices();
+
     // ========================
     // Helpers
     // ========================
@@ -2280,4 +2324,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial restoration
     restoreFormState();
 });
+
+        
 </script>
