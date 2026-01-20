@@ -4,23 +4,10 @@
     <div class="container hero-content py-5" data-animate>
       <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Discover our communities") ?></h1>
 
-      <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Dynamic communities + Quality classes = Learning that takes off!") ?></p>
+      <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("Engaged_communities_and_high-quality_courses_for_sustainable_progress.") ?></p>
     </div>
   </section>
-  <!-- ===== CTA ===== -->
-  <?php if (!$this->session->userdata('user_id')): ?>
-    <section class="py-4 bg-light" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-      <div class="container">
-        <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
-          <div class="me-md-3">
-            <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket <?php echo (get_user_language() === 'arabic') ? 'ms-2' : 'me-2'; ?>"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
-            <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
-          </div>
-          <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
-        </div>
-      </div>
-    </section>
-  <?php endif; ?>
+
   <form id="searchForm" class="search-bar " action="<?php echo site_url('home/communities_search'); ?>" method="get" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- ===== BARRE DE FILTRES (style identique au screen) ===== -->
     <section class="py-4 bg-light border-top" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
@@ -42,9 +29,9 @@
           </div>
           <!-- Sélecteur catégories (pill + bordure orange + icône filtre) -->
           <div class="col-12 col-md-6 col-lg-4">
-            <div class="pill-select d-flex border border-2 rounded-pill border-warning">
+            <div class="pill-select d-flex">
               <span class="ps-3 d-inline-flex align-items-center text-muted">
-                <i class="fa-solid fa-filter"></i>
+                <i class="fa-solid fa-filter fa-style"></i>
               </span>
               <select name="categories" id="catSelect"
                 class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark">
@@ -64,11 +51,16 @@
           <!-- Langues (boutons pastilles, actif = bleu) -->
           <div class="col-12 col-md-6 col-lg-3">
             <div class="d-flex align-items-center gap-3 justify-content-lg-end">
-              <span class="text-muted small d-none d-md-inline"><?php echo get_phrase("Language ") ?></span>
-              <div id="langFilter" class="d-flex align-items-center gap-2">
-                <button class="lang-pill active" data-lang="all"><?php echo get_phrase("All") ?></button>
-                <button class="lang-pill" data-lang="fr">FR</button>
-                <button class="lang-pill" data-lang="ar">AR</button>
+              <!-- Label removed for consistency -->
+              <div class="pill-select d-flex" style="min-width: 140px;">
+                  <span class="ps-3 d-inline-flex align-items-center text-muted">
+                    <i class="fa-solid fa-language fa-style"></i>
+                  </span>
+                  <select id="langSelect" class="form-select border-0 bg-transparent flex-grow-1 text-dark" style="box-shadow: none;">
+                    <option value="all"><?php echo get_phrase("All") ?></option>
+                    <option value="fr">FR</option>
+                    <option value="ar">AR</option>
+                  </select>
               </div>
             </div>
           </div>
@@ -88,13 +80,28 @@
 
   </section>
 
+    <!-- ===== CTA ===== -->
+  <?php if (!$this->session->userdata('user_id')): ?>
+    <section class="py-4 bg-light" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+      <div class="container">
+        <div class="p-4 p-md-5 rounded-4 text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between cta-gradient">
+          <div class="me-md-3">
+            <h2 class="h4 fw-bold mb-2"><i class="fa-solid fa-rocket <?php echo (get_user_language() === 'arabic') ? 'ms-2' : 'me-2'; ?>"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
+            <p class="mb-0 opacity-90 text-white"><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
+          </div>
+          <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-light text-wayo fw-bold mt-3 mt-md-0 px-4"><?php echo get_phrase("Create my community") ?></a>
+        </div>
+      </div>
+    </section>
+  <?php endif; ?>
+
 
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const search = document.getElementById("searchInputs");
       const catSel = document.getElementById("catSelect");
-      const langBtns = document.querySelectorAll("#langFilter .lang-pill");
+      const langSel = document.getElementById("langSelect");
       const cards = document.querySelectorAll(".course");
       const topBtn = document.getElementById("scrollTopBtn");
       let currentCat = "all";
@@ -119,14 +126,10 @@
         currentCat = catSel.value;
         refresh();
       });
-      // Language pills
-      langBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-          langBtns.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          currentLang = btn.dataset.lang;
-          refresh();
-        });
+      // Language select
+      langSel.addEventListener("change", () => {
+        currentLang = langSel.value;
+        refresh();
       });
       // Scroll-to-top show/hide
       window.addEventListener("scroll", () => {

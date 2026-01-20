@@ -20,7 +20,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
             <li>
                 <a href="<?= site_url('home/communities'); ?>"
                   class="<?= ($current2 == 'communities') ? 'active' : '' ?>">
-                  <?php echo get_phrase('Communities');?>
+                  <?php echo get_phrase('our_communities');?>
                 </a>
             </li>
 

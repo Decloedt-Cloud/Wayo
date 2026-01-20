@@ -3516,7 +3516,7 @@
     "view_all": "Ver todo",
     "no_events_this_month": "No hay eventos este mes",
     "take_control_of_your_community_and_stay_close_to_your_members_anytime,_anywhere.": "Toma el control de tu comunidad y mantente cerca de tus miembros en cualquier momento y lugar.",
-    "take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere.": "Toma el control de tu comunidad y mantente cerca de tus miembros en cualquier momento, Mentor-Card en cualquier lugar.",
+    "take_control_of_your_community_and_stay_close_to_your_members_anytime,_mentor-cardanywhere.": "Toma el control de tu comunidad y mantente cerca de tus miembros en cualquier momento.",
     "youssef_el_omrani": "Youssef El Omrani",
     "artificial_intelligence_and_data_analysis": "Inteligencia artificial y análisis de datos",
     "salma_benkacem": "Salma Benkacem",
@@ -3623,5 +3623,7 @@
     "generated_by": "Generado por",
     "price_excl_tax": "Precio excl. impuestos",
     "excl_tax": "Excl. impuestos",
-    "incl_tax": "Incl. impuestos"
+    "incl_tax": "Incl. impuestos",
+    "engaged_communities_and_high-quality_courses_for_sustainable_progress.": "Comunidades comprometidas y cursos de alta calidad para un progreso sostenible",
+    "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "Se le enviará un correo electrónico de validación en un plazo máximo de"
 }
