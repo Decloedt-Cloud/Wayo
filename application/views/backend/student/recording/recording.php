@@ -1,86 +1,229 @@
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+
 <style>
-   .alert-modern .icon {
-      background-color: #6c757d;
-      color: #fff;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      cursor: pointer;
-      margin-left: 10px;
-   }
-.alert-modern {
-      padding: 0;
-   }
- .alert-modern:hover .icon {
-      background-color: #5a6268; /* Légère variation au survol */
-   }
-
-   /* Popover styling */
-   .popover {
-      --bs-popover-bg: #fff;
-      --bs-popover-border-color: #6c757d;
-      --bs-popover-header-bg: #f8f9fa;
-      --bs-popover-header-color: #495057;
-      --bs-popover-body-padding-x: 1rem;
-      --bs-popover-body-padding-y: 0.75rem;
-   }
-
-   [dir="rtl"] .space-between-icon {
-      margin-right: 10px !important;
-   }
-
-   /* Ensure popover shows on click for mobile */
-   @media (max-width: 850.98px) {
-      .alert-modern .icon {
-         pointer-events: auto;
-         margin-left: 10px;
-      }
-      .d-flex.align-items-center.justify-content-between {
-            width: 15% !important;
-        }
-   }
-   .d-flex.align-items-center.justify-content-between {
-      width: 10%;
-   }
-
-   .page-title {
-      margin: 0;
-      display: flex;
-      align-items: center;
-   }
-
-   .page-title, .fw-bold {
-    white-space: nowrap;
+/* ========== MODERN DASHBOARD STYLES ========== */
+.modern-dashboard {
+  /* MONOCHROMATIC THEME (INDIGO) */
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-lighter: #e0e7ff;
+  --primary-dark: #4338ca;
+  --secondary: #10b981; /* Green for success */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-main);
+  min-height: 100vh;
+  padding: 1.5rem;
+  margin: -15px -15px 0 -15px;
 }
 
- .dataTables_filter {
-        display: none !important;
-    }
-    .daterangepicker {
-        z-index: 1050;
-    }
+/* Header */
+.dash-header {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dash-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dash-header h1 .icon-box {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.dash-header .date-badge {
+  background: var(--bg-card);
+  padding: 0.625rem 1rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dash-header .date-badge i {
+  color: var(--primary);
+}
+
+/* Modern Card */
+.modern-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.modern-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #fafbfc, transparent);
+}
+
+.modern-card-header h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.modern-card-header h3 i {
+  color: var(--primary);
+  font-size: 1.125rem;
+}
+
+.modern-card-body {
+  padding: 1.5rem;
+}
+
+/* Modern Alert */
+.modern-alert {
+  background: linear-gradient(135deg, var(--primary-lighter), #c7d2fe);
+  border: none;
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+.modern-alert .alert-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.modern-alert .alert-content strong {
+  color: var(--primary-dark);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.modern-alert .alert-content span {
+  color: var(--text-dark);
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Table Modern */
+.table-modern thead th {
+    border-top: none;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    background-color: #f8fafc;
+}
+.table-modern tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+
+/* Utilities */
+.dataTables_filter {
+    display: none !important;
+}
+.daterangepicker {
+    z-index: 1050;
+}
 </style>
 
-<div class="col-xl-12">
-   <div class="header-card">
-      <div class="card-body">
-         <h4 class="page-title d-inline-block">
-            <i class="fas fa-save fa-fw"></i> <?php echo get_phrase('Recordings'); ?>
-         </h4>
-      </div> <!-- end card body-->
-   </div> <!-- end card -->
-</div><!-- end col-->
+<div class="modern-dashboard">
+    <!-- Header -->
+    <div class="dash-header">
+        <h1>
+            <div class="icon-box"><i class="mdi mdi-video"></i></div>
+            <?php echo get_phrase('Recordings'); ?>
+        </h1>
+        <div class="date-badge">
+            <i class="mdi mdi-calendar-today"></i> <?php echo date('d M, Y'); ?>
+        </div>
+    </div>
 
+    <!-- Info Alert -->
+    <div class="modern-alert">
+        <div class="alert-icon"><i class="mdi mdi-information-variant"></i></div>
+        <div class="alert-content">
+            <strong><?php echo get_phrase('Note'); ?></strong>
+            <span><?php echo get_phrase("If you can't find your recording, we are currently preparing it, and it will be ready soon."); ?></span>
+        </div>
+    </div>
 
-<div class="col-xl-12">
-    <div class="header-card">
-        <div class="card-body">
+    <!-- Filter Card -->
+    <div class="modern-card">
+        <div class="modern-card-header">
+            <h3><i class="mdi mdi-filter-variant"></i> <?php echo get_phrase('Filter Recordings'); ?></h3>
+        </div>
+        <div class="modern-card-body">
             <form id="filterForm">
                 <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                 <div class="row align-items-end g-3">
@@ -100,38 +243,24 @@
             </form>
         </div>
     </div>
-</div>
 
-<h4 class="fw-bold mb-3 d-flex align-items-center justify-content-between" style="flex-wrap: nowrap">
-    <span>
-        <i class="mdi mdi-history" style="font-size: 25px;"></i> <?php echo get_phrase("History") ?>
-    </span>
-    <div class="alert-modern d-flex align-items-center">
-        <div class="icon flex-shrink-0"
-             data-bs-toggle="popover"
-             data-bs-trigger="hover focus"
-             data-bs-content="<?php echo get_phrase("If you can't find your recording, we are currently preparing it, and it will be ready soon.") ?>"
-             data-bs-placement="top">
-            <i class="dripicons-information"></i>
+    <!-- Table Card -->
+    <div class="modern-card">
+        <div class="modern-card-header">
+            <h3><i class="mdi mdi-history"></i> <?php echo get_phrase('Recording History'); ?></h3>
         </div>
-    </div>
-</h4>
-<div class="row">
-<div class="col-12">
-    <div class="mb-3">
-        <div class="main-card">
-            <div class="card-body">
-        <div class="table-responsive">
-             <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">
-                <thead>
-                    <tr>
-                        <th><?php echo get_phrase('Name'); ?></th>
-                        <th><?php echo get_phrase('Creation Date'); ?></th>
-                        <th><?php echo get_phrase('Duration'); ?></th>
-                        <th><?php echo get_phrase('Action'); ?></th>
-                    </tr>
+        <div class="modern-card-body">
+            <div class="table-responsive">
+                <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern w-100">
+                    <thead>
+                        <tr>
+                            <th><?php echo get_phrase('Name'); ?></th>
+                            <th><?php echo get_phrase('Creation Date'); ?></th>
+                            <th><?php echo get_phrase('Duration'); ?></th>
+                            <th><?php echo get_phrase('Action'); ?></th>
+                        </tr>
                     </thead>
-                        <tbody>
+                    <tbody>
                         <?php foreach ($recordings as $recording): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($recording['name']); ?></td>
@@ -139,28 +268,21 @@
                                 <td><?php echo htmlspecialchars($recording['formatted_duration']); ?></td>
                                 <td>
                                      <div class="dropdown text-center">
-										<button type="button" class="btn btn-sm btn-outline-primary btn-rounded btn-icon" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
-										<div class="dropdown-menu dropdown-menu-end">
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-rounded btn-icon" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-end">
                                             <a href="<?php echo htmlspecialchars($recording['recording_url']); ?>" target="_blank" class="dropdown-item text-primary">
                                                 <?php echo get_phrase('View'); ?>
                                             </a>
                                         </div>
-									</div>
-								</td>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
-                            <?php if (empty($recordings)): ?>
-                                <tr>
-                                <td colspan="5" class="text-center"><?php echo get_phrase("No recordings found"); ?></td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
@@ -179,7 +301,9 @@ function initDataTable() {
                     next: '<i class="mdi mdi-chevron-right"></i>'
                 },
                 lengthMenu: '<?php echo get_phrase('show'); ?> _MENU_ <?php echo get_phrase('entries'); ?>',
-                info: '<?php echo get_phrase('showing'); ?> _START_ <?php echo get_phrase('to'); ?> _END_ <?php echo get_phrase('of'); ?> _TOTAL_ <?php echo get_phrase('entries'); ?>'
+                info: '<?php echo get_phrase('showing'); ?> _START_ <?php echo get_phrase('to'); ?> _END_ <?php echo get_phrase('of'); ?> _TOTAL_ <?php echo get_phrase('entries'); ?>',
+                emptyTable: '<?php echo get_phrase("No recordings found"); ?>',
+                zeroRecords: '<?php echo get_phrase("No recordings found"); ?>'
             },
             drawCallback: function() {
                 $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
@@ -199,9 +323,7 @@ function updateRecordingTable(recordings) {
 
     var tbody = $('#basic-datatable tbody');
     tbody.empty();
-    if (recordings && recordings.length === 0) {
-        tbody.append('<tr><td colspan="5" class="text-center"><?php echo get_phrase("No recordings found"); ?></td></tr>');
-    } else {
+    if (recordings && recordings.length > 0) {
         $.each(recordings, function(index, recording) {
             var row = `
                 <tr>

@@ -1351,7 +1351,7 @@ class Crud_model extends CI_Model
 		$this->db->where('session', $this->active_session);
 		return $this->db->get('invoices');
 	}
-	public function get_invoice_by_student_id($user_id = "", $limit = null, $offset = null, $filter = 'all')
+	public function get_invoice_by_student_id($user_id = "", $limit = null, $offset = null, $filter = 'all', $search = '')
 	{
 		// 1. Resolve IDs (Student ID and User ID)
 		// $user_id param here is typically the 'code' from students table
@@ -1385,6 +1385,15 @@ class Crud_model extends CI_Model
 
 		// Apply filter conditions
 		$this->apply_invoice_filter($filter);
+
+        // Apply Search
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('invoices.title', $search);
+            $this->db->or_like('invoices.id', $search); // Search by ID
+            $this->db->or_like('invoices.total_amount', $search); // Search by Amount
+            $this->db->group_end();
+        }
 
 		$this->db->order_by('invoices.created_at', 'DESC'); // Plus récentes en premier
 
@@ -1422,7 +1431,7 @@ class Crud_model extends CI_Model
 	/**
 	 * Count invoices for a student (for pagination)
 	 */
-	public function count_invoices_by_student($user_id = "", $filter = 'all')
+	public function count_invoices_by_student($user_id = "", $filter = 'all', $search = '')
 	{
 		// 1. Resolve IDs (Student ID and User ID)
 		$student_id_to_check = [];
@@ -1448,11 +1457,19 @@ class Crud_model extends CI_Model
 		$this->db->where_in('invoices.student_id', $student_id_to_check);
 		$this->db->group_end();
 
-		// Apply filter conditions
+		// Apply filter
 		$this->apply_invoice_filter($filter);
 
-		$result = $this->db->get()->row();
-		return $result ? (int)$result->total : 0;
+        // Apply Search
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('invoices.title', $search);
+            $this->db->or_like('invoices.id', $search);
+            $this->db->or_like('invoices.total_amount', $search);
+            $this->db->group_end();
+        }
+
+		return $this->db->get()->row()->total;
 	}
 
 	// This function will be triggered if parent logs in

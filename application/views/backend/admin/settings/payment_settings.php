@@ -604,8 +604,8 @@ $vat_enabled = isset($result['vat']) && $result['vat'] == 1;
                         <label><?php echo get_phrase('VAT Applicable'); ?></label>
                         <select class="form-control-modern" name="vat_applicable" id="vat_applicable">
                             <option value=""><?php echo get_phrase('Select'); ?>...</option>
-                            <option value="1" <?php if ($result['vat'] == 1) echo 'selected'; ?>><?php echo get_phrase('Yes'); ?></option>
-                            <option value="0" <?php if ($result['vat'] == 0) echo 'selected'; ?>><?php echo get_phrase('No'); ?></option>
+                            <option value="1" <?php if ($result['vat_enabled'] == 1) echo 'selected'; ?>><?php echo get_phrase('Yes'); ?></option>
+                            <option value="0" <?php if ($result['vat_enabled'] == 0) echo 'selected'; ?>><?php echo get_phrase('No'); ?></option>
                         </select>
                     </div>
 
@@ -613,7 +613,7 @@ $vat_enabled = isset($result['vat']) && $result['vat'] == 1;
                         <label><?php echo get_phrase('VAT Rate'); ?></label>
                         <div class="input-with-icon">
                             <i class="fas fa-percentage icon"></i>
-                            <input type="text" id="vat_rate" name="vat_rate" class="form-control-modern" readonly value="<?php echo $result['vat']; ?>" placeholder="--" />
+                            <input type="text" id="vat_rate" name="vat_rate" class="form-control-modern" readonly value="<?php echo $result['vat_rate']; ?>" placeholder="--" />
                         </div>
                     </div>
 

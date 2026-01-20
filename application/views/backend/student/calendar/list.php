@@ -1,5 +1,151 @@
 <?php $active_school_id = school_id(); ?>
-<div class="card-calendar px-4 py-3">
+
+<style>
+    /* Modern Calendar Toolbar */
+    .calendar-header {
+        margin-bottom: 2rem;
+    }
+
+    .today-btn {
+        background: var(--primary-lighter);
+        color: var(--primary);
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        font-family: var(--font-body);
+    }
+    .today-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .nav-btn {
+        background: white;
+        border: 1px solid var(--border-color);
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        transition: all 0.2s ease;
+        margin: 0 4px;
+    }
+    .nav-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--bg-main);
+    }
+
+    .month-nav {
+        font-family: var(--font-header);
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        margin-left: 1rem !important;
+    }
+
+    .view-filter {
+        padding: 0.5rem 2.5rem 0.5rem 1rem; /* Extra right padding for arrow */
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-dark);
+        font-family: var(--font-body);
+        font-weight: 500;
+        outline: none;
+        cursor: pointer;
+        background-color: white;
+        transition: all 0.2s;
+        /* Custom arrow could be added here */
+    }
+    .view-filter:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-lighter);
+    }
+
+    /* FullCalendar Overrides for Modern Look */
+    #calendar {
+        font-family: var(--font-body);
+    }
+
+    .fc-theme-standard td, 
+    .fc-theme-standard th {
+        border-color: var(--border-color);
+    }
+
+    .fc .fc-col-header-cell-cushion {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 1rem 0;
+        letter-spacing: 0.5px;
+    }
+
+    .fc-daygrid-day-number {
+        color: var(--text-dark);
+        font-weight: 600;
+        padding: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .fc-day-today {
+        background-color: var(--bg-main) !important;
+    }
+
+    /* Events Styling */
+    .fc-event {
+        border: none !important;
+        background: transparent !important;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .fc-event-main {
+        background: var(--primary-lighter);
+        color: var(--primary-dark);
+        border-left: 3px solid var(--primary);
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
+
+    .fc-event:hover .fc-event-main {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .fc-event-main.expired {
+        background: #f1f5f9;
+        color: #94a3b8;
+        border-left-color: #cbd5e1;
+    }
+
+    .fc-event-main.active-meeting {
+        background: #dcfce7; /* Green light */
+        color: #166534; /* Green dark */
+        border-left-color: #22c55e;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+</style>
+
+<div class="">
+
     <div class="calendar-header">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -15,7 +161,9 @@
                 </div>
             </div>
             <div class="text-end">
-
+                  <select class="school-filter school-filter-student me-3" id="schoolFilter">
+                        <option value=""><?php echo get_phrase('All schools'); ?></option>
+                    </select>
                     <select class="view-filter view-filter-student me-3" id="viewFilter">
                         <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
                         <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
@@ -27,70 +175,225 @@
     </div>
     <!-- FullCalendar container -->
     <div id="calendar"></div>
+
+    <!-- Event Details Modal (Modernized) -->
     <div class="modal fade" id="eventEditModal" tabindex="-1" role="dialog" aria-labelledby="eventEditModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventEditModalLabel"><?php echo get_phrase('event_details'); ?></h5>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modern-modal-content">
+                <div class="modal-header modern-modal-header">
+                    <h5 class="modal-title" id="eventEditModalLabel">
+                        <i class="fas fa-info-circle me-2" style="color: var(--primary);"></i>
+                        <?php echo get_phrase('event_details'); ?>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                  <input type="hidden" id="eventId" name="id">
-                  <input type="hidden" id="currentOccurrenceDate" name="current_occurrence_date">
-                  <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
-                  <input type="hidden" id="recurrenceEndDate" name="recurrence_end_date">
-                  <input type="hidden" id="customRecurrence" name="custom_recurrence">
+                <div class="modal-body modern-modal-body">
+                    <!-- Hidden Inputs -->
+                    <input type="hidden" id="eventId" name="id">
+                    <input type="hidden" id="currentOccurrenceDate" name="current_occurrence_date">
+                    <input type="hidden" id="recurrenceType" name="recurrence_type" value="does_not_repeat">
+                    <input type="hidden" id="recurrenceEndDate" name="recurrence_end_date">
+                    <input type="hidden" id="customRecurrence" name="custom_recurrence">
+
                     <div id="eventDetailsView" style="display: none;">
-                      <div class="mb-2">
-                          <h6><?php echo get_phrase('Created By'); ?></h6>
-                          <p id="eventCreator" class="mb-0"></p>
-                      </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Title'); ?></h6>
-                            <p id="eventTitle" class="mb-0"></p>
+                        
+                        <!-- Event Title & Description -->
+                        <div class="mb-4 text-center">
+                            <h4 id="eventTitle" class="mb-2 fw-bold" style="color: var(--text-dark);"></h4>
+                            <p id="eventDescriptionView" class="text-muted mb-0"></p>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Description'); ?></h6>
-                            <p id="eventDescriptionView" class="mb-0"></p>
+
+                        <!-- Details Grid -->
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="far fa-user"></i> <?php echo get_phrase('Created By'); ?></span>
+                                <span class="detail-value" id="eventCreator"></span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-school"></i> <?php echo get_phrase('Community'); ?></span>
+                                <span class="detail-value" id="eventSchool"></span>
+                            </div>
+
+                            <div class="detail-item full-width">
+                                <span class="detail-label"><i class="far fa-clock"></i> <?php echo get_phrase('Time'); ?></span>
+                                <span class="detail-value">
+                                    <span id="eventStart"></span> - <span id="eventEnd"></span>
+                                </span>
+                            </div>
+                            
+                            <div class="detail-item full-width" id="eventRecurrenceSection" style="display: none;">
+                                <span class="detail-label"><i class="fas fa-redo"></i> <?php echo get_phrase('Recurrence'); ?></span>
+                                <span class="detail-value" id="eventRecurrence"></span>
+                            </div>
+
+                             <div class="detail-item full-width">
+                                <span class="detail-label"><i class="fas fa-users"></i> <?php echo get_phrase('Participants'); ?></span>
+                                <div id="eventParticipants" class="badges-container mt-1"></div>
+                                <div class="mt-1">
+                                    <small class="text-muted"><?php echo get_phrase('number of participants'); ?>: <span id="participantCount" class="fw-bold">0</span></small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Community'); ?></h6>
-                            <p id="eventSchool" class="mb-0"></p>
+
+                        <!-- Action Button -->
+                        <div class="mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-primary w-100 py-2 rounded-pill shadow-sm join-meeting-btn" id="joinMeetingBtn" style="display: none;">
+                                <?php echo get_phrase('Meeting Not Started') ?>
+                            </button>
                         </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('Participants'); ?></h6>
-                            <div id="eventParticipants" class="badges-container"></div>
-                        </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('From'); ?></h6>
-                            <p id="eventStart" class="mb-0"></p>
-                        </div>
-                        <div class="mb-2">
-                            <h6><?php echo get_phrase('To'); ?></h6>
-                            <p id="eventEnd" class="mb-0"></p>
-                        </div>
-                        <div class="mb-2" id="eventRecurrenceSection" style="display: none;">
-                            <h6><?php echo get_phrase('Recurrence'); ?></h6>
-                            <p id="eventRecurrence" class="mb-0"></p>
-                        </div>
-                          <div><?php echo get_phrase('number of participants'); ?>
-                             <span id="participantCount">0</span>
-                        </div>
-                        <div class="form-group-calendar mt-3 btn-group-1">
-                            <button type="button" class="btn join-meeting-btn" id="joinMeetingBtn" style="display: none;"><?php echo get_phrase('Meeting Not Started') ?></button>
-                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+    /* Modal Styling */
+    .modern-modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+    }
+
+    .modern-modal-header {
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-main);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modern-modal-header .modal-title {
+        font-family: var(--font-header);
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 1.1rem;
+    }
+
+    .modern-modal-body {
+        padding: 2rem;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        background: var(--bg-main);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .detail-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-label i {
+        color: var(--primary);
+    }
+
+    .detail-value {
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .join-meeting-btn {
+        background: var(--primary);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+    }
+
+    .join-meeting-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Modern Buttons */
+    .modern-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        gap: 0.5rem;
+        cursor: pointer;
+        min-width: 100px;
+    }
+
+    .modern-btn i {
+        font-size: 1.1rem;
+    }
+
+    .modern-btn-primary {
+        background: var(--primary, #6366f1);
+        color: white;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    .modern-btn-primary:hover {
+        background: var(--primary-dark, #4338ca);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .modern-btn-success {
+        background: #dcfce7;
+        color: #16a34a;
+        border-color: #bbf7d0;
+    }
+    .modern-btn-success:hover {
+        background: #bbf7d0;
+        color: #15803d;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
+    }
+    
+    .badges-container .badge {
+        background: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        padding: 0.35em 0.65em;
+        font-weight: 500;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+    </style>
     
 <script>
 
 const CalendarApp = {
   calendar: null,
   currentView: 'dayGridMonth',
-  selectedSchool: '<?php echo $active_school_id; ?>',
+  selectedSchool: '',
   selectedClass: '',
   isLoading: false,
   selectedDays: [],
@@ -128,8 +431,7 @@ const CalendarApp = {
       sessionStorage.removeItem(key);
     }
   });
-  this.initCalendar();
-  this.pollActiveMeetings();
+  this.loadSchools();
   this.bindGlobalEvents();
   this.setupResizeListener();
 
@@ -160,7 +462,6 @@ const CalendarApp = {
 },
 
   initCalendar() {
-    console.log('CalendarApp initialized with selectedSchool:', this.selectedSchool);
     const calendarEl = document.getElementById('calendar');
     const now = new Date();
     const isMobile = window.innerWidth <= 576;
@@ -319,13 +620,13 @@ const CalendarApp = {
                 this.initCalendar();
               }
             } catch (e) {
-              this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
+              this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>');
               // Initialize calendar to avoid breaking UI
               this.initCalendar();
             }
           },
           error: () => {
-            this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
+            this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>');
             // Initialize calendar to avoid breaking UI
             this.initCalendar();
           }
@@ -497,14 +798,14 @@ const CalendarApp = {
                     let errorMessage = data.message || '<?php echo get_phrase("Failed to load events"); ?>';
                     // Customize error messages for student without class
                     if (errorMessage.includes('Not enrolled in any school') || errorMessage.includes('No student associated with this user')) {
-                        errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>';
+                        errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>';
                     }
                     this.showNotification('error', errorMessage);
                     failureCallback();
                 }
             } catch (e) {
                 console.error('Error parsing response:', e, response);
-                this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>');
+                this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>');
                 failureCallback();
             }
         },
@@ -513,7 +814,7 @@ const CalendarApp = {
             let errorMessage = xhr.status === 403 ? '<?php echo get_phrase("Access denied"); ?>' : '<?php echo get_phrase("Failed to load events"); ?>';
             // Customize error message for student without class
             if (errorMessage === '<?php echo get_phrase("Failed to load events"); ?>') {
-                errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty<br>To see events, join a class or wait for your registration to be validated."); ?>';
+                errorMessage = '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>';
             }
             this.showNotification('error', errorMessage);
             failureCallback();
@@ -527,7 +828,9 @@ const CalendarApp = {
 
 
   loadClassesWithEvents(start, end) {
-  // No school selection needed - using active school
+  if (!this.selectedSchool) {
+    return;
+  }
 },
 
   showNotification(type, message, duration = 3000) {
@@ -1619,7 +1922,11 @@ const CalendarApp = {
     const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
     const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
 
-
+    if (!this.selectedSchool) {
+        this.hasActiveMeetings = false;
+        this.stopActiveMeetingsPolling();
+        return;
+    }
 
     $.ajax({
         url: '<?php echo site_url('student/get_events'); ?>',
@@ -1763,7 +2070,19 @@ stopActiveMeetingsPolling() {
   goToToday() { this.calendar.today(); },
 
   bindGlobalEvents() {
-
+  $('#schoolFilter').on('change', () => {
+    this.selectedSchool = $('#schoolFilter').val();
+    this.selectedClass = '';
+    $('#classFilter').empty().append('<option value=""><?php echo get_phrase("All classes"); ?></option>').val('');
+    this.clearEventCache(); // Clear event cache when school changes
+    if (this.selectedSchool) {
+      const view = this.calendar.view;
+      const start = view.activeStart;
+      const end = view.activeEnd;
+      this.loadClassesWithEvents(start, end);
+    }
+    this.calendar.refetchEvents();
+  });
 
   $('#classFilter').on('change', () => {
     this.selectedClass = $('#classFilter').val();

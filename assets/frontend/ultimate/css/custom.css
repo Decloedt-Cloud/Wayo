@@ -399,6 +399,7 @@ main [dir="rtl"] {
   padding: 40px;
   margin-top: 32px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: start;
 }
 
 .plan-details-split .plan-kicker {
@@ -410,6 +411,7 @@ main [dir="rtl"] {
   font-weight: 800;
   font-size: .9rem;
   margin-bottom: 12px;
+  
 }
 
 .plan-details-split h3 {
@@ -552,11 +554,11 @@ main [dir="rtl"] {
   }
 
   .plan-details-split {
-    text-align: center;
+    text-align: start;
   }
 
   .plan-price-split {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .price-details {
@@ -2191,4 +2193,37 @@ a {
 header[dir="rtl"] .offcanvas-header,
 [dir="rtl"] .offcanvas-header {
   flex-direction: row-reverse;
+}
+
+/* Fix navigation alignment on 992px-1399px screens */
+@media (min-width: 992px) and (max-width: 1399px) {
+  body .container-customize {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .navbar-nav .nav-item {
+    margin: 0 5px !important;
+  }
+
+  .navbar-nav .nav-link {
+    font-size: 15px !important;
+    padding: 0.5rem 0.8rem !important;
+  }
+
+  .btn-lang,
+  .btn-custom,
+  .switcher-trigger {
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Fix username display - prevent wrapping */
+  .navbar-user-profile .user-section {
+    white-space: nowrap !important;
+  }
+
+  .navbar-user-profile .user-section span {
+    white-space: nowrap !important;
+  }
 }

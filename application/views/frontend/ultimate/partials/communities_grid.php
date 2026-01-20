@@ -34,7 +34,7 @@
                    <?php echo ($c['language'] ?? '') == 'ar' ? 'dir="rtl"' : ''; ?>>
 
                 <h3 class="h6 fw-bold text-uppercase"><?php echo $c['name']; ?></h3>
-                <p class="small text-secondary mb-3 card-description"><?php echo $c['description']; ?></p>
+                <p class="small text-secondary mb-3 card-description" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; height: 4.5em; line-height: 1.5em;"><?php echo $c['description']; ?></p>
 
                 <ul class="list-inline small text-secondary mb-3">
                   <li class="list-inline-item me-3">

@@ -1,350 +1,541 @@
 <?php
 $quiz_questions = $this->lms_model->get_quiz_questions($lesson_details['id']);
 $lesson_progress = lesson_progress($lesson_details['id']);
+$question_count = count($quiz_questions->result_array());
 ?>
-<div id="quiz-body">
-    <div id="quiz-header">
-        <strong><?php echo get_phrase("quiz_title"); ?></strong> : <?php echo $lesson_details['title']; ?><br>
-        <strong><?php echo get_phrase("number_of_questions"); ?></strong> :
-        <?php echo count($quiz_questions->result_array()); ?><br>
-        <?php if (count($quiz_questions->result_array()) > 0): ?>
-            <button type="button" name="button" class="btn start-exam-btn mt-2 text-white"
-                onclick="getStarted(1); ">
-                <?php echo get_phrase("get_started"); ?>
-            </button>
-            <button type="button" name="button" class="btn start-exam-btn mt-2 text-white" onclick="check_result(); ">
-                <?php echo get_phrase("check_result"); ?>
-            </button>
-        <?php endif; ?>
-    </div>
-
-    <form class="" id="quiz_form" action="" method="post">
-        <!-- Champ caché pour le jeton CSRF -->
-        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
-        <input type="hidden" name="overwrite_results" value="1" />
-        <?php if (count($quiz_questions->result_array()) > 0): ?>
-            <?php foreach ($quiz_questions->result_array() as $key => $quiz_question):
-                $options = json_decode($quiz_question['options']);
-                ?>
-                <input type="hidden" name="lesson_id" value="<?php echo $lesson_details['id']; ?>">
-                <div class="hidden" id="question-number-<?php echo $key + 1; ?>">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-12">
-                            <!-- Bloc de la question -->
-                            <div class="card-body question-body">
-                                <h6 class="card-title"><?php echo get_phrase("question") . ' ' . ($key + 1); ?> :
-                                    <strong><?php echo $quiz_question['title']; ?></strong>
-                                </h6>
-                            </div>
-                            <!-- Chronomètre -->
-                            <div class="timer-container text-center mb-2">
-                                Temps restant : <span id="timer<?php echo $key + 1; ?>">00:15</span>
-                                <div class="timer-bar" id="timer-bar-<?php echo $key + 1; ?>"></div>
-                            </div>
-                            <!-- Bloc des options -->
-                            <div class="card text-left quiz-card">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item quiz-options-header">
-                                        <h5 class="text-capitalize"><?php echo get_phrase("Choose_your_answer"); ?></h5>
-                                    </li>
-                                    <?php foreach ($options as $key2 => $option): ?>
-                                        <li class="list-group-item quiz-options">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                    name="<?php echo $quiz_question['id']; ?>[]" value="<?php echo $key2 + 1; ?>"
-                                                    id="quiz-id-<?php echo $quiz_question['id']; ?>-option-id-<?php echo $key2 + 1; ?>"
-                                                    onclick="enableNextButton('<?php echo $quiz_question['id']; ?>')">
-                                                <label class="form-check-label"
-                                                    for="quiz-id-<?php echo $quiz_question['id']; ?>-option-id-<?php echo $key2 + 1; ?>">
-                                                    <?php echo $option; ?>
-                                                </label>
-                                            </div>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                            <!-- Bouton Suivant/Soumettre -->
-                            <button type="button" name="button" class="btn start-exam-btn mt-2 text-white"
-                                id="next-btn-<?php echo $quiz_question['id']; ?>" 
-                                <?php if (count($quiz_questions->result_array()) == $key + 1): ?>onclick="submitQuiz()" 
-                                <?php else: ?>onclick="showNextQuestion('<?php echo $key + 2; ?>');" <?php endif; ?>
-                                disabled
-                                data-question-id="<?php echo $quiz_question['id']; ?>">
-                                <?php echo count($quiz_questions->result_array()) == $key + 1 ? get_phrase("check_result") : get_phrase("submit_and_next"); ?>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </form>
-</div>
-<div id="quiz-result" class="text-left">
-</div>
 
 <style>
+/* ========== MODERN QUIZ STYLES ========== */
+.quiz-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-.card {
-    background-color: #fff !important;
-}
-.quiz-body {
-    padding: 20px;
-    color: #000;
-    min-height: 100vh;
-    font-family: 'Orbitron', sans-serif;
-}
-#quiz-header {
-    color: #000 !important;
-    font-size: 1.0rem;
-    border: 1px solid #D9D9D9;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 12px 15px;
-    margin-bottom: 20px;
+/* Quiz Header Card */
+.quiz-info-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
     text-align: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-#quiz-header strong {
-    color: #000;
-    font-size: 1.1rem;
-    font-weight: 700;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-#quiz-body {
-    overflow: hidden;
-    max-width: 100%;
-}
-.quiz-card {
-    background-color: transparent !important;
+    animation: fadeUp 0.4s ease;
 }
 
-.card-body {
-    color: #000 !important;
-    font-size: 1.0rem;
-    border: 1px solid #D9D9D9 !important;
-    border-radius: 15px !important;
-    background-color: #fff !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-.question-body {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-.question-body .card-title {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-.quiz-button:disabled {
-    background: #4a4a4a;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-.timer-container {
+.quiz-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-lighter), #c7d2fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary);
     position: relative;
-    width: 100%; /* Étend à la largeur du conteneur parent */
-    font-size: 0.9rem;
-    padding: 4px 10px;
-    background: #fff;
-    color: #000;
-    font-weight: 600;
-    margin-top: 50px;
-    text-align: center;
 }
-.timer-bar {
-    height: 3px;
-    background: linear-gradient(90deg, #DA4437, #04A523);
-    border-radius: 2px;
-    width: 100%; /* Commence à 100% de la largeur du conteneur parent */
+
+.quiz-icon::after {
+    content: '';
     position: absolute;
-    bottom: -2px;
-    left: 0;
-    animation: timerProgress 15s linear forwards;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px dashed var(--primary-lighter);
+    animation: spin 15s linear infinite;
 }
-@keyframes timerProgress {
-    0% { width: 100%; }
-    100% { width: 0%; }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
-.list-group-item.quiz-options {
-    background: #fff !important;
-    color: #000 !important;
-    padding: 10px 15px !important;
-    margin-bottom: 8px !important;
-    border-radius: 10px !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
+
+.quiz-info-title {
+    font-family: var(--font-header);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
 }
-.list-group-item.quiz-options:hover {
-    background: #f5f5f5 !important;
-    border-color: #2196F3 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+
+.quiz-info-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
 }
-.list-group-item.quiz-options.selected {
-    background: #e3f2fd !important;
-    border-color: #2196F3 !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+
+.quiz-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background: var(--bg-main);
+    border-radius: var(--radius-lg);
 }
-.list-group-item.quiz-options-header {
-    background: #fff !important;
-    color: #000 !important;
-    padding: 10px 15px !important;
-    margin-bottom: 8px !important;
-    border-radius: 10px !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-    /* Pas d'effet de survol */
-    cursor: default;
+
+.quiz-stat {
+    text-align: center;
 }
-.form-check-label {
-    color: #000;
-    margin-left: 10px;
-    font-size: 0.95rem;
-    width: 100%;
-    cursor: pointer;
-    line-height: 1.4;
+
+.quiz-stat-value {
+    display: block;
+    font-family: var(--font-header);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
 }
-.form-check-input {
-    margin-top: 0.2rem;
+
+.quiz-stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
 }
-.hidden {
-    display: none;
+
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
-#quiz-result {
-    margin-top: 20px;
-}
-.start-exam-btn {
-    background: #4f46e5 ;
-    border: none;
-    padding: 6px 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-.start-exam-btn:hover {
-    background:rgba(99, 101, 241, 0.85);
-    transform: scale(1.05);
-}
-.retake-quiz-btn {
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+
+.quiz-btn {
     display: inline-flex;
     align-items: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
-.retake-quiz-btn:hover {
-    background: rgba(99, 101, 241, 0.85);
-    color: #fff;
-    transform: scale(1.05);
-}
-.confirmation-container {
-    text-align: center;
-    padding: 25px;
-    background: linear-gradient(145deg, #ffffff, #f0f0f0);
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease;
-}
-.confirmation-icon {
-    font-size: 2.5rem;
-    color: #04A523;
-    margin-bottom: 15px;
-    animation: pulseIcon 1.5s infinite;
-}
-.confirmation-container h5 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 12px;
-}
-.confirmation-container p {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 15px;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulseIcon {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-}
-@media (max-width: 768px) {
-    .list-group-item.quiz-options,
-    .list-group-item.quiz-options-header {
-        padding: 8px 12px !important;
-        margin-bottom: 6px !important;
-    }
-    .form-check-label {
-        font-size: 0.85rem;
-        margin-left: 8px;
-    }
 
-    .timer-container {
-        font-size: 0.8rem;
-        padding: 3px 6px;
+.quiz-btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.quiz-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.quiz-btn-secondary {
+    background: var(--bg-main);
+    color: var(--primary);
+    border: 2px solid var(--primary-lighter);
+}
+
+.quiz-btn-secondary:hover {
+    background: var(--primary-lighter);
+    border-color: var(--primary);
+}
+
+/* Question Card */
+.question-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease;
+}
+
+.question-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.question-number-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.question-timer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--primary-dark);
+}
+
+.question-timer i {
+    color: #ef4444;
+    animation: pulse 1s ease infinite;
+}
+
+.question-body {
+    padding: 1.5rem;
+}
+
+.question-text {
+    font-family: var(--font-header);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* Timer Progress Bar */
+.timer-progress {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.timer-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary), #f59e0b, #ef4444);
+    border-radius: 2px;
+    animation: timerCountdown 15s linear forwards;
+}
+
+@keyframes timerCountdown {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Options List */
+.options-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.options-header i {
+    color: var(--primary);
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.option-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-main);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-item:hover {
+    background: var(--primary-lighter);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.option-item.selected {
+    background: var(--primary-lighter);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.option-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: var(--bg-card);
+}
+
+.option-item.selected .option-checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.option-item.selected .option-checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.option-text {
+    flex: 1;
+    font-size: 0.9375rem;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.option-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Question Footer */
+.question-footer {
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-main);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Quiz Result Container */
+#quiz-result {
+    margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quiz-info-card {
+        padding: 1.5rem;
     }
-    .timer-bar {
-        height: 2px;
+    
+    .quiz-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
     }
-    .start-exam-btn {
-        font-size: 0.9rem;
-        padding: 5px 5px;
+    
+    .quiz-info-title {
+        font-size: 1.25rem;
+    }
+    
+    .quiz-stats {
+        gap: 1.25rem;
+        padding: 1rem;
+    }
+    
+    .quiz-stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .quiz-actions {
+        flex-direction: column;
+    }
+    
+    .quiz-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .question-text {
+        font-size: 1.0625rem;
+    }
+    
+    .option-item {
+        padding: 0.875rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .quiz-stats {
+        flex-direction: column;
+        gap: 1rem;
     }
 }
 </style>
 
-<script>
-// Tableau pour stocker les références des timers
-let timers = {};
-const totalQuestions = <?php echo count($quiz_questions->result_array()); ?>;
+<div class="quiz-wrapper">
+    <!-- Quiz Header -->
+    <div id="quiz-header" class="quiz-info-card">
+        <div class="quiz-icon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <h2 class="quiz-info-title"><?php echo $lesson_details['title']; ?></h2>
+        <p class="quiz-info-subtitle"><?php echo get_phrase('test_your_knowledge'); ?></p>
+        
+        <div class="quiz-stats">
+            <div class="quiz-stat">
+                <span class="quiz-stat-value"><?php echo $question_count; ?></span>
+                <span class="quiz-stat-label"><?php echo get_phrase('questions'); ?></span>
+            </div>
+            <div class="quiz-stat">
+                <span class="quiz-stat-value">15s</span>
+                <span class="quiz-stat-label"><?php echo get_phrase('per_question'); ?></span>
+            </div>
+        </div>
+        
+        <?php if ($question_count > 0): ?>
+        <div class="quiz-actions">
+            <button type="button" class="quiz-btn quiz-btn-primary" onclick="getStarted(1);">
+                <i class="fas fa-play"></i>
+                <?php echo get_phrase('start_quiz'); ?>
+            </button>
+            <button type="button" class="quiz-btn quiz-btn-secondary" onclick="check_result();">
+                <i class="fas fa-chart-bar"></i>
+                <?php echo get_phrase('check_result'); ?>
+            </button>
+        </div>
+        <?php else: ?>
+        <p class="text-muted"><?php echo get_phrase('no_questions_available'); ?></p>
+        <?php endif; ?>
+    </div>
 
-// Activer le bouton "Suivant" ou "Soumettre" quand une réponse est sélectionnée
+    <!-- Quiz Form -->
+    <form id="quiz_form" action="" method="post">
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
+        <input type="hidden" name="overwrite_results" value="1" />
+        <input type="hidden" name="lesson_id" value="<?php echo $lesson_details['id']; ?>">
+        
+        <?php if ($question_count > 0): ?>
+            <?php foreach ($quiz_questions->result_array() as $key => $quiz_question):
+                $options = json_decode($quiz_question['options']);
+                $question_num = $key + 1;
+                $is_last = ($question_count == $question_num);
+            ?>
+            <div class="hidden" id="question-number-<?php echo $question_num; ?>">
+                <div class="question-card">
+                    <!-- Question Header -->
+                    <div class="question-header">
+                        <span class="question-number-badge">
+                            <i class="fas fa-bookmark"></i>
+                            <?php echo get_phrase('question'); ?> <?php echo $question_num; ?>/<?php echo $question_count; ?>
+                        </span>
+                        <span class="question-timer">
+                            <i class="fas fa-clock"></i>
+                            <span id="timer<?php echo $question_num; ?>">00:15</span>
+                        </span>
+                    </div>
+                    
+                    <!-- Question Body -->
+                    <div class="question-body">
+                        <!-- Timer Progress -->
+                        <div class="timer-progress">
+                            <div class="timer-progress-bar" id="timer-bar-<?php echo $question_num; ?>"></div>
+                        </div>
+                        
+                        <!-- Question Text -->
+                        <p class="question-text"><?php echo $quiz_question['title']; ?></p>
+                        
+                        <!-- Options -->
+                        <div class="options-header">
+                            <i class="fas fa-hand-pointer"></i>
+                            <?php echo get_phrase('choose_your_answer'); ?>
+                        </div>
+                        
+                        <div class="options-list">
+                            <?php foreach ($options as $key2 => $option): ?>
+                            <label class="option-item" for="quiz-<?php echo $quiz_question['id']; ?>-opt-<?php echo $key2 + 1; ?>" onclick="selectOption(this)">
+                                <input type="checkbox" 
+                                       name="<?php echo $quiz_question['id']; ?>[]" 
+                                       value="<?php echo $key2 + 1; ?>"
+                                       id="quiz-<?php echo $quiz_question['id']; ?>-opt-<?php echo $key2 + 1; ?>"
+                                       onclick="enableNextButton('<?php echo $quiz_question['id']; ?>')">
+                                <span class="option-checkbox"></span>
+                                <span class="option-text"><?php echo $option; ?></span>
+                            </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Question Footer -->
+                    <div class="question-footer">
+                        <button type="button" 
+                                class="quiz-btn quiz-btn-primary" 
+                                id="next-btn-<?php echo $quiz_question['id']; ?>"
+                                <?php if ($is_last): ?>
+                                    onclick="submitQuiz()"
+                                <?php else: ?>
+                                    onclick="showNextQuestion('<?php echo $question_num + 1; ?>');"
+                                <?php endif; ?>
+                                disabled
+                                data-question-id="<?php echo $quiz_question['id']; ?>">
+                            <?php if ($is_last): ?>
+                                <i class="fas fa-check-circle"></i>
+                                <?php echo get_phrase('submit_quiz'); ?>
+                            <?php else: ?>
+                                <?php echo get_phrase('next'); ?>
+                                <i class="fas fa-arrow-right"></i>
+                            <?php endif; ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </form>
+    
+    <!-- Results Container -->
+    <div id="quiz-result"></div>
+</div>
+
+<script>
+// Timer management
+let timers = {};
+const totalQuestions = <?php echo $question_count; ?>;
+
+function selectOption(element) {
+    // Toggle selected class
+    element.classList.toggle('selected');
+}
+
 function enableNextButton(questionId) {
     const button = document.getElementById('next-btn-' + questionId);
     button.disabled = false;
 }
 
-// Arrêter tous les timers
 function stopAllTimers() {
-    Object.keys(timers).forEach(function (key) {
+    Object.keys(timers).forEach(function(key) {
         clearInterval(timers[key]);
     });
     timers = {};
 }
 
-// Démarrer ou réinitialiser le timer pour une question spécifique
 function startTimer(index) {
     stopAllTimers();
     let timerSpan = document.getElementById('timer' + index);
     let timerBar = document.getElementById('timer-bar-' + index);
     let timeLeft = 15;
+    
     timerSpan.textContent = '00:' + (timeLeft < 10 ? '0' + timeLeft : timeLeft);
-    timerBar.style.width = '100%';
+    timerBar.style.animation = 'none';
+    timerBar.offsetHeight; // Trigger reflow
+    timerBar.style.animation = 'timerCountdown 15s linear forwards';
 
-    let timer = setInterval(function () {
+    let timer = setInterval(function() {
         if (timeLeft <= 0) {
             clearInterval(timer);
             delete timers[index];
-            let button = document.getElementById('next-btn-' + document.getElementById('question-number-' + index).querySelector('button').dataset.questionId);
-            button.disabled = true;
+            
             if (index < totalQuestions) {
                 showNextQuestion(index + 1);
             } else {
@@ -355,14 +546,17 @@ function startTimer(index) {
             timeLeft--;
         }
     }, 1000);
+    
     timers[index] = timer;
 }
 
-// Afficher la question suivante et réinitialiser le timer
 function showNextQuestion(nextQuestionNumber) {
-    document.querySelectorAll('#quiz-body > form > div').forEach(function (question) {
+    // Hide all questions
+    document.querySelectorAll('#quiz_form > div').forEach(function(question) {
         question.classList.add('hidden');
     });
+    
+    // Show next question
     const nextQuestion = document.getElementById('question-number-' + nextQuestionNumber);
     if (nextQuestion) {
         nextQuestion.classList.remove('hidden');
@@ -370,31 +564,26 @@ function showNextQuestion(nextQuestionNumber) {
     }
 }
 
-// Soumettre le quiz
-function submitQuiz() {
-    stopAllTimers();
-    let form = document.getElementById('quiz_form');
-    let submitButton = form.querySelector('button:not([disabled])'); // Find the active submit button
-    if (submitButton) {
-        submitButton.disabled = true; // Disable to prevent multiple submissions
-    }
-    // Submit the form synchronously
-    form.submit();
-}
-
-// Gérer le clic sur le bouton "Get Started"
 function getStarted(questionNumber) {
     document.getElementById('quiz-header').style.display = 'none';
     document.getElementById('question-number-' + questionNumber).classList.remove('hidden');
     startTimer(questionNumber);
 }
 
-// Refaire le quiz
+function submitQuiz() {
+    stopAllTimers();
+    let form = document.getElementById('quiz_form');
+    let submitButton = form.querySelector('button:not([disabled])');
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+    form.submit();
+}
+
 function retakeQuiz() {
     window.location.reload();
 }
 
-// Gérer le clic sur le bouton "Check Result"
 function check_result() {
     fetch('/quiz/results?lesson_id=<?php echo $lesson_details['id']; ?>', {
         method: 'GET',
@@ -404,31 +593,45 @@ function check_result() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Erreur réseau: ' + response.status);
+            throw new Error('Network error: ' + response.status);
         }
         return response.json();
     })
     .then(data => {
         let quizResult = document.getElementById('quiz-result');
         if (data.error) {
-            quizResult.innerHTML = `<p>${data.error}</p>`;
+            quizResult.innerHTML = `<div class="quiz-info-card"><p class="text-muted">${data.error}</p></div>`;
             return;
         }
-        // Afficher les résultats
+        
         quizResult.innerHTML = `
-            <div class="confirmation-container">
-                <h5><?php echo get_phrase('your_quiz_results'); ?></h5>
-                <p>Score: ${data.score}%</p>
-                <p>Correct Answers: ${data.correct_answers} / ${data.total_questions}</p>
-                <button type="button" class="btn retake-quiz-btn mt-3" onclick="retakeQuiz()">
-                    <i class="fas fa-redo-alt me-2"></i><?php echo get_phrase('retake_quiz'); ?>
-                </button>
+            <div class="quiz-info-card" style="margin-top: 1.5rem;">
+                <div class="quiz-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
+                    <i class="fas fa-trophy" style="color: #059669;"></i>
+                </div>
+                <h2 class="quiz-info-title"><?php echo get_phrase('your_results'); ?></h2>
+                <div class="quiz-stats">
+                    <div class="quiz-stat">
+                        <span class="quiz-stat-value" style="color: ${data.score >= 50 ? '#059669' : '#ef4444'};">${data.score}%</span>
+                        <span class="quiz-stat-label"><?php echo get_phrase('score'); ?></span>
+                    </div>
+                    <div class="quiz-stat">
+                        <span class="quiz-stat-value">${data.correct_answers}/${data.total_questions}</span>
+                        <span class="quiz-stat-label"><?php echo get_phrase('correct'); ?></span>
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <button type="button" class="quiz-btn quiz-btn-primary" onclick="retakeQuiz()">
+                        <i class="fas fa-redo-alt"></i>
+                        <?php echo get_phrase('retake_quiz'); ?>
+                    </button>
+                </div>
             </div>
         `;
     })
     .catch(error => {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue lors de la récupération des résultats: ' + error.message);
+        console.error('Error:', error);
+        alert('An error occurred while fetching results: ' + error.message);
     });
 }
 </script>

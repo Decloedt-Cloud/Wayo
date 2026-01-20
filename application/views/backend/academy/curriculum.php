@@ -3687,6 +3687,9 @@ saveNewSection = function() {
 // COMMON MODAL UTILITIES
 // ==========================================
 
+// Global flag to track outline generation state
+let isOutlineGenerating = false;
+
 // Common modal management functions
 function showModal(modalId) {
     document.getElementById(modalId).style.display = 'flex';
@@ -3864,6 +3867,11 @@ function openPdfImportModal() {
 }
 
 function closePdfImportModal() {
+    // Block closing if generation is in progress
+    if (isOutlineGenerating) {
+        return;
+    }
+    
     hideModal('pdfImportModal');
     resetPdfImportModal();
     
@@ -3900,9 +3908,9 @@ function initPdfDropZoneEvents() {
         }
     });
 
-    // Modal close handler
+    // Modal close handler (blocked during generation)
     document.getElementById('pdfImportModal').addEventListener('click', function(e) {
-        if (e.target === this) {
+        if (e.target === this && !isOutlineGenerating) {
             closePdfImportModal();
         }
     });
@@ -3950,7 +3958,6 @@ function getOutlineRulesData() {
         tone: document.getElementById('outlineTone').value,
         includeIntro: document.getElementById('outlineIncludeIntro').checked,
         includeConclusion: document.getElementById('outlineIncludeConclusion').checked,
-        generateContent: document.getElementById('outlineGenerateContent').checked,
         maxSections: document.getElementById('outlineMaxSections').value,
         lessonsPerSection: document.getElementById('outlineLessonsPerSection').value,
         lessonDuration: document.getElementById('outlineLessonDuration').value,
@@ -3967,6 +3974,12 @@ function generateOutlineSchemas() {
         return;
     }
     
+    // Set generation flag to block modal closing
+    isOutlineGenerating = true;
+    
+    // Hide close button during generation
+    document.getElementById('pdfModalCloseBtn').style.display = 'none';
+    
     const outlineData = getOutlineRulesData();
     
     // Get course context data (prerequisites, field_of_activity, course_style)
@@ -3980,7 +3993,6 @@ function generateOutlineSchemas() {
     schemaSelectionEl.classList.add('is-loading'); // Add loading class to hide content
     document.getElementById('outlineSchemaFooter').style.display = 'none'; // Hide footer during generation
     showModal('schemaLoadingOverlay');
-    disableScroll();
     
     // Call DeepSeek API
     const csrfName = document.getElementById('csrf_name')?.value || '<?php echo $this->security->get_csrf_token_name(); ?>';
@@ -3998,9 +4010,14 @@ function generateOutlineSchemas() {
     })
     .then(response => response.json())
     .then(data => {
+        // Reset generation flag - schemas generated, user can close modal
+        isOutlineGenerating = false;
+        
+        // Show close button again
+        document.getElementById('pdfModalCloseBtn').style.display = '';
+        
         hideModal('schemaLoadingOverlay');
         document.getElementById('outlineSchemaSelection').classList.remove('is-loading'); // Remove loading class
-        enableScroll();
         // Always show footer after loading completes
         document.getElementById('outlineSchemaFooter').style.display = 'flex';
         
@@ -4016,9 +4033,14 @@ function generateOutlineSchemas() {
         }
     })
     .catch(error => {
+        // Reset generation flag on error
+        isOutlineGenerating = false;
+        
+        // Show close button again
+        document.getElementById('pdfModalCloseBtn').style.display = '';
+        
         hideModal('schemaLoadingOverlay');
         document.getElementById('outlineSchemaSelection').classList.remove('is-loading'); // Remove loading class
-        enableScroll();
         console.error('Failed to generate schemas:', error.message);
         backToOutlineRules();
     });
@@ -4130,6 +4152,11 @@ function selectSchema(schemaNum) {
 }
 
 function backToOutlineRules() {
+    // Block going back during generation
+    if (isOutlineGenerating) {
+        return;
+    }
+    
     document.querySelector('.outline-rules-body').style.display = 'block';
     document.getElementById('outlineRulesFooter').style.display = 'flex';
     document.getElementById('outlineSchemaSelection').style.display = 'none';
@@ -4150,10 +4177,15 @@ function continueWithSelectedSchema() {
         return;
     }
     
+    // Set generation flag to block modal closing
+    isOutlineGenerating = true;
+    
+    // Hide close button during generation
+    document.getElementById('pdfModalCloseBtn').style.display = 'none';
+    
     // Add loading class to hide content and show overlay
     document.getElementById('outlineSchemaSelection').classList.add('is-applying');
     showModal('schemaApplyingOverlay');
-    disableScroll();
 
     // Disable all schema cards during generation
     const schemaContainer = document.querySelector('.schema-cards-container');
@@ -4187,10 +4219,15 @@ function continueWithSelectedSchema() {
     })
     .then(response => response.json())
     .then(data => {
+        // Reset generation flag
+        isOutlineGenerating = false;
+        
+        // Show close button again
+        document.getElementById('pdfModalCloseBtn').style.display = '';
+        
         // Remove loading class and hide overlay
         document.getElementById('outlineSchemaSelection').classList.remove('is-applying');
         hideModal('schemaApplyingOverlay');
-        enableScroll();
 
         // Re-enable schema cards
         schemaContainer.classList.remove('generating');
@@ -4211,10 +4248,15 @@ function continueWithSelectedSchema() {
         }
     })
     .catch(error => {
+        // Reset generation flag on error
+        isOutlineGenerating = false;
+        
+        // Show close button again
+        document.getElementById('pdfModalCloseBtn').style.display = '';
+        
         // Remove loading class and hide overlay
         document.getElementById('outlineSchemaSelection').classList.remove('is-applying');
         hideModal('schemaApplyingOverlay');
-        enableScroll();
 
         // Re-enable schema cards on error
         const schemaContainer = document.querySelector('.schema-cards-container');
@@ -4302,7 +4344,7 @@ function extractPdfStructure(file) {
                 <h3><?php echo get_phrase("outline_rules"); ?></h3>
                 <p class="outline-rules-subtitle"><?php echo get_phrase("define_rules_to_generate_course_outline"); ?></p>
             </div>
-            <button type="button" class="pdf-modal-close" onclick="closePdfImportModal()">
+            <button type="button" class="pdf-modal-close" id="pdfModalCloseBtn" onclick="closePdfImportModal()">
                 <i class="fas fa-xmark"></i>
             </button>
         </div>
@@ -4394,14 +4436,6 @@ function extractPdfStructure(file) {
                             <span><?php echo get_phrase("include_conclusion_section"); ?></span>
                             <label class="outline-toggle">
                                 <input type="checkbox" id="outlineIncludeConclusion" checked>
-                                <span class="outline-toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="outline-toggle-item">
-                            <span><?php echo get_phrase("generate_full_content"); ?></span>
-                            <label class="outline-toggle">
-                                <input type="checkbox" id="outlineGenerateContent" checked>
                                 <span class="outline-toggle-slider"></span>
                             </label>
                         </div>
