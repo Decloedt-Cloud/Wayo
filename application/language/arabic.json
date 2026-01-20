@@ -3556,5 +3556,11 @@
     "excl_tax": "بدون الضريبة",
     "incl_tax": "مع الضريبة",
     "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
-    "recording_info": "معلومات التسجيل"
+    "recording_info": "معلومات التسجيل",
+    "no_teachers_found": "لم يتم العثور على معلمين",
+    "teacher_details": "تفاصيل المعلم",
+    "search_teachers": "البحث عن المعلمين",
+    "teacher_list": "قائمة المعلمين",
+    "active_teachers": "المعلمون النشطون",
+    "total_teachers": "إجمالي المعلمين"
 }

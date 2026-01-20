@@ -1,4 +1,73 @@
 
+<style>
+    /* Modern Buttons */
+    .modern-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        gap: 0.5rem;
+        cursor: pointer;
+        min-width: 100px;
+    }
+
+    .modern-btn i {
+        font-size: 1.1rem;
+    }
+
+    .modern-btn-primary {
+        background: var(--exp-primary, #6366f1);
+        color: white;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    .modern-btn-primary:hover {
+        background: var(--exp-primary-dark, #4338ca);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .modern-btn-danger {
+        background: #fee2e2;
+        color: #ef4444;
+        border-color: #fecaca;
+    }
+    .modern-btn-danger:hover {
+        background: #fecaca;
+        color: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+    }
+
+    .modern-btn-success {
+        background: #dcfce7;
+        color: #16a34a;
+        border-color: #bbf7d0;
+    }
+    .modern-btn-success:hover {
+        background: #bbf7d0;
+        color: #15803d;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
+    }
+
+    .modern-btn-secondary {
+        background: #f1f5f9;
+        color: #64748b;
+        border-color: #e2e8f0;
+    }
+    .modern-btn-secondary:hover {
+        background: #e2e8f0;
+        color: #475569;
+        transform: translateY(-2px);
+    }
+</style>
+
     <div class="exp-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div class="exp-toolbar-left" style="display: flex; gap: 0.5rem; align-items: center;">
             <button class="exp-btn" style="padding: 0.5rem 1rem; background: var(--exp-light); border: 1px solid var(--exp-border);" onclick="CalendarApp.goToToday()"><?php echo get_phrase('TODAY'); ?></button>
@@ -117,8 +186,8 @@
                             </div>
                         </div>
 
-                        <div class="exp-modal-footer mt-4">
-                            <button type="submit" class="exp-btn exp-btn-primary">
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <button type="submit" class="modern-btn modern-btn-primary">
                                 <i class="mdi mdi-check"></i> <?php echo get_phrase('save_event'); ?>
                             </button>
                         </div>
@@ -175,14 +244,14 @@
                              <span id="participantCount" class="badge bg-light text-dark border">0</span>
                         </div>
                         
-                        <div class="exp-modal-footer">
-                            <button type="button" class="exp-btn exp-btn-primary" id="editEventBtn">
+                        <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                            <button type="button" class="modern-btn modern-btn-primary flex-grow-1" id="editEventBtn">
                                 <i class="mdi mdi-pencil"></i> <?php echo get_phrase('Edit') ?>
                             </button>
-                            <button type="button" class="exp-btn" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;" id="deleteevent">
+                            <button type="button" class="modern-btn modern-btn-danger flex-grow-1" id="deleteevent">
                                 <i class="mdi mdi-trash-can"></i> <?php echo get_phrase('Delete') ?>
                             </button>
-                            <button type="button" class="exp-btn" style="background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; display: none;" id="joinMeetingBtn">
+                            <button type="button" class="modern-btn modern-btn-success flex-grow-1" style="display: none;" id="joinMeetingBtn">
                                 <i class="mdi mdi-video"></i> <?php echo get_phrase('Start Meeting') ?>
                             </button>
                         </div>
@@ -265,7 +334,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" data-bs-toggle="modal" data-bs-target="#recurrenceModal">
+                            <button type="button" class="modern-btn modern-btn-secondary" data-bs-toggle="modal" data-bs-target="#recurrenceModal">
                                 <i class="mdi mdi-repeat"></i> <?php echo get_phrase('Repeat') ?>
                             </button>
 
@@ -278,12 +347,12 @@
                             </div>
                         </div>
 
-                        <div class="exp-modal-footer mt-4">
-                            <button type="submit" class="exp-btn exp-btn-primary">
-                                <i class="mdi mdi-check"></i> <?php echo get_phrase('Save') ?>
-                            </button>
-                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" id="cancelEditBtn">
+                        <div class="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
+                            <button type="button" class="modern-btn modern-btn-secondary" id="cancelEditBtn">
                                 <?php echo get_phrase('Cancel') ?>
+                            </button>
+                            <button type="submit" class="modern-btn modern-btn-primary">
+                                <i class="mdi mdi-check"></i> <?php echo get_phrase('Save') ?>
                             </button>
                         </div>
                     </form>
@@ -338,12 +407,12 @@
                             <input type="text" class="exp-form-control" id="customRecurrencePopup" name="custom_recurrence" readonly>
                         </div>
                         
-                        <div class="exp-modal-footer mt-4">
-                            <button type="button" class="exp-btn exp-btn-primary" id="saveRecurrence">
-                                <i class="mdi mdi-check"></i> <?php echo get_phrase('save') ?>
-                            </button>
-                            <button type="button" class="exp-btn" style="background: var(--exp-light); border: 1px solid var(--exp-border);" data-bs-dismiss="modal">
+                        <div class="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
+                            <button type="button" class="modern-btn modern-btn-secondary" data-bs-dismiss="modal">
                                 <?php echo get_phrase('Cancel') ?>
+                            </button>
+                            <button type="button" class="modern-btn modern-btn-primary" id="saveRecurrence">
+                                <i class="mdi mdi-check"></i> <?php echo get_phrase('save') ?>
                             </button>
                         </div>
                     </form>

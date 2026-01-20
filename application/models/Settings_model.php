@@ -138,6 +138,7 @@ class Settings_model extends CI_Model
   public function update_current_school_settings()
   {
     $schoolId = school_id();
+    
     $data['name'] = htmlspecialchars($this->input->post('school_name'));
     $data['phone'] = htmlspecialchars($this->input->post('phone'));
     $data['Rue'] = htmlspecialchars($this->input->post('communityStreet'));
@@ -146,8 +147,20 @@ class Settings_model extends CI_Model
     $data['Codepostal'] = htmlspecialchars($this->input->post('communityPostalCode'));
     $data['description'] = htmlspecialchars($this->input->post('description'));
     $data['access'] = htmlspecialchars($this->input->post('access'));
+    // $data['category'] was being overwritten. Assuming 'category' input is for school category
     $data['category'] = htmlspecialchars_decode($this->input->post('category'));
-    $schoolId = school_id();
+    
+    // Validate Tax Residence and prepare country code
+    $tax_residence = htmlspecialchars_decode($this->input->post('tax_residence'));
+  
+    // Validation Tax Residence
+    if (!in_array($tax_residence, ['MA', 'UAE'])) {
+        log_message('error', 'Invalid Tax Residence value: ' . $tax_residence);
+        return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
+    }
+    
+    // Set country code based on tax residence (or use tax residence directly if it IS the code)
+    $country_code = $tax_residence;
 
     $this->db->where('id', $schoolId);
     $this->db->update('schools', $data);
@@ -171,24 +184,12 @@ class Settings_model extends CI_Model
     }
     
     // ----------------- Settings school -----------------
-    $tax_residence_input = htmlspecialchars_decode($this->input->post('tax_residence'));
+ 
     // Tax_residence est maintenant stocké dans schools.country (source unique de vérité)
     $data_settings_school['type'] = htmlspecialchars_decode($this->input->post('i_am'));
     $data_settings_school['num_vat'] = htmlspecialchars_decode($this->input->post('num_vat'));
 
-    // Normaliser le country code
-    $country_code = null;
-    if ($tax_residence_input === 'MA') {
-        $country_code = 'MA';
-    } elseif ($tax_residence_input === 'UAE' || $tax_residence_input === 'AE') {
-        $country_code = 'AE';
-    }
- 
-    // Validation Tax Residence
-    if (!in_array($tax_residence_input, ['MA', 'UAE'])) {
-        log_message('error', 'Invalid Tax Residence value: ' . $tax_residence_input);
-        return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
-    }
+
     
     // Mettre à jour country dans schools (source unique de vérité)
     $this->db->where('id', $schoolId);
@@ -308,13 +309,13 @@ class Settings_model extends CI_Model
                 log_message('debug', "⚠️ Aucune bannière trouvée pour l’école {$schoolId}");
             }
     
-            // ✅ 4. Mise à jour des colonnes personnalisées dans table space
-            $dbHumhub = $this->load->database('humhub', TRUE);
-            $dbHumhub->where('id', $school->humhub_space_id);
-            $dbHumhub->update('space', [
-                'community_name' => $data['name'],
-                'community_id' => $schoolId
-            ]);
+            // // ✅ 4. Mise à jour des colonnes personnalisées dans table space
+            // $dbHumhub = $this->load->database('humhub', TRUE);
+            // $dbHumhub->where('id', $school->humhub_space_id);
+            // $dbHumhub->update('space', [
+            //     'community_name' => $data['name'],
+            //     'community_id' => $schoolId
+            // ]);
         } else {
             log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$school->humhub_space_id}");
         }

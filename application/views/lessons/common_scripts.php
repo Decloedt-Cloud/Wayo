@@ -10,34 +10,66 @@ let remainingTime;
 let timerInterval;
 let currentQuestion = 1; // Variable pour suivre la question actuelle
 let quizSubmitted = false;  // Drapeau pour vérifier si le quiz a été soumis
+var isUpdatingProgress = false; // Flag to prevent concurrent AJAX requests
 
+// Initialize savedProgress
+savedProgress = currentProgress ? parseFloat(currentProgress) : 0;
+if (isNaN(savedProgress)) savedProgress = 0;
 
 function markThisLessonAsCompleted(lesson_id) {
-  $('#lesson_list_area').hide();
+  // If an update is already in progress, retry in 500ms to avoid CSRF token conflict
+  if (isUpdatingProgress) {
+    setTimeout(function() { markThisLessonAsCompleted(lesson_id); }, 500);
+    return;
+  }
+
+  isUpdatingProgress = true;
+  $('#sidebar-content').css('opacity', '0.5');
   $('#lesson_list_loader').show();
   var progress;
-  // Récupérer le nom et la valeur du jeton CSRF depuis l'input caché
-  var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-  var csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-  if ($('input#'+lesson_id).is(':checked')) {
+  
+  // Robust CSRF token retrieval
+  var csrfInput = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]');
+  var csrfName = csrfInput.attr('name');
+  var csrfHash = csrfInput.val();
+  
+  // Use the new checkbox ID format: lesson-{id}
+  var checkbox = document.getElementById('lesson-' + lesson_id);
+  if (checkbox && checkbox.checked) {
     progress = 1;
-  }else{
+  } else {
     progress = 0;
   }
+  
+  var data = {lesson_id : lesson_id, progress : progress};
+  if (csrfName) {
+      data[csrfName] = csrfHash;
+  }
+
   $.ajax({
     type : 'POST',
     url : '<?php echo site_url('addons/courses/save_course_progress'); ?>',
-    data : {lesson_id : lesson_id, progress : progress , [csrfName]: csrfHash},
+    data : data,
     dataType: 'json',
     success : function(response){
-      currentProgress = response.status;
+      currentProgress = response.html;
 
       // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-      var newCsrfName = response.csrf.csrfName;
-      var newCsrfHash = response.csrf.csrfHash;
-      $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+      if(response.csrf) {
+          var newCsrfName = response.csrf.csrfName;
+          var newCsrfHash = response.csrf.csrfHash;
+          $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+      }
 
-      $('#lesson_list_area').show();
+      $('#sidebar-content').css('opacity', '1');
+      $('#lesson_list_loader').hide();
+    },
+    complete: function() {
+      isUpdatingProgress = false;
+    },
+    error: function() {
+      isUpdatingProgress = false;
+      $('#sidebar-content').css('opacity', '1');
       $('#lesson_list_loader').hide();
     }
   });
@@ -53,23 +85,30 @@ var timer = setInterval(function(){
 
 $(document).ready(function() {
   if (lessonType == 'video' && videoProvider == 'html5') {
-    var totalDuration = document.querySelector('#player').duration;
+    var playerEl = document.querySelector('#player');
+    if (playerEl) {
+      var totalDuration = playerEl.duration;
 
-    if (currentProgress == 1 || currentProgress == totalDuration) {
-      document.querySelector('#player').currentTime = 0;
-    }else {
-      document.querySelector('#player').currentTime = currentProgress;
+      if (currentProgress == 1 || currentProgress == totalDuration) {
+        playerEl.currentTime = 0;
+      } else {
+        playerEl.currentTime = currentProgress;
+      }
     }
   }
 });
+
 var counter = 0;
 if (typeof player !== 'undefined' && player && typeof player.on === 'function') {
   player.on('canplay', event => {
     if (counter == 0) {
-      if (currentProgress == 1) {
-        document.querySelector('#player').currentTime = 0;
-      }else{
-        document.querySelector('#player').currentTime = currentProgress;
+      var playerEl = document.querySelector('#player');
+      if (playerEl) {
+        if (currentProgress == 1) {
+          playerEl.currentTime = 0;
+        } else {
+          playerEl.currentTime = currentProgress;
+        }
       }
     }
     counter++;
@@ -77,28 +116,63 @@ if (typeof player !== 'undefined' && player && typeof player.on === 'function') 
 }
 
 function getCurrentTime() {
+  if (isUpdatingProgress) return; // Skip if another request is in progress
+
   var lesson_id = '<?php echo $lesson_id; ?>';
-  newProgress = document.querySelector('#player').currentTime;
-  var totalDuration = document.querySelector('#player').duration;
+  var playerEl = document.querySelector('#player');
+  if (!playerEl) return;
+  
+  newProgress = playerEl.currentTime;
+  var totalDuration = playerEl.duration;
 
   console.log('Current Progress is '+currentProgress);
   console.log('New Progress is '+newProgress);
 
   if (newProgress != savedProgress && newProgress > 0 && currentProgress != 1) {
 
+    // Throttle updates: only update if difference is > 5 seconds or video finished
+    if (Math.abs(newProgress - savedProgress) < 5 && newProgress != totalDuration) {
+        return;
+    }
+
     // if the user watches the entire video the lesson will be marked as seen automatically.
     if (totalDuration == newProgress) {
       newProgress = 1;
-      $('input#'+lesson_id).prop('checked', true);
+      // Use the new checkbox ID format
+      var checkbox = document.getElementById('lesson-' + lesson_id);
+      if (checkbox) checkbox.checked = true;
     }
 
+    var csrfInput = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]');
+    var csrfName = csrfInput.attr('name');
+    var csrfHash = csrfInput.val();
+
+    isUpdatingProgress = true;
+
     // update the video prgress here.
+    var data = {lesson_id : lesson_id, progress : newProgress};
+    if (csrfName) {
+        data[csrfName] = csrfHash;
+    }
+
     $.ajax({
       type : 'POST',
       url : '<?php echo site_url('addons/courses/save_course_progress'); ?>',
-      data : {lesson_id : lesson_id, progress : newProgress},
+      data : data,
+      dataType: 'json',
       success : function(response){
-        savedProgress = response;
+        savedProgress = response.html;
+        if(response.csrf) {
+            var newCsrfName = response.csrf.csrfName;
+            var newCsrfHash = response.csrf.csrfHash;
+            $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+        }
+      },
+      complete: function() {
+        isUpdatingProgress = false;
+      },
+      error: function() {
+        isUpdatingProgress = false;
       }
     });
   }
@@ -160,13 +234,10 @@ function initProgressBar(dataPercent) {
 
 
 
-
 //THIRD SECTIONS
 function toggle_lesson_view() {
-    $('.play-lesson-sidebar').toggle();
-    // No need to manually adjust flex of body if it's set to grow, but let's be safe
+    $('.lessons-sidebar').toggle();
 }
-
 
 
 
@@ -176,16 +247,16 @@ function toggle_lesson_view() {
 function getStarted(first_quiz_question) {
     $('#quiz-header').hide();
     $('#lesson-summary').hide();
-    $('#question-number-' + first_quiz_question).show();
-    currentQuestion = first_quiz_question; // Initialiser la première question
-    startTimer(15); // Commencez le chronomètre avec 10 secondes ou toute autre durée
+    $('#question-number-' + first_quiz_question).removeClass('hidden').show();
+    currentQuestion = first_quiz_question;
+    startTimer(15);
 }
 
 function showNextQuestion(next_question) {
-    $('#question-number-' + (next_question - 1)).hide();
-    $('#question-number-' + next_question).show();
-    currentQuestion = next_question; // Mettre à jour la question actuelle
-    startTimer(15); // Redémarrer le chronomètre pour la nouvelle question
+    $('#question-number-' + (next_question - 1)).addClass('hidden').hide();
+    $('#question-number-' + next_question).removeClass('hidden').show();
+    currentQuestion = next_question;
+    startTimer(15);
 }
 
 function startTimer(duration) {
@@ -196,6 +267,14 @@ function startTimer(duration) {
 
     // Initialiser le temps restant
     remainingTime = duration;
+
+    // Reset timer bar animation
+    var timerBar = document.getElementById('timer-bar-' + currentQuestion);
+    if (timerBar) {
+        timerBar.style.animation = 'none';
+        timerBar.offsetHeight; // Trigger reflow
+        timerBar.style.animation = 'timerCountdown 15s linear forwards';
+    }
 
     // Démarrer le nouvel intervalle de mise à jour du chronomètre
     timerInterval = setInterval(updateTimer, 1000);
@@ -208,7 +287,10 @@ function updateTimer() {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
  
-    document.getElementById('timer' + currentQuestion).textContent = minutes + ':' + seconds;
+    var timerEl = document.getElementById('timer' + currentQuestion);
+    if (timerEl) {
+        timerEl.textContent = minutes + ':' + seconds;
+    }
     
     if (remainingTime <= 0) {
         clearInterval(timerInterval);
@@ -221,7 +303,6 @@ function updateTimer() {
             // Vérifier si le quiz n'a pas déjà été soumis
             if (!quizSubmitted) {
                 quizSubmitted = true;  // Marquer le quiz comme soumis
-                alert("Temps écoulé! Soumettez le quiz.");
                 submitQuiz(); // Soumettez le quiz une seule fois
             }
         }
@@ -237,34 +318,57 @@ function stopTimer() {
 function submitQuiz() {
   quizSubmitted = true;
   var lesson_id = '<?php echo $lesson_id; ?>';
-  document.getElementById(lesson_id).checked = true
+  
+  // Use the new checkbox ID format: lesson-{id}
+  var checkbox = document.getElementById('lesson-' + lesson_id);
+  if (checkbox) {
+    checkbox.checked = true;
+  }
+  
   markThisLessonAsCompleted(lesson_id);
-    $.ajax({
-        url: '<?php echo site_url('addons/lessons/submit_quiz'); ?>',
-        type: 'post',
-        data: $('form#quiz_form').serialize(),
-        success: function(response) {
-            $('#quiz-body').hide();
-            $('#quiz-result').html(response);
-        }
-    });
+  
+  $.ajax({
+      url: '<?php echo site_url('addons/lessons/submit_quiz'); ?>',
+      type: 'post',
+      data: $('form#quiz_form').serialize(),
+      success: function(response) {
+          // Hide quiz body (use quiz-wrapper for new design)
+          $('.quiz-wrapper #quiz-header').hide();
+          $('.quiz-wrapper form').hide();
+          $('#quiz-result').html(response).show();
+      }
+  });
 }
+
 function check_result() {
   quizSubmitted = true;
   var lesson_id = '<?php echo $lesson_id; ?>';
-  document.getElementById(lesson_id).checked = true
+  
+  // Use the new checkbox ID format: lesson-{id}
+  var checkbox = document.getElementById('lesson-' + lesson_id);
+  if (checkbox) {
+    checkbox.checked = true;
+  }
+  
   markThisLessonAsCompleted(lesson_id);
-    $.ajax({
-        url: '<?php echo site_url('addons/lessons/check_result'); ?>',
-        type: 'post',
-        data: $('form#quiz_form').serialize(),
-        success: function(response) {
-            $('#quiz-body').hide();
-            $('#quiz-result').html(response);
-        }
-    });
+  
+  $.ajax({
+      url: '<?php echo site_url('addons/lessons/check_result'); ?>',
+      type: 'post',
+      data: $('form#quiz_form').serialize(),
+      success: function(response) {
+          $('.quiz-wrapper #quiz-header').hide();
+          $('.quiz-wrapper form').hide();
+          $('#quiz-result').html(response).show();
+      }
+  });
 }
+
 function enableNextButton(quizID) {
     $('#next-btn-'+quizID).prop('disabled', false);
+}
+
+function retakeQuiz() {
+    window.location.reload();
 }
 </script>

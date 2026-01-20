@@ -3633,5 +3633,11 @@
     "excl_tax": "Excl. impuestos",
     "incl_tax": "Incl. impuestos",
     "manage_meeting_recordings": "Gestionar grabaciones de reuniones",
-    "recording_info": "Información de grabación"
+    "recording_info": "Información de grabación",
+    "no_teachers_found": "No se encontraron profesores",
+    "teacher_details": "Detalles del profesor",
+    "search_teachers": "Buscar profesores",
+    "teacher_list": "Lista de profesores",
+    "active_teachers": "Profesores activos",
+    "total_teachers": "Total de profesores"
 }
