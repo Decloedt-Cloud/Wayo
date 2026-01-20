@@ -399,6 +399,7 @@ main [dir="rtl"] {
   padding: 40px;
   margin-top: 32px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: start;
 }
 
 .plan-details-split .plan-kicker {
@@ -410,6 +411,7 @@ main [dir="rtl"] {
   font-weight: 800;
   font-size: .9rem;
   margin-bottom: 12px;
+  
 }
 
 .plan-details-split h3 {
@@ -552,11 +554,11 @@ main [dir="rtl"] {
   }
 
   .plan-details-split {
-    text-align: center;
+    text-align: start;
   }
 
   .plan-price-split {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .price-details {

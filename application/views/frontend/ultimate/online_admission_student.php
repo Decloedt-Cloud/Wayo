@@ -8,7 +8,7 @@
 <style>
   /* ----------------- Hero ----------------- */
 
-    .hero{ position:relative; min-height:68vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/cover-wayo.png'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:50vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/cover-wayo.png'); background-size:cover; background-position:center; }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
@@ -378,13 +378,23 @@
         </div>
 
         <div class="grid-2">
+          <?php
+            $is_rtl = (get_user_language() === 'arabic');
+            $input_padding_style = $is_rtl 
+                ? 'width:100%; padding-left: 45px; box-sizing: border-box;' 
+                : 'width:100%; padding-right: 45px; box-sizing: border-box;';
+            
+            $icon_pos_style = $is_rtl
+                ? 'position:absolute; left:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;'
+                : 'position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;';
+          ?>
           <label class="field">
             <span class="field-label"><?php echo get_phrase("Password") ?> <span class="req">*</span></span>
             <div style="position:relative; width: 100%;">
                 <input id="password" type="password"  class="form-control rounded-end shadow-none"
                     name="password-student" required aria-required="true" data-msg="Please enter a password" data-error-class="u-has-error"
-                    data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
-                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('password', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+                    data-success-class="u-has-success" style="<?php echo $input_padding_style; ?>">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('password', this, event)" style="<?php echo $icon_pos_style; ?>"></i>
             </div>
             <div class="error" data-for="password" style="margin-top: 45px;"></div>
           </label>
@@ -394,8 +404,8 @@
             <div style="position:relative; width: 100%;">
                 <input id="confirmPassword" type="password"  class="form-control rounded-end shadow-none"
                     name="repeat-password-student"  minlength="6" required aria-required="true" data-msg="Please repeat your password"
-                    data-error-class="u-has-error" data-success-class="u-has-success" style="width:100%; padding-right: 45px; box-sizing: border-box;">
-                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('confirmPassword', this, event)" style="position:absolute; right:35px; top:18px; cursor:pointer; color:#6b7280; font-size:15px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
+                    data-error-class="u-has-error" data-success-class="u-has-success" style="<?php echo $input_padding_style; ?>">
+                <i class="fa-regular fa-eye-slash" onclick="toggleStudentPassword('confirmPassword', this, event)" style="<?php echo $icon_pos_style; ?>"></i>
             </div>
             <div class="error" data-for="confirmPassword" style="margin-top: 45px;"></div>
           </label>
@@ -451,7 +461,7 @@
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </div>
                 <div class="success-info-text">
-                    <?php echo get_phrase("You_will_receive_a_validation_email_within_a_maximum_of") ?> <strong><?php echo get_phrase("24 hours.") ?></strong> <?php echo get_phrase("to confirm your registration.") ?>
+                    <?php echo get_phrase("A_validation_email_will_be_sent_to_you_within_a_maximum_of") ?> <strong><?php echo get_phrase("24 hours.") ?></strong> <?php echo get_phrase("to confirm your registration.") ?>
                 </div>
             </div>
 

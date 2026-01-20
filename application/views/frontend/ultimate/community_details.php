@@ -410,14 +410,7 @@ foreach ($classes as $key => $class) {
             <i class="fa-regular fa-user text-wayo me-2"></i>
             <span id="classMentor"></span>
           </li>
-          <li class="list-inline-item me-3">
-            <i class="fa-regular fa-clock text-wayo me-2"></i>
-            <span id="classDuration"></span>
-          </li>
-          <li class="list-inline-item me-3">
-            <i class="fa-solid fa-star text-wayo me-2"></i>
-            <span id="classLevel"></span>
-          </li>
+
           <li class="list-inline-item me-3">
             <i class="fa-regular fa-circle-check text-wayo me-2"></i>
             <span id="classFree"></span>
@@ -827,8 +820,7 @@ document.querySelectorAll('.class-card').forEach(card => {
         modal.querySelector('.modal-title').textContent = card.dataset.title;
         modal.querySelector('#classPhoto').src = '<?php echo base_url("uploads/class/"); ?>' + card.dataset.photo;
         modal.querySelector('#classDescription').textContent = card.dataset.desc;
-        modal.querySelector('#classDuration').textContent = card.dataset.duration;
-        modal.querySelector('#classLevel').textContent = card.dataset.level;
+
 
         // Dates
         const startText = '<?php echo get_phrase("From"); ?>';

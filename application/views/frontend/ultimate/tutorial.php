@@ -8,7 +8,7 @@
       <div class="col-lg-6 col-md-12 mb-4 mb-lg-0">
         <section class="tuto-desc">
           <h1 class="tuto-heading">
-            <span class="tag"><?php echo get_phrase("Tutoriel ") ?></span> <?php echo get_phrase("Launch your community on Wayo Academy") ?>
+            <?php echo get_phrase("Launch your community on Wayo Academy") ?>
           </h1>
 
           <p>
