@@ -999,8 +999,8 @@ if ($current_user_id) {
                             </li>
                             <?php } ?>
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
-                                <div class="user-section">
-                                    <span class="text-capitalize align-content-center"><?php echo $this->session->user_name; ?></span>
+                                <div class="user-section" style="white-space: nowrap;">
+                                    <span class="text-capitalize align-content-center" style="white-space: nowrap;"><?php echo $this->session->user_name; ?></span>
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle nav-user-img">
                                 </div>
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
