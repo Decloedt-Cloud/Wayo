@@ -3349,7 +3349,7 @@
     "pets": "Mascotas",
     "travel": "Viajes",
     "other_": "Otro",
-    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Tu calendario está vacío<br>Para ver eventos, únete a una clase o espera a que se valide tu inscripción.",
+    "⚠️_your_calendar_is_empty_to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Tu calendario está vacío para ver eventos, únete a una clase o espera a que se valide tu inscripción.",
     "import_from_pdf": "Importar desde PDF",
     "add_manually": "Agregar manualmente",
     "create_lesson_with_editor": "Crear lección con el editor",

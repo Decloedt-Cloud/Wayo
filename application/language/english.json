@@ -3570,7 +3570,7 @@
     "pets": "Pets",
     "travel": "Travel",
     "other_": "Other ",
-    "⚠️_your_calendar_is_empty<br>to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Your calendar is empty<br>to see events, join a class or wait for your registration to be validated.",
+    "⚠️_your_calendar_is_empty_to_see_events,_join_a_class_or_wait_for_your_registration_to_be_validated.": "⚠️ Your calendar is empty to see events, join a class or wait for your registration to be validated.",
     "add_first_section": "Add first section",
     "import_from_pdf": "Import from pdf",
     "add_manually": "Add manually",

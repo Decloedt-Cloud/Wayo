@@ -1963,6 +1963,7 @@ public function generate_questions_from_pdf()
       // Windows paths
       $possible_paths = [
         'C:\\Users\\AbdelfattahAllam\\AppData\\Local\\Python\\bin\\python.exe',
+        'C:\\Python\\python.exe',
         'C:\\Python312\\python.exe',
         'C:\\Python311\\python.exe',
         'C:\\Python310\\python.exe',
@@ -3262,9 +3263,6 @@ PROMPT;
     $created_lessons = 0;
     $created_quizzes = 0;
 
-    // Collect all lessons that need content generation
-    $lessons_to_generate = [];
-
     // Get current max order for sections
     $this->db->select_max('orders');
     $this->db->where('course_id', $course_id);
@@ -3324,12 +3322,12 @@ PROMPT;
           $quiz_id = $this->db->insert_id();
           $created_quizzes++;
           
-          // Generate real questions
+          // Generate quiz questions using AI
           $questions_count = intval($child['questions'] ?? $outline_rules['questionsCount'] ?? 10);
           $section_context = $section_data['title'] ?? '';
           $course_context = $course['title'] ?? '';
 
-          if (($outline_rules['generateContent'] ?? true) && ($outline_rules['quizFrequency'] ?? 'per_section') !== 'none') {
+          if (($outline_rules['quizFrequency'] ?? 'per_section') !== 'none') {
             try {
               $generated_questions = $this->generate_quiz_questions($child_title, $section_context, $course_context, $outline_rules, $questions_count);
 
@@ -3337,7 +3335,7 @@ PROMPT;
                 foreach ($generated_questions as $q_index => $question) {
                   // Convert letter answer to numeric index (A=1, B=2, C=3, D=4)
                   $correct_answer_letter = strtoupper($question['correct_answer'] ?? 'A');
-                  $correct_answer_index = ord($correct_answer_letter) - ord('A') + 1; // A=1, B=2, C=3, D=4
+                  $correct_answer_index = ord($correct_answer_letter) - ord('A') + 1;
 
                   $question_data = [
                     'quiz_id' => $quiz_id,
@@ -3345,7 +3343,7 @@ PROMPT;
                     'number_of_options' => 4,
                     'type' => 'multiple_choice',
                     'options' => json_encode($question['options'] ?? ['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
-                    'correct_answers' => json_encode([$correct_answer_index]) // Store as numeric index
+                    'correct_answers' => json_encode([$correct_answer_index])
                   ];
                   $this->db->insert('question', $question_data);
                 }
@@ -3353,35 +3351,35 @@ PROMPT;
                 throw new Exception("No valid questions generated");
               }
             } catch (Exception $e) {
-            // Fallback to placeholder questions if generation fails
-            for ($q = 1; $q <= $questions_count; $q++) {
-              $question_data = [
-                'quiz_id' => $quiz_id,
-                'title' => 'Question ' . $q . ' (Content will be generated shortly)',
-                'number_of_options' => 4,
-                'type' => 'multiple_choice',
-                'options' => json_encode(['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
-                'correct_answers' => json_encode([1]) // Default to first option (A)
-              ];
-              $this->db->insert('question', $question_data);
-            }
+              // Fallback to placeholder questions if generation fails
+              for ($q = 1; $q <= $questions_count; $q++) {
+                $question_data = [
+                  'quiz_id' => $quiz_id,
+                  'title' => 'Question ' . $q,
+                  'number_of_options' => 4,
+                  'type' => 'multiple_choice',
+                  'options' => json_encode(['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
+                  'correct_answers' => json_encode([1])
+                ];
+                $this->db->insert('question', $question_data);
+              }
             }
           } else {
-            // Create placeholder questions when content generation is disabled
+            // Create placeholder questions when quiz frequency is 'none'
             for ($q = 1; $q <= $questions_count; $q++) {
               $question_data = [
                 'quiz_id' => $quiz_id,
-                'title' => 'Question ' . $q . ' (Content will be generated when you enable full content generation)',
+                'title' => 'Question ' . $q,
                 'number_of_options' => 4,
                 'type' => 'multiple_choice',
                 'options' => json_encode(['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D']),
-                'correct_answers' => json_encode([1]) // Default to first option (A)
+                'correct_answers' => json_encode([1])
               ];
               $this->db->insert('question', $question_data);
             }
           }
         } else {
-          // Create lesson structure first
+          // Create lesson structure (content is not generated from outline, only titles)
           $lesson_content = $child['summary'] ?? $child['content'] ?? '';
 
           $lesson_data = [
@@ -3392,48 +3390,15 @@ PROMPT;
             'attachment_type' => 'description',
             'duration' => 0,
             'date_added' => strtotime(date('D, d-M-Y')),
-            'summary' => $lesson_content, // Will be updated after batch generation
+            'summary' => $lesson_content,
             'order' => $lesson_order
           ];
 
           $this->db->insert('lesson', $lesson_data);
           $lesson_id = $this->db->insert_id();
           $created_lessons++;
-
-          // Collect lesson for batch content generation
-          if (empty($lesson_content) && ($outline_rules['generateContent'] ?? true)) {
-            $lessons_to_generate[] = [
-              'id' => $lesson_id,
-              'title' => $child_title,
-              'section_context' => $section_data['title'] ?? '',
-              'course_context' => $course['title'] ?? ''
-            ];
-          }
         }
       }
-    }
-
-    // Generate content for all lessons in batch
-    if (!empty($lessons_to_generate)) {
-      try {
-        $batch_content = $this->generate_lessons_content_batch($lessons_to_generate, $outline_rules);
-
-        // Update lessons with generated content
-        foreach ($lessons_to_generate as $index => $lesson_info) {
-          $lesson_number = $index + 1;
-          $generated_content = $batch_content[$lesson_number] ?? '';
-
-          if (!empty($generated_content)) {
-            $this->db->where('id', $lesson_info['id']);
-            $this->db->update('lesson', ['summary' => $generated_content]);
-          }
-        }
-      } catch (Exception $e) {
-        log_message('error', "Batch content generation failed: " . $e->getMessage());
-        // Leave placeholder content as is
-      }
-    } else {
-      log_message('info', "No lessons need content generation");
     }
 
     // Update course with new section IDs
