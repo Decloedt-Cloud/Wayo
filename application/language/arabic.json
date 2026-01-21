@@ -3443,10 +3443,10 @@
     "meeting_is_not_active": "الاجتماع غير نشط",
     "add_first_section": "إضافة القسم الأول",
     "arabic": "العربية",
-    "dutch": "الهولندية",
-    "english": "الانجليزية",
-    "french": "الفرنسية",
-    "spanish": "الاسبانية",
+    "dutch": "Nederlands",
+    "english": "English",
+    "french": "Français",
+    "spanish": "Español",
     "billing_architecture": "بنية الفواتير",
     "manage_billing_entities_and_payment_methods_by_country/region": "إدارة الكيانات المدفوعة وطرق الدفع بناءً على البلد/المنطقة",
     "admin_fee_manager": "إدارة الرسوم الإدارية",
@@ -3477,7 +3477,6 @@
     "set_the_price_of_your_community": "تحديد سعر مجتمعك",
     "monthly_membership_amount_(mad/month)": "مبلغ الاشتراك الشهري (درهم/شهر)",
     "14_day_free_trial": "تجربة مجانية لمدة 14 يومًا",
-    "price_to_pay_:_790_mad": "السعر الواجب دفعه: 790 درهم",
     "you_benefit_from_a_14_day_free_trial_to_test_all_features": "تستفيد من تجربة مجانية لمدة 14 يومًا لاختبار جميع الميزات",
     "unlimited_classes_&_trainings": "دروس وتدريبات غير محدودة",
     "3%_commission_excluding_tax_the_cheapest_on_the_market*": "عمولة 3٪ بدون ضرائب، الأرخص في السوق*",
@@ -3544,7 +3543,6 @@
     "join_as_member": "الانضمام كعضو",
     "your_profile_has_been_successfully_created_on_wayo.": "تم إنشاء ملفك الشخصي بنجاح على موقع وايو.",
     "nederlands_(nl)": "الهولندية (NL)",
-    "mad_/_month": "MAD / شهر",
     "account_status": "حالة الحساب",
     "account_ready_to_create": "الحساب جاهز للإنشاء",
     "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "بعد الإنشاء يمكنك إكمال ملفك الشخصي مباشرة من لوحة التحكم",
@@ -3567,6 +3565,8 @@
     "a_validation_email_will_be_sent_to_you_within_a_maximum_of": "سيتم إرسال رسالة تحقق إليك خلال مدة أقصاها",
     "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
     "recording_info": "معلومات التسجيل",
+    "/_month": "/ شهريًا",
+    "price_to_pay_:": "السعر الواجب دفعه:"
     "no_teachers_found": "لم يتم العثور على معلمين",
     "teacher_details": "تفاصيل المعلم",
     "search_teachers": "البحث عن المعلمين",
@@ -3689,5 +3689,6 @@
     "students_cannot_update_exams": "لا يمكن للطلاب تعديل الاختبارات",
     "students_cannot_manage_exam_questions": "لا يمكن للطلاب إدارة أسئلة الاختبار",
     "there_are_no_events_scheduled_at_the_moment": "لا توجد فعاليات مجدولة في الوقت الحالي",
-    "designation_details": "تفاصيل التعيين"
+    "designation_details": "تفاصيل التعيين",
+    "recording_info": "معلومات التسجيل"
 }
