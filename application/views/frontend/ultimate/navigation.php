@@ -53,7 +53,7 @@ if ($current_user_id) {
     }
 
     /* Fixed alignment for 1220px - 1399px range */
-    @media (min-width: 1220px) and (max-width: 1399px) {
+    @media (min-width: 1220px) {
         .container {
             max-width: 95% !important;
         }
