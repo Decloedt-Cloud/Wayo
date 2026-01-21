@@ -102,8 +102,76 @@ class App_rewriter {
             $replace_end_sq = $base_url . '/' . $addon_replace . '\'';
             $output = str_replace($search_end_sq, $replace_end_sq, $output);
         }
- 
-         $CI->output->set_output($output);
+
+        // Handle home/xxx -> xxx replacements
+        $home_segments = array(
+            'communities', 'about', 
+            'privacy_policy', 'community_details'
+        );
+
+        foreach ($home_segments as $segment) {
+            $search_segment = 'home/' . $segment;
+            $replace_segment = $segment;
+
+            // Replace "base_url/home/segment/" with "base_url/segment/"
+            $search = $base_url . '/' . $search_segment . '/';
+            $replace = $base_url . '/' . $replace_segment . '/';
+            $output = str_replace($search, $replace, $output);
+            
+            // Replace "base_url/index.php/home/segment/" with "base_url/index.php/segment/"
+            $search_index = $base_url . '/index.php/' . $search_segment . '/';
+            $replace_index = $base_url . '/index.php/' . $replace_segment . '/';
+            $output = str_replace($search_index, $replace_index, $output);
+            
+            // Handle exact match ending with quote
+            $search_end = $base_url . '/' . $search_segment . '"';
+            $replace_end = $base_url . '/' . $replace_segment . '"';
+            $output = str_replace($search_end, $replace_end, $output);
+
+            $search_end_sq = $base_url . '/' . $search_segment . "'";
+            $replace_end_sq = $base_url . '/' . $replace_segment . '\'';
+            $output = str_replace($search_end_sq, $replace_end_sq, $output);
+        }
+
+        // Handle admission/online_admission -> join/community
+        // Handle admission/online_admission_student -> join/member
+        // Handle home/tutorial -> getting_started
+        // Handle home/faq -> help-center
+        $special_map = array(
+            'admission/online_admission' => 'join/community',
+            'admission/online_admission_student' => 'join/member',
+            'home/tutorial' => 'getting_started',
+            'tutorial' => 'getting_started',
+            'home/faq' => 'help-center',
+            'faq' => 'help-center',
+            'home/terms_conditions' => 'terms',
+            'terms_conditions' => 'terms',
+            'home/contact' => 'support',
+            'contact' => 'support'
+        );
+
+        foreach ($special_map as $search_segment => $replace_segment) {
+            // Replace "base_url/search_segment/" with "base_url/replace_segment/"
+            $search = $base_url . '/' . $search_segment . '/';
+            $replace = $base_url . '/' . $replace_segment . '/';
+            $output = str_replace($search, $replace, $output);
+            
+            // Replace "base_url/index.php/search_segment/" with "base_url/index.php/replace_segment/"
+            $search_index = $base_url . '/index.php/' . $search_segment . '/';
+            $replace_index = $base_url . '/index.php/' . $replace_segment . '/';
+            $output = str_replace($search_index, $replace_index, $output);
+            
+            // Handle exact match ending with quote
+            $search_end = $base_url . '/' . $search_segment . '"';
+            $replace_end = $base_url . '/' . $replace_segment . '"';
+            $output = str_replace($search_end, $replace_end, $output);
+
+            $search_end_sq = $base_url . '/' . $search_segment . "'";
+            $replace_end_sq = $base_url . '/' . $replace_segment . '\'';
+            $output = str_replace($search_end_sq, $replace_end_sq, $output);
+        }
+
+        $CI->output->set_output($output);
         $CI->output->_display();
     }
 }

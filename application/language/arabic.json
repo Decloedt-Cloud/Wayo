@@ -2196,7 +2196,7 @@
     "yes,_delete_it!": "نعم، احذفه!",
     "edit_event": "تعديل الحدث",
     "number_of_participants": "عدد المشاركين",
-    "faq": "الأسئلة الشائعة",
+    "faq": "مركز المساعدة",
     "faq_&_user_guide": "الأسئلة الشائعة ودليل المستخدم",
     "monetize_your_expertise.": "حوِّل خبرتك إلى دخل",
     "learn_local,_progress_fast.": "تعلّم من محيطك وتطوّر بسرعة.",
@@ -3566,7 +3566,7 @@
     "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
     "recording_info": "معلومات التسجيل",
     "/_month": "/ شهريًا",
-    "price_to_pay_:": "السعر الواجب دفعه:"
+    "price_to_pay_:": "السعر الواجب دفعه:",
     "no_teachers_found": "لم يتم العثور على معلمين",
     "teacher_details": "تفاصيل المعلم",
     "search_teachers": "البحث عن المعلمين",
@@ -3690,5 +3690,7 @@
     "students_cannot_manage_exam_questions": "لا يمكن للطلاب إدارة أسئلة الاختبار",
     "there_are_no_events_scheduled_at_the_moment": "لا توجد فعاليات مجدولة في الوقت الحالي",
     "designation_details": "تفاصيل التعيين",
-    "recording_info": "معلومات التسجيل"
+    "help_center": "مركز المساعدة",
+    "support_contact": "اتصال الدعم",
+    "support_information": "معلومات الدعم"
 }
