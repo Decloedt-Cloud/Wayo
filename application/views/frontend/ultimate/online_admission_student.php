@@ -8,7 +8,7 @@
 <style>
   /* ----------------- Hero ----------------- */
 
-    .hero{ position:relative; min-height:50vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/cover-wayo.png'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/cover-wayo.png'); background-size:cover; background-position:center; }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }

@@ -45,16 +45,11 @@ if ($current_user_id) {
         #openLoginBtnM {
             display: none !important;
         }
-
-        .container-customize {
-            padding-left: 12rem !important;
-            padding-right: 12rem !important;
-        }
     }
 
     /* Fixed alignment for 1220px - 1399px range */
     @media (min-width: 1220px) {
-        .container {
+        .container-customize {
             max-width: 95% !important;
         }
         .navbar-nav .nav-link {
@@ -68,6 +63,18 @@ if ($current_user_id) {
         }
         .gap-2 {
             gap: 0.5rem !important;
+        }
+    }
+
+    /* Reduce width for screens 1600px and larger */
+    @media (min-width: 1600px) {
+        .container-customize {
+            max-width: 85% !important;
+        }
+    }
+    @media (min-width: 1900px) {
+        .container-customize {
+            max-width: 75% !important;
         }
     }
 
@@ -905,7 +912,7 @@ if ($current_user_id) {
     <!-- ========== HEADER ========== -->
     <header class="site-header" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <nav class="navbar navbar-expand-lg">
-            <div class="container">
+            <div class="container container-customize">
                 <!-- Logo -->
                 <a class="navbar-brand" href="<?php echo base_url('home'); ?>" aria-label="Wayo Academy">
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
