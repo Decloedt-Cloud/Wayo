@@ -3554,7 +3554,6 @@
     "set_the_price_of_your_community": "Stel de prijs van je community in",
     "monthly_membership_amount_(mad/month)": "Maandelijks lidmaatschapsbedrag (MAD/maand)",
     "14_day_free_trial": "14 dagen gratis proefperiode",
-    "price_to_pay_:_790_mad": "Te betalen prijs: 790 MAD",
     "you_benefit_from_a_14_day_free_trial_to_test_all_features": "Je profiteert van een gratis proefperiode van 14 dagen om alle functies te testen",
     "unlimited_classes_&_trainings": "Onbeperkte lessen en trainingen",
     "3%_commission_excluding_tax_the_cheapest_on_the_market*": "3% commissie exclusief btw, de goedkoopste op de markt*",
@@ -3627,7 +3626,6 @@
     "join_as_member": "Word lid",
     "arabic": "Arabic",
     "nederlands_(nl)": "Nederlands (NL)",
-    "mad_/_month": "MAD / maand",
     "after_creation_you_can_complete_your_profile_directly_from_your_dashboard": "Na het aanmaken kun je je profiel rechtstreeks vanuit je dashboard voltooien",
     "your_profile_has_been_successfully_created_on_wayo.": "Je profiel is succesvol aangemaakt op Wayo.",
     "account_status": "Accountstatus",
@@ -3653,6 +3651,8 @@
     "recording_info": "Opname info",
     "no_recordings_found": "Geen opnames gevonden",
     "history": "Geschiedenis",
+    "/_month": "/ maand",
+    "price_to_pay_:": "Te betalen prijs:",
     "no_teachers_found": "Geen leraren gevonden",
     "teacher_details": "Details van de leraar",
     "search_teachers": "Leraren zoeken",
@@ -3661,3 +3661,4 @@
     "total_teachers": "Totaal aantal leraren",
     "history": "Geschiedenis"
 }
+

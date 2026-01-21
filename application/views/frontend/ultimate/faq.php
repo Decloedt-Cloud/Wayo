@@ -322,62 +322,44 @@
   </script>
 
   <script>
-     async function updatePrices() {
-              try {
-                  // Get user's country
+  async function updatePrices() {
+    try {
+      // Détection du pays de l’utilisateur
+      const response = await fetch('https://api.country.is/');
+      const data = await response.json();
+      const country = data.country;
 
-                  const response = await fetch('https://api.country.is/');
-                  const data = await response.json();
-                  const country = data.country; 
-                  
-                  // Base price in MAD (Moroccan Dirham)
-                  const basePriceMAD = 790;
-                  
-                  // Get live exchange rate MAD to AED
-                  const exchangeRate = await getExchangeRate('MAD', 'AED');
-                  
-                  // Calculate prices
-                  const prices = {
-                      'MA': { 
-                          value: basePriceMAD.toFixed(2).replace('.', ','), 
-                          currency: 'DH' 
-                      },
-                      'AE': { 
-                          value: (basePriceMAD * exchangeRate).toFixed(2), 
-                          currency: 'AED' 
-                      }
-                  };
-                  
-                  // Get the price based on country
-                  const priceData = prices[country] || prices['MA'];
-                  
-                  // Update all price elements
-                  const priceElements = document.querySelectorAll('.plan-price-split');
-                  
-                  priceElements.forEach(element => {
-                      const priceValue = element.querySelector('.price-value');
-                      const priceCurrency = element.querySelector('.price-currency');
-                      
-                      if (priceValue) priceValue.textContent = parseInt(priceData.value);
-                      if (priceCurrency) priceCurrency.textContent = priceData.currency;
-                  });
-                  
-              } catch (error) {
-                  console.error('Error updating prices:', error);
-              }
-          }
-          // Récupérer les taux de change avec Currency-API
-          async function getExchangeRate(from, to) {
-              try {
-                  // Using free exchangerate-api.com
-                  const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
-                  const data = await response.json();
-                  return data.rates[to] || 0.4; // Fallback rate if API fails
-              } catch (error) {
-                  console.error('Error fetching exchange rate:', error);
-                  return 0.4; // Fallback: 1 MAD ≈ 0.4 AED
-              }
-          }
-        // Initialiser les prix au chargement de la page
-        document.addEventListener('DOMContentLoaded', updatePrices);
-  </script>
+      // Définition des prix fixes
+      const prices = {
+        'MA': {
+          value: 790,
+          currency: 'DH'
+        },
+        'AE': {
+          value: 299, 
+          currency: 'AED'
+        }
+      };
+
+      // Fallback par défaut (Maroc)
+      const priceData = prices[country] || prices['MA'];
+
+      // Mise à jour des éléments prix
+      const priceElements = document.querySelectorAll('.plan-price-split');
+
+      priceElements.forEach(element => {
+        const priceValue = element.querySelector('.price-value');
+        const priceCurrency = element.querySelector('.price-currency');
+
+        if (priceValue) priceValue.textContent = priceData.value;
+        if (priceCurrency) priceCurrency.textContent = priceData.currency;
+      });
+
+    } catch (error) {
+      console.error('Error updating prices:', error);
+    }
+  }
+
+  // Initialisation au chargement de la page
+  document.addEventListener('DOMContentLoaded', updatePrices);
+</script>
