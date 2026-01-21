@@ -35,7 +35,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
                 <a href="<?= site_url('home/contact'); ?>"
                   class="<?= ($current2 == 'contact') ? 'active' : '' ?>">
                   
-                  <?php echo get_phrase('Contact');?>
+                  <?php echo get_phrase('Support');?>
                 </a>
             </li>
       </ul>
@@ -44,10 +44,10 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
         <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank" class="social-btn">
             <i class="fa-brands fa-facebook-f"></i>
         </a>
-        <a href="https://www.instagram.com/wayo_academy/" target="_blank" class="social-btn">
+        <a href="https://www.instagram.com/wayo_ma/" target="_blank" class="social-btn">
             <i class="fa-brands fa-instagram"></i>
         </a>
-        <a href="https://www.linkedin.com/company/wayoacademy/" target="_blank" class="social-btn">
+        <a href="https://www.linkedin.com/company/wayo-ma/" target="_blank" class="social-btn">
             <i class="fa-brands fa-linkedin-in"></i>
         </a>
         <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">
@@ -72,8 +72,8 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
         <p><strong><?php echo get_phrase('Useful Links'); ?></strong></p>
           <div class="infolinks">
             <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
-              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('FAQ'); ?></a>
-              <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('CGU'); ?></a>
+              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
+              <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
               <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
               <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
           </div>

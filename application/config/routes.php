@@ -53,6 +53,30 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
 
+// Routes for home masking
+$route['getting_started'] = 'home/tutorial';
+$route['help-center'] = 'home/faq';
+$route['communities'] = 'home/communities';
+$route['communities/(.+)'] = 'home/communities/$1';
+$route['tutorial'] = 'home/tutorial';
+$route['contact'] = 'home/contact';
+$route['support'] = 'home/contact';
+$route['about'] = 'home/about';
+$route['faq'] = 'home/faq';
+$route['terms'] = 'home/terms_conditions';
+$route['terms_conditions'] = 'home/terms_conditions';
+$route['privacy_policy'] = 'home/privacy_policy';
+$route['community_details'] = 'home/community_details';
+$route['community_details/(.+)'] = 'home/community_details/$1';
+
+// Routes for admission masking
+$route['join/community'] = 'admission/online_admission';
+$route['join/community/(.+)'] = 'admission/online_admission/$1';
+$route['join/member'] = 'admission/online_admission_student';
+$route['join/member/(.+)'] = 'admission/online_admission_student/$1';
+
+
+// API Routes
 $route['api/login'] = 'api/Admin/login';
 $route['api/menu'] = 'api/Admin/menu';
 

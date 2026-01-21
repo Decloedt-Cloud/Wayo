@@ -267,7 +267,7 @@
 <section class="contact-hero position-relative text-center" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <div class="hero-overlay"></div>
   <div class="container position-relative hero-inner">
-    <h1 class="fw-extrabold text-dark"><?php echo get_phrase("Contact_Us") ?></h1>
+    <h1 class="fw-extrabold text-dark"><?php echo get_phrase("Support") ?></h1>
     <p class="mt-2 mb-0"><?php echo get_phrase("Any questions?") ?>
       <strong><?php echo get_phrase("Response guaranteed within 24 business hours.") ?></strong>
     </p>
@@ -282,7 +282,7 @@
           <!-- Champ caché pour le jeton CSRF -->
                 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
          
-          <h2 class="h3 fw-bold mb-4 text-center"><?php echo get_phrase('contact_us'); ?></h2>
+          <h2 class="h3 fw-bold mb-4 text-center"><?php echo get_phrase('Support_Contact'); ?></h2>
          
           <div class="row g-3">
             <!-- Prénom -->
@@ -370,7 +370,7 @@
       <!-- Sidebar infos -->
       <aside class="col-12 col-lg-5">
         <div class="glass h-100 p-3 p-md-4 <?php echo (get_user_language() === 'arabic') ? 'text-center' : 'text-start'; ?> d-flex flex-column justify-content-center align-items-center">
-          <h2 class="h4 fw-bold mb-4"><?php echo get_phrase('Contact_Information'); ?></h2>
+          <h2 class="h4 fw-bold mb-4"><?php echo get_phrase('Support_Information'); ?></h2>
           <ul class="list-unstyled d-flex flex-column gap-3 contact-list mb-4">
             <li>
               <i class="fa-solid fa-phone"></i>
@@ -393,10 +393,10 @@
             <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank" class="social-btn">
               <i class="fa-brands fa-facebook-f"></i>
             </a>
-            <a href="https://www.instagram.com/wayo_academy/" target="_blank" class="social-btn">
+            <a href="https://www.instagram.com/wayo_ma/" target="_blank" class="social-btn">
               <i class="fa-brands fa-instagram"></i>
             </a>
-            <a href="https://www.linkedin.com/company/wayoacademy/" target="_blank" class="social-btn">
+            <a href="https://www.linkedin.com/company/wayo-ma/" target="_blank" class="social-btn">
               <i class="fa-brands fa-linkedin-in"></i>
             </a>
             <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">

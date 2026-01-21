@@ -2293,7 +2293,7 @@
     "views,_completions,_revenue_(dashboard)": "Views, completions, revenue (dashboard)",
     "start_now": "Start now",
     "watch_a_demo": "Watch a demo",
-    "faq": "FAQ",
+    "faq": "Help Center",
     "faq_&_user_guide": "Faq & user guide",
     "monetize_your_expertise.": "Monetize your expertise.",
     "learn_local,_progress_fast.": "Learn local, progress fast.",
@@ -4146,5 +4146,8 @@
     "allowed_files": "Allowed files",
     "update_password": "Update password",
     "teacher_details": "Teacher details",
-    "create_your_first_event": "Create your first event"
+    "create_your_first_event": "Create your first event",
+    "help_center": "Help Center",
+    "support_contact": "Support contact",
+    "support_information": "Support information"
 }

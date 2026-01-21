@@ -110,6 +110,78 @@ class App_Config extends CI_Config {
             }
         }
 
+        // Mask home/segment -> segment
+        // home/communities -> communities
+        // home/contact -> contact
+        // home/about -> about
+        // home/privacy_policy -> privacy_policy
+        // home/community_details -> community_details
+        $home_segments = array(
+            'communities', 'about', 
+            'privacy_policy', 'community_details'
+        );
+
+        foreach ($home_segments as $segment) {
+            foreach ($check_prefixes as $prefix) {
+                // Pattern: prefix + home/segment
+                $search = $prefix . 'home/' . $segment;
+                
+                // Exact match
+                if ($url === $search) {
+                    return $prefix . $segment;
+                }
+                
+                // Slash match
+                if (strpos($url, $search . '/') === 0) {
+                    return substr_replace($url, $prefix . $segment . '/', 0, strlen($search) + 1);
+                }
+                
+                // Query match
+                if (strpos($url, $search . '?') === 0) {
+                    return substr_replace($url, $prefix . $segment . '?', 0, strlen($search) + 1);
+                }
+            }
+        }
+
+        // Mask admission/online_admission -> join/community
+        // Mask admission/online_admission_student -> join/member
+        // Mask home/tutorial -> getting_started
+        // Mask home/faq -> help-center
+        $special_map = array(
+            'admission/online_admission' => 'join/community',
+            'admission/online_admission_student' => 'join/member',
+            'home/tutorial' => 'getting_started',
+            'tutorial' => 'getting_started',
+            'home/faq' => 'help-center',
+            'faq' => 'help-center',
+            'home/terms_conditions' => 'terms',
+            'terms_conditions' => 'terms',
+            'home/contact' => 'support',
+            'contact' => 'support'
+        );
+
+        foreach ($special_map as $original => $mapped) {
+            foreach ($check_prefixes as $prefix) {
+                // Pattern: prefix + original
+                $search = $prefix . $original;
+                
+                // Exact match
+                if ($url === $search) {
+                    return $prefix . $mapped;
+                }
+                
+                // Slash match
+                if (strpos($url, $search . '/') === 0) {
+                    return substr_replace($url, $prefix . $mapped . '/', 0, strlen($search) + 1);
+                }
+                
+                // Query match
+                if (strpos($url, $search . '?') === 0) {
+                    return substr_replace($url, $prefix . $mapped . '?', 0, strlen($search) + 1);
+                }
+            }
+        }
+
         return $url;
     }
 }
