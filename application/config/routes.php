@@ -665,3 +665,83 @@ $route['cron/fx_health'] = 'Cron/fx_health';
 $route['cron/fx_cleanup'] = 'Cron/fx_cleanup';
 $route['cron/fx_clear_cache'] = 'Cron/fx_clear_cache';
 $route['cron/fx_test_api'] = 'Cron/fx_test_api';
+
+
+/*
+| -------------------------------------------------------------------------
+| CUSTOM ROUTE FOR APP URL MASKING
+| -------------------------------------------------------------------------
+*/
+if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !== false)) {
+    
+    $role_route = '';
+    $cookie_name = 'ci_session';
+    
+    if (isset($_COOKIE[$cookie_name])) {
+        if (!isset($db)) {
+             include(APPPATH . 'config/database.php');
+        }
+        
+        $dsn_db = $db['default'];
+        
+        try {
+            $driver = ($dsn_db['dbdriver'] == 'mysqli') ? 'mysql' : $dsn_db['dbdriver'];
+            $dsn = $driver . ':host=' . $dsn_db['hostname'] . ';dbname=' . $dsn_db['database'] . ';charset=' . $dsn_db['char_set'];
+            $pdo = new PDO($dsn, $dsn_db['username'], $dsn_db['password']);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            $sess_id = $_COOKIE[$cookie_name];
+            
+            $stmt = $pdo->prepare("SELECT data FROM ci_sessions WHERE id = ?");
+            $stmt->execute([$sess_id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($row) {
+                 $data = $row['data'];
+                 if (is_resource($data)) {
+                     $data = stream_get_contents($data);
+                 }
+                 
+                 // Try to extract the active 'role' from session data
+                 // Matches: role|s:5:"admin"; or "role";s:5:"admin";
+                 if (preg_match('/(?:^|[;|}])"?role"?[|;]s:\d+:"([^"]+)"/', $data, $matches)) {
+                     $role_route = $matches[1];
+                 }
+                 // Fallback to legacy checks if role is not found (unlikely but safe)
+                 elseif (strpos($data, 'admin_login|b:1') !== false) {
+                     $role_route = 'admin';
+                 } elseif (strpos($data, 'teacher_login|b:1') !== false) {
+                     $role_route = 'teacher';
+                 } elseif (strpos($data, 'student_login|b:1') !== false) {
+                     $role_route = 'student';
+                 } elseif (strpos($data, 'superadmin_login|b:1') !== false) {
+                     $role_route = 'superadmin';
+                 }
+            }
+        } catch (Exception $e) {
+            // Silence
+        }
+    }
+    
+    if ($role_route) {
+        $route['app/member'] = $role_route . '/student';
+        $route['app/member/(.+)'] = $role_route . '/student/$1';
+        $route['app/mentor'] = $role_route . '/teacher';
+        $route['app/mentor/(.+)'] = $role_route . '/teacher/$1';
+        $route['app/certifications'] = $role_route . '/exam';
+        $route['app/certifications/(.+)'] = $role_route . '/exam/$1';
+        $route['app/announcements'] = $role_route . '/event_calendar';
+        $route['app/announcements/(.+)'] = $role_route . '/event_calendar/$1';
+        $route['app/community_settings'] = $role_route . '/school_settings';
+        $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
+        $route['app/courses'] = 'addons/courses';
+        $route['app/courses/(.+)'] = 'addons/courses/$1';
+        $route['app/lessons'] = 'addons/lessons';
+        $route['app/lessons/(.+)'] = 'addons/lessons/$1';
+        $route['app'] = $role_route . '/dashboard';
+        $route['app/(.+)'] = $role_route . '/$1';
+    } else {
+        $route['app'] = 'login';
+        $route['app/(.+)'] = 'login';
+    }
+}

@@ -328,7 +328,7 @@
                     </div>
                     <div class="exp-header-text">
                         <h4><?php echo get_phrase('student'); ?></h4>
-                        <p><?php echo get_phrase('manage_student_details'); ?></p>
+                        <p><?php echo get_phrase('manage_member_details'); ?></p>
                     </div>
                 </div>
                 <div class="exp-header-actions">
