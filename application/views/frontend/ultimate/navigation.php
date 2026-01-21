@@ -52,6 +52,25 @@ if ($current_user_id) {
         }
     }
 
+    /* Fixed alignment for 1220px - 1399px range */
+    @media (min-width: 1220px) and (max-width: 1399px) {
+        .container {
+            max-width: 95% !important;
+        }
+        .navbar-nav .nav-link {
+            white-space: nowrap !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
+            font-size: 15px !important;
+        }
+        .user-section {
+            gap: 0.5rem !important;
+        }
+        .gap-2 {
+            gap: 0.5rem !important;
+        }
+    }
+
     .site-header {
         position: sticky;
         top: 0;
@@ -1000,7 +1019,6 @@ if ($current_user_id) {
                             <?php } ?>
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
                                 <div class="user-section" style="white-space: nowrap;">
-                                    <span class="text-capitalize align-content-center" style="white-space: nowrap;"><?php echo $this->session->user_name; ?></span>
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle nav-user-img">
                                 </div>
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
@@ -1093,9 +1111,6 @@ if ($current_user_id) {
                                 <div class="d-flex align-items-center gap-2">
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
                                         alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
-                                    <span class="text-capitalize align-content-center">
-                                        <?php echo $this->session->user_name; ?>
-                                    </span>
                                 </div>
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
                             </div>

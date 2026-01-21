@@ -30,7 +30,7 @@ Navigation Styling
   --logo-h-desktop: 88px;
   --logo-h-tablet: 60px;
   --logo-h-mobile: 52px;
-  --linear-gradient-style-Wayo : linear-gradient(135deg, var(--orange), var(--orange-2));
+  --linear-gradient-style-Wayo: linear-gradient(135deg, var(--orange), var(--orange-2));
 }
 
 header,
@@ -49,6 +49,25 @@ header,
 
 .user-dropdown.active {
   display: block;
+}
+
+.navbar-user-profile {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background-color: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-2);
+  z-index: 1050;
+  margin-top: 10px;
+  padding: 0;
+  overflow: hidden;
 }
 
 .nav {
@@ -182,7 +201,7 @@ header,
 .hidden-section {
   transition: all 0.5s;
   opacity: 0;
-  height: 0 !important;
+  /* height: 0 !important; */
 }
 
 .show {
@@ -227,9 +246,6 @@ label div:first-child {
   width: 17px;
 }
 
-label div:nth-child(2) {
-  /* width: 13px; */
-}
 
 label div:last-child {
   width: 25px;
