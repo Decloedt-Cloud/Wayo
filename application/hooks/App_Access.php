@@ -29,8 +29,11 @@ class App_Access {
             $clean_uri = $request_uri;
         }
         
+        // Remove index.php from the beginning of the URI if present (case-insensitive)
+        // This handles explicit access like /index.php/home/about
+        $clean_uri = preg_replace('/^\/?index\.php\/?/i', '/', $clean_uri);
+        
         // Ensure clean_uri starts with / for consistent matching
-        // e.g. "admin/dashboard" -> "/admin/dashboard"
         if (substr($clean_uri, 0, 1) !== '/') {
             $clean_uri = '/' . $clean_uri;
         }
@@ -117,6 +120,62 @@ class App_Access {
                 $redirect_url = rtrim($base_url, '/') . $new_uri;
                 
                 // Perform 301 Redirect
+                header("Location: " . $redirect_url, true, 301);
+                exit;
+            }
+        }
+
+
+
+        // Redirect admission/online_admission -> join/community
+        // Redirect admission/online_admission_student -> join/member
+        // Redirect home/tutorial -> getting_started
+        // Redirect tutorial -> getting_started
+        // Redirect home/faq -> help-center
+        $special_map = array(
+            'admission/online_admission' => 'join/community',
+            'admission/online_admission_student' => 'join/member',
+            'home/tutorial' => 'getting_started',
+            'tutorial' => 'getting_started',
+            'home/faq' => 'help-center',
+            'faq' => 'help-center',
+            'home/terms_conditions' => 'terms',
+            'terms_conditions' => 'terms',
+            'home/contact' => 'support',
+            'contact' => 'support'
+        );
+
+        foreach ($special_map as $target_segment => $replacement_segment) {
+            $target = '/' . $target_segment;
+            $replacement = '/' . $replacement_segment;
+            
+            if (strpos($clean_uri, $target . '/') === 0 || 
+                $clean_uri === $target || 
+                strpos($clean_uri, $target . '?') === 0) {
+                
+                $new_uri = substr_replace($clean_uri, $replacement, 0, strlen($target));
+                $redirect_url = rtrim($base_url, '/') . $new_uri;
+                header("Location: " . $redirect_url, true, 301);
+                exit;
+            }
+        }
+        
+        // Redirect home/segment -> segment
+        $home_segments = array(
+            'communities', 'about', 
+            'privacy_policy', 'community_details'
+        );
+
+        foreach ($home_segments as $segment) {
+            $target = '/home/' . $segment;
+            $replacement = '/' . $segment;
+            
+            if (strpos($clean_uri, $target . '/') === 0 || 
+                $clean_uri === $target || 
+                strpos($clean_uri, $target . '?') === 0) {
+                
+                $new_uri = substr_replace($clean_uri, $replacement, 0, strlen($target));
+                $redirect_url = rtrim($base_url, '/') . $new_uri;
                 header("Location: " . $redirect_url, true, 301);
                 exit;
             }
