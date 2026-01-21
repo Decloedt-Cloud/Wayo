@@ -3566,7 +3566,7 @@
     "manage_meeting_recordings": "إدارة تسجيلات الاجتماع",
     "recording_info": "معلومات التسجيل",
     "/_month": "/ شهريًا",
-    "price_to_pay_:": "السعر الواجب دفعه:"
+    "price_to_pay_:": "السعر الواجب دفعه:",
     "no_teachers_found": "لم يتم العثور على معلمين",
     "teacher_details": "تفاصيل المعلم",
     "search_teachers": "البحث عن المعلمين",
@@ -3690,5 +3690,5 @@
     "students_cannot_manage_exam_questions": "لا يمكن للطلاب إدارة أسئلة الاختبار",
     "there_are_no_events_scheduled_at_the_moment": "لا توجد فعاليات مجدولة في الوقت الحالي",
     "designation_details": "تفاصيل التعيين",
-    "recording_info": "معلومات التسجيل"
+    "create_your_community_space_and_set_your_goals.": "أنشئ مساحة مجتمعك وحدد أهدافك."
 }
