@@ -759,6 +759,7 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/community_settings'] = $role_route . '/school_settings';
         $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
         $route['app/courses'] = 'addons/courses';
+        $route['app/courses/(:num)'] = 'student/manage_class/courses/$1';
         $route['app/courses/(.+)'] = 'addons/courses/$1';
         $route['app/lessons'] = 'addons/lessons';
         $route['app/lessons/(.+)'] = 'addons/lessons/$1';
