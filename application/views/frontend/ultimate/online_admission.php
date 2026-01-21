@@ -10,7 +10,7 @@
 
     .hero {
         position: relative;
-        min-height: 50vh;
+        min-height: 35vh;
         display: grid;
         place-items: center;
         color: #fff;
