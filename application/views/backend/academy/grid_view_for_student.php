@@ -241,7 +241,7 @@ $selected_user_id = $selected_user_id ?? 'all';
                                 <?php
                                 if ($selected_school_id != "all") {
                                     $classes_list = $this->db->select('id, name')
-                                        ->where('school_id', $selected_school_id)
+                                        ->where('school_id', school_id())
                                         ->get('classes')->result_array();
 
                                     foreach ($classes_list as $classe): ?>

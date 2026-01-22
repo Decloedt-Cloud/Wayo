@@ -1,10 +1,13 @@
 <meta charset="utf-8" />
-    <title><?php echo get_phrase($page_title); ?> | <?php 
-        $active_school_id = $this->session->userdata('active_school_id');
-        if (!empty($active_school_id)) {
-            echo $this->db->get_where('schools', array('id' => $active_school_id))->row('name');
-        } else {
-            echo $this->db->get_where('schools', array('id' => school_id()))->row('name');
+    <title><?php echo get_phrase($page_title); ?> <?php 
+        $school_id = school_id();
+        if ($school_id > 0) {
+            $active_school_id = $this->session->userdata('active_school_id');
+            if (!empty($active_school_id)) {
+                echo ' | ' . $this->db->get_where('schools', array('id' => $active_school_id))->row('name');
+            } else {
+                echo ' | ' . $this->db->get_where('schools', array('id' => $school_id))->row('name');
+            }
         }
     ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

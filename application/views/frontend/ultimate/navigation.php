@@ -1028,10 +1028,12 @@ if ($current_user_id) {
                             </div>
                         <?php } ?>
                         <?php if ($this->session->userdata('user_id')) { ?>
-                            <?php if ($user_has_community) {
+                            <?php 
                                 // Determine dashboard link: if student is pending approval, redirect to invoice
                                 $dashboard_link = route('dashboard');
-                                if ($this->session->userdata('user_type') === 'student') {
+                                if (!$user_has_community) {
+                                    $dashboard_link = route('invoice');
+                                } else if ($this->session->userdata('user_type') === 'student') {
                                     $student_status_check = $this->db->get_where('students', array('user_id' => $this->session->userdata('user_id'), 'school_id' => $this->session->userdata('active_school_id')))->row_array();
                                     if ($student_status_check && $student_status_check['status'] != 1) {
                                         $dashboard_link = route('invoice');
@@ -1041,7 +1043,7 @@ if ($current_user_id) {
                             <li class="nav-item navbar-user" style="margin:0 2px ; list-style:none">
                                 <a href="<?php echo $dashboard_link; ?>" target="" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"> <?php echo get_phrase('community_app'); ?> </a>
                             </li>
-                            <?php } ?>
+                            
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
                                 <div class="user-section" style="white-space: nowrap;">
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle nav-user-img">
