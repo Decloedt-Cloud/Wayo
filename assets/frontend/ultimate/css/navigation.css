@@ -1043,7 +1043,7 @@ Responsive Styling
   }
 
   .bottom_nav {
-    bottom: 50% !important;
+    /* bottom: 50% !important; */
   }
 
   .navbar[dir="rtl"] .bottom_nav {

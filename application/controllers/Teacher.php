@@ -312,314 +312,541 @@ class Teacher extends CI_Controller {
 			  echo json_encode(["status" => "success", "message" => "Room supprimée avec succès !"]);
 		  }
 	
-	public function recording($param1 = '', $param2 = '', $param3 = '') {
-    // Check authentication
-    if ($this->session->userdata('teacher_login') != 1) {
-        redirect(site_url('login'), 'refresh');
-    }
+	// public function recording($param1 = '', $param2 = '', $param3 = '')
+    // {
+    //         // Check authentication
+    //         if ($this->session->userdata('teacher_login') != 1) {
+    //             redirect(site_url('login'), 'refresh');
+    //         }
 
-    // Get the logged-in user's ID
-    $user_id = $this->session->userdata('user_id');
+    //         // Get the logged-in user's ID
+    //         $user_id = $this->session->userdata('user_id');
 
-    // Map user_id to teacher_id
-    $this->db->select('id');
-    $this->db->from('teachers');
-    $this->db->where('user_id', $user_id);
-    $teacher = $this->db->get()->row_array();
-    $teacher_id = $teacher['id'] ?? null;
+    //         // Map user_id to teacher_id
+    //         $this->db->select('id');
+    //         $this->db->from('teachers');
+    //         $this->db->where('user_id', $user_id);
+    //         $teacher = $this->db->get()->row_array();
+    //         $teacher_id = $teacher['id'] ?? null;
 
-    if (!$teacher_id) {
-        log_message('error', 'recording - No teacher associated with user_id: ' . $user_id);
-        show_error('No teacher associated with this user.', 403);
-        return;
-    }
+    //         if (!$teacher_id) {
+    //             log_message('error', 'recording - No teacher associated with user_id: ' . $user_id);
+    //             show_error('No teacher associated with this user.', 403);
+    //             return;
+    //         }
 
-    // Get permitted class IDs from teacher_permissions where attendance = 1
-    $this->db->select('class_id');
-    $this->db->from('teacher_permissions');
-    $this->db->where('teacher_id', $teacher_id);
-    $this->db->where('attendance', 1);
-    $permitted_classes = $this->db->get()->result_array();
-    $permitted_class_ids = array_map('strval', array_column($permitted_classes, 'class_id'));
+    //         // Get permitted class IDs from teacher_permissions where attendance = 1
+    //         $this->db->select('class_id');
+    //         $this->db->from('teacher_permissions');
+    //         $this->db->where('teacher_id', $teacher_id);
+    //         $this->db->where('attendance', 1);
+    //         $permitted_classes = $this->db->get()->result_array();
+    //         $permitted_class_ids = array_map('strval', array_column($permitted_classes, 'class_id'));
 
-    // Get school_id from users table
-    $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
-    if (!$user || empty($user['school_id'])) {
-        log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
-        show_error('No school associated with this user.', 403);
-        return;
-    }
-    $school_id = $user['school_id'];
+    //         // Get school_id from users table
+    //         $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+    //         if (!$user || empty($user['school_id'])) {
+    //             log_message('error', 'recording - No school_id found for user_id: ' . $user_id);
+    //             show_error('No school associated with this user.', 403);
+    //             return;
+    //         }
+    //         $school_id = $user['school_id'];
 
-    // Synchronize recordings (unchanged)
-    $this->load->config('bigbluebutton');
-    $bbb_url = $this->config->item('bbb_url');
-    $bbb_secret = $this->config->item('bbb_secret');
+    //         // Synchronize recordings (unchanged)
+    //         $this->load->config('bigbluebutton');
+    //         $bbb_url = $this->config->item('bbb_url');
+    //         $bbb_secret = $this->config->item('bbb_secret');
 
-    $last_sync = $this->session->userdata('last_recording_sync');
-    $current_time = time();
-    $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
+    //         $last_sync = $this->session->userdata('last_recording_sync');
+    //         $current_time = time();
+    //         $sync_interval = 10; // Synchronize every 10 seconds (for testing, adjust as needed)
 
-    if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
-        // Filter meetings by school_id
-        $this->db->where('school_id', $school_id);
-        $meetings = $this->db->get('sessions_meetings')->result_array();
+    //         if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
+    //             // Filter meetings by school_id
+    //             $this->db->where('school_id', $school_id);
+    //             $meetings = $this->db->get('sessions_meetings')->result_array();
 
-        foreach ($meetings as $meeting) {
-            $params = "meetingID=" . urlencode($meeting['meeting_id']);
-            $checksum = sha1("getRecordings" . $params . $bbb_secret);
-            $recordings_url = $bbb_url . "getRecordings?" . $params . "&checksum=" . $checksum;
+    //             foreach ($meetings as $meeting) {
+    //                 $params = "meetingID=" . urlencode($meeting['meeting_id']);
+    //                 $checksum = sha1("getRecordings" . $params . $bbb_secret);
+    //                 $recordings_url = $bbb_url . "getRecordings?" . $params . "&checksum=" . $checksum;
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $recordings_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            $recordings_response = curl_exec($ch);
-            $curl_error = curl_error($ch);
-            curl_close($ch);
+    //                 $ch = curl_init();
+    //                 curl_setopt($ch, CURLOPT_URL, $recordings_url);
+    //                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    //                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    //                 $recordings_response = curl_exec($ch);
+    //                 $curl_error = curl_error($ch);
+    //                 curl_close($ch);
 
-            if ($curl_error) {
-                log_message('error', 'recording - cURL error for meeting_id: ' . $meeting['meeting_id'] . ': ' . $curl_error);
-                continue;
+    //                 if ($curl_error) {
+    //                     log_message('error', 'recording - cURL error for meeting_id: ' . $meeting['meeting_id'] . ': ' . $curl_error);
+    //                     continue;
+    //                 }
+
+    //                 $recordings_xml = simplexml_load_string($recordings_response);
+    //                 if ($recordings_xml && (string)$recordings_xml->returncode === "SUCCESS") {
+    //                     foreach ($recordings_xml->recordings->recording as $recording) {
+    //                         if ((string)$recording->state !== 'published') {
+    //                             continue;
+    //                         }
+    //                         $recording_id = (string)$recording->recordID;
+    //                         $recording_start_time = (string)$recording->startTime;
+    //                         $recording_end_time = (string)$recording->endTime;
+    //                         $original_recording_url = (string)$recording->playback->format->url;
+    //                         $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
+    //                         $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
+
+    //                         // Format duration
+    //                         $hours = floor($duration_seconds / 3600);
+    //                         $minutes = floor(($duration_seconds % 3600) / 60);
+    //                         $seconds = $duration_seconds % 60;
+    //                         $formatted_duration = $hours >= 1
+    //                             ? sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds)
+    //                             : sprintf("%02d:%02d", $minutes, $seconds);
+
+    //                         $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
+    //                         $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
+
+    //                         $existing = $this->db->get_where('recordings', ['recording_id' => $recording_id])->row_array();
+    //                         if (!$existing) {
+    //                             $recording_data = [
+    //                                 'meeting_id' => $meeting['meeting_id'],
+    //                                 'appointment_id' => $meeting['appointment_id'],
+    //                                 'recording_id' => $recording_id,
+    //                                 'name' => $meeting['name'],
+    //                                 'class_id' => $meeting['class_id'],
+    //                                 'school_id' => $meeting['school_id'],
+    //                                 'start_time' => $start_time,
+    //                                 'end_time' => $end_time,
+    //                                 'duration' => $duration_seconds,
+    //                                 'formatted_duration' => $formatted_duration,
+    //                                 'recording_url' => $recording_url,
+    //                                 'created_at' => date('Y-m-d H:i:s'),
+    //                                 'updated_at' => date('Y-m-d H:i:s')
+    //                             ];
+    //                             $this->db->insert('recordings', $recording_data);
+    //                         } else {
+    //                             $this->db->where('recording_id', $recording_id);
+    //                             $this->db->update('recordings', [
+    //                                 'recording_url' => $recording_url,
+    //                                 'updated_at' => date('Y-m-d H:i:s')
+    //                             ]);
+    //                         }
+    //                     }
+    //                 }
+    //             }
+
+    //             $this->session->set_userdata('last_recording_sync', $current_time);
+    //         }
+
+    //         // Initialize filters
+    //         $filters = [
+    //             'meeting_name' => $this->input->post('meeting_name', true) ?? '',
+    //             'date_range' => $this->input->post('date_range', true) ?? ''
+    //         ];
+
+    //         // Build query for recordings with access restrictions
+    //         $this->db->select('r.*, c.name as class_name');
+    //         $this->db->from('recordings r');
+    //         $this->db->join('classes c', 'r.class_id = c.id', 'left');
+    //         $this->db->join('appointments a', 'r.appointment_id = a.id', 'inner');
+    //         $this->db->join('appointment_participants ap', 'a.id = ap.appointment_id', 'left');
+    //         $this->db->where('r.school_id', $school_id);
+
+    //         // Allow access if teacher is invited individually or has class permissions
+    //         if (!empty($permitted_class_ids)) {
+    //             $this->db->where('
+    //                 (ap.type = "class" AND ap.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+    //                 OR (ap.type = "individual" AND ap.guest = ' . intval($user_id) . ')
+    //             ');
+    //         } else {
+    //             // Only check for individual invitations if no class permissions exist
+    //             $this->db->where('ap.type', 'individual');
+    //             $this->db->where('ap.guest', $user_id);
+    //         }
+
+    //         // Apply filters
+    //         if (!empty($filters['meeting_name'])) {
+    //             $this->db->like('r.name', $filters['meeting_name'], 'both');
+    //         }
+    //         if (!empty($filters['date_range'])) {
+    //             $dates = explode(' - ', $filters['date_range']);
+    //             if (count($dates) == 1) {
+    //                 $date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+    //                 if ($date) {
+    //                     $this->db->where('DATE(r.start_time)', $date->format('Y-m-d'));
+    //                 }
+    //             } elseif (count($dates) == 2) {
+    //                 $date_from = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+    //                 $date_to = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
+    //                 if ($date_from && $date_to) {
+    //                     $this->db->where('r.start_time >=', $date_from->format('Y-m-d 00:00:00'));
+    //                     $this->db->where('r.start_time <=', $date_to->format('Y-m-d 23:59:59'));
+    //                 }
+    //             }
+    //         }
+
+    //         $this->db->group_by('r.id'); // Avoid duplicates
+    //         $this->db->order_by('r.created_at', 'DESC');
+    //         $recordings = $this->db->get()->result_array();
+
+    //         // Handle AJAX request
+    //         if ($this->input->is_ajax_request()) {
+    //             header('Content-Type: application/json');
+    //             echo json_encode([
+    //                 'status' => 'success',
+    //                 'recordings' => $recordings,
+    //                 'filters' => $filters,
+    //                 'csrf_token' => $this->security->get_csrf_hash()
+    //             ]);
+    //             return;
+    //         }
+
+    //         // Load view for non-AJAX request
+    //         $page_data['recordings'] = $recordings;
+    //         $page_data['filters'] = $filters;
+    //         $page_data['page_name'] = 'recording/recording';
+    //         $page_data['page_title'] = 'recording';
+
+    //         $this->load->view('backend/index', $page_data);
+    // }
+
+    public function recording($param1 = '', $param2 = '', $param3 = '') 
+    {
+        // Check authentication
+        if ($this->session->userdata('teacher_login') != 1) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        // Get User and Teacher ID
+        $user_id = $this->session->userdata('user_id');
+        $teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+        if (!$teacher) {
+            show_error('No teacher found', 403);
+            return;
+        }
+        $teacher_id = $teacher['id'];
+
+        // Get school_id
+        $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+        if (!$user || empty($user['school_id'])) {
+            show_error('No school associated', 403);
+            return;
+        }
+        $school_id = $user['school_id'];
+
+        // Get permitted classes
+        $this->db->select('class_id');
+        $this->db->from('teacher_permissions');
+        $this->db->where('teacher_id', $teacher_id);
+        $this->db->where('attendance', 1);
+        $permitted_classes = $this->db->get()->result_array();
+        $permitted_class_ids = array_column($permitted_classes, 'class_id');
+        
+        if (empty($permitted_class_ids)) {
+            $permitted_class_ids = [-1]; 
+        }
+
+        // Synchronize recordings
+        $this->load->config('bigbluebutton');
+        $bbb_url = $this->config->item('bbb_url');
+        $bbb_secret = $this->config->item('bbb_secret');
+
+        $last_sync = $this->session->userdata('last_recording_sync');
+        $current_time = time();
+        $sync_interval = 10; 
+
+        if (!$last_sync || ($current_time - $last_sync) > $sync_interval) {
+            $this->db->where('school_id', $school_id);
+            // Optimization: Limit to recent meetings and permitted classes
+            $this->db->where('created_at >=', date('Y-m-d H:i:s', strtotime('-7 days')));
+            $this->db->where_in('class_id', $permitted_class_ids);
+            $this->db->order_by('created_at', 'DESC');
+            $this->db->limit(15);
+            $meetings = $this->db->get('sessions_meetings')->result_array();
+
+            foreach ($meetings as $meeting) {
+                $params = "meetingID=" . urlencode($meeting['meeting_id']);
+                $checksum = sha1("getRecordings" . $params . $bbb_secret);
+                $recordings_url = $bbb_url . "getRecordings?" . $params . "&checksum=" . $checksum;
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $recordings_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                $recordings_response = curl_exec($ch);
+                $curl_error = curl_error($ch);
+                curl_close($ch);
+
+                if ($curl_error) {
+                    log_message('error', 'recording - cURL error for meeting_id: ' . $meeting['meeting_id'] . ': ' . $curl_error);
+                    continue;
+                }
+
+                $recordings_xml = simplexml_load_string($recordings_response);
+                if ($recordings_xml && (string)$recordings_xml->returncode === "SUCCESS") {
+                    foreach ($recordings_xml->recordings->recording as $recording) {
+                        if ((string)$recording->state !== 'published') {
+                            continue;
+                        }
+                        $recording_id = (string)$recording->recordID;
+                        $recording_start_time = (string)$recording->startTime;
+                        $recording_end_time = (string)$recording->endTime;
+                        $original_recording_url = (string)$recording->playback->format->url;
+                        $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
+                        $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
+
+                        // Format duration
+                        $hours = floor($duration_seconds / 3600);
+                        $minutes = floor(($duration_seconds % 3600) / 60);
+                        $seconds = $duration_seconds % 60;
+                        
+                        if ($hours >= 1) {
+                            $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+                        } else {
+                            $formatted_duration = sprintf("%02d:%02d", $minutes, $seconds);
+                        }
+
+                        $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
+                        $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
+
+                        $existing = $this->db->get_where('recordings', ['recording_id' => $recording_id])->row_array();
+                        if (!$existing) {
+                            $recording_data = [
+                                'meeting_id' => $meeting['meeting_id'],
+                                'appointment_id' => $meeting['appointment_id'],
+                                'recording_id' => $recording_id,
+                                'name' => $meeting['name'],
+                                'class_id' => $meeting['class_id'],
+                                'school_id' => $meeting['school_id'],
+                                'start_time' => $start_time,
+                                'end_time' => $end_time,
+                                'duration' => $duration_seconds,
+                                'formatted_duration' => $formatted_duration,
+                                'recording_url' => $recording_url,
+                                'created_at' => date('Y-m-d H:i:s'),
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ];
+                            $this->db->insert('recordings', $recording_data);
+                        } else {
+                            $this->db->where('recording_id', $recording_id);
+                            $this->db->update('recordings', [
+                                'recording_url' => $recording_url,
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                }
             }
 
-            $recordings_xml = simplexml_load_string($recordings_response);
-            if ($recordings_xml && (string)$recordings_xml->returncode === "SUCCESS") {
-                foreach ($recordings_xml->recordings->recording as $recording) {
-                    if ((string)$recording->state !== 'published') {
-                        continue;
-                    }
-                    $recording_id = (string)$recording->recordID;
-                    $recording_start_time = (string)$recording->startTime;
-                    $recording_end_time = (string)$recording->endTime;
-                    $original_recording_url = (string)$recording->playback->format->url;
-                    $recording_url = str_replace('https://31.97.52.98', 'https://visio.wayo.site', $original_recording_url);
-                    $duration_seconds = (int)(($recording_end_time - $recording_start_time) / 1000);
+            $this->session->set_userdata('last_recording_sync', $current_time);
+        }
 
-                    // Format duration
-                    $hours = floor($duration_seconds / 3600);
-                    $minutes = floor(($duration_seconds % 3600) / 60);
-                    $seconds = $duration_seconds % 60;
-                    $formatted_duration = $hours >= 1
-                        ? sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds)
-                        : sprintf("%02d:%02d", $minutes, $seconds);
+        // Initialize filters
+        $filters = [
+            'meeting_name' => $this->input->post('meeting_name', true) ?? '',
+            'date_range' => $this->input->post('date_range', true) ?? ''
+        ];
 
-                    $start_time = date('Y-m-d H:i:s', $recording_start_time / 1000);
-                    $end_time = date('Y-m-d H:i:s', $recording_end_time / 1000);
+        // Build query
+        $this->db->select('r.*, c.name as class_name');
+        $this->db->from('recordings r');
+        $this->db->join('classes c', 'r.class_id = c.id', 'left');
+        $this->db->where('r.school_id', $school_id);
+        $this->db->where_in('r.class_id', $permitted_class_ids); // Permission check
 
-                    $existing = $this->db->get_where('recordings', ['recording_id' => $recording_id])->row_array();
-                    if (!$existing) {
-                        $recording_data = [
-                            'meeting_id' => $meeting['meeting_id'],
-                            'appointment_id' => $meeting['appointment_id'],
-                            'recording_id' => $recording_id,
-                            'name' => $meeting['name'],
-                            'class_id' => $meeting['class_id'],
-                            'school_id' => $meeting['school_id'],
-                            'start_time' => $start_time,
-                            'end_time' => $end_time,
-                            'duration' => $duration_seconds,
-                            'formatted_duration' => $formatted_duration,
-                            'recording_url' => $recording_url,
-                            'created_at' => date('Y-m-d H:i:s'),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ];
-                        $this->db->insert('recordings', $recording_data);
-                    } else {
-                        $this->db->where('recording_id', $recording_id);
-                        $this->db->update('recordings', [
-                            'recording_url' => $recording_url,
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
+        // Apply filters
+        if (!empty($filters['meeting_name'])) {
+            $this->db->like('r.name', $filters['meeting_name'], 'both');
+        }
+        if (!empty($filters['date_range'])) {
+            $dates = explode(' - ', $filters['date_range']);
+            if (count($dates) == 1) {
+                $date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                if ($date) {
+                    $this->db->where('DATE(r.start_time)', $date->format('Y-m-d'));
+                }
+            } elseif (count($dates) == 2) {
+                $date_from = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
+                $date_to = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
+                if ($date_from && $date_to) {
+                    $this->db->where('r.start_time >=', $date_from->format('Y-m-d 00:00:00'));
+                    $this->db->where('r.start_time <=', $date_to->format('Y-m-d 23:59:59'));
                 }
             }
         }
 
-        $this->session->set_userdata('last_recording_sync', $current_time);
-    }
+        $this->db->order_by('r.created_at', 'DESC');
+        $recordings = $this->db->get()->result_array();
 
-    // Initialize filters
-    $filters = [
-        'meeting_name' => $this->input->post('meeting_name', true) ?? '',
-        'date_range' => $this->input->post('date_range', true) ?? ''
-    ];
-
-    // Build query for recordings with access restrictions
-    $this->db->select('r.*, c.name as class_name');
-    $this->db->from('recordings r');
-    $this->db->join('classes c', 'r.class_id = c.id', 'left');
-    $this->db->join('appointments a', 'r.appointment_id = a.id', 'inner');
-    $this->db->join('appointment_participants ap', 'a.id = ap.appointment_id', 'left');
-    $this->db->where('r.school_id', $school_id);
-
-    // Allow access if teacher is invited individually or has class permissions
-    if (!empty($permitted_class_ids)) {
-        $this->db->where('
-            (ap.type = "class" AND ap.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
-            OR (ap.type = "individual" AND ap.guest = ' . intval($user_id) . ')
-        ');
-    } else {
-        // Only check for individual invitations if no class permissions exist
-        $this->db->where('ap.type', 'individual');
-        $this->db->where('ap.guest', $user_id);
-    }
-
-    // Apply filters
-    if (!empty($filters['meeting_name'])) {
-        $this->db->like('r.name', $filters['meeting_name'], 'both');
-    }
-    if (!empty($filters['date_range'])) {
-        $dates = explode(' - ', $filters['date_range']);
-        if (count($dates) == 1) {
-            $date = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-            if ($date) {
-                $this->db->where('DATE(r.start_time)', $date->format('Y-m-d'));
-            }
-        } elseif (count($dates) == 2) {
-            $date_from = DateTime::createFromFormat('d-m-Y', trim($dates[0]));
-            $date_to = DateTime::createFromFormat('d-m-Y', trim($dates[1]));
-            if ($date_from && $date_to) {
-                $this->db->where('r.start_time >=', $date_from->format('Y-m-d 00:00:00'));
-                $this->db->where('r.start_time <=', $date_to->format('Y-m-d 23:59:59'));
-            }
+        // Handle AJAX request
+        if ($this->input->is_ajax_request()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'success',
+                'recordings' => $recordings,
+                'filters' => $filters,
+                'csrf_token' => $this->security->get_csrf_hash()
+            ]);
+            return;
         }
+
+        // Load view for non-AJAX request
+        $page_data['recordings'] = $recordings;
+        $page_data['filters'] = $filters;
+        $page_data['page_name'] = 'recording/recording';
+        $page_data['page_title'] = 'recording';
+
+        $this->load->view('backend/index', $page_data);
     }
-
-    $this->db->group_by('r.id'); // Avoid duplicates
-    $this->db->order_by('r.created_at', 'DESC');
-    $recordings = $this->db->get()->result_array();
-
-    // Handle AJAX request
-    if ($this->input->is_ajax_request()) {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 'success',
-            'recordings' => $recordings,
-            'filters' => $filters,
-            'csrf_token' => $this->security->get_csrf_hash()
-        ]);
-        return;
-    }
-
-    // Load view for non-AJAX request
-    $page_data['recordings'] = $recordings;
-    $page_data['filters'] = $filters;
-    $page_data['page_name'] = 'recording/recording';
-    $page_data['page_title'] = 'recording';
-
-    $this->load->view('backend/index', $page_data);
-}
 		   
 			public function delete_recording()
-{
-    // Vérifier l'authentification
-    if ($this->session->userdata('teacher_login') != 1) {
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('unauthorized_access'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
-        return;
-    }
+            {
+                // Vérifier l'authentification
+                if ($this->session->userdata('teacher_login') != 1) {
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('unauthorized_access'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
 
-    // Récupérer l'ID de l'enregistrement depuis la requête POST
-    $recording_id = trim($this->input->post('recording_id', true));
+                // Get permitted classes for security check
+                $user_id = $this->session->userdata('user_id');
+                $teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+                if (!$teacher) {
+                     $this->output->set_status_header(403);
+                     return;
+                }
+                $teacher_id = $teacher['id'];
 
-    if (empty($recording_id)) {
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('invalid_recording_id'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-        log_message('error', 'delete_recording - Invalid recording_id received');
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
-        return;
-    }
+                $this->db->select('class_id');
+                $this->db->from('teacher_permissions');
+                $this->db->where('teacher_id', $teacher_id);
+                $this->db->where('attendance', 1);
+                $permitted_classes = $this->db->get()->result_array();
+                $permitted_class_ids = array_column($permitted_classes, 'class_id');
+                
+                if (empty($permitted_class_ids)) {
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('unauthorized_access'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
 
-    // Vérifier si l'enregistrement existe dans la table recordings
-    $this->db->where('recording_id', $recording_id);
-    $existing = $this->db->get('recordings')->row_array();
+                // Récupérer l'ID de l'enregistrement depuis la requête POST
+                $recording_id = trim($this->input->post('recording_id', true));
 
-    if (!$existing) {
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('recording_not_found'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-        log_message('error', 'delete_recording - Recording not found: recording_id=' . $recording_id);
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
-        return;
-    }
+                if (empty($recording_id)) {
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('invalid_recording_id'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    log_message('error', 'delete_recording - Invalid recording_id received');
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
 
-    // Charger la configuration BigBlueButton
-    $this->load->config('bigbluebutton');
-    $bbb_url = $this->config->item('bbb_url');
-    $bbb_secret = $this->config->item('bbb_secret');
+                // Vérifier si l'enregistrement existe dans la table recordings
+                $this->db->where('recording_id', $recording_id);
+                $existing = $this->db->get('recordings')->row_array();
 
-    // Supprimer l'enregistrement de BigBlueButton
-    $params = "recordID=" . urlencode($recording_id);
-    $checksum = sha1("deleteRecordings" . $params . $bbb_secret);
-    $delete_url = $bbb_url . "deleteRecordings?" . $params . "&checksum=" . $checksum;
+                if (!$existing) {
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('recording_not_found'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    log_message('error', 'delete_recording - Recording not found: recording_id=' . $recording_id);
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $delete_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    $delete_response = curl_exec($ch);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
+                // Security Check: Is this recording from a permitted class?
+                if (!in_array($existing['class_id'], $permitted_class_ids)) {
+                     $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('unauthorized_action_for_this_class'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
 
-    if ($curl_error) {
-        log_message('error', 'delete_recording - cURL error while deleting from BBB: recording_id=' . $recording_id . ', Error: ' . $curl_error);
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('failed_to_delete_recording_from_bbb'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
-        return;
-    }
+                // Charger la configuration BigBlueButton
+                $this->load->config('bigbluebutton');
+                $bbb_url = $this->config->item('bbb_url');
+                $bbb_secret = $this->config->item('bbb_secret');
 
-    // Vérifier la réponse de l'API BBB
-    $delete_xml = simplexml_load_string($delete_response);
-    if (!$delete_xml || (string)$delete_xml->returncode !== "SUCCESS") {
-        log_message('error', 'delete_recording - BBB API delete failed: recording_id=' . $recording_id . ', Response: ' . $delete_response);
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('failed_to_delete_recording_from_bbb'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
-        return;
-    }
+                // Supprimer l'enregistrement de BigBlueButton
+                $params = "recordID=" . urlencode($recording_id);
+                $checksum = sha1("deleteRecordings" . $params . $bbb_secret);
+                $delete_url = $bbb_url . "deleteRecordings?" . $params . "&checksum=" . $checksum;
 
-    // Supprimer l'enregistrement de la table recordings
-    $this->db->where('recording_id', $recording_id);
-    $this->db->delete('recordings');
-    $db_error = $this->db->error();
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $delete_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                $delete_response = curl_exec($ch);
+                $curl_error = curl_error($ch);
+                curl_close($ch);
+
+                if ($curl_error) {
+                    log_message('error', 'delete_recording - cURL error while deleting from BBB: recording_id=' . $recording_id . ', Error: ' . $curl_error);
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('failed_to_delete_recording_from_bbb'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
+
+                // Vérifier la réponse de l'API BBB
+                $delete_xml = simplexml_load_string($delete_response);
+                if (!$delete_xml || (string)$delete_xml->returncode !== "SUCCESS") {
+                    log_message('error', 'delete_recording - BBB API delete failed: recording_id=' . $recording_id . ', Response: ' . $delete_response);
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('failed_to_delete_recording_from_bbb'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                    return;
+                }
+
+                // Supprimer l'enregistrement de la table recordings
+                $this->db->where('recording_id', $recording_id);
+                $this->db->delete('recordings');
+                $db_error = $this->db->error();
 
 
-    if ($db_error['code'] == 0 && $this->db->affected_rows() > 0) {
-        $response = [
-            'status' => 'success',
-            'message' => get_phrase('recording_deleted_successfully'),
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-    } else {
-        log_message('error', 'delete_recording - Failed to delete recording: recording_id=' . $recording_id . ', Last Query: ' . $this->db->last_query() . ', DB Error: ' . json_encode($db_error));
-        $response = [
-            'status' => 'error',
-            'message' => get_phrase('failed_to_delete_recording') . ' (DB Error: ' . $db_error['message'] . ')',
-            'csrf_token' => $this->security->get_csrf_hash()
-        ];
-    }
-
-    $this->output->set_content_type('application/json')->set_output(json_encode($response));
-}
+                if ($db_error['code'] == 0 && $this->db->affected_rows() > 0) {
+                    $response = [
+                        'status' => 'success',
+                        'message' => get_phrase('recording_deleted_successfully'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                } else {
+                    log_message('error', 'delete_recording - Failed to delete recording: recording_id=' . $recording_id . ', Last Query: ' . $this->db->last_query() . ', DB Error: ' . json_encode($db_error));
+                    $response = [
+                        'status' => 'error',
+                        'message' => get_phrase('database_error'),
+                        'csrf_token' => $this->security->get_csrf_hash()
+                    ];
+                }
+                $this->output->set_content_type('application/json')->set_output(json_encode($response));
+            }
 	
 		  public function filter_recordings()
 		  {
@@ -1009,19 +1236,21 @@ class Teacher extends CI_Controller {
     if ($param1 == 'status') {
       $this->db->where('id', $param3);
       $this->db->update('users', array('status' => $param4));
-      $response = array(
-        'status' => true,
-        'notification' => get_phrase('status_has_been_updated')
-      );
       
         // Préparer la réponse avec un nouveau jeton CSRF
         $csrf = array(
                   'csrfName' => $this->security->get_csrf_token_name(),
                   'csrfHash' => $this->security->get_csrf_hash(),
                 );
-              
+      
+      header('Content-Type: application/json');
       // Renvoyer la réponse avec un nouveau jeton CSRF
-      echo json_encode(array('status' => json_encode($response), 'csrf' => $csrf));
+      echo json_encode(array(
+          'status' => true, 
+          'notification' => get_phrase('status_has_been_updated'),
+          'csrf' => $csrf
+      ));
+      exit;
     }
 
     //updated to database
@@ -1055,8 +1284,14 @@ class Teacher extends CI_Controller {
         'csrfHash' => $this->security->get_csrf_hash(),
     );
 
+    header('Content-Type: application/json');
     // Renvoyer la réponse avec un nouveau jeton CSRF
-     echo json_encode(array('status' => $response, 'csrf' => $csrf));
+     echo json_encode(array(
+         'status' => $response, 
+         'notification' => get_phrase('student_deleted_successfully'),
+         'csrf' => $csrf
+     ));
+     exit;
     }
 
     if ($param1 == 'filter') {
