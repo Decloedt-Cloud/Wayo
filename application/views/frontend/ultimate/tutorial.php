@@ -129,8 +129,15 @@
             <li><i class="fa-solid fa-chart-line"></i> <strong><?php echo get_phrase("Tracking") ?></strong> : <?php echo get_phrase("views, completions, revenue (dashboard)") ?></li>
           </ul>
           <div class="obi-cta">
-            <a href="<?php echo site_url('admission/online_admission'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
-            <button class="obi-btn obi-btn--ghost" data-video="https://www.youtube.com/embed/2e6g2Lsl7aw"><?php echo get_phrase("Watch a demo") ?></button>
+            <?php if ($this->session->userdata('user_id')) : ?>
+                <!-- utilisateur connecté -->
+                 <a href="<?php echo route('dashboard'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
+            <?php else : ?>
+                <!-- utilisateur non connecté -->
+                  <a href="<?php echo site_url('admission/online_admission'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
+            <?php endif; ?>
+             <button class="obi-btn obi-btn--ghost" data-video="https://www.youtube.com/embed/2e6g2Lsl7aw"><?php echo get_phrase("Watch a demo") ?></button>
+           
           </div>
         </article>
       </div>
