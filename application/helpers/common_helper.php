@@ -19,9 +19,11 @@ if (!function_exists('school_id')) {
     } else {
       if ($CI->session->userdata('school_id') > 0) {
         return $CI->session->userdata('school_id');
-      } else {
-        return get_settings('school_id');
       }
+      // else {
+      //   return get_settings('school_id');
+      // }
+      return 0;
     }
   }
 }

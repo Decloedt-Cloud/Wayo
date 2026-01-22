@@ -2,7 +2,12 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-	    <title><?php echo get_phrase($page_title); ?> | <?php echo $this->db->get_where('schools', array('id' => school_id()))->row('name'); ?></title>
+	    <title><?php echo get_phrase($page_title); ?><?php 
+            $school_id = school_id();
+            if ($school_id > 0) {
+                echo ' | ' . $this->db->get_where('schools', array('id' => $school_id))->row('name');
+            }
+        ?></title>
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
 		
