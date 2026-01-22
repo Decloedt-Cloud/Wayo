@@ -59,7 +59,17 @@ class Courses extends CI_Controller {
     $teacher_login = $this->session->userdata('teacher_login');
     $student_login = $this->session->userdata('student_login');
     if($teacher_login == 1 || $superadmin_login == 1 || $admin_login == 1 || $student_login == 1){
-
+        // Check if student is approved
+        if ($student_login == 1) {
+            $user_id = $this->session->userdata('user_id');
+            $current_school_id = school_id();
+            $student_check = $this->db->get_where('students', array('user_id' => $user_id, 'school_id' => $current_school_id))->row_array();
+            
+            if (!$student_check || $student_check['status'] != 1) {
+                //$this->session->set_flashdata('error_message', get_phrase('you_must_wait_for_the_community_owner_approval'));
+                redirect(site_url('student/invoice'), 'refresh');
+            }
+        }
     }else{
       redirect(site_url('login'), 'refresh');
     }

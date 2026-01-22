@@ -23,13 +23,12 @@ if ($current_user_id) {
                 $user_has_community = true;
                 break; // Une communauté valide trouvée, on arrête
             } else if ($role_in_school === 'student') {
-                // Vérifier si le student est approuvé (status = 1) dans cette communauté
-                $student_approved = $this->db->where('user_id', $current_user_id)
+                // Vérifier si le student est inscrit (peu importe le statut) dans cette communauté
+                $student_entry = $this->db->where('user_id', $current_user_id)
                     ->where('school_id', $user_school->school_id)
-                    ->where('status', 1)
                     ->get('students')
                     ->row();
-                if (!empty($student_approved)) {
+                if (!empty($student_entry)) {
                     $user_has_community = true;
                     break; // Une communauté valide trouvée, on arrête
                 }
@@ -916,7 +915,17 @@ if ($current_user_id) {
                 </button>
                 <?php if ($this->session->userdata('user_id') && $user_has_community) { ?>
                     <li class="nav-item navbar-user d-lg-none" style="margin:0 2px; list-style: none;">
-                        <a href="<?php echo route('dashboard'); ?>" target="" class="btn btn-login btn-ghost login-toggle w-100 mb-2" style="cursor:pointer !important;">
+                        <?php
+                            // Determine dashboard link: if student is pending approval, redirect to invoice
+                            $dashboard_link_mobile = route('dashboard');
+                            if ($this->session->userdata('user_type') === 'student') {
+                                $student_status_check_mobile = $this->db->get_where('students', array('user_id' => $this->session->userdata('user_id'), 'school_id' => $this->session->userdata('active_school_id')))->row_array();
+                                if ($student_status_check_mobile && $student_status_check_mobile['status'] != 1) {
+                                    $dashboard_link_mobile = route('invoice');
+                                }
+                            }
+                        ?>
+                        <a href="<?php echo $dashboard_link_mobile; ?>" target="" class="btn btn-login btn-ghost login-toggle w-100 mb-2" style="cursor:pointer !important;">
                             <?php echo get_phrase('community_app'); ?>
                         </a>
                     </li>
@@ -1012,9 +1021,18 @@ if ($current_user_id) {
                             </div>
                         <?php } ?>
                         <?php if ($this->session->userdata('user_id')) { ?>
-                            <?php if ($user_has_community) { ?>
+                            <?php if ($user_has_community) {
+                                // Determine dashboard link: if student is pending approval, redirect to invoice
+                                $dashboard_link = route('dashboard');
+                                if ($this->session->userdata('user_type') === 'student') {
+                                    $student_status_check = $this->db->get_where('students', array('user_id' => $this->session->userdata('user_id'), 'school_id' => $this->session->userdata('active_school_id')))->row_array();
+                                    if ($student_status_check && $student_status_check['status'] != 1) {
+                                        $dashboard_link = route('invoice');
+                                    }
+                                }
+                            ?>
                             <li class="nav-item navbar-user" style="margin:0 2px ; list-style:none">
-                                <a href="<?php echo route('dashboard'); ?>" target="" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"> <?php echo get_phrase('community_app'); ?> </a>
+                                <a href="<?php echo $dashboard_link; ?>" target="" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"> <?php echo get_phrase('community_app'); ?> </a>
                             </li>
                             <?php } ?>
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
@@ -1545,10 +1563,17 @@ if ($current_user_id) {
                     icon.innerHTML = '<i class="fas fa-users"></i>';
 
                     // Contenu texte
+                    let nameHtml = `<div class="community-name">${c.community_name}</div>`;
+                    if (c.status !== undefined && c.status != 1) {
+                        nameHtml += `<div class="community-role text-warning" style="font-size: 0.85em; margin-top: 2px;">
+                                        <i class="fas fa-clock"></i> <?php echo get_phrase('Pending Approval'); ?>
+                                     </div>`;
+                    } else {
+                         nameHtml += `<div class="community-role">${c.role_label}</div>`;
+                    }
+
                     const content = document.createElement('div');
-                    content.innerHTML = `
-            <div class="community-name">${c.community_name}</div>
-        `;
+                    content.innerHTML = nameHtml;
 
                     // Badge rôle
                     const badge = document.createElement('span');

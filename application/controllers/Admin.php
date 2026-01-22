@@ -4401,11 +4401,17 @@ class Admin extends CI_Controller
 {
     if ($param1 == 'assigned') {
         $data['student_id'] = $this->input->post('student_id');
+        $school_id = $this->input->post('school_id');
 
         $user_id = $this->db->get_where('students', array('id' => $data['student_id']))->row('user_id');
         $this->email_model->approved_online_admission($data['student_id'], $user_id);
 
-        $this->db->where('user_id', $user_id);
+        if (!empty($school_id)) {
+            $this->db->where('id', $data['student_id']);
+            $this->db->where('school_id', $school_id);
+        } else {
+            $this->db->where('user_id', $user_id);
+        }
         $this->db->update('students', array('status' => 1));
 
         $this->session->set_flashdata('flash_message', get_phrase('admission_request_has_been_updated'));

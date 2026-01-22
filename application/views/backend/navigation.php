@@ -547,37 +547,54 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         right: 0;
     }
 
-    /* ===== Disabled State (pending approval) ===== */
-    .sidebar.sidebar-disabled {
-        opacity: 0.6;
+    /* ===== Disabled Menu State ===== */
+    .sidebar.sidebar-disabled .side-nav-item,
+    .sidebar.sidebar-disabled .has-submenu {
+        opacity: 0.5;
         pointer-events: none;
-        user-select: none;
+        filter: grayscale(100%);
     }
 
-    .sidebar.sidebar-disabled::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.3);
-        z-index: 100;
+    /* Exception for allowed items */
+    .sidebar.sidebar-disabled .side-nav-item.allowed-menu-item,
+    .sidebar.sidebar-disabled .has-submenu.allowed-menu-item {
+        opacity: 1;
+        pointer-events: auto;
+        filter: none;
     }
 </style>
-
-
 <?php
-$school_approved  = true;
-$allowed_in_menu  = false;
-$trial_expired    = false;
+$user_type = $this->session->userdata('user_type');
+$student_approved = true;
+$school_approved = true;
+$trial_expired = false;
+$school = null;
 
-if ($this->session->userdata('user_type') == 'admin') {
-    $school_id = $this->session->userdata('school_id');
-    $school    = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+if ($user_type == 'admin') {
+    $current_school_id = school_id();
+    $school = $this->db->get_where('schools', ['id' => $current_school_id])->row_array();
+    
+    // Si status = 0, l'école n'est pas approuvée
+    if (!$school || (int)$school['status'] === 0) {
+        $school_approved = false;
+    }
+} elseif ($user_type == 'student') {
+    $current_school_id = school_id();
+    $student_row = $this->db->get_where('students', [
+        'user_id' => $this->session->userdata('user_id'),
+        'school_id' => $current_school_id
+    ])->row_array();
+    
+    // Si pas de ligne ou status = 0, l'étudiant n'est pas approuvé
+    if (!$student_row || (int)$student_row['status'] === 0) {
+        $student_approved = false;
+    }
+}
 
-    $school_approved = ($school && (int)$school['status'] === 1);
+// Déterminer si le menu doit être grisé
+$is_disabled = (!$school_approved || !$student_approved || $trial_expired);
 
+if ($user_type == 'admin') {
     // Calcul de l’état de la période d’essai
     if ($school) {
         $now       = time();
@@ -589,22 +606,9 @@ if ($this->session->userdata('user_type') == 'admin') {
             $trial_expired = true;
         }
     }
-
-    // Si non approuvé OU essai expiré → on autorise seulement dashboard et logout dans le menu
-    $current_method = $this->router->method;
-    $allowed_methods_base = ['dashboard', 'logout', 'language'];
-    $allowed_methods_trial = array_merge($allowed_methods_base, ['subscription', 'payment']);
-
-    if (!$school_approved) {
-        $allowed_in_menu = in_array($current_method, $allowed_methods_base);
-    } elseif ($trial_expired) {
-        $allowed_in_menu = in_array($current_method, $allowed_methods_trial);
-    } else {
-        $allowed_in_menu = true;
-    }
 }
 ?>
-<aside class="sidebar <?php echo (!$school_approved || $trial_expired) ? 'sidebar-disabled' : ''; ?>" id="sidebar">
+<aside class="sidebar <?php echo ($is_disabled) ? 'sidebar-disabled' : ''; ?>" id="sidebar">
     <div class="sidebar-header">
         <a href="<?php echo route('profile'); ?>">
             <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="avatar">
@@ -686,9 +690,19 @@ if ($this->session->userdata('user_type') == 'admin') {
                             : $controller . '/' . $main_menu['route_name'];
                         $has_direct_route = true;
                     }
+
+                    $extra_li_class = '';
+                    if ($is_disabled) {
+                        // Check if this menu item should be allowed
+                        if ($main_menu['unique_identifier'] == 'student_fee_manager' || 
+                            $main_menu['unique_identifier'] == 'admin_fee_manager' ||
+                            $main_route == $controller . '/invoice') {
+                            $extra_li_class = 'allowed-menu-item';
+                        }
+                    }
                 ?>
 
-                    <li class="has-submenu" data-menu-identifier="<?php echo $main_menu['unique_identifier']; ?>">
+                    <li class="has-submenu <?php echo $extra_li_class; ?>" data-menu-identifier="<?php echo $main_menu['unique_identifier']; ?>">
                         <?php if ($has_submenus): ?>
                             <?php if ($has_direct_route): ?>
                                 <a href="javascript:void(0);"

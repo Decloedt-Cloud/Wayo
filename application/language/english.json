@@ -4149,5 +4149,7 @@
     "create_your_first_event": "Create your first event",
     "help_center": "Help Center",
     "support_contact": "Support contact",
-    "support_information": "Support information"
+    "support_information": "Support information",
+    "pending_approval": "Pending approval",
+    "you_must_wait_for_the_community_owner_approval_to_access_services": "You must wait for the community owner approval to access services"
 }

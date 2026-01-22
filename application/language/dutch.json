@@ -3796,5 +3796,11 @@
     "postal_address": "Postadres",
     "city_/_country": "Stad / land",
     "support_information": "Supportinformatie",
-    "follow_us": "Volg ons"
+    "follow_us": "Volg ons",
+    "pending_approval": "In afwachting van goedkeuring",
+    "you_must_wait_for_the_community_owner_approval_to_access_services": "U moet wachten op de goedkeuring van de community-eigenaar om toegang te krijgen tot de diensten",
+    "track_your_payments_and_invoices": "Volg uw betalingen en facturen",
+    "search_invoice_title_or_id": "Zoek op factuurtitel of ID",
+    "total_invoices": "Totaal facturen",
+    "total_due": "Totaal openstaand"
 }

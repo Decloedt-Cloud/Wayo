@@ -2362,10 +2362,68 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			}
 		} else {
 
-			if ($this->db->get_where('students', array('user_id' => $user_id, 'school_id' => $school_id))->num_rows() > 0) {
-				$this->session->set_flashdata('success', get_phrase('already_joined_school'));
-				if (isset($_SERVER['HTTP_REFERER'])) {
-					redirect($_SERVER['HTTP_REFERER'], 'refresh');
+			// Check if already joined - Prioritize approved status
+			// First, try to find an approved student record
+			$this->db->where('user_id', $user_id);
+			$this->db->where('school_id', $school_id);
+			$this->db->where('status', 1);
+			$existing_student = $this->db->get('students')->row_array();
+
+			// If not found, look for any record (pending)
+			if (empty($existing_student)) {
+				$this->db->where('user_id', $user_id);
+				$this->db->where('school_id', $school_id);
+				$existing_student = $this->db->get('students')->row_array();
+			}
+			
+			log_message('error', 'join_school debug: user_id='.$user_id.' school_id='.$school_id.' existing_student='.json_encode($existing_student));
+
+			if (!empty($existing_student)) {
+				if ($existing_student['status'] == 1) {
+					// Already approved? Switch session!
+					$this->session->set_userdata('active_school_id', $school_id);
+					$this->session->set_userdata('school_id', $school_id);
+					$this->session->set_userdata('role', 'student');
+					$this->session->set_userdata('user_type', 'student');
+
+					// Ensure user_schools is up to date just in case
+					$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
+					if ($user_school_check) {
+						$this->db->where('id', $user_school_check->id);
+						$this->db->update('user_schools', ['role' => 'student']);
+					} else {
+						// Insert missing user_schools entry if it doesn't exist
+						$this->db->insert('user_schools', [
+							'user_id' => $user_id,
+							'school_id' => $school_id,
+							'role' => 'student'
+						]);
+					}
+
+					$this->session->set_flashdata('success', get_phrase('welcome_back_to_the_community'));
+					redirect(site_url('student/dashboard'), 'refresh');
+				} else {
+					// Still pending - Switch session anyway to allow restricted access (grayed out menu)
+					$this->session->set_userdata('active_school_id', $school_id);
+					$this->session->set_userdata('school_id', $school_id);
+					$this->session->set_userdata('role', 'student');
+					$this->session->set_userdata('user_type', 'student');
+
+					// Ensure user_schools is up to date just in case (for pending users too)
+					$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
+					if ($user_school_check) {
+						$this->db->where('id', $user_school_check->id);
+						$this->db->update('user_schools', ['role' => 'student']);
+					} else {
+						$this->db->insert('user_schools', [
+							'user_id' => $user_id,
+							'school_id' => $school_id,
+							'role' => 'student'
+						]);
+					}
+
+					// Redirect to invoice page where the message will be shown
+					redirect(site_url('student/invoice'), 'refresh');
 				}
 			} else {
 
@@ -2390,13 +2448,25 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 
 		$this->db->insert('students', $data);
 			
-		// Ajouter dans user_schools pour suivre les communautés de l'étudiant
-		// Même logique que pour admin et mentor
-		$this->db->replace('user_schools', [
-			'user_id' => $user_id,
-			'school_id' => $school_id,
-			'role' => 'student'
-		]);
+		// Vérifier s'il existe une entrée avec school_id NULL pour cet utilisateur
+		$existing_null_entry = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => NULL))->row();
+
+		if ($existing_null_entry) {
+			// Mettre à jour l'entrée existante
+			$this->db->where('id', $existing_null_entry->id);
+			$this->db->update('user_schools', [
+				'school_id' => $school_id,
+				'role' => 'student'
+			]);
+		} else {
+			// Ajouter dans user_schools pour suivre les communautés de l'étudiant
+			// Même logique que pour admin et mentor
+			$this->db->replace('user_schools', [
+				'user_id' => $user_id,
+				'school_id' => $school_id,
+				'role' => 'student'
+			]);
+		}
 		
 		// Mettre à jour le school_id de l'utilisateur s'il est null
 		// avec le school_id de user_schools
@@ -2411,67 +2481,88 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$this->db->update('users', ['school_id' => $school_id]);
 		}
 		
+		// -------------------------------------------------------------------------
+		// PROCESS INVOICE AND EMAILS BEFORE REDIRECTION
+		// -------------------------------------------------------------------------
 		$user_email = $this->db->get_where('users', array('id' => $user_id))->row('email');
-				$user_name = $this->db->get_where('users', array('id' => $user_id))->row('name');
-				$this->db->where('school_id', $school_id);
-				$this->db->where_in('role', array('admin', 'superadmin'));
-				$user_email_admin = $this->db->get('users')->row('email');
+		$user_name = $this->db->get_where('users', array('id' => $user_id))->row('name');
+		$this->db->where('school_id', $school_id);
+		$this->db->where_in('role', array('admin', 'superadmin'));
+		$user_email_admin = $this->db->get('users')->row('email');
 
-				if (!empty($data_invoice) && !empty($data_invoice['invoice_id'])) {
-					$this->db->where('id', $data_invoice['invoice_id']);
-					$invoice_details = $this->db->get('invoices')->row_array();
+		if (!empty($data_invoice) && !empty($data_invoice['invoice_id'])) {
+			$this->db->where('id', $data_invoice['invoice_id']);
+			$invoice_details = $this->db->get('invoices')->row_array();
 
-					if (!empty($invoice_details)) {
-						$paid_amount = isset($data_invoice['amount_paid']) ? (float)$data_invoice['amount_paid'] : 0;
-						$invoice_amount_paid = isset($invoice_details['amount_paid']) ? (float)$invoice_details['amount_paid'] : 0;
-						$invoice_total = (float)$invoice_details['total_amount'];
-						$due_amount = $invoice_total - $invoice_amount_paid;
-						
-						// Si une conversion de devise a été appliquée, utiliser le montant original
-						$amount_to_compare = $paid_amount;
-						if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied'] && isset($data_invoice['original_amount'])) {
-							$amount_to_compare = (float)$data_invoice['original_amount'];
-						}
-						
-						// Tolérance de 0.01 pour les erreurs d'arrondi
-						$is_full_payment = abs($due_amount - $amount_to_compare) < 0.01;
-						
-						log_message('debug', "Community payment check: due={$due_amount}, compare={$amount_to_compare}, is_full=" . ($is_full_payment ? 'true' : 'false'));
-						
-						if ($is_full_payment) {
-							$updater = array(
-								'status' => 'paid',
-								'payment_method' => isset($data_invoice['payment_method']) ? $data_invoice['payment_method'] : $invoice_details['payment_method'],
-								'paid_amount' => $invoice_total, // Marquer comme totalement payé
-								'currency' => isset($data_invoice['original_currency']) ? $data_invoice['original_currency'] : (isset($data_invoice['currency']) ? $data_invoice['currency'] : $invoice_details['currency']),
-								'payment_type' => isset($data_invoice['payment_type']) ? $data_invoice['payment_type'] : $invoice_details['payment_type'],
-								'vat_amount' => isset($data_invoice['vat_amount']) ? $data_invoice['vat_amount'] : $invoice_details['vat_amount'],
-								'vat_rate' => isset($data_invoice['vat_rate']) ? $data_invoice['vat_rate'] : $invoice_details['vat_rate'],
-								'sub_total' => isset($data_invoice['sub_total']) ? $data_invoice['sub_total'] : $invoice_details['sub_total'],
-								'total_amount' => $invoice_total,
-								'updated_at'  => strtotime(date('d-M-Y'))
-							);
-							
-							// Ajouter les infos de conversion FX si présentes
-							if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied']) {
-								$updater['payment_currency'] = isset($data_invoice['currency']) ? $data_invoice['currency'] : null;
-								$updater['payment_amount_converted'] = $paid_amount;
-								$updater['fx_rate'] = isset($data_invoice['fx_rate']) ? $data_invoice['fx_rate'] : null;
-								$updater['fx_rate_date'] = isset($data_invoice['fx_rate_date']) ? $data_invoice['fx_rate_date'] : null;
-								$updater['conversion_applied'] = 1;
-							}
-							
-							$this->db->where('id', $data_invoice['invoice_id']);
-							$this->db->update('invoices', $updater);
-							
-							log_message('info', "Community invoice #{$data_invoice['invoice_id']} marked as paid");
-						}
-					}
+			if (!empty($invoice_details)) {
+				$paid_amount = isset($data_invoice['amount_paid']) ? (float)$data_invoice['amount_paid'] : 0;
+				$invoice_amount_paid = isset($invoice_details['amount_paid']) ? (float)$invoice_details['amount_paid'] : 0;
+				$invoice_total = (float)$invoice_details['total_amount'];
+				$due_amount = $invoice_total - $invoice_amount_paid;
+				
+				// Si une conversion de devise a été appliquée, utiliser le montant original
+				$amount_to_compare = $paid_amount;
+				if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied'] && isset($data_invoice['original_amount'])) {
+					$amount_to_compare = (float)$data_invoice['original_amount'];
 				}
+				
+				// Tolérance de 0.01 pour les erreurs d'arrondi
+				$is_full_payment = abs($due_amount - $amount_to_compare) < 0.01;
+				
+				log_message('debug', "Community payment check: due={$due_amount}, compare={$amount_to_compare}, is_full=" . ($is_full_payment ? 'true' : 'false'));
+				
+				if ($is_full_payment) {
+					$updater = array(
+						'status' => 'paid',
+						'payment_method' => isset($data_invoice['payment_method']) ? $data_invoice['payment_method'] : $invoice_details['payment_method'],
+						'paid_amount' => $invoice_total, // Marquer comme totalement payé
+						'currency' => isset($data_invoice['original_currency']) ? $data_invoice['original_currency'] : (isset($data_invoice['currency']) ? $data_invoice['currency'] : $invoice_details['currency']),
+						'payment_type' => isset($data_invoice['payment_type']) ? $data_invoice['payment_type'] : $invoice_details['payment_type'],
+						'vat_amount' => isset($data_invoice['vat_amount']) ? $data_invoice['vat_amount'] : $invoice_details['vat_amount'],
+						'vat_rate' => isset($data_invoice['vat_rate']) ? $data_invoice['vat_rate'] : $invoice_details['vat_rate'],
+						'sub_total' => isset($data_invoice['sub_total']) ? $data_invoice['sub_total'] : $invoice_details['sub_total'],
+						'total_amount' => $invoice_total,
+						'updated_at'  => strtotime(date('d-M-Y'))
+					);
+					
+					// Ajouter les infos de conversion FX si présentes
+					if (isset($data_invoice['conversion_applied']) && $data_invoice['conversion_applied']) {
+						$updater['payment_currency'] = isset($data_invoice['currency']) ? $data_invoice['currency'] : null;
+						$updater['payment_amount_converted'] = $paid_amount;
+						$updater['fx_rate'] = isset($data_invoice['fx_rate']) ? $data_invoice['fx_rate'] : null;
+						$updater['fx_rate_date'] = isset($data_invoice['fx_rate_date']) ? $data_invoice['fx_rate_date'] : null;
+						$updater['conversion_applied'] = 1;
+					}
+					
+					$this->db->where('id', $data_invoice['invoice_id']);
+					$this->db->update('invoices', $updater);
+					
+					log_message('info', "Community invoice #{$data_invoice['invoice_id']} marked as paid");
+				}
+			}
+		}
 
-				$this->email_model->join_student_email($user_email, $user_name, $data['code'], $row->name, $school_id);
-				$this->email_model->join_student_email_for_admin($user_email_admin, $user_name, $data['code'], $row->name, $school_id);
-
+		$this->email_model->join_student_email($user_email, $user_name, $data['code'], $row->name, $school_id);
+		$this->email_model->join_student_email_for_admin($user_email_admin, $user_name, $data['code'], $row->name, $school_id);
+		// -------------------------------------------------------------------------
+		
+		// Check if the student status is pending (0) or approved (1)
+		// If pending, do NOT show popup, just switch session to allow restricted access
+		if (isset($data['status']) && $data['status'] == 0) {
+			// Update session to switch to the new school (pending state)
+			$this->session->set_userdata('active_school_id', $school_id);
+			$this->session->set_userdata('school_id', $school_id);
+			$this->session->set_userdata('role', 'student');
+			$this->session->set_userdata('user_type', 'student');
+			
+			redirect(site_url('student/invoice'), 'refresh');
+		} else {
+			// Update session to immediately switch to the new school ONLY if approved
+			$this->session->set_userdata('active_school_id', $school_id);
+			$this->session->set_userdata('school_id', $school_id);
+			$this->session->set_userdata('role', 'student');
+			$this->session->set_userdata('user_type', 'student');
+		}
 
 				// if (isset($_SERVER['HTTP_REFERER'])) {
 				// 	redirect($_SERVER['HTTP_REFERER'], 'refresh');
