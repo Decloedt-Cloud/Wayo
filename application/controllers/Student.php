@@ -13,6 +13,7 @@ class Student extends CI_Controller {
 	
 	// Liste des méthodes accessibles SANS avoir rejoint une école
 	private $allowed_without_school = [
+		'language',
 		'join_school',
 		'payment',
 		'invoice',
@@ -105,10 +106,25 @@ class Student extends CI_Controller {
 		if ($is_student_logged && !$this->has_joined_school() && !$is_allowed_method) {
 			// Stocker un flag pour indiquer que l'étudiant n'a pas d'école
 			$this->session->set_userdata('student_has_no_school', true);
-			// Rediriger vers la page des communautés
-			redirect(site_url('home/communities'), 'refresh');
+			// Rediriger vers la page des factures (demande utilisateur)
+			redirect(site_url('student/invoice'), 'refresh');
 		} else {
 			$this->session->set_userdata('student_has_no_school', false);
+			
+			// NOUVEAU : Vérifier si l'école ACTIVE est approuvée
+			// Si l'étudiant a une école active mais n'est pas approuvé DANS CELLE-CI, rediriger vers invoice
+			$active_school_id = $this->session->userdata('active_school_id');
+			if ($is_student_logged && $active_school_id && !$is_allowed_method) {
+				$active_student_status = $this->db->get_where('students', array(
+					'user_id' => $this->session->userdata('user_id'),
+					'school_id' => $active_school_id
+				))->row('status');
+				
+				// Si status existe et n'est pas 1 (donc 0 ou autre), rediriger
+				if (isset($active_student_status) && $active_student_status != 1) {
+					redirect(site_url('student/invoice'), 'refresh');
+				}
+			}
 		}
 	}
 	
@@ -120,10 +136,10 @@ class Student extends CI_Controller {
 		$user_id = $this->session->userdata('user_id');
 		
 		// Vérifier dans la table students si l'utilisateur a au moins un enregistrement
-		// avec school_id non null et status = 1 (approuvé)
+		// avec school_id non null (peu importe le status)
+		// On laisse la redirection spécifique gérer le cas non approuvé
 		$student = $this->db->where('user_id', $user_id)
 			->where('school_id IS NOT NULL', null, false)
-			->where('status', 1)
 			->get('students')
 			->row();
 		
@@ -1638,8 +1654,9 @@ public function get_exams_paginated()
 			$offset = ($current_page - 1) * $per_page;
 
 			// Get total count for pagination (filtered)
-			$total_invoices = $this->crud_model->count_invoices_by_student($student_data['code'], $filter, $search);
-			$total_pages = ceil($total_invoices / $per_page);
+			$student_code = isset($student_data['code']) ? $student_data['code'] : '';
+			$total_invoices = $student_code ? $this->crud_model->count_invoices_by_student($student_code, $filter, $search) : 0;
+			$total_pages = $per_page > 0 ? ceil($total_invoices / $per_page) : 0;
 
 			// Pass pagination data to view
 			$page_data['pagination'] = [
@@ -1681,8 +1698,9 @@ public function get_exams_paginated()
 		$offset = ($page - 1) * $per_page;
 
 		// Get total count
-		$total_invoices = $this->crud_model->count_invoices_by_student($student_data['code'], $filter, $search);
-		$total_pages = ceil($total_invoices / $per_page);
+		$student_code = isset($student_data['code']) ? $student_data['code'] : '';
+		$total_invoices = $student_code ? $this->crud_model->count_invoices_by_student($student_code, $filter, $search) : 0;
+		$total_pages = $per_page > 0 ? ceil($total_invoices / $per_page) : 0;
 
 		// Prepare data for view
 		$page_data['pagination'] = [

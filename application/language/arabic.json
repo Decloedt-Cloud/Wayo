@@ -3701,5 +3701,11 @@
     "help_center": "مركز المساعدة",
     "support_contact": "اتصال الدعم",
     "support_information": "معلومات الدعم",
-    "create_your_community_space_and_set_your_goals.": "أنشئ مساحة مجتمعك وحدد أهدافك."
+    "create_your_community_space_and_set_your_goals.": "أنشئ مساحة مجتمعك وحدد أهدافك.",
+    "pending_approval": "قيد الموافقة",
+    "you_must_wait_for_the_community_owner_approval_to_access_services": "يجب عليك الانتظار لموافقة مالك المجتمع للوصول إلى الخدمات",
+    "track_your_payments_and_invoices": "تتبع مدفوعاتك وفواتيرك",
+    "search_invoice_title_or_id": "ابحث عن عنوان الفاتورة أو المعرف",
+    "total_invoices": "إجمالي الفواتير",
+    "total_due": "الإجمالي المستحق"
 }

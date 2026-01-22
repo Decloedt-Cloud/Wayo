@@ -1,4 +1,24 @@
 <div class="modern-dashboard">
+    <?php
+    $current_school_id = school_id();
+    $student_status_check = $this->db->get_where('students', [
+        'user_id' => $this->session->userdata('user_id'), 
+        'school_id' => $current_school_id
+    ])->row_array();
+
+    if ($student_status_check && (int)$student_status_check['status'] === 0):
+    ?>
+    <div class="alert alert-warning mb-4" role="alert" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: linear-gradient(135deg, #fff3cd, #ffecb5);">
+        <h4 class="alert-heading d-flex align-items-center" style="color: #856404; font-weight: 700;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <?php echo get_phrase('pending_approval'); ?>
+        </h4>
+        <p class="mb-0 mt-2" style="color: #856404; font-size: 1.1em;">
+            <?php echo get_phrase('you_must_wait_for_the_community_owner_approval_to_access_services'); ?>
+        </p>
+    </div>
+    <?php endif; ?>
+
     <!-- Header -->
     <div class="dash-header">
         <h1>

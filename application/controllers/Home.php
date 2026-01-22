@@ -738,18 +738,19 @@ function community_details($school_id = '')
 			$role_lower = strtolower($community['role']);
 			
 			if ($role_lower === 'student') {
-				// Vérifier si le student est approuvé dans cette communauté
-				$student_approved = $this->db->where('user_id', $user_id)
+				// Vérifier si le student existe dans cette communauté (peu importe le status)
+				$student_entry = $this->db->where('user_id', $user_id)
 					->where('school_id', $community['school_id'])
-					->where('status', 1)
 					->get('students')
 					->row();
 				
-				if (!empty($student_approved)) {
+				if (!empty($student_entry)) {
 					$community['is_active'] = (
 						$community['school_id'] == $current_school_id &&
 						$role_lower === strtolower($current_role)
 					);
+					// Ajouter une info sur le statut pour le frontend si besoin
+					$community['status'] = $student_entry->status;
 					$communities[] = $community;
 				}
 			} else {
@@ -885,9 +886,17 @@ function community_details($school_id = '')
 			// etc. si besoin
 		]);
 
+		$redirect_url = site_url($role . '/dashboard');
+		if ($role === 'student') {
+			$student_status = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $school_id])->row('status');
+			if (isset($student_status) && $student_status != 1) {
+				$redirect_url = site_url('student/invoice');
+			}
+		}
+
 		echo json_encode([
 			'status' => 'success',
-			'redirect_url' => site_url($role . '/dashboard')
+			'redirect_url' => $redirect_url
 		]);
 	}
 
@@ -1161,15 +1170,15 @@ function community_details($school_id = '')
 			$label = $role_key === 'teacher' ? get_phrase('Mentor') : ucfirst($role_key);
 			if ($role_key === 'student') $label = get_phrase('member');
 
-			// Pour les students, vérifier que le status est 1 (approuvé)
+			// Pour les students, vérifier que le status est 1 (approuvé) ou non
 			if ($role_key === 'student') {
-				$this->db->select('s.id as school_id, s.name as community_name');
+				$this->db->select('s.id as school_id, s.name as community_name, st.status');
 				$this->db->from('user_schools us');
 				$this->db->join('schools s', 's.id = us.school_id');
 				$this->db->join('students st', 'st.school_id = us.school_id AND st.user_id = us.user_id', 'inner');
 				$this->db->where('us.user_id', $user_id);
 				$this->db->where('us.role', $r['role']);
-				$this->db->where('st.status', 1); // Seulement les étudiants approuvés
+				// $this->db->where('st.status', 1); // REMOVED: On veut voir toutes les communautés, même en attente
 				$communities = $this->db->get()->result_array();
 			} else {
 				// Pour admin/teacher, pas de vérification de status
@@ -1213,15 +1222,15 @@ function community_details($school_id = '')
 
 		$role_key = strtolower($role);
 		
-		// Pour les students, vérifier que le status est 1 (approuvé)
+		// Pour les students, vérifier que le status est 1 (approuvé) ou non
 		if ($role_key === 'student') {
-			$this->db->select('s.id as school_id, s.name as community_name, us.role');
+			$this->db->select('s.id as school_id, s.name as community_name, us.role, st.status');
 			$this->db->from('user_schools us');
 			$this->db->join('schools s', 's.id = us.school_id');
 			$this->db->join('students st', 'st.school_id = us.school_id AND st.user_id = us.user_id', 'inner');
 			$this->db->where('us.user_id', $user_id);
 			$this->db->where('us.role', ucfirst($role));
-			$this->db->where('st.status', 1); // Seulement les étudiants approuvés
+			// $this->db->where('st.status', 1); // REMOVED: On veut voir toutes les communautés
 			$communities = $this->db->get()->result_array();
 		} else {
 			// Pour admin/teacher, pas de vérification de status
@@ -1294,6 +1303,12 @@ function community_details($school_id = '')
 
 		// NOUVEAU : Redirection intelligente
 		$redirect_url = site_url($role . '/dashboard');
+		if ($role === 'student') {
+			$student_status = $this->db->get_where('students', ['user_id' => $user_id, 'school_id' => $school_id])->row('status');
+			if (isset($student_status) && $student_status != 1) {
+				$redirect_url = site_url('student/invoice');
+			}
+		}
 
 		echo json_encode([
 			'status' => 'success',

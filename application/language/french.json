@@ -3851,5 +3851,9 @@
     "my_courses": "Mes cours",
     "centre_d’aide": "Centre d’aide",
     "support_contact": "Contact du support",
-    "support_information": "Informations du support"
+    "support_information": "Informations du support",
+    "pending_approval": "En attente d'approbation",
+    "you_must_wait_for_the_community_owner_approval_to_access_services": "Vous devez attendre l'approbation du propriétaire de la communauté pour accéder aux services",
+    "track_your_payments_and_invoices": "Suivez vos paiements et vos factures",
+    "search_invoice_title_or_id": "Rechercher par titre ou ID de facture"
 }

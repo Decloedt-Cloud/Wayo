@@ -255,10 +255,9 @@ if ($active_school_id && $user_belongs_to_school) {
                             $user_has_community = true;
                             break; // Une communauté valide trouvée, on arrête
                         } else if ($role_in_school === 'student') {
-                            // Vérifier si le student est approuvé (status = 1) dans cette communauté
+                            // Vérifier si le student existe dans cette communauté (peu importe le status)
                             $student_approved = $this->db->where('user_id', $user_id)
                                 ->where('school_id', $user_school->school_id)
-                                ->where('status', 1)
                                 ->get('students')
                                 ->row();
                             if (!empty($student_approved)) {
@@ -616,6 +615,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let roleClass = 'student';
                 let roleLabel = TRANSLATIONS.member;
+
+                // Indiquer si en attente
+                // Check explicitly for undefined to handle 0 correctly
+                if (typeof c.status !== 'undefined' && c.status != 1) {
+                    roleLabel += ' (Pending)';
+                    roleClass = 'secondary'; // Changement de couleur
+                }
 
                 const isSelected = c.is_active === true;
 

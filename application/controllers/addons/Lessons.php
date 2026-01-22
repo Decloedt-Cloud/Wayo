@@ -31,6 +31,33 @@ class Lessons extends CI_Controller {
         $user_login_type = $this->session->userdata('user_login_type');
         if($user_login_type != 1)
         redirect(site_url('login'), 'refresh');
+
+        $student_login = $this->session->userdata('student_login');
+        if ($student_login == 1) {
+             $user_id = $this->session->userdata('user_id');
+            // Check if school_id helper is available, if not load it
+            if (!function_exists('school_id')) {
+                 $this->load->helper('common_helper'); // Assuming school_id is in common_helper or similar
+                 // If not sure where school_id is, maybe better to rely on session directly or load the helper.
+                 // school_id() helper is in application/helpers/common_helper.php (from memory/previous context)
+            }
+            // However, usually CI loads helpers in autoload.
+            
+            $current_school_id = $this->session->userdata('active_school_id'); // Safer to use session directly if helper not sure
+            if (!$current_school_id) {
+                 $current_school_id = $this->session->userdata('school_id');
+            }
+
+            // Using school_id() is better if available.
+            // Let's assume it is available as Courses.php used it without loading it explicitly (maybe in autoload).
+             $current_school_id = school_id();
+
+            $student_check = $this->db->get_where('students', array('user_id' => $user_id, 'school_id' => $current_school_id))->row_array();
+            
+            if (!$student_check || $student_check['status'] != 1) {
+                redirect(site_url('student/invoice'), 'refresh');
+            }
+        }
     }
 
     public function index(){

@@ -1,5 +1,6 @@
 <?php 
 $student_data = $this->user_model->get_logged_in_student_details();
+$student_code = isset($student_data['code']) ? $student_data['code'] : null;
 
 // Pagination data
 $pagination = isset($pagination) ? $pagination : [
@@ -19,10 +20,10 @@ $active_filter = isset($pagination['filter']) ? $pagination['filter'] : 'all';
 $search_query = isset($pagination['search']) ? $pagination['search'] : '';
 
 // Get paginated invoices (filtered)
-$invoices = $this->crud_model->get_invoice_by_student_id($student_data['code'], $per_page, $offset, $active_filter, $search_query)->result_array();
+$invoices = $student_code ? $this->crud_model->get_invoice_by_student_id($student_code, $per_page, $offset, $active_filter, $search_query)->result_array() : [];
 
 // Get all invoices for stats (without pagination) - keep global stats
-$all_invoices = $this->crud_model->get_invoice_by_student_id($student_data['code'])->result_array();
+$all_invoices = $student_code ? $this->crud_model->get_invoice_by_student_id($student_code)->result_array() : [];
 
 // Calculate statistics from all invoices
 $total_invoices = count($all_invoices);

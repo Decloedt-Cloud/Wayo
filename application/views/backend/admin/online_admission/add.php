@@ -57,6 +57,7 @@
     <form method="POST" class="d-block" action="<?php echo site_url('admin/online_admission/assigned'); ?>">
         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
         <input type="hidden" name="student_id" value="<?php echo $param1; ?>">
+        <input type="hidden" name="school_id" value="<?php echo $param2; ?>">
         
         <div class="adm-form-actions">
             <button class="adm-btn adm-btn-primary" type="submit">

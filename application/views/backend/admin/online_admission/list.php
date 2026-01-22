@@ -106,7 +106,7 @@ $total_applications = $applications ? $applications->num_rows() : 0;
     <div class="adm-col-actions">
         <div class="adm-action-buttons">
             <button type="button" class="adm-action-btn adm-btn-view" title="<?php echo get_phrase('profile'); ?>" onclick="largeModal('<?php echo site_url('modal/popup/student/profile/'.$student['id'])?>', '<?php echo $this->db->get_where('schools', array('id' => $school_id))->row('name'); ?>')"><i class="mdi mdi-eye-outline"></i></button>
-            <button type="button" class="adm-action-btn adm-btn-approve" title="<?php echo get_phrase('approved'); ?>" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$student['id'])?>','<?php echo get_phrase('approved'); ?>')"><i class="mdi mdi-check-circle-outline"></i></button>
+            <button type="button" class="adm-action-btn adm-btn-approve" title="<?php echo get_phrase('approved'); ?>" onclick="rightModal('<?php echo site_url('modal/popup/online_admission/add/'.$student['id'].'/'.$school_id)?>','<?php echo get_phrase('approved'); ?>')"><i class="mdi mdi-check-circle-outline"></i></button>
             <button type="button" class="adm-action-btn adm-btn-delete" title="<?php echo get_phrase('delete'); ?>" onclick="confirmModalRedirect('<?php echo site_url('superadmin/online_admission/delete/'.$student['id']); ?>')"><i class="mdi mdi-trash-can-outline"></i></button>
         </div>
     </div>
