@@ -72,8 +72,8 @@
 
 
   <!-- ===== GRID DES COMMUNAUTÉS (20 cartes) ===== -->
-  <section class="py-5 section-communities">
-    <div class="container mt-5" id="communitiesContainer">
+  <section class="pb-5 section-communities">
+    <div class="container" id="communitiesContainer">
       <?php include 'partials/communities_grid.php'; ?>
 
     </div>

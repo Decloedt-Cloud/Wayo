@@ -2196,7 +2196,7 @@
     "yes,_delete_it!": "نعم، احذفه!",
     "edit_event": "تعديل الحدث",
     "number_of_participants": "عدد المشاركين",
-    "faq": "الأسئلة الشائعة",
+    "faq": "مركز المساعدة",
     "faq_&_user_guide": "الأسئلة الشائعة ودليل المستخدم",
     "monetize_your_expertise.": "حوِّل خبرتك إلى دخل",
     "learn_local,_progress_fast.": "تعلّم من محيطك وتطوّر بسرعة.",
@@ -3697,7 +3697,9 @@
     "manage_student_details": "إدارة بيانات الطلاب",
     "view_teacher_details": "عرض بيانات المدرّس",
     "error_occurred": "حدث خطأ",
-    "manage_certifications": "إدارة الشهادات"
-
-
+    "manage_certifications": "إدارة الشهادات",
+    "help_center": "مركز المساعدة",
+    "support_contact": "اتصال الدعم",
+    "support_information": "معلومات الدعم",
+    "create_your_community_space_and_set_your_goals.": "أنشئ مساحة مجتمعك وحدد أهدافك."
 }

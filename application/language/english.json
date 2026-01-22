@@ -2293,7 +2293,7 @@
     "views,_completions,_revenue_(dashboard)": "Views, completions, revenue (dashboard)",
     "start_now": "Start now",
     "watch_a_demo": "Watch a demo",
-    "faq": "FAQ",
+    "faq": "Help Center",
     "faq_&_user_guide": "Faq & user guide",
     "monetize_your_expertise.": "Monetize your expertise.",
     "learn_local,_progress_fast.": "Learn local, progress fast.",
@@ -4154,5 +4154,8 @@
     "manage_student_details": "Manage student details",
     "view_teacher_details": "View teacher details",
     "error_occurred": "Error occurred",
-    "manage_certifications": "Manage certifications"
+    "manage_certifications": "Manage certifications",
+    "help_center": "Help Center",
+    "support_contact": "Support contact",
+    "support_information": "Support information"
 }

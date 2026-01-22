@@ -45,10 +45,36 @@ if ($current_user_id) {
         #openLoginBtnM {
             display: none !important;
         }
+    }
 
+    /* Fixed alignment for 1220px - 1399px range */
+    @media (min-width: 1220px) {
         .container-customize {
-            padding-left: 12rem !important;
-            padding-right: 12rem !important;
+            max-width: 95% !important;
+        }
+        .navbar-nav .nav-link {
+            white-space: nowrap !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
+            font-size: 15px !important;
+        }
+        .user-section {
+            gap: 0.5rem !important;
+        }
+        .gap-2 {
+            gap: 0.5rem !important;
+        }
+    }
+
+    /* Reduce width for screens 1600px and larger */
+    @media (min-width: 1600px) {
+        .container-customize {
+            max-width: 85% !important;
+        }
+    }
+    @media (min-width: 1900px) {
+        .container-customize {
+            max-width: 75% !important;
         }
     }
 
@@ -886,7 +912,7 @@ if ($current_user_id) {
     <!-- ========== HEADER ========== -->
     <header class="site-header" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
         <nav class="navbar navbar-expand-lg">
-            <div class="container">
+            <div class="container container-customize">
                 <!-- Logo -->
                 <a class="navbar-brand" href="<?php echo base_url('home'); ?>" aria-label="Wayo Academy">
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
@@ -1000,7 +1026,6 @@ if ($current_user_id) {
                             <?php } ?>
                             <li class="nav-item navbar-user-profile" style="margin:0 2px; list-style:none;">
                                 <div class="user-section" style="white-space: nowrap;">
-                                    <span class="text-capitalize align-content-center" style="white-space: nowrap;"><?php echo $this->session->user_name; ?></span>
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>" alt="user-image" class="rounded-circle nav-user-img">
                                 </div>
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
@@ -1093,9 +1118,6 @@ if ($current_user_id) {
                                 <div class="d-flex align-items-center gap-2">
                                     <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
                                         alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
-                                    <span class="text-capitalize align-content-center">
-                                        <?php echo $this->session->user_name; ?>
-                                    </span>
                                 </div>
                                 <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
                             </div>

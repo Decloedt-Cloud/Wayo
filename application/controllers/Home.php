@@ -91,7 +91,7 @@ class Home extends CI_Controller
 	function faq()
 	{
 		$page_data['page_name'] = 'faq';
-		$page_data['page_title'] = get_phrase('faq');
+		$page_data['page_title'] = get_phrase("help_center");
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
@@ -176,7 +176,7 @@ class Home extends CI_Controller
 		 $this->session->unset_userdata('toast_message');
 		}
 		$page_data['page_name'] = 'contact';
-		$page_data['page_title'] = get_phrase('contact_us');
+		$page_data['page_title'] = get_phrase('Support');
 
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}

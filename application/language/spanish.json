@@ -2280,7 +2280,7 @@
     "views,_completions,_revenue_(dashboard)": "Vistas, completados, ingresos (panel)",
     "start_now": "Comenzar ahora",
     "watch_a_demo": "Ver una demo",
-    "faq": "Preguntas frecuentes",
+    "faq": "Centro de ayuda",
     "faq_&_user_guide": "Preguntas frecuentes y guía del usuario",
     "monetize_your_expertise.": "Monetiza tu experiencia.",
     "learn_local,_progress_fast.": "Aprende localmente, progresa rápido.",
@@ -3750,5 +3750,10 @@
     "manage_student_details": "Gestionar datos de los estudiantes",
     "view_teacher_details": "Ver datos del docente",
     "error_occurred": "Ocurrió un error",
-    "manage_certifications": "Gestionar certificaciones"
+    "manage_certifications": "Gestionar certificaciones",
+    "help_center": "Centro de ayuda",
+    "centro_de_ayuda": "Centro de ayuda",
+    "soporte": "Soporte",
+    "support_contact": "Contacto de soporte",
+    "support_information": "Información de soporte"
 }

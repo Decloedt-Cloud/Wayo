@@ -2369,7 +2369,7 @@
     "edit_event": "Evenement bewerken",
     "chat": "Bericht",
     "contenu_complet": "Volledige inhoud",
-    "faq": "FAQ",
+    "faq": "Hulpcentrum",
     "faq_&_user_guide": "FAQ & gebruikershandleiding",
     "monetize_your_expertise.": "Monetiseer uw expertise.",
     "learn_local,_progress_fast.": "Lokaal leren, snel vooruitgang boeken.",
@@ -3794,6 +3794,15 @@
     "manage_student_details": "Studentgegevens beheren",
     "view_teacher_details": "Docentgegevens bekijken",
     "error_occurred": "Er is een fout opgetreden",
-    "manage_certifications": "Certificaten beheren"
+    "manage_certifications": "Certificaten beheren",
+    "help_center": "Helpcentrum",
+    "helpcentrum": "Helpcentrum",
+    "ondersteuning": "Ondersteuning",
+    "any_questions?": "Nog vragen?",
+    "response_guaranteed_within_24_business_hours.": "Reactie gegarandeerd binnen 24 werkuren.",
+    "support_contact": "Contact support",
+    "postal_address": "Postadres",
+    "city_/_country": "Stad / land",
+    "support_information": "Supportinformatie",
+    "follow_us": "Volg ons"
 }
-
