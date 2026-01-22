@@ -187,12 +187,45 @@
             const doc = parser.parseFromString(html, "text/html");
             cardsGrid.innerHTML = doc.querySelector("#cardsGrid")?.innerHTML || "<p class='text-center text-muted py-5'>Aucun résultat trouvé.</p>";
             pagination.innerHTML = doc.querySelector("#pagination")?.innerHTML || "";
+            
+            // Mise à jour de la pagination active
+            updateActivePagination(url);
             attachPaginationEvents();
           })
           .catch(err => {
             console.error("Erreur AJAX :", err);
             cardsGrid.innerHTML = `<p class="text-center text-danger py-5">Erreur de chargement.</p>`;
           });
+      }
+
+      function updateActivePagination(url) {
+        // Extraire le numéro de page de l'URL
+        const urlParts = url.split('/');
+        let currentPage = 1;
+        
+        // Chercher le numéro de page dans l'URL (dernier segment numérique ou premier paramètre)
+        for (let i = urlParts.length - 1; i >= 0; i--) {
+          const part = urlParts[i].split('?')[0]; // Enlever les paramètres de recherche
+          if (!isNaN(part) && part !== '') {
+            currentPage = parseInt(part);
+            break;
+          }
+        }
+
+        // Retirer la classe active de tous les éléments de pagination
+        pagination.querySelectorAll(".page-item").forEach(item => {
+          item.classList.remove("active");
+        });
+
+        // Ajouter la classe active au bon numéro de page
+        pagination.querySelectorAll(".page-link").forEach(link => {
+          const pageText = link.textContent.trim();
+          if (!isNaN(pageText) && parseInt(pageText) === currentPage) {
+            link.closest(".page-item").classList.add("active");
+            // Mettre à jour le href pour éviter le clic
+            link.href = "#";
+          }
+        });
       }
 
       function attachPaginationEvents() {
