@@ -1,38 +1,34 @@
 <form method="POST" class="d-block ajaxForm" action="<?php echo route('event_calendar/create'); ?>">
-  <!-- Champ caché pour le jeton CSRF -->
   <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
   
-  <div class="form-row">
-    <div class="form-group mb-1">
-      <label for="title"><?php echo get_phrase('event_title'); ?></label>
-      <input type="text" class="form-control" id="title" name = "title" required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_title_name'); ?></small>
-    </div>
-    <div class="form-group mb-1">
-      <label for="starting_date"><?php echo get_phrase('event_starting_date'); ?></label>
-      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="starting_date" name = "starting_date" data-provide = "datepicker" required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_starting_date'); ?></small>
-    </div>
+  <div class="exp-form-group">
+    <label><?php echo get_phrase('event_title'); ?></label>
+    <input type="text" class="form-control" name="title" required>
+    <small class="text-muted"><?php echo get_phrase('provide_title_name'); ?></small>
+  </div>
+  
+  <div class="exp-form-group">
+    <label><?php echo get_phrase('start_date'); ?></label>
+    <input type="text" class="form-control date" name="starting_date" data-provide="datepicker" data-date-format="yyyy-mm-dd" required>
+  </div>
+  
+  <div class="exp-form-group">
+    <label><?php echo get_phrase('end_date'); ?></label>
+    <input type="text" class="form-control date" name="ending_date" data-provide="datepicker" data-date-format="yyyy-mm-dd" required>
+  </div>
 
-    <div class="form-group mb-1">
-      <label for="starting_date"><?php echo get_phrase('event_ending_date'); ?></label>
-      <input type="date" value="<?php echo date('m/d/Y'); ?>" class="form-control" id="ending_date" name = "ending_date" data-provide = "datepicker" required>
-      <small id="name_help" class="form-text text-muted"><?php echo get_phrase('provide_ending_date'); ?></small>
-    </div>
-
-    <div class="form-group  col-md-12">
-      <button class="btn btn-block btn-primary" type="submit"><?php echo get_phrase('save_event'); ?></button>
-    </div>
+  <div class="text-right">
+    <button class="modern-btn" type="submit"><?php echo get_phrase('save_event'); ?></button>
   </div>
 </form>
 
 <script>
 $(document).ready(function() {
-  
+  $('.date').datepicker();
 });
-$(".ajaxForm").validate({}); // Jquery form validation initialization
+$(".ajaxForm").validate({});
 $(".ajaxForm").submit(function(e) {
   var form = $(this);
-  ajaxSubmit(e, form, showAllEvents);
+  ajaxSubmit(e, form, refreshEventCalendar);
 });
 </script>

@@ -3787,6 +3787,13 @@
     "students_cannot_manage_exam_questions": "Studenten kunnen examenvragen niet beheren",
     "there_are_no_events_scheduled_at_the_moment": "Er zijn momenteel geen evenementen gepland",
     "designation_details": "Functie-details",
-    "history": "Geschiedenis"
+    "manage_syllabus": "Lesprogramma beheren",
+    "manage_student_marks_and_results": "Cijfers en resultaten van studenten beheren",
+    "filter_selection": "Selectie filteren",
+    "marks_list": "Cijferlijst",
+    "manage_student_details": "Studentgegevens beheren",
+    "view_teacher_details": "Docentgegevens bekijken",
+    "error_occurred": "Er is een fout opgetreden",
+    "manage_certifications": "Certificaten beheren"
 }
 

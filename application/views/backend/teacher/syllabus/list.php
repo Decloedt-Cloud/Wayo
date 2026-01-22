@@ -16,26 +16,34 @@ if (isset($class_id) ):
     }
     
     if(count($syllabuses) > 0):?>
-    <table id="basic-datatable" class="table table-striped dt-responsive nowrap" width="100%">
-      <thead>
-            <tr>
-                <th><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('title'); ?></th>
-                <th><i class="mdi mdi-book-open-page-variant-outline thead-icon"></i><?php echo get_phrase('syllabus'); ?></th>
-                <th><?php echo get_phrase('option'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($syllabuses as $syllabus):?>
+    <div class="exp-table-container">
+        <table id="basic-datatable" class="exp-report-table" width="100%">
+            <thead>
                 <tr>
-                    <td><?php echo $syllabus['title']; ?></td>
-                    <td><a href="<?php echo base_url('uploads/syllabus/'.$syllabus['file']); ?>" class="btn btn-info mdi mdi-download" download><?php echo get_phrase('download'); ?></a></td>
-                    <td>
-                        <button type="button" class="btn btn-icon btn-secondary btn-sm" style="margin-right:5px;" onclick="confirmModal('<?php echo route('syllabus/delete/'.$syllabus['id']); ?>', showAllSyllabuses)" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-original-title="<?php echo get_phrase('delete_syllabus'); ?>"> <i class="mdi mdi-window-close"></i></button>
-                    </td>
+                    <th><i class="mdi mdi-file-document-outline thead-icon"></i><?php echo get_phrase('title'); ?></th>
+                    <th><i class="mdi mdi-book-open-page-variant-outline thead-icon"></i><?php echo get_phrase('syllabus'); ?></th>
+                    <th><?php echo get_phrase('option'); ?></th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach($syllabuses as $syllabus):?>
+                    <tr>
+                        <td><?php echo $syllabus['title']; ?></td>
+                        <td>
+                            <a href="<?php echo base_url('uploads/syllabus/'.$syllabus['file']); ?>" class="exp-btn-sm exp-btn-download" download>
+                                <i class="mdi mdi-download"></i> <?php echo get_phrase('download'); ?>
+                            </a>
+                        </td>
+                        <td>
+                            <button type="button" class="exp-btn-sm exp-btn-delete" onclick="confirmModal('<?php echo route('syllabus/delete/'.$syllabus['id']); ?>', showAllSyllabuses)" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo get_phrase('delete_syllabus'); ?>">
+                                <i class="mdi mdi-delete"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     <?php else: ?>
         <?php include APPPATH.'views/backend/empty.php'; ?>
     <?php endif; ?>

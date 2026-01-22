@@ -4146,5 +4146,13 @@
     "allowed_files": "Allowed files",
     "update_password": "Update password",
     "teacher_details": "Teacher details",
-    "create_your_first_event": "Create your first event"
+    "create_your_first_event": "Create your first event",
+    "manage_syllabus": "Manage syllabus",
+    "manage_student_marks_and_results": "Manage student marks and results",
+    "filter_selection": "Filter selection",
+    "marks_list": "Marks list",
+    "manage_student_details": "Manage student details",
+    "view_teacher_details": "View teacher details",
+    "error_occurred": "Error occurred",
+    "manage_certifications": "Manage certifications"
 }

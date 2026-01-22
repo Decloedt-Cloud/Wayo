@@ -2,6 +2,99 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/exam.css">
 
+<style>
+/* ============================================================================
+   EXAM MANAGER - MODERN DESIGN
+   ============================================================================ */
+:root {
+    --exp-primary: #6366f1;
+    --exp-primary-light: #eef2ff;
+    --exp-success: #059669;
+    --exp-dark: #1e293b;
+    --exp-gray: #64748b;
+    --exp-light: #f8fafc;
+    --exp-border: #e2e8f0;
+    --exp-warning: #f59e0b;
+    --exp-danger: #ef4444;
+}
+
+/* Header Card */
+.exp-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.exp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.exp-header-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.exp-header-text h4 {
+    margin: 0;
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.exp-header-text p {
+    margin: 0.25rem 0 0;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+}
+
+.exp-header-actions {
+    margin-left: auto;
+}
+
+.exp-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.exp-btn-light {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+.exp-btn-light:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+</style>
+
 <!-- SweetAlert2 -->
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
 
@@ -23,11 +116,22 @@
     
     <!-- Certification List Panel (Always visible) -->
     <div class="exam-list-panel" id="outlinePanel">
-        <div class="exam-list-header">
-            <h4><i class="fas fa-file-signature fa-fw"></i> <?php echo get_phrase('certifications'); ?></h4>
-            <button type="button" class="btn-add-exam" onclick="openNewExamEditor()">
-                <i class="fas fa-plus"></i> <?php echo get_phrase('add_certification'); ?>
-            </button>
+        <div class="exp-header">
+            <div class="exp-header-left">
+                <div class="exp-header-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="exp-header-text">
+                    <h4><?php echo get_phrase('certifications'); ?></h4>
+                    <p><?php echo get_phrase('manage_certifications'); ?></p>
+                </div>
+            </div>
+            <div class="exp-header-actions">
+                <button type="button" class="exp-btn exp-btn-light" onclick="openNewExamEditor()">
+                    <i class="fas fa-plus"></i>
+                    <span><?php echo get_phrase('add_certification'); ?></span>
+                </button>
+            </div>
         </div>
         <div class="exam-list-content exam_content" id="examsContainer">
             <?php include 'list.php'; ?>
