@@ -639,7 +639,6 @@ $(document).ready(function() {
     });
 });
 </script>
-
 <style>
 .outline-filter {
     background: #fff;

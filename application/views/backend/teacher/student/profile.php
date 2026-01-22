@@ -1,238 +1,319 @@
-
 <?php
     $student = $this->db->get_where('students', array('id' => $param1))->row_array();
+    $user_id = $student['user_id'];
+    $user = $this->db->get_where('users', array('id' => $user_id))->row_array();
+    
+    // Fetch classes
+    $enrols = $this->db->get_where('enrols', array('student_id' => $param1))->result_array();
 ?>
 
-<div class="container py-4">
-    <div class="row g-4 align-items-start">
+<style>
+    :root {
+        --exp-primary: #6366f1;
+        --exp-primary-light: #eef2ff;
+        --exp-dark: #1e293b;
+        --exp-gray: #64748b;
+        --exp-border: #e2e8f0;
+        --exp-success: #10b981;
+        --exp-danger: #ef4444;
+    }
 
-        <!-- Profil Étudiant -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow profile-card overflow-hidden">
-                <!-- Bandeau -->
-                <div class="profile-cover left-side-prf">
-                    
+    .exp-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid var(--exp-border);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .exp-cover {
+        height: 120px;
+        background: linear-gradient(135deg, var(--exp-primary-light) 0%, #e0e7ff 100%);
+        position: relative;
+    }
+
+    .exp-avatar-wrapper {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 4px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .exp-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+    }
+
+    .exp-profile-body {
+        padding: 3.5rem 1.5rem 1.5rem;
+        text-align: center;
+    }
+
+    .exp-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--exp-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .exp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .exp-badge-primary {
+        background: var(--exp-primary-light);
+        color: var(--exp-primary);
+    }
+    
+    .exp-badge-success {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .exp-badge-danger {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .exp-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        text-align: left;
+    }
+
+    .exp-info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid var(--exp-border);
+    }
+
+    .exp-info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: white;
+        color: var(--exp-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .exp-section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--exp-dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .exp-section-title i {
+        color: var(--exp-primary);
+    }
+
+    .exp-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .exp-detail-box {
+        padding: 1rem;
+        border: 1px solid var(--exp-border);
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .exp-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--exp-gray);
+        margin-bottom: 0.25rem;
+    }
+
+    .exp-value {
+        font-weight: 600;
+        color: var(--exp-dark);
+        font-size: 0.95rem;
+        word-break: break-word;
+    }
+
+    .exp-chip {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: white;
+        border: 1px solid var(--exp-border);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: var(--exp-dark);
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="row">
+    <!-- Left Column: Profile Card -->
+    <div class="col-lg-4">
+        <div class="exp-card">
+            <div class="exp-cover">
+                <div class="exp-avatar-wrapper">
+                    <img src="<?php echo $this->user_model->get_user_image($user_id); ?>" class="exp-avatar" alt="Profile">
                 </div>
-                <div class="card-body text-center pt-5">
-                    <div class="avatar-wrap">
-                        <img
-                            class="avatar-img"
-                            width="120" height="120"
-                            src="<?php echo $this->user_model->get_user_image($student['user_id']); ?>"
-                            alt="Profile Image">
-                    </div>
-
-                    <h5 class="mt-3 mb-1 fw-semibold">
-                        <?php echo $this->user_model->get_user_details($student['user_id'], 'name'); ?>
-                    </h5>
-
-                    <div class="mb-3 small text-muted">
-                        <?php echo get_phrase('student_code'); ?> :
-                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold ms-1">
-                            <?php echo $student['code']; ?>
+            </div>
+            
+            <div class="exp-profile-body">
+                <h3 class="exp-name"><?php echo $user['name']; ?></h3>
+                <div class="mb-3">
+                    <span class="exp-badge exp-badge-primary">
+                        <i class="mdi mdi-identifier"></i> <?php echo $student['code']; ?>
+                    </span>
+                    <?php if($user['status'] == 1): ?>
+                        <span class="exp-badge exp-badge-success ml-2">
+                            <i class="mdi mdi-check-circle"></i> <?php echo get_phrase('active'); ?>
                         </span>
+                    <?php else: ?>
+                        <span class="exp-badge exp-badge-danger ml-2">
+                            <i class="mdi mdi-alert-circle"></i> <?php echo get_phrase('inactive'); ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="exp-info-list">
+                    <div class="exp-info-item">
+                        <div class="exp-info-icon">
+                            <i class="mdi mdi-email-outline"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="exp-label"><?php echo get_phrase('email'); ?></div>
+                            <div class="exp-value"><?php echo $user['email']; ?></div>
+                        </div>
+                    </div>
+                    
+                    <div class="exp-info-item">
+                        <div class="exp-info-icon">
+                            <i class="mdi mdi-phone-outline"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="exp-label"><?php echo get_phrase('phone'); ?></div>
+                            <div class="exp-value"><?php echo $user['phone'] ? $user['phone'] : '-'; ?></div>
+                        </div>
                     </div>
 
-                    <div class="text-start mt-3">
-                        <div class="section-title text-center small text-uppercase fw-bold text-muted mb-2">
-                            <?php echo get_phrase('class'); ?>
+                    <div class="exp-info-item">
+                        <div class="exp-info-icon">
+                            <i class="mdi mdi-cake-variant-outline"></i>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
-                            <?php foreach ($enrols as $enrol):
-                                $class_name = $this->db->get_where('classes', array('id' => $enrol['class_id']))->row('name'); ?>
-                                <span class="chip"><?php echo $class_name; ?></span>
-                            <?php endforeach; ?>
+                        <div style="flex: 1;">
+                            <div class="exp-label"><?php echo get_phrase('birthday'); ?></div>
+                            <div class="exp-value"><?php echo $user['birthday'] ? date('d M, Y', strtotime($user['birthday'])) : '-'; ?></div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <div class="row g-2 text-center small">
-
-                        <div class="col-12">
-                            <div class="mini-stat">
-                                <div class="label text-muted"><?php echo get_phrase('phone'); ?></div>
-                                <div class="value">
-                                    <?php echo $this->user_model->get_user_details($student['user_id'], 'phone'); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Right Column: Details -->
+    <div class="col-lg-8">
+        <!-- Academic Info -->
+        <div class="exp-card" style="padding: 1.5rem;">
+            <h4 class="exp-section-title">
+                <i class="mdi mdi-school-outline"></i> <?php echo get_phrase('academic_information'); ?>
+            </h4>
+            
+            <div class="mb-4">
+                <div class="exp-label mb-2"><?php echo get_phrase('enrolled_classes'); ?></div>
+                <div>
+                    <?php foreach ($enrols as $enrol): 
+                        $class = $this->db->get_where('classes', array('id' => $enrol['class_id']))->row_array();
+                        if($class):
+                    ?>
+                        <span class="exp-chip">
+                            <i class="mdi mdi-google-classroom"></i> <?php echo $class['name']; ?>
+                        </span>
+                    <?php endif; endforeach; ?>
                 </div>
-            </div><!-- /card -->
+            </div>
         </div>
 
-        <!-- Détails & Onglets -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow">
-                <div class="profile-cover bg-white border-0">
-                    <h6 class="mb-0 fw-bold Banner-title">
-                        <i class="bi bi-person-lines-fill me-2"></i> 
-                        <?php echo strtoupper(get_phrase('Details')) ?>
-                    </h6>
+        <!-- Address Info -->
+        <div class="exp-card" style="padding: 1.5rem;">
+            <h4 class="exp-section-title">
+                <i class="mdi mdi-map-marker-radius-outline"></i> <?php echo get_phrase('address_details'); ?>
+            </h4>
+            
+            <div class="exp-detail-grid">
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('street'); ?></div>
+                    <div class="exp-value"><?php echo $user['Rue'] ? $user['Rue'] : '-'; ?></div>
+                </div>
+                
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('number'); ?></div>
+                    <div class="exp-value"><?php echo $user['Numero'] ? $user['Numero'] : '-'; ?></div>
+                </div>
+                
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('city'); ?></div>
+                    <div class="exp-value"><?php echo $user['Ville'] ? $user['Ville'] : '-'; ?></div>
+                </div>
+                
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('postal_code'); ?></div>
+                    <div class="exp-value"><?php echo $user['Codepostal'] ? $user['Codepostal'] : '-'; ?></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="exp-card" style="padding: 1.5rem;">
+            <h4 class="exp-section-title">
+                <i class="mdi mdi-information-outline"></i> <?php echo get_phrase('other_information'); ?>
+            </h4>
+            
+            <div class="exp-detail-grid">
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('gender'); ?></div>
+                    <div class="exp-value"><?php echo get_phrase(strtolower($user['gender'])); ?></div>
+                </div>
+                
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('blood_group'); ?></div>
+                    <div class="exp-value"><?php echo $user['blood_group'] ? $user['blood_group'] : '-'; ?></div>
                 </div>
 
-
-                <div class="card-body">
-                    <div class="tab-content" id="myTabContent">
-                        <!-- Profil -->
-                        <div class="tab-pane fade show active" id="profile" role="tabpanel">
-                            <div class="row g-2">
-                                <div class="col-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('name'); ?></div>
-                                        <div class="info-value">
-                                            <?php echo $this->user_model->get_user_details($student['user_id'], 'name'); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('email'); ?></div>
-                                        <div class="info-value">
-                                            <?php echo $this->user_model->get_user_details($student['user_id'], 'email'); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('student_code'); ?></div>
-                                        <div class="info-value">
-                                            <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold">
-                                                <?php echo $student['code']; ?>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="info-block">
-                                        <div class="info-title"><?php echo get_phrase('Address'); ?></div>
-                                        <div class="info-value">
-                                            <?php
-                                                echo $this->user_model->get_user_details($student['user_id'], 'Rue')
-                                                     .', '.$this->user_model->get_user_details($student['user_id'], 'Numero')
-                                                     .', '.$this->user_model->get_user_details($student['user_id'], 'Ville')
-                                                     .', '.$this->user_model->get_user_details($student['user_id'], 'Codepostal');
-                                            ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="info-block">
-                                        <div class="info-title mb-2"><?php echo get_phrase('class'); ?></div>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <?php foreach ($enrols as $enrol):
-                                                $class_name = $this->db->get_where('classes', array('id' => $enrol['class_id']))->row('name'); ?>
-                                                <span class="chip chip-outline">• <?php echo $class_name; ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div><!-- /row -->
-                        </div><!-- /tab -->
-                    </div><!-- /tab-content -->
-                </div><!-- /card-body -->
-            </div><!-- /card -->
+                <?php if(!empty($user['num_vat'])): ?>
+                <div class="exp-detail-box">
+                    <div class="exp-label"><?php echo get_phrase('vat_number'); ?></div>
+                    <div class="exp-value"><?php echo $user['num_vat']; ?></div>
+                </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- CSS personnalisé (design uniquement) -->
-<style>
-/* Général */
-.card { border-radius: 16px; }
-.shadow { box-shadow: 0 10px 24px rgba(20, 20, 43, 0.06) !important; }
-
-/* Profil: couverture + avatar */
-.profile-card { position: relative; }
-.profile-cover {
-    height: 86px;
-    background: linear-gradient(135deg, #e8f0ff 0%, #f7f7ff 100%);
-     display: flex;
-    justify-content: left;
-    align-items: center;
-    padding-left: 3em;
-}
-.profile-cover.left-side-prf {
-    height: 124px;
-}
-
-.Banner-title{
-        font-size: 14px;
-        color: #536de6;
-    }
-.avatar-wrap {
-    margin-top: -124px;
-}
-
-.avatar-img {
-    border-radius: 50%;
-    border: 4px solid #fff;
-    outline: 3px solid var(--bs-primary);
-    object-fit: cover;
-}
-
-/* Chips (classes) */
-.chip {
-    display: inline-block;
-    padding: .35rem .65rem;
-    border-radius: 999px;
-    background: #f5f7fb;
-    border: 1px solid #eef1f7;
-    font-size: .8125rem;
-    line-height: 1;
-}
-.chip-outline {
-    background: transparent;
-    border-color: #dfe6f3;
-}
-
-/* Mini stats en pied de carte */
-.mini-stat .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; }
-.mini-stat .value { font-weight: 600; }
-
-/* Nav pills douces */
-.soft-pills .nav-link {
-    border-radius: 10px;
-    background: #f6f8fb;
-    color: #4d5a75;
-    margin-right: .5rem;
-}
-.soft-pills .nav-link.active {
-    background: var(--bs-primary);
-    color: #fff;
-    box-shadow: 0 6px 14px rgba(35, 99, 255, .2);
-}
-
-/* Blocs info */
-.info-block {
-    padding: 1rem 1.125rem;
-    border: 1px solid #eef1f7;
-    border-radius: 12px;
-    background: #ffffffcc;
-    backdrop-filter: blur(6px);
-}
-.info-title {
-    font-size: .8rem;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: #6b7280;
-    margin-bottom: .25rem;
-}
-.info-value {
-    font-size: 1rem;
-    color: #0f172a;
-}
-
-/* Aides */
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-</style>
