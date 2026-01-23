@@ -190,7 +190,13 @@
                           <span class="price-period"><?php echo str_replace('/', '/ ', get_phrase("per month, no commitment")); ?></span>
                       </div>
                   </div>
-                  <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community"); ?></a>
+                    <?php if ($this->session->userdata('user_id')) : ?>
+                        <!-- utilisateur connecté -->
+                        <a href="<?php echo route('dashboard'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
+                    <?php else : ?>
+                        <!-- utilisateur non connecté -->
+                          <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
+                    <?php endif; ?>
                   <p class="plan-guarantee">✔<?php echo get_phrase("Enjoy 14 days of free trial before paying."); ?></p>
               </div>
               <div class="plan-features-split">
