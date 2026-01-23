@@ -3707,5 +3707,6 @@
     "track_your_payments_and_invoices": "تتبع مدفوعاتك وفواتيرك",
     "search_invoice_title_or_id": "ابحث عن عنوان الفاتورة أو المعرف",
     "total_invoices": "إجمالي الفواتير",
-    "total_due": "الإجمالي المستحق"
+    "total_due": "الإجمالي المستحق",
+    "class_is_full_no_more_space": "الفصل ممتلئ، لا يوجد مكان آخر"
 }

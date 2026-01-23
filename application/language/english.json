@@ -4159,5 +4159,12 @@
     "support_contact": "Support contact",
     "support_information": "Support information",
     "pending_approval": "Pending approval",
-    "you_must_wait_for_the_community_owner_approval_to_access_services": "You must wait for the community owner approval to access services"
+    "you_must_wait_for_the_community_owner_approval_to_access_services": "You must wait for the community owner approval to access services",
+    "beauty_&amp;_fashion": "Beauty &amp; fashion",
+    "request_sent_waiting_for_approval": "Request sent waiting for approval",
+    "welcome_to_the_community": "Welcome to the community",
+    "sales_&amp;_marketing": "Sales &amp; marketing",
+    "class_is_full_no_more_space": "Class is full no more space",
+    "soon": "Soon",
+    "unknown": "Unknown"
 }

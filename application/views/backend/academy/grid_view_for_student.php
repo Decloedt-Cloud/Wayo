@@ -408,7 +408,7 @@ $selected_user_id = $selected_user_id ?? 'all';
                                     </a>
                                 <?php elseif ($is_full): ?>
                                     <a href="javascript:void(0);" class="btn-course outline" style="cursor: not-allowed; opacity: 0.6;">
-                                        <i class="fas fa-lock"></i> <?= get_phrase('waiting_list'); ?>
+                                        <i class="fas fa-lock"></i> <?= get_phrase('class_is_full_no_more_space'); ?>
                                     </a>
                                 <?php else: ?>
                                     <a href="javascript:;" onclick="rightModal('<?= site_url('modal/popup/academy/add/' . $student_profile_id . '/' . $class['id'] . '/' . $school_id . '/' . $class['price'] . '/' . $currencies) ?>','<?= get_phrase('join'); ?>');"

@@ -1,4 +1,42 @@
 <script type="text/javascript">
+// Define showNotification globally if not already defined
+if (typeof showNotification !== 'function') {
+    window.showNotification = function(type, message) {
+        if (typeof toastr !== 'undefined') {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            if (type === 'success') {
+                toastr.success(message);
+            } else if (type === 'error') {
+                toastr.error(message);
+            } else if (type === 'warning') {
+                toastr.warning(message);
+            } else {
+                toastr.info(message);
+            }
+        } else {
+            // Fallback if toastr is not loaded
+            console.log(type.toUpperCase() + ': ' + message);
+            alert(message);
+        }
+    }
+}
+
 var callBackFunction;
 var callBackFunctionForGenericConfirmationModal;
 function largeModal(url, header)

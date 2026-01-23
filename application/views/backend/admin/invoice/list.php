@@ -552,8 +552,19 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
             </td></tr>
             <?php else: ?>
             <?php foreach ($invoices as $inv):
-                $student = $this->user_model->get_student_details_by_id('student', $inv['student_id']);
-                $class = isset($inv['class_id']) ? $this->crud_model->get_class_details_by_id($inv['class_id'])->row_array() : null;
+                            // 1. Essai prioritaire : table students (ID = Student ID)
+                            $student_entry = $this->db->get_where('students', array('id' => $inv['student_id']))->row_array();
+                            $student = [];
+                            
+                            if ($student_entry && isset($student_entry['user_id'])) {
+                                $student = $this->db->get_where('users', array('id' => $student_entry['user_id']))->row_array();
+                            }
+                            // 2. Si échec, essai direct sur la table users (cas School Join / Adhésion communauté où ID = User ID)
+                            if (empty($student)) {
+                                $student = $this->db->get_where('users', array('id' => $inv['student_id']))->row_array();
+                            }
+
+                            $class = isset($inv['class_id']) ? $this->crud_model->get_class_details_by_id($inv['class_id'])->row_array() : null;
                 $fx = isset($inv['conversion_applied']) && $inv['conversion_applied'] == 1;
                 $fx_curr = isset($inv['payment_currency']) ? $inv['payment_currency'] : null;
                 $fx_amt = isset($inv['payment_amount_converted']) ? (float)$inv['payment_amount_converted'] : null;
@@ -571,17 +582,33 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     <div class="ai-student">
                         <div class="ai-avatar"><?php echo $initials; ?></div>
                         <div>
-                            <?php if (isset($student['name']) && $student['name']): ?>
-                            <div class="ai-student-name"><?php echo htmlspecialchars($student['name']); ?></div>
-                            <?php if (!empty($student['email'])): ?><div class="ai-student-email"><?php echo htmlspecialchars($student['email']); ?></div><?php endif; ?>
-                            <?php if ($class): ?><div class="ai-student-class"><i class="mdi mdi-school"></i> <?php echo htmlspecialchars($class['name']); ?></div><?php endif; ?>
+                            <?php if (isset($student['name']) && !empty($student['name'])): ?>
+                                <div class="ai-student-name"><?php echo htmlspecialchars($student['name']); ?></div>
+                                <div class="ai-student-email"><?php echo htmlspecialchars($student['email']); ?></div>
                             <?php else: ?>
-                            <div class="ai-student-name" style="color: var(--ai-gray);"><?php echo get_phrase('subscription'); ?></div>
+                                <div class="ai-student-name" style="color: var(--ai-gray);">
+                                    <?php echo get_phrase('subscription'); ?>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($class): ?>
+                                <div class="ai-student-class"><?php echo $class['name']; ?></div>
                             <?php endif; ?>
                         </div>
                     </div>
                 </td>
-                <td><strong><?php echo htmlspecialchars($inv['title']); ?></strong></td>
+                <td>
+                    <strong>
+                        <?php 
+                        $type_label = $class ? get_phrase('class') : get_phrase('membership');
+                        
+                        if ((float)$inv['total_amount'] <= 0) {
+                             echo get_phrase('free') . ' - ' . $type_label . ' - ' . htmlspecialchars($inv['title']);
+                        } else {
+                             echo $type_label . ' - ' . htmlspecialchars($inv['title']);
+                        }
+                        ?>
+                    </strong>
+                </td>
                 <td>
                     <div class="ai-amount"><?php echo number_format($inv['total_amount'], 2); ?></div>
                     <div class="ai-currency"><?php echo $inv['currency']; ?></div>
@@ -605,7 +632,10 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     $method_display = '';
                     $method_class = '';
                     
-                    if (!empty($inv['payment_method'])) {
+                    if ((float)$inv['total_amount'] == 0) {
+                        $method_display = 'Free_access';
+                        $method_class = 'free';
+                    } elseif (!empty($inv['payment_method'])) {
                         $m = strtolower($inv['payment_method']);
                         $method_display = ucfirst($inv['payment_method']);
                         $method_class = (strpos($m,'stripe')!==false)?'stripe':((strpos($m,'paypal')!==false)?'paypal':((strpos($m,'bank')!==false)?'bank':''));
@@ -627,7 +657,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     
                     if ($method_display): ?>
                     <span class="ai-method <?php echo $method_class; ?>">
-                        <i class="mdi <?php echo $method_class === 'stripe' ? 'mdi-credit-card' : ($method_class === 'paypal' ? 'mdi-paypal' : 'mdi-bank'); ?>"></i> 
+                        <i class="mdi <?php echo $method_class === 'stripe' ? 'mdi-credit-card' : ($method_class === 'paypal' ? 'mdi-paypal' : ($method_class === 'free' ? 'mdi-lock-open-variant' : 'mdi-bank')); ?>"></i> 
                         <?php echo $method_display; ?>
                     </span>
                     <?php else: ?>—<?php endif; ?>
