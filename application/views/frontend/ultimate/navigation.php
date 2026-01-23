@@ -1057,6 +1057,11 @@ if ($current_user_id) {
                                 <a id="openLoginBtn" class="btn btn-login btn-ghost login-toggle" style="cursor:pointer !important;"><?php echo get_phrase('Login'); ?> </a>
                                 <?php include 'components/navigation-components/login_register_component.php'; ?>
                             </li>
+                            <li class="nav-item navbar-user" style="list-style: none;">
+                                <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-accent btn-custom" style="cursor:pointer !important;">
+                                    <?php echo get_phrase('Create_Community'); ?>
+                                </a>
+                            </li>
                         <?php } ?>
                     </div>
                 </div>

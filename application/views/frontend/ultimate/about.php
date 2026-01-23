@@ -25,7 +25,7 @@
         }
 
     /* Hero */
-    .hero{ position:relative; min-height:68vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/bg-about-us.png'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:68vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/bg-about-us.png'); ?>'); background-size:cover; background-position:center; }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
@@ -231,7 +231,7 @@
                 <!-- Team Member 1 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/bouhouti.jpg" alt="Mohamed Bouhouti<?php echo get_phrase("Our_teams") ?>">
+                    <img src="<?php echo base_url('uploads/teams/bouhouti.jpg'); ?>" alt="Mohamed Bouhouti<?php echo get_phrase("Our_teams") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Mohamed_Bouhouti") ?></h3>
@@ -247,7 +247,7 @@
                 <!-- Team Member 2 -->
                 <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/decloedt.jpg" alt="<?php echo get_phrase("decloedt") ?>">
+                    <img src="<?php echo base_url('uploads/teams/decloedt.jpg'); ?>" alt="<?php echo get_phrase("decloedt") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Stéphanie_Decloedt") ?></h3>
@@ -262,7 +262,7 @@
                 <!-- Team Member 3 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/bennani.jpg" alt="<?php echo get_phrase("Fatine_Bennani") ?>">
+                    <img src="<?php echo base_url('uploads/teams/bennani.jpg'); ?>" alt="<?php echo get_phrase("Fatine_Bennani") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Fatine_Bennani") ?></h3>
@@ -277,11 +277,11 @@
                 <!-- Team Member 4 -->
                   <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/aboulfath.jpg" alt="<?php echo get_phrase("Ahmed Aboulfath") ?>">
+                    <img src="<?php echo base_url('uploads/teams/aboulfath.jpg'); ?>" alt="<?php echo get_phrase("Ahmed Aboulfath") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Ahmed_Aboulfath") ?></h3>
-                    <div class="position"><?php echo get_phrase("Digital_Marketing_Manager") ?></div>
+                    <div class="position"><?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
                       <a href="https://www.linkedin.com/in/ahmed-aboulfath-2156a6162/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:ahmed.aboulfath@decloedt.cloud"><i class="fas fa-envelope"></i></a>
@@ -293,7 +293,7 @@
                 <!-- Team Member 5 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/naji.png" alt="naji">
+                    <img src="<?php echo base_url('uploads/teams/naji.png'); ?>" alt="naji">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Aymane_Naji") ?></h3>
@@ -310,11 +310,11 @@
                 <!-- Team Member 6 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/sandale.jpg" alt="<?php echo get_phrase("Zakaria_Sandal") ?>">
+                    <img src="<?php echo base_url('uploads/teams/sandale.jpg'); ?>" alt="<?php echo get_phrase("Zakaria_Sandal") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Zakaria_Sandal") ?></h3>
-                    <div class="position"> <?php echo get_phrase("Senior_Programmatic_Analyst") ?></div>
+                    <div class="position"> <?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
                       <a href="https://www.linkedin.com/in/ziko-zakaria/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:zakaria.sandal@decloedt.cloud"><i class="fas fa-envelope"></i></a>
@@ -326,7 +326,7 @@
                 <!-- Team Member 7 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/khiat.png" alt="<?php echo get_phrase("Mehdi El khiat") ?>">
+                    <img src="<?php echo base_url('uploads/teams/khiat.png'); ?>" alt="<?php echo get_phrase("Mehdi El khiat") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Mehdi El khiat") ?></h3>
@@ -343,7 +343,7 @@
                 <!-- Team Member 8 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/fettah.jpg" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
+                    <img src="<?php echo base_url('uploads/teams/fettah.jpg'); ?>" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>
@@ -360,7 +360,7 @@
                 <!-- Team Member 9 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/tchoubi.png" alt="<?php echo get_phrase("Mouhssine_Tchoubi") ?>">
+                    <img src="<?php echo base_url('uploads/teams/tchoubi.png'); ?>" alt="<?php echo get_phrase("Mouhssine_Tchoubi") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Mouhssine_Tchoubi") ?></h3>
@@ -376,7 +376,7 @@
                 <!-- Team Member 10 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/bastor.png" alt="<?php echo get_phrase("Hamza_Bastor") ?>">
+                    <img src="<?php echo base_url('uploads/teams/bastor.png'); ?>" alt="<?php echo get_phrase("Hamza_Bastor") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Hamza_Bastor") ?></h3>
@@ -392,7 +392,7 @@
                 <!-- Team Member 11 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/abbaoui.png" alt="<?php echo get_phrase("Khalil_Abbaoui") ?>">
+                    <img src="<?php echo base_url('uploads/teams/abbaoui.png'); ?>" alt="<?php echo get_phrase("Khalil_Abbaoui") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Khalil_Abbaoui") ?></h3>
@@ -408,7 +408,7 @@
                 <!-- Team Member 12 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/maski.png" alt="<?php echo get_phrase("Aymen_Maski") ?>">
+                    <img src="<?php echo base_url('uploads/teams/maski.png'); ?>" alt="<?php echo get_phrase("Aymen_Maski") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Aymen_Maski") ?> </h3>
@@ -424,7 +424,7 @@
                 <!-- Team Member 13 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/zmane.png" alt="<?php echo get_phrase("Ilyas Zmane") ?>">
+                    <img src="<?php echo base_url('uploads/teams/zmane.png'); ?>" alt="<?php echo get_phrase("Ilyas Zmane") ?>">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Ilyas Zmane") ?></h3>
@@ -439,7 +439,7 @@
                 <!-- Team Member 14 -->
                   <div class="team-card">
                   <div class="card-image">
-                    <img src="../uploads/teams/fakir.png" alt="Abdelazyz Fakir">
+                    <img src="<?php echo base_url('uploads/teams/fakir.png'); ?>" alt="Abdelazyz Fakir">
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Abdelazyz_Fakir") ?></h3>
@@ -472,9 +472,13 @@
         <div class="text-center">
           <h2 class="h2 mb-2 p-cta"><?php echo get_phrase("Ready to join the community?") ?></h2>
           <p class="mb-3"><?php echo get_phrase("Become a mentor or learner, and grow with Wayo.") ?></p>
-            <a class="btn btn-accent btn-pill" href="<?php echo site_url('admission/online_admission'); ?>">
-              <?php echo get_phrase("Create my account ") ?>
-            </a>
+          <?php if ($this->session->userdata('user_id')) : ?>
+                        <!-- utilisateur connecté -->
+                        <a href="<?php echo route('dashboard'); ?>" class="btn btn-accent btn-pill"><?php echo get_phrase("Create my account ") ?></a>
+                    <?php else : ?>
+                        <!-- utilisateur non connecté -->
+                        <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-accent btn-pill"><?php echo get_phrase("Create my account") ?></a>
+          <?php endif; ?>
         </div>
       </div>
     </section>

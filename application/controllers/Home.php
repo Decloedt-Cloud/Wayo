@@ -79,6 +79,13 @@ class Home extends CI_Controller
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
+	//AFFILIATION PAGE
+	function affiliation(){
+		$page_data['page_name'] = 'affiliation';
+		$page_data['page_title'] = get_phrase('affiliation');
+		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
+	}
+
 	// TUTORIAL PAGE
 	function tutorial()
 	{
@@ -180,6 +187,7 @@ class Home extends CI_Controller
 
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
+
 
 	//GET THE PRIVACY POLICY PAGE
 	function privacy_policy()
@@ -358,6 +366,7 @@ class Home extends CI_Controller
 	$config['attributes']      = ['class' => 'page-link'];
 
     // Initialiser la pagination
+    $config['cur_page'] = $page;
     $this->pagination->initialize($config);
 
     // Créer les liens de pagination
@@ -381,7 +390,7 @@ class Home extends CI_Controller
     $this->load->view('frontend/' . $this->theme . '/index', $page_data);
 }
 
-	function communities_search()
+	function communities_search($param1 = null)
 	{
 
 		$input = htmlspecialchars($this->input->get('search'));
@@ -393,22 +402,17 @@ class Home extends CI_Controller
 		$config['use_page_numbers'] = true;
 		$config['uri_segment'] = 3;
 
+		// Détecter la page actuelle
+		$page = ($param1 != null && is_numeric($param1)) ? (int)$param1 : ($this->uri->segment($config['uri_segment']) ? (int)$this->uri->segment($config['uri_segment']) : 1);
+		$offset = ($page - 1) * $config['per_page'];
 
 		if ($input == null) {
-
-			$page = ($this->uri->segment($config['uri_segment'])) ? $this->uri->segment($config['uri_segment']) : 1;
-			$offset = ($page - 1) * $config['per_page'];
 			$page_data['schools'] = $this->user_model->get_schools($config['per_page'], $offset);
 			$config['total_rows'] = $this->db->count_all('schools');
 			$page_data['statement'] = 1;
 
 		} else {
-
-			$page = ($this->uri->segment($config['uri_segment'])) ? $this->uri->segment($config['uri_segment']) : 1;
-			$offset = ($page - 1) * $config['per_page'];
 			$page_data['input_search'] = $input;
-
-
 			$page_data['schools'] = $this->user_model->get_schools_search($input, $config['per_page'], $offset);
 			$config['total_rows'] = $this->user_model->get_schools_search_count($input);
 			$page_data['statement'] = 2;
@@ -422,8 +426,6 @@ class Home extends CI_Controller
 		//pagination bootstrap settings
 		{
 			$config['first_url'] = $config['base_url'] . $config['suffix'];
-
-
 			$config['num_links'] = 1;
 
 			// Icônes Font Awesome
@@ -460,6 +462,7 @@ class Home extends CI_Controller
 		}
 
 		//initialize pagination
+		$config['cur_page'] = $page;
 		$this->pagination->initialize($config);
 
 		//create pagination links
@@ -468,6 +471,13 @@ class Home extends CI_Controller
 		$page_data['categories'] = $this->frontend_model->get_categories();
 		$page_data['page_name'] = 'communities';
 		$page_data['page_title'] = get_phrase('communities');
+
+		// Support AJAX
+		if ($this->input->is_ajax_request()) {
+			$this->load->view('frontend/' . $this->theme . '/partials/communities_grid', $page_data);
+			return;
+		}
+
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 
 

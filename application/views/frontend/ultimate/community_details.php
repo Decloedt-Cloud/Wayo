@@ -172,7 +172,6 @@ foreach ($classes as $key => $class) {
                           </span>
                         </div>
                         <span class="fomo-badge">🔥 <?php echo get_phrase("Limited offer") ?></span>
-                        <p class="small mb-1"><?php echo get_phrase("Class description") ?></p>
 
                         <?php if (!empty($class['date_debut']) && !empty($class['date_fin']) && 
                                   $class['date_debut'] !== '0000-00-00' && $class['date_fin'] !== '0000-00-00'): ?>
@@ -818,7 +817,15 @@ document.querySelectorAll('.class-card').forEach(card => {
 
         // Remplir les champs du modal
         modal.querySelector('.modal-title').textContent = card.dataset.title;
-        modal.querySelector('#classPhoto').src = '<?php echo base_url("uploads/class/"); ?>' + card.dataset.photo;
+        
+        // Utiliser une image par défaut si la photo n'existe pas
+        const classPhoto = card.dataset.photo;
+        if (classPhoto && classPhoto.trim() !== '' && classPhoto !== 'null') {
+          modal.querySelector('#classPhoto').src = '<?php echo base_url("uploads/class/"); ?>' + classPhoto;
+        } else {
+          modal.querySelector('#classPhoto').src = '<?php echo base_url("uploads/communityCover/placeholder.jpg"); ?>';
+        }
+        
         modal.querySelector('#classDescription').textContent = card.dataset.desc;
 
 
