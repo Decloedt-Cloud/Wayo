@@ -281,7 +281,7 @@
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Ahmed_Aboulfath") ?></h3>
-                    <div class="position"><?php echo get_phrase("Digital_Marketing_Manager") ?></div>
+                    <div class="position"><?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
                       <a href="https://www.linkedin.com/in/ahmed-aboulfath-2156a6162/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:ahmed.aboulfath@decloedt.cloud"><i class="fas fa-envelope"></i></a>
@@ -314,7 +314,7 @@
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Zakaria_Sandal") ?></h3>
-                    <div class="position"> <?php echo get_phrase("Senior_Programmatic_Analyst") ?></div>
+                    <div class="position"> <?php echo get_phrase("Digital_Marketing_Specialist") ?></div>
                     <div class="social-links">
                       <a href="https://www.linkedin.com/in/ziko-zakaria/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:zakaria.sandal@decloedt.cloud"><i class="fas fa-envelope"></i></a>
