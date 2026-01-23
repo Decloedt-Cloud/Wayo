@@ -63,6 +63,7 @@ $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
 $route['about'] = 'home/about';
 $route['faq'] = 'home/faq';
+$route['affiliation'] = 'home/affiliation';
 $route['terms'] = 'home/terms_conditions';
 $route['terms_conditions'] = 'home/terms_conditions';
 $route['privacy_policy'] = 'home/privacy_policy';
