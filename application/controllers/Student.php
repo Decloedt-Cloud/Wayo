@@ -1022,33 +1022,8 @@ class Student extends CI_Controller {
 		// Si le prix est 0 (gratuit), on inscrit directement l'étudiant
 		if ($data['price'] <= 0) {
 			
-			// 0. Créer une facture "payée" de montant 0 pour la traçabilité
-			$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
-			
-			if($num_rows_invoices == 0){
-				$name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
-				$classe_name = $this->db->get_where('classes', array('id' => $data['class_id']))->row('name');
-				
-				$data_invoice['title'] = $name." - ".$classe_name;
-				$data_invoice['total_amount'] = 0;
-				$data_invoice['sub_total'] = 0;
-				$data_invoice['vat_amount'] = 0;
-				$data_invoice['vat_rate'] = 0;
-				$data_invoice['paid_amount'] = 0;
-				$data_invoice['currency'] = $data['currency'];
-				$data_invoice['class_id'] = $data['class_id'];
-				$data_invoice['student_id'] = $data['student_id'];
-				$data_invoice['status'] = "paid"; // Marqué comme payé directement
-				$data_invoice['school_id'] = $data['school_id'];
-				$data_invoice['session'] = $data['session'];
-				$data_invoice['created_at'] = strtotime(date('d-M-Y'));
-				$data_invoice['updated_at'] = strtotime(date('d-M-Y'));
-				
-				$this->db->insert('invoices', $data_invoice);
-			}
-
-			// 1. Inscrire dans la table enrols
-			$this->crud_model->payment_success($data);
+			// 1. Inscrire dans la table enrols sans créer de facture
+			$this->crud_model->enroll_student_free($data);
 
 			// 2. Ajouter aux espaces HumHub (classe et école)
 			$this->add_student_to_class_space($data['student_id'], $data['class_id']);
@@ -1061,11 +1036,12 @@ class Student extends CI_Controller {
 				$this->session->set_userdata('school_id', $school_id);
 			}
 
-			// 3. Rediriger directement vers le cours
+            // 3. Rediriger directement vers le cours
 			redirect(site_url('student/courses/' . $data['class_id']), 'refresh');
-			return;
+            return;
 		}
 
+		// Si payant, vérifier facture existante ou en créer une
 		$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
 		// print_r($num_rows_invoices);die;
 		if($num_rows_invoices == 0){
@@ -1154,42 +1130,9 @@ class Student extends CI_Controller {
         // Si le prix est gratuit (0 ou null), on rejoint directement sans passer par le paiement
         if ((float)$data['price'] <= 0.01) {
             
-             // 🔹 5. Créer la facture (invoice) GRATUITE
-             $invoice_data = [
-                'title'        => $school_name,
-                'total_amount' => 0, // Montant TTC
-                'sub_total'    => 0, // Montant HT
-                'vat_amount'   => 0, // Montant TVA
-                'vat_rate'     => 0,   // Taux TVA
-                'student_id'   => $data['student_id'],
-                'school_id'    => $data['school_id'],
-                'status'       => 'paid',
-                'currency'     => $data['currency'],
-                'session'      => $data['session'],
-                'created_at'   => strtotime(date('Y-m-d H:i:s')),
-                'updated_at'   => strtotime(date('Y-m-d H:i:s')),
-                'payment_type' => 'school_join',
-                'payment_method' => 'free_access'
-            ];
-            $this->db->insert('invoices', $invoice_data);
-            $invoice_id = $this->db->insert_id();
-
-            // 🔹 6. Créer l'entrée de paiement (0)
-            $payment_data = [
-                'student_id'     => $data['student_id'],
-                'school_id'      => $data['school_id'],
-                'amount'         => 0,
-                'currency'       => $data['currency'],
-                'payment_type'   => 'community_join',
-                'payment_status' => 'paid',
-                'invoice_id'     => $invoice_id,
-                'created_at'     => date('Y-m-d H:i:s')
-            ];
-            $this->db->insert('payments', $payment_data);
-
+             // 🔹 5. Pas de facture ni paiement pour le gratuit
+             
             $this->user_model->join_school($data['school_id'], [
-                'invoice_id'     => $invoice_id,
-                'amount_paid'    => 0,
                 'payment_method' => 'free_access'
             ]);
 

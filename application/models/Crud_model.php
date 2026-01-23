@@ -1330,6 +1330,7 @@ class Crud_model extends CI_Model
 		$this->db->where('created_at <=', $date_to);
 		$this->db->where('school_id', $this->school_id);
 		$this->db->where('session', $this->active_session);
+		$this->db->order_by('id', 'desc');
 		return $this->db->get('invoices');
 	}
 	public function get_community_details_by_id($school_id = "")
@@ -1401,7 +1402,7 @@ class Crud_model extends CI_Model
             $this->db->group_end();
         }
 
-		$this->db->order_by('invoices.created_at', 'DESC'); // Plus récentes en premier
+		$this->db->order_by('invoices.id', 'DESC'); // Plus récentes en premier
 
 		if ($limit !== null) {
 			$this->db->limit($limit, $offset);
@@ -1851,6 +1852,52 @@ class Crud_model extends CI_Model
 			$data_enrols['school_id'] = $enrolment_data['school_id'];
 			$data_enrols['session'] = $enrolment_data['session'];
 			$this->db->insert('enrols', $data_enrols);
+		}
+	}
+
+	// Enrollment for free classes (No invoice required)
+	public function enroll_student_free($data = array())
+	{
+		// Récupérer les données de la session
+		$enrolment_data = $this->session->userdata('enrolment_data');
+		
+		if (empty($enrolment_data)) {
+			// Fallback if data is passed directly
+			$enrolment_data = $data;
+		}
+
+		// Toujours utiliser l'ID de la table students pour les inscriptions
+		$student_id = $enrolment_data['student_id'] ?? null;
+		$student_row = null;
+		if ($student_id) {
+			$student_row = $this->db->get_where('students', ['id' => $student_id])->row_array();
+			if (!$student_row) {
+				// Certains écrans envoient l'user_id : on mappe vers l'étudiant
+				$student_row = $this->db->get_where('students', [
+					'user_id'   => $student_id,
+					'school_id' => $enrolment_data['school_id'] ?? null
+				])->row_array();
+			}
+		}
+
+		if ($student_row) {
+			// Vérifier si déjà inscrit pour éviter les doublons
+			$exists = $this->db->get_where('enrols', [
+				'student_id' => $student_row['id'],
+				'class_id' => $enrolment_data['class_id'],
+				'school_id' => $enrolment_data['school_id'],
+				'session' => $enrolment_data['session']
+			])->num_rows();
+
+			if ($exists == 0) {
+				// Utiliser les données
+				$data_enrols['student_id'] = $student_row['id'];
+				$data_enrols['class_id'] = $enrolment_data['class_id'];
+				$data_enrols['school_id'] = $enrolment_data['school_id'];
+				$data_enrols['session'] = $enrolment_data['session'];
+				$this->db->insert('enrols', $data_enrols);
+				log_message('info', "Free enrollment created for student #{$student_row['id']} in class #{$enrolment_data['class_id']}");
+			}
 		}
 	}
 
