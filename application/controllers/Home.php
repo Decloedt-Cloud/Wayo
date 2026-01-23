@@ -79,6 +79,13 @@ class Home extends CI_Controller
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
+	//AFFILIATION PAGE
+	function affiliation(){
+		$page_data['page_name'] = 'affiliation';
+		$page_data['page_title'] = get_phrase('affiliation');
+		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
+	}
+
 	// TUTORIAL PAGE
 	function tutorial()
 	{
@@ -180,6 +187,7 @@ class Home extends CI_Controller
 
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
+
 
 	//GET THE PRIVACY POLICY PAGE
 	function privacy_policy()

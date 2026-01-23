@@ -115,4 +115,9 @@ elseif ($page_name == "privacy_policy"){
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/privacy-policy.css">';
     
 }
+elseif ($page_name == "affiliation"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/affiliation.css">';
+    
+}
 ?>
