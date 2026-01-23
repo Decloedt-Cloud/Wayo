@@ -3708,6 +3708,7 @@
     "search_invoice_title_or_id": "ابحث عن عنوان الفاتورة أو المعرف",
     "total_invoices": "إجمالي الفواتير",
     "total_due": "الإجمالي المستحق",
+    "class_is_full_no_more_space": "الفصل ممتلئ، لا يوجد مكان آخر",
     "affiliation": "التسويق بالعمولة",
     "transform": "حوّل",
     "your_followers_into_customers_with_a_custom_offer": "متابعيك إلى عملاء من خلال عرض مخصص",

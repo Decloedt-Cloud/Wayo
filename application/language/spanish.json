@@ -3762,6 +3762,7 @@
     "search_invoice_title_or_id": "Buscar título o ID de factura",
     "total_invoices": "Total de facturas",
     "total_due": "Total pendiente",
+    "class_is_full_no_more_space": "La clase está llena, no hay más espacio",
     "affiliation": "Afiliación",
     "transform": "Convierte",
     "your_followers_into_customers_with_a_custom_offer": "a tus seguidores en clientes con una oferta personalizada",

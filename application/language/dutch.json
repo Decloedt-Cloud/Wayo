@@ -3811,6 +3811,7 @@
     "search_invoice_title_or_id": "Zoek op factuurtitel of ID",
     "total_invoices": "Totaal facturen",
     "total_due": "Totaal openstaand",
+    "class_is_full_no_more_space": "De klas zit vol, er is geen plaats meer",
     "affiliation": "Affiliateprogramma",
     "transform": "Zet",
     "your_followers_into_customers_with_a_custom_offer": "je volgers om in klanten met een op maat gemaakte aanbieding",

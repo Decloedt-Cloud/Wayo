@@ -93,7 +93,7 @@ if ($__school_id && $__trial_expired) {
             if (isset($unpaid_invoice['payment_type']) && $unpaid_invoice['payment_type'] === 'subscription_admin') {
                 $__payment_url = site_url('admin/payment/subscription_admin/' . $unpaid_invoice['id']);
             } else {
-                $__payment_url = site_url('student/payment/community/' . $unpaid_invoice['id']);
+                $__payment_url = site_url('payment/community/' . $unpaid_invoice['id']);
             }
         }
     }
