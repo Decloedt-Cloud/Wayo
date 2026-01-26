@@ -19,7 +19,6 @@ class Login extends CI_Controller
 		log_message('error', 'Le contrôleur Login a bien été appelé.');
 
 		$this->load->database();
-		$this->load->library('Humhub_sso');
 		$this->load->library('session');
 
 		/*LOADING ALL THE MODELS HERE*/

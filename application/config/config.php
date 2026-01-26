@@ -520,22 +520,7 @@ $config['csrf_exclude_uris'] = array(
     'teacher/get_recordings',
     'teacher/get_recordings_by_meeting_id',
 
-    'admin/wall',
-    'admin/people',
-    'admin/spaces',
-    'admin/chat',
-    'superadmin/wall',
-    'superadmin/people',
-    'superadmin/spaces',
-    'superadmin/chat',
-    'teacher/wall',
-    'teacher/people',
-    'teacher/spaces',
-    'teacher/chat',
-    'student/wall',
-    'student/people',
-    'student/spaces',
-    'student/chat',
+
     'class_room/create',
     'bigbluebutton/check_meeting_status',
     'superadmin/calendar.*',
@@ -680,16 +665,6 @@ $config['enable_hooks'] = TRUE;
 
 // Ici tu peux charger d'autres configs CI, puis ajouter :
 
-// $config['HUMHUB_BASE_URL']   = 'http://51.94.163.211';
-// $config['HUMHUB_JWT_SECRET'] = 'ry4mRP6N8ZBKP_Xn6998drxRXtml_jaDv5cvR2KJuM0dzr0owm4TiKxlnHnjG7qf3RPrvJFbMDAIlbDbz71MuT';
-// $config['HUMHUB_API_TOKEN']  = 'kteQ3M3rtHxiOuDPUbdgaTWN_ao_dWGk0Qrm85Zsrk-diUilMSzEqDTSqNROvkaLBF5wdXac8sFpfVVNeqrcvr';
-
-
-// Dans config.php ou constants.php
-$config['humhub_url'] = 'https://preprodwayosocial.wayo.site/';
-// $config['humhub_url'] = 'http://localhost/social-voicemessage/humhub-1.17.2/';   
-// $config['humhub_image'] = 'C:/xampp/htdocs/social-voicemessage/humhub-1.17.2/uploads/profile_image/';   
-$config['humhub_image'] = 'https://preprodwayosocial.wayo.site/uploads/profile_image/';
 
 /*
 |--------------------------------------------------------------------------
