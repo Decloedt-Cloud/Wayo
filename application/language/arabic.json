@@ -1812,7 +1812,7 @@
     "1._introduction": "مقدمة",
     "welcome_to_wayo_academy,_your_online_learning_platform._wayo_academy_is_dedicated_to_empowering_professional_coaches_across_various_fields_(scrum,_agility,_languages,_sciences,_sports,_etc.)_to_offer_personalized_online_training_to_their_clients_or_members._by_accessing_or_using_our_website_and_mobile_application,_you_agree_to_these_terms_and_conditions._please_read_them_carefully_as_they_outline_your_rights_and_obligations_as_a_user.": "مرحبًا بكم في  Wayo، منصتكم التعليمية عبر الإنترنت. تكرس  Wayo جهودها لتمكين الموجهون المحترفين في مختلف المجالات (سكروم، الرشاقة، اللغات، العلوم، الرياضة، إلخ.) لتقديم تدريب شخصي عبر الإنترنت لعملائهم أو أعضائهم. باستخدامكم لموقعنا الإلكتروني أو تطبيقنا المحمول، فإنكم توافقون على هذه الشروط والأحكام. يرجى قراءتها بعناية حيث توضح حقوقكم وواجباتكم كمستخدمين.",
     "2._definitions": "التعريفات",
-    "wayo_academy:": " Wayo:",
+    "wayo_academy:": " Wayo",
     "the_suite_of_educational_services_provided_through_our_website_and_mobile_application.": "مجموعة الخدمات التعليمية المقدمة من خلال موقعنا الإلكتروني وتطبيقنا المحمول.",
     "user:": "المستخدم:",
     "any_person_or_entity_having_subscribed_to_a_service_or_training_course_via_the_website/application.": "أي شخص أو كيان اشترك في خدمة أو دورة تدريبية عبر الموقع/التطبيق.",
@@ -3737,5 +3737,8 @@
     "you_earn_100_dh": "تكسب 100 درهم",
     "at_10_dh_for_the_first_month,_there_is_no_resistance._your_community_can_test_without_risk": "بسعر 10 دراهم في الشهر الأول، لا يوجد أي تردد. يمكن لمجتمعك التجربة دون أي مخاطر",
     "100_dh_per_qualified_customer._no_hidden_fees,_no_complex_conditions": "100 درهم لكل عميل مؤهل. بدون رسوم خفية وبدون شروط معقدة",
+    "become_a_partner_wayo": "أصبح شريكًا مع وايو",
+    "and_monetize_your_community": "واجني أرباحًا من مجتمعك",
+    "an_initial_quota_is_set_up_to_assess_the_quality_of_the_traffic._once_your_reliability_is_proven,_the_limits_are_lifted": "تم تحديد حصة أولية لتقييم جودة الحركة. بمجرد إثبات موثوقيتك، تُرفع الحدود",
     "offers_and_prices": "العروض والأسعار"
 }

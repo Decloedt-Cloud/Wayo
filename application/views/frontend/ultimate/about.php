@@ -67,28 +67,145 @@
     #scrollTopBtn{ position:fixed; right:16px; bottom:16px; width:44px; height:44px; border:none; border-radius:999px; background:var(--accent); color:#fff; display:grid; place-items:center; box-shadow:0 8px 18px rgba(0,0,0,.16); opacity:0; visibility:hidden; transition:opacity .2s, visibility .2s, transform .2s; }
     #scrollTopBtn.show{ opacity:1; visibility:visible; transform:translateY(0); }
 
-    /* Timeline arrow & progression */
+    /* Timeline Section Styling */
+    .section-timeline {
+        background: #f8f9fa;
+        position: relative;
+    }
+
     .timeline {
       position: relative;
-      padding-bottom: 60px !important;
+      padding: 40px 0;
+      max-width: 1100px;
+      margin: 0 auto;
     }
+    
+    /* Vertical Line */
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ECEEF3;
+      transform: translateX(-50%);
+    }
+
+    /* Orange Arrow at bottom */
     .timeline::after {
       content: "" !important;
       position: absolute !important;
-      bottom: 0 !important;
+      bottom: -15px !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       width: 0 !important;
       height: 0 !important;
       border-left: 10px solid transparent !important;
       border-right: 10px solid transparent !important;
-      border-top: 15px solid #ff6600 !important;
+      border-top: 15px solid var(--accent) !important;
       z-index: 10 !important;
+      display: block !important;
     }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 40px;
+      z-index: 1;
+    }
+
+    /* Hide existing dot from external CSS */
+    .timeline-item::before {
+        content: none !important;
+    }
+
+    /* Dot on the line */
+    .timeline-item::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 3px rgba(252,123,48,0.1);
+      z-index: 2;
+    }
+
+    .card-timeline {
+      background: #fff;
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      width: 100%;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+    }
+    
+    .card-timeline:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        border-color: rgba(252, 123, 48, 0.2);
+    }
+
+    .card-timeline h5 {
+      color: #1e1e2d;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      font-size: 1.15rem;
+    }
+    
+    .card-timeline p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    @media (min-width: 769px) {
+        .timeline-left {
+            padding-right: 50px !important;
+        }
+        .timeline-right {
+            padding-left: 50px !important;
+        }
+        .timeline-left .card-timeline {
+            text-align: right;
+        }
+    }
+
     @media (max-width: 768px) {
+      .timeline::before {
+          left: 20px;
+          transform: translateX(-50%);
+      }
       .timeline::after {
-          left: 8px !important;
-          transform: none !important;
+          left: 20px !important;
+          transform: translateX(-50%) !important;
+      }
+      .timeline-item::after {
+          left: 32px;
+          transform: translate(-50%, -50%);
+      }
+      .timeline-left {
+          justify-content: flex-start !important;
+          padding-left: 45px !important;
+          margin-bottom: 30px;
+      }
+      .timeline-right {
+          padding-left: 45px !important;
+      }
+      .card-timeline {
+          text-align: left !important;
       }
     }
   </style>
@@ -433,20 +550,6 @@
                     <div class="social-links">
                       <a href="https://www.linkedin.com/in/ilyas-zmane-0483691bb/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                       <a href="mailto:Ilyas.Zmane@decloedt.cloud"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Team Member 14 -->
-                  <div class="team-card">
-                  <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/fakir.png'); ?>" alt="Abdelazyz Fakir">
-                  </div>
-                  <div class="card-content">
-                    <h3><?php echo get_phrase("Abdelazyz_Fakir") ?></h3>
-                    <div class="position"><?php echo get_phrase("Full-Stack_Developer") ?></div>
-                    <div class="social-links">
-                      <a href="https://www.linkedin.com/in/fakir-aziz/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="mailto:Abdelazyz.fakir@decloedt.cloud"><i class="fas fa-envelope"></i></a>
                     </div>
                   </div>
                 </div>
