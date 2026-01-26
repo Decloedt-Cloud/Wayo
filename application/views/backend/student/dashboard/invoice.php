@@ -15,7 +15,11 @@ $date_to   = strtotime(date('Y-m-t')." 23:59:59");
     </thead>
     <tbody>
         <?php
-        $invoices = $this->crud_model->get_invoice_by_date_range($date_from, $date_to)->result_array();
+        $student_data = $this->user_model->get_logged_in_student_details();
+        $student_code = isset($student_data['code']) ? $student_data['code'] : null;
+        // Get all invoices (excluding unpaid)
+        $invoices = $student_code ? $this->crud_model->get_invoice_by_student_id($student_code)->result_array() : [];
+        
         foreach ($invoices as $invoice): ?>
         <tr>
             <td>
