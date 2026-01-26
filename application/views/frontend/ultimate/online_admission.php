@@ -603,6 +603,8 @@
         flex-direction: column;
         gap: 1rem;
         flex: 1 1 300px; /* Allow growth, min-width 300px */
+        min-width: 0; /* Prevent overflow from children */
+        max-width: 100%;
     }
 
     .summary-card:hover {
@@ -642,23 +644,32 @@
         font-size: 0.95rem;
         line-height: 1.6;
         color: #4b5563;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
     }
 
     .summary-item {
         display: flex;
         justify-content: space-between;
         margin-bottom: 0.5rem;
+        gap: 10px; /* Add gap to prevent label and value from Touching */
     }
 
     .summary-label {
         font-weight: 600;
         color: #64748b;
         margin-right: 12px;
+        flex-shrink: 0; /* Prevent label from shrinking */
     }
 
     .summary-value {
         color: #1e293b;
         text-align: right;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        min-width: 0; /* Allow shrinking in flex */
     }
 
     .summary-media-row {
@@ -2044,7 +2055,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3><?php echo get_phrase("Description"); ?></h3>
                     </div>
                     <div class="summary-card-body">
-                        <p style="margin:0; font-style: italic; color: #64748b;">"${desc}"</p>
+                        <p style="margin:0; font-style: italic; color: #64748b; overflow-wrap: break-word; word-break: break-word;">"${desc}"</p>
                     </div>
                 </div>
             </div>
