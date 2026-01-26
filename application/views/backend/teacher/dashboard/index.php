@@ -516,7 +516,7 @@
         </h1>
         <div class="date-badge">
             <i class="far fa-calendar-alt"></i>
-            <span><?php echo date('l, j F Y'); ?></span>
+            <span> <?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?></span>
         </div>
     </div>
 

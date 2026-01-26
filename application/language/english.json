@@ -145,7 +145,7 @@
     "online_exam": "Online exam",
     "update_permissions": "Update permissions",
     "no_permission_assigned_yet": "No permission assigned yet",
-    "take_attendance": "Take attendance",
+    "take_attendance": "Attendance",
     "select_a_month": "Select a month",
     "january": "January",
     "february": "February",
@@ -2049,7 +2049,7 @@
     "list": "List",
     "edit_event": "Edit event",
     "teacher_permission_updated": "Teacher permission updated",
-    "wayo_academy,_much_more_than_a_learning_platform.": "Wayo, much more than a learning platform.",
+    "wayo_academy,_much_more_than_a_learning_platform": "Wayo, much more than a learning platform",
     "a_community_of_experts_and_learners_united_to_turn_skills_into_opportunities.": "A community of experts and learners united to turn skills into opportunities.",
     "join_the_community_": "Join the community ",
     "découvrir_l’histoire_": "Découvrir l’histoire ",
@@ -4194,5 +4194,11 @@
     "social": "Social",
     "people": "People",
     "chat": "Chat",
-    "add_new_accountant_details": "Add new accountant details"
+    "add_new_accountant_details": "Add new accountant details",
+    "offers_and_prices": "Offers and prices",
+    "manage_class_syllabuses": "Manage class syllabuses",
+    "total_syllabus": "Total syllabus",
+    "upload_and_share_study_materials": "Upload and share study materials",
+    "enter_syllabus_title": "Enter syllabus title",
+    "no_syllabus_found_for_this_selection": "No syllabus found for this selection"
 }

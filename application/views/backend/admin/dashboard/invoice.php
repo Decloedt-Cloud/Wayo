@@ -40,7 +40,7 @@ $date_to   = strtotime(date('Y-m-t')." 23:59:59");
                 <?php echo  currency($invoice['paid_amount']) ; ?>
             </td>
             <td>
-                <?php echo  ucfirst($invoice['status']) ; ?>
+                <?php echo strtolower($invoice['status']) == 'unpaid' ? get_phrase('pending') : ucfirst($invoice['status']); ?>
             </td>
         </tr>
     <?php endforeach; ?>

@@ -139,7 +139,7 @@
     "online_exam": "الامتحان عبر الإنترنت",
     "update_permissions": "تحديث الأذونات",
     "no_permission_assigned_yet": "لم يتم تخصيص أي إذن بعد",
-    "take_attendance": "تسجيل الحضور",
+    "take_attendance": "الحضور",
     "select_a_month": "اختر شهرًا",
     "january": "يناير",
     "february": "فبراير",
@@ -3736,5 +3736,7 @@
     "they_access_the_full_platform_for_only_10_dh_for_the_first_month": "يمكنهم الوصول إلى المنصة كاملة مقابل 10 دراهم فقط في الشهر الأول",
     "you_earn_100_dh": "تكسب 100 درهم",
     "at_10_dh_for_the_first_month,_there_is_no_resistance._your_community_can_test_without_risk": "بسعر 10 دراهم في الشهر الأول، لا يوجد أي تردد. يمكن لمجتمعك التجربة دون أي مخاطر",
-    "100_dh_per_qualified_customer._no_hidden_fees,_no_complex_conditions": "100 درهم لكل عميل مؤهل. بدون رسوم خفية وبدون شروط معقدة"
+    "100_dh_per_qualified_customer._no_hidden_fees,_no_complex_conditions": "100 درهم لكل عميل مؤهل. بدون رسوم خفية وبدون شروط معقدة",
+    "select_date_and_class": "Select date and class",
+    "select_date": "Select date"
 }

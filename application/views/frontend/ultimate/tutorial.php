@@ -74,9 +74,7 @@
       <div class="obi-grid">
         <!-- 1. Profil -->
         <article class="obi-card" data-animate data-step="1">
-          <div class="obi-num">1</div>
-          <div class="obi-icon"><i class="fa-solid fa-id-card-clip"></i></div>
-          <h3><?php echo get_phrase("Create a profile") ?></h3>
+          <h3><span class="obi-num-inline">1</span> <?php echo get_phrase("Create a profile") ?></h3>
           <p><?php echo get_phrase("Enter your basic information to secure and personalize your space.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-regular fa-user"></i> <strong><?php echo get_phrase("Full name") ?></strong> <?php echo get_phrase("(displayed publicly)") ?></li>
@@ -88,9 +86,7 @@
 
         <!-- 2. Communauté -->
         <article class="obi-card" data-animate data-step="2">
-          <div class="obi-num">2</div>
-          <div class="obi-icon"><i class="fa-solid fa-users-gear"></i></div>
-          <h3><?php echo get_phrase("Create a community") ?></h3>
+          <h3><span class="obi-num-inline">2</span> <?php echo get_phrase("Create a community") ?></h3>
           <p><?php echo get_phrase("Clearly present your value proposition and set the price.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-solid fa-video"></i> <strong><?php echo get_phrase("Community video") ?></strong> <?php echo get_phrase("(YouTube/Vimeo ou téléversement) ") ?></li>
@@ -106,9 +102,7 @@
 
         <!-- 3. Classes -->
         <article class="obi-card" data-animate data-step="3">
-          <div class="obi-num">3</div>
-          <div class="obi-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-          <h3><?php echo get_phrase("Create classes") ?></h3>
+          <h3><span class="obi-num-inline">3</span> <?php echo get_phrase("Create classes") ?></h3>
           <p><?php echo get_phrase("Add your educational content and organize your catalog.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-solid fa-clapperboard"></i> <strong><?php echo get_phrase("Type") ?></strong> : <?php echo get_phrase("live, replay, files") ?> <?php echo get_phrase("quiz") ?></li>
@@ -120,9 +114,7 @@
 
         <!-- 4. Lancement -->
         <article class="obi-card" data-animate data-step="4">
-          <div class="obi-num">4</div>
-          <div class="obi-icon"><i class="fa-solid fa-rocket"></i></div>
-          <h3><?php echo get_phrase("Launch and monetize") ?></h3>
+          <h3><span class="obi-num-inline">4</span> <?php echo get_phrase("Launch and monetize") ?></h3>
           <p><?php echo get_phrase("Publish your community, promote it, and track your metrics.") ?></p>
           <ul class="obi-bullets">
             <li><i class="fa-regular fa-paper-plane"></i> <strong><?php echo get_phrase("Publishing & sharing") ?></strong> : <?php echo get_phrase("social networks, email, QR") ?></li>

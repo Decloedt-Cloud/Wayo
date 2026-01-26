@@ -25,7 +25,7 @@
         }
 
     /* Hero */
-    .hero{ position:relative; min-height:68vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/bg-about-us.png'); ?>'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/bg-about-us.png'); ?>'); background-size:cover; background-position:center; }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
@@ -99,7 +99,7 @@
     <!-- HERO -->
     <section class="hero" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="container hero-content py-5" data-animate>
-        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Wayo Academy, much more than a learning platform.") ?></h1>
+        <h1 class="display-5 fw-bold mb-2"><?php echo get_phrase("Wayo Academy, much more than a learning platform") ?></h1>
        
         <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("A community of experts and learners united to turn skills into opportunities.") ?></p>
     <div class="row g-2 justify-content-center">
