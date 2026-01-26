@@ -1,7 +1,7 @@
 <div class="affiliation-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <!-- Hero Section -->
     <section class="text-center aff-section">
-        <h1><span class="aff-accent"><?php echo get_phrase('Transform'); ?></span> <?php echo get_phrase('your followers into customers with a custom offer'); ?>.</h1>
+        <h1><span class="aff-accent"><?php echo get_phrase('Become a partner wayo'); ?></span> <?php echo get_phrase('and monetize your community'); ?>.</h1>
         <p class="aff-subtitle mb-5"><?php echo get_phrase('Offer 1 month of full access for 10 DH. Earn 100 DH per signup. Simple'); ?>.</p>
         <button class="aff-cta-primary" onclick="handleCTA()"><?php echo get_phrase('Become a Partner'); ?></button>
     </section>
@@ -84,7 +84,7 @@
             </div>
             <div class="aff-faq-card">
                 <h5><?php echo get_phrase('Is there a limit?'); ?></h5>
-                <p><?php echo get_phrase('We set an initial quota to validate the traffic quality together. Once your reliability is proven, the limits are lifted'); ?>.</p>
+                <p><?php echo get_phrase('An initial quota is set up to assess the quality of the traffic. Once your reliability is proven, the limits are lifted'); ?>.</p>
             </div>
         </div>
     </section>
