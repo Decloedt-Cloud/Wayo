@@ -24,7 +24,12 @@ class Admin extends CI_Controller
 		$this->load->library('session');
 		$this->config->load('config'); 
     	
-		require_once APPPATH . '../vendor/autoload.php';
+		$composer_autoload = APPPATH . '../vendor/autoload.php';
+		if (file_exists($composer_autoload)) {
+			require_once $composer_autoload;
+		} else {
+			log_message('error', 'Composer autoload file not found: ' . $composer_autoload);
+		}
 
 		/*LOADING ALL THE MODELS HERE model  */
 		$this->load->model('Crud_model', 'crud_model');
