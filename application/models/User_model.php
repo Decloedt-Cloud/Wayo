@@ -1642,7 +1642,13 @@ class User_model extends CI_Model
 
 			);
 			$enrol_data = $this->db->get_where('enrols', $checker)->row_array();
+			// Try to find by user_id first
 			$student_details = $this->db->get_where('students', array('user_id' => $id))->row_array();
+			
+			// If not found, try by id (student_id)
+			if (empty($student_details)) {
+				$student_details = $this->db->get_where('students', array('id' => $id))->row_array();
+			}
 
 			if ($student_details) {
 				$enrol_data['code'] = $student_details['code'];
@@ -2379,51 +2385,78 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			log_message('error', 'join_school debug: user_id='.$user_id.' school_id='.$school_id.' existing_student='.json_encode($existing_student));
 
 			if (!empty($existing_student)) {
-				if ($existing_student['status'] == 1) {
-					// Already approved? Switch session!
-					$this->session->set_userdata('active_school_id', $school_id);
-					$this->session->set_userdata('school_id', $school_id);
-					$this->session->set_userdata('role', 'student');
-					$this->session->set_userdata('user_type', 'student');
-
-					// Ensure user_schools is up to date just in case
-					$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
-					if ($user_school_check) {
-						$this->db->where('id', $user_school_check->id);
-						$this->db->update('user_schools', ['role' => 'student']);
-					} else {
-						// Insert missing user_schools entry if it doesn't exist
-						$this->db->insert('user_schools', [
-							'user_id' => $user_id,
-							'school_id' => $school_id,
-							'role' => 'student'
-						]);
+				
+				// Cas Spécial : Mise à jour du statut pour accès gratuit/public si l'utilisateur était déjà en attente
+				// Ou si c'est une première inscription gratuite
+				if (!empty($data_invoice) && isset($data_invoice['payment_method']) && $data_invoice['payment_method'] == 'free_access') {
+					
+					// Vérifier si l'école est publique pour forcer le statut 1
+					$query_school = $this->db->get_where('schools', array('id' => $school_id));
+					if ($query_school->num_rows() > 0) {
+						$row_school = $query_school->row();
+						if ($row_school->access == 0) { // 0 = Public (selon convention dans community_details.php)
+							$this->db->where('id', $existing_student['id']);
+							$this->db->update('students', ['status' => 1]);
+							$existing_student['status'] = 1; 
+							log_message('info', 'Student auto-approved for free public community (existing record updated).');
+						}
 					}
+				}
 
-					$this->session->set_flashdata('success', get_phrase('welcome_back_to_the_community'));
-					redirect(site_url('student/dashboard'), 'refresh');
+				// Only handle redirects if this is NOT a payment confirmation call
+				if (empty($data_invoice)) {
+					if ($existing_student['status'] == 1) {
+						// Already approved? Switch session!
+						$this->session->set_userdata('active_school_id', $school_id);
+						$this->session->set_userdata('school_id', $school_id);
+						$this->session->set_userdata('role', 'student');
+						$this->session->set_userdata('user_type', 'student');
+
+						// Ensure user_schools is up to date just in case
+						$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
+						if ($user_school_check) {
+							$this->db->where('id', $user_school_check->id);
+							$this->db->update('user_schools', ['role' => 'student']);
+						} else {
+							// Insert missing user_schools entry if it doesn't exist
+							$this->db->insert('user_schools', [
+								'user_id' => $user_id,
+								'school_id' => $school_id,
+								'role' => 'student'
+							]);
+						}
+
+						$this->session->set_flashdata('success', get_phrase('welcome_back_to_the_community'));
+						redirect(site_url('student/dashboard'), 'refresh');
+					} else {
+						// Still pending - Switch session anyway to allow restricted access (grayed out menu)
+						$this->session->set_userdata('active_school_id', $school_id);
+						$this->session->set_userdata('school_id', $school_id);
+						$this->session->set_userdata('role', 'student');
+						$this->session->set_userdata('user_type', 'student');
+
+						// Ensure user_schools is up to date just in case (for pending users too)
+						$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
+						if ($user_school_check) {
+							$this->db->where('id', $user_school_check->id);
+							$this->db->update('user_schools', ['role' => 'student']);
+						} else {
+							$this->db->insert('user_schools', [
+								'user_id' => $user_id,
+								'school_id' => $school_id,
+								'role' => 'student'
+							]);
+						}
+
+						// Redirect to invoice page where the message will be shown
+						redirect(site_url('student/invoice'), 'refresh');
+					}
 				} else {
-					// Still pending - Switch session anyway to allow restricted access (grayed out menu)
-					$this->session->set_userdata('active_school_id', $school_id);
-					$this->session->set_userdata('school_id', $school_id);
-					$this->session->set_userdata('role', 'student');
-					$this->session->set_userdata('user_type', 'student');
-
-					// Ensure user_schools is up to date just in case (for pending users too)
-					$user_school_check = $this->db->get_where('user_schools', array('user_id' => $user_id, 'school_id' => $school_id))->row();
-					if ($user_school_check) {
-						$this->db->where('id', $user_school_check->id);
-						$this->db->update('user_schools', ['role' => 'student']);
-					} else {
-						$this->db->insert('user_schools', [
-							'user_id' => $user_id,
-							'school_id' => $school_id,
-							'role' => 'student'
-						]);
-					}
-
-					// Redirect to invoice page where the message will be shown
-					redirect(site_url('student/invoice'), 'refresh');
+					// Pre-fill data for payment processing context (Existing Student)
+					$query = $this->db->get_where('schools', array('id' => $school_id));
+					$row = $query->row();
+					$data['code'] = $existing_student['code'];
+					$data['status'] = $existing_student['status']; // Important: Transmettre le statut à jour
 				}
 			} else {
 
@@ -2439,10 +2472,13 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
 
-					if ($row->access == 1) {
-						$data['status'] = 1; //Public
+					// 0 = Public, 1 = Private (Convention inversée ou spécifique à vérifier)
+					// Dans community_details.php : if ($school["access"] > 0) { Private } else { Public }
+					// Donc access == 0 => Public => Status = 1 (Approved)
+					if ($row->access == 0) {
+						$data['status'] = 1; // Public -> Approved directly
 					} else {
-						$data['status'] = 0; //Private
+						$data['status'] = 0; // Private -> Pending
 					}
 				}
 
@@ -2537,6 +2573,14 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 					$this->db->where('id', $data_invoice['invoice_id']);
 					$this->db->update('invoices', $updater);
 					
+					// Approve the student in the school
+					$this->db->where('user_id', $user_id);
+					$this->db->where('school_id', $school_id);
+					$this->db->update('students', array('status' => 1));
+
+					// Update local data status for the redirection logic at the end of function
+					$data['status'] = 1;
+
 					log_message('info', "Community invoice #{$data_invoice['invoice_id']} marked as paid");
 				}
 			}
@@ -2555,6 +2599,7 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$this->session->set_userdata('role', 'student');
 			$this->session->set_userdata('user_type', 'student');
 			
+			$this->session->set_flashdata('info', get_phrase('request_sent_waiting_for_approval'));
 			redirect(site_url('student/invoice'), 'refresh');
 		} else {
 			// Update session to immediately switch to the new school ONLY if approved
@@ -2562,6 +2607,9 @@ public function get_unread_messages_count($wayo_user_id)//user_model
 			$this->session->set_userdata('school_id', $school_id);
 			$this->session->set_userdata('role', 'student');
 			$this->session->set_userdata('user_type', 'student');
+
+			$this->session->set_flashdata('success', get_phrase('welcome_to_the_community'));
+			redirect(site_url('student/dashboard'), 'refresh');
 		}
 
 				// if (isset($_SERVER['HTTP_REFERER'])) {

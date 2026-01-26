@@ -241,7 +241,7 @@ foreach ($classes as $key => $class) {
                             // CASE 2 : classe full → liste d’attente
                             elseif ($is_max_reached): ?>
                               <button type="button" class="btn btn-outline-secondary fw-bold" disabled>
-                                <?php echo htmlspecialchars(get_phrase("waiting_list")); ?>
+                                <?php echo htmlspecialchars(get_phrase("class_is_full_no_more_space")); ?>
                               </button>
 
                             <?php 

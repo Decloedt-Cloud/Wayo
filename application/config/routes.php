@@ -63,6 +63,7 @@ $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
 $route['about'] = 'home/about';
 $route['faq'] = 'home/faq';
+$route['affiliation'] = 'home/affiliation';
 $route['terms'] = 'home/terms_conditions';
 $route['terms_conditions'] = 'home/terms_conditions';
 $route['privacy_policy'] = 'home/privacy_policy';
@@ -691,6 +692,8 @@ $route['cron/fx_clear_cache'] = 'Cron/fx_clear_cache';
 $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
+$route['payment/community/(:num)'] = 'student/payment/community/$1';
+
 /*
 | -------------------------------------------------------------------------
 | CUSTOM ROUTE FOR APP URL MASKING
@@ -763,6 +766,7 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/courses/(.+)'] = 'addons/courses/$1';
         $route['app/lessons'] = 'addons/lessons';
         $route['app/lessons/(.+)'] = 'addons/lessons/$1';
+        $route['app/payment/(:num)'] = 'student/payment/classe/$1';
         $route['app'] = $role_route . '/dashboard';
         $route['app/(.+)'] = $role_route . '/$1';
     } else {

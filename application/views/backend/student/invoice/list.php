@@ -298,10 +298,17 @@ $default_currency = !empty($all_invoices) ? $all_invoices[0]['currency'] : 'USD'
                         </td>
                         <td>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold"><?php echo $invoice['title']; ?></span>
-                                <small class="text-muted">
-                                    <?php echo !empty($class_details) ? $class_details['name'] : get_phrase('subscription'); ?>
-                                </small>
+                                <span class="fw-bold">
+                                    <?php 
+                                    $type_label = !empty($class_details) ? get_phrase('class') : get_phrase('membership');
+
+                                    if ((float)$invoice['total_amount'] <= 0) {
+                                        echo get_phrase('free') . ' - ' . $type_label . ' - ' . $invoice['title'];
+                                    } else {
+                                        echo $type_label . ' - ' . $invoice['title'];
+                                    }
+                                    ?>
+                                </span>
                             </div>
                         </td>
                         <td>
@@ -330,7 +337,14 @@ $default_currency = !empty($all_invoices) ? $all_invoices[0]['currency'] : 'USD'
                         <td>
                             <div class="d-flex gap-2">
                                 <?php if (!$is_paid): ?>
-                                    <a href="<?php echo route('payment/' . $invoice['id']); ?>" class="modern-btn primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    <?php
+                                         // Déterminer l'URL de paiement en fonction du type de facture (Classe ou Communauté)
+                                         $payment_url = site_url('payment/community/' . $invoice['id']);
+                                         if (!empty($invoice['class_id']) && $invoice['class_id'] > 0) {
+                                             $payment_url = site_url('app/payment/' . $invoice['id']);
+                                         }
+                                     ?>
+                                    <a href="<?php echo $payment_url; ?>" class="modern-btn primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                         <i class="mdi mdi-credit-card-outline"></i> <?php echo get_phrase('pay'); ?>
                                     </a>
                                 <?php else: ?>

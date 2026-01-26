@@ -1,0 +1,326 @@
+/* Global Overrides for Affiliation Page to ensure header consistency */
+body {
+    font-family: 'Urbanist', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+
+.affiliation-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px 80px;
+    /* Increased top padding to avoid overlap with sticky header */
+    font-family: 'Urbanist', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #0A0A0A;
+}
+
+/* Specific fix for Navbar font which might be overridden by general.css */
+.site-header,
+.navbar,
+.nav-link,
+.btn-login,
+.btn-custom {
+    font-family: 'Urbanist', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+
+/* Typography */
+.affiliation-container h1 {
+    font-size: 56px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #171717;
+    margin: 0 auto 24px;
+    text-align: center;
+}
+
+.affiliation-container .aff-section-title {
+    font-size: 34px !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 48px !important;
+    text-align: center !important;
+    color: #000 !important;
+    border: none !important;
+    background: none !important;
+    padding: 0 !important;
+}
+
+.affiliation-container .aff-subtitle {
+    font-size: 19px;
+    color: #555;
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Buttons */
+.affiliation-container .aff-cta-primary {
+    background: #F47A1F !important;
+    color: #fff !important;
+    padding: 12px 32px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(244, 122, 31, 0.2) !important;
+    display: inline-block !important;
+}
+
+.affiliation-container .aff-cta-primary:hover {
+    background: #e06910 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(244, 122, 31, 0.3) !important;
+}
+
+/* Sections */
+.affiliation-container .aff-section {
+    margin-bottom: 80px !important;
+    margin-top: 80px;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+.affiliation-container .aff-section:first-of-type {
+    margin-top: 0 !important;
+}
+
+/* Steps */
+.affiliation-container .aff-step-item {
+    text-align: center;
+}
+
+.affiliation-container .aff-step-number {
+    width: 40px;
+    height: 40px;
+    background: #F47A1F;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0 auto 20px;
+}
+
+.affiliation-container .aff-step-item h5 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #000;
+}
+
+.affiliation-container .aff-step-item p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Arguments (Checklist) */
+.affiliation-container .aff-argument-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.affiliation-container .aff-argument-item {
+    background: #fff;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.affiliation-container .aff-check-icon {
+    width: 22px;
+    height: 22px;
+    background: #F47A1F;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.affiliation-container .aff-argument-item h6 {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #000;
+}
+
+.affiliation-container .aff-argument-item p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* Calculator */
+.affiliation-container .aff-calculator-card {
+    background: #fff;
+    border: 1px solid #EFEFEF;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.affiliation-container .aff-calculator-card h5 {
+    font-size: 22px;
+    font-weight: 850;
+    margin-bottom: 24px;
+    color: #000;
+}
+
+.affiliation-container .aff-calc-label {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.affiliation-container .aff-calc-input {
+    max-width: 180px;
+    margin: 0 auto 24px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    border: 1px solid #EEE;
+    border-radius: 8px;
+    padding: 10px;
+    background: #FAFAFA;
+    display: block;
+    direction: ltr !important;
+}
+
+.affiliation-container .aff-calc-result {
+    font-size: 64px;
+    font-weight: 900;
+    color: #F47A1F;
+    margin-bottom: 8px;
+    letter-spacing: -3px;
+    direction: ltr !important;
+    unicode-bidi: bidi-override;
+}
+
+.affiliation-container .aff-calc-footer {
+    font-size: 13px;
+    color: #999;
+}
+
+/* FAQ */
+.affiliation-container .aff-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.affiliation-container .aff-faq-card {
+    background: #fff;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 24px 32px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.affiliation-container .aff-faq-card h5 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #000;
+}
+
+.affiliation-container .aff-faq-card p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 0;
+    line-height: 1.7;
+}
+
+.affiliation-container .aff-divider {
+    border: 0;
+    height: 1px;
+    background: #000;
+    margin: 80px 0 0;
+}
+
+/* Footer CTA */
+.affiliation-container .aff-footer-cta {
+    text-align: center;
+    margin-top: 0 !important;
+    padding-top: 60px !important;
+}
+
+.affiliation-container .aff-footer-cta h2 {
+    font-size: 40px;
+    font-weight: 850;
+    margin-bottom: 32px;
+    color: #000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .affiliation-container {
+        padding: 40px 15px 40px;
+    }
+
+    .affiliation-container h1 {
+        font-size: 28px;
+    }
+
+    .affiliation-container .aff-subtitle {
+        font-size: 16px;
+    }
+
+    .affiliation-container .aff-section {
+        margin-top: 40px !important;
+        margin-bottom: 40px !important;
+    }
+
+    .affiliation-container .aff-section-title {
+        font-size: 24px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .affiliation-container .aff-step-item h5 {
+        font-size: 18px;
+    }
+
+    .affiliation-container .aff-argument-item h6 {
+        font-size: 16px;
+    }
+
+    .affiliation-container .aff-calculator-card {
+        padding: 30px 20px;
+    }
+
+    .affiliation-container .aff-calc-result {
+        font-size: 40px;
+    }
+
+    .affiliation-container .aff-divider {
+        margin: 40px 0 0;
+    }
+
+    .affiliation-container .aff-footer-cta {
+        padding-top: 20px !important;
+    }
+
+    .affiliation-container .aff-footer-cta h2 {
+        font-size: 28px;
+    }
+}

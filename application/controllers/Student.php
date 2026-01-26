@@ -1019,6 +1019,29 @@ class Student extends CI_Controller {
 	  	$this->session->set_userdata('enrolment_data', $data);
 
 
+		// Si le prix est 0 (gratuit), on inscrit directement l'étudiant
+		if ($data['price'] <= 0) {
+			
+			// 1. Inscrire dans la table enrols sans créer de facture
+			$this->crud_model->enroll_student_free($data);
+
+			// 2. Ajouter aux espaces HumHub (classe et école)
+			$this->add_student_to_class_space($data['student_id'], $data['class_id']);
+			$school_id = $data['school_id'];
+			
+			if ($school_id) {
+				$this->add_student_to_school_community($data['student_id'], $school_id);
+				// Mettre à jour la session pour que l'étudiant soit dans la bonne communauté
+				$this->session->set_userdata('active_school_id', $school_id);
+				$this->session->set_userdata('school_id', $school_id);
+			}
+
+            // 3. Rediriger directement vers le cours
+			redirect(site_url('student/courses/' . $data['class_id']), 'refresh');
+            return;
+		}
+
+		// Si payant, vérifier facture existante ou en créer une
 		$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
 		// print_r($num_rows_invoices);die;
 		if($num_rows_invoices == 0){
@@ -1094,6 +1117,8 @@ class Student extends CI_Controller {
         $data['currency']   = htmlspecialchars($this->input->post('currency'));
         $data['session']    = active_session();
 
+        log_message('debug', 'JOIN_SCHOOL_DEBUG: User ' . $data['student_id'] . ' joining School ' . $data['school_id'] . ' with Price: ' . $data['price']);
+
         // 🔹 2. Vérifier si l'école existe
         $school = $this->db->get_where('schools', ['id' => $data['school_id']])->row();
         if (!$school) {
@@ -1101,21 +1126,23 @@ class Student extends CI_Controller {
             return;
         }
         $school_name = $school->name;
-        $is_private_school = (int)$school->access > 0;
-
-        if ($is_private_school) {
-            // Les communautés privées ne passent pas par la page de paiement
+        
+        // Si le prix est gratuit (0 ou null), on rejoint directement sans passer par le paiement
+        if ((float)$data['price'] <= 0.01) {
+            
+             // 🔹 5. Pas de facture ni paiement pour le gratuit
+             
             $this->user_model->join_school($data['school_id'], [
-                'invoice_id'     => null,
-                'amount_paid'    => 0,
-                'payment_method' => 'private_access'
+                'payment_method' => 'free_access'
             ]);
 
+            // User_model->join_school gère la redirection, mais par sécurité :
             if (isset($_SERVER['HTTP_REFERER'])) {
                 redirect($_SERVER['HTTP_REFERER'], 'refresh');
             } else {
                 redirect(site_url('home'), 'refresh');
             }
+            return;
         }
 
         // 🔹 3. Vérifier s'il existe déjà une facture pour cette école et cet étudiant
@@ -1157,7 +1184,7 @@ class Student extends CI_Controller {
             
             // 🔹 5. Créer la facture (invoice) avec TVA
             $invoice_data = [
-                'title'        => 'Adhésion - ' . $school_name,
+                'title'        => $school_name,
                 'total_amount' => $price_ttc, // Montant TTC
                 'sub_total'    => $sub_total, // Montant HT
                 'vat_amount'   => $vat_amount, // Montant TVA
@@ -1202,7 +1229,7 @@ class Student extends CI_Controller {
        // ✅ ADD THIS: Store school_id in session for payment page
         $this->session->set_userdata('payment_school_id', $data['school_id']);
 
-		redirect(site_url('Student/payment/community/' . $invoice_id), 'refresh');
+		redirect(site_url('payment/community/' . $invoice_id), 'refresh');
     }
 }
 
@@ -2188,6 +2215,14 @@ public function get_exams_paginated()
 
                 if ($school_id) {
                     $this->add_student_to_school_community($details['student_id'], $school_id);
+                    // Mettre à jour la session pour que l'étudiant soit dans la bonne communauté
+                    $this->session->set_userdata('active_school_id', $school_id);
+                    $this->session->set_userdata('school_id', $school_id);
+                }
+
+                // Redirection vers la page du cours après paiement réussi
+                if (!empty($details['class_id'])) {
+                    redirect(site_url('student/courses/' . $details['class_id']), 'refresh');
                 }
             }
                 
@@ -2280,22 +2315,64 @@ public function get_exams_paginated()
             // Fetch invoice from database (alternative method)
             $invoice = $this->db->get_where('invoices', ['id' => $this->uri->segment(4)])->row();
             
-            // Set the total amount to pay and currency
-            $page_data['amount_to_pay'] = $page_data['invoice_details']['total_amount'];
-            $page_data['currency'] = $page_data['invoice_details']['currency'];
-
-            
              if ($param1 == "classe") {
                 // Load class name
                 $class_id = $page_data['invoice_details']['class_id'];
                 $class = $this->db->get_where('classes', ['id' => $class_id])->row();
                 $page_data['class_name'] = $class ? $class->name : "";
+
+                // UPDATE INVOICE IF CLASS PRICE CHANGED
+                if ($class) {
+                    $current_price = (float)$class->price;
+                    $school_id = $page_data['invoice_details']['school_id'];
+                    
+                    // Recalculate VAT
+                    $settings_school = $this->settings_model->get_settings_school_data($school_id);
+                    $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
+                    $vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
+                    $tax_residence  = isset($school['country']) ? $school['country'] : null;
+                    
+                    $vat_rate = 0;
+                    if ($vat_applicable) {
+                        if ($tax_residence === 'MA') {
+                            $vat_rate = 20;
+                        } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+                            $vat_rate = 5;
+                        }
+                    }
+
+                    $vat_amount = $current_price * ($vat_rate / 100);
+                    $new_total_amount = $current_price + $vat_amount;
+
+                    // If total amount differs, update invoice
+                    if (abs($page_data['invoice_details']['total_amount'] - $new_total_amount) > 0.01) {
+                         $update_data = [
+                            'total_amount' => $new_total_amount,
+                            'sub_total'    => $current_price,
+                            'vat_amount'   => $vat_amount,
+                            'vat_rate'     => $vat_rate,
+                            'updated_at'   => strtotime(date('d-M-Y'))
+                        ];
+                        $this->db->where('id', $invoice_id);
+                        $this->db->update('invoices', $update_data);
+                        
+                        // Update page data
+                        $page_data['invoice_details']['total_amount'] = $new_total_amount;
+                        $page_data['invoice_details']['sub_total'] = $current_price;
+                        $page_data['invoice_details']['vat_amount'] = $vat_amount;
+                        $page_data['invoice_details']['vat_rate'] = $vat_rate;
+                    }
+                }
             } else {
                 // Load community name (from school table)
                 $school_id = $page_data['invoice_details']['school_id'];
                 $community = $this->db->get_where('schools', ['id' => $school_id])->row();
                 $page_data['community_name'] = $community ? $community->name : "";
             }
+
+            // Set the total amount to pay and currency
+            $page_data['amount_to_pay'] = $page_data['invoice_details']['total_amount'];
+            $page_data['currency'] = $page_data['invoice_details']['currency'];
             // ========== PAYMENT GATEWAY SETTINGS ==========
     
             
