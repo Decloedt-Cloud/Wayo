@@ -1384,11 +1384,16 @@ class Crud_model extends CI_Model
 		$this->db->where_in('invoices.student_id', $student_id_to_check);
 		$this->db->group_end();
 		
+		// Hide unpaid invoices for student view
+		$this->db->where('LOWER(invoices.status) !=', 'unpaid');
+		
+		/*
 		// If user has an active school in session, filter by that school
 		$active_school_id = $this->session->userdata('active_school_id');
 		if (!empty($active_school_id)) {
 			$this->db->where('invoices.school_id', $active_school_id);
 		}
+		*/
 
 		// Apply filter conditions
 		$this->apply_invoice_filter($filter);
@@ -1464,11 +1469,16 @@ class Crud_model extends CI_Model
 		$this->db->where_in('invoices.student_id', $student_id_to_check);
 		$this->db->group_end();
 		
+		// Hide unpaid invoices for student view
+		$this->db->where('LOWER(invoices.status) !=', 'unpaid');
+		
+		/*
 		// If user has an active school in session, filter by that school
 		$active_school_id = $this->session->userdata('active_school_id');
 		if (!empty($active_school_id)) {
 			$this->db->where('invoices.school_id', $active_school_id);
 		}
+		*/
 
 		// Apply filter
 		$this->apply_invoice_filter($filter);
