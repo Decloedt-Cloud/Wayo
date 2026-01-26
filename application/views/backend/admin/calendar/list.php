@@ -90,8 +90,8 @@
     </div>
     <!-- FullCalendar container -->
     <div id="calendar"></div>
-    <div class="modal fade mt-5" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
             <div class="modal-content exp-modal-content">
                 <div class="modal-header exp-modal-header">
                     <h5 class="modal-title" id="createEventModalLabel"><?php echo get_phrase('New_Event'); ?></h5>
@@ -197,7 +197,7 @@
         </div>
     </div>
     <div class="modal fade" id="eventEditModal" tabindex="-1" role="dialog" aria-labelledby="eventEditModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
             <div class="modal-content exp-modal-content">
                 <div class="modal-header exp-modal-header">
                     <h5 class="modal-title" id="eventEditModalLabel"><?php echo get_phrase('event_details'); ?></h5>
@@ -449,6 +449,22 @@ const CalendarApp = {
   lastOccurrenceDate: null,
   lastHasActiveMeetings: false,
 
+  handleDateClick(info) {
+    let dateStr = info.dateStr || info.startStr;
+    if (dateStr && dateStr.includes('T')) {
+        dateStr = dateStr.split('T')[0];
+    }
+    
+    $('#createEventForm')[0].reset();
+    $('#createeventDate').val(dateStr);
+    
+    // Initialize time options for the selected date
+    this.generateTimeOptions($('#createeventStartTime'), dateStr);
+    this.generateTimeOptions($('#createeventEndTime'), dateStr);
+    
+    $('#createEventModal').modal('show');
+  },
+
   closeAllPopovers() {
   $('[data-bs-popover]').each(function () {
     try {
@@ -479,6 +495,14 @@ const CalendarApp = {
 
     $('#eventEditModal, #createEventModal, #recurrenceModal').on('show.bs.modal', () => {
       this.closeAllPopovers();
+    });
+
+    $('#eventEditModal, #createEventModal, #recurrenceModal').on('hidden.bs.modal', () => {
+        setTimeout(() => {
+            if (this.calendar) {
+                this.calendar.updateSize();
+            }
+        }, 200);
     });
     
     document.addEventListener('visibilitychange', () => {
@@ -520,6 +544,13 @@ const CalendarApp = {
         },
         events: (info, successCallback, failureCallback) => {
             this.loadEvents(info.startStr, info.endStr, successCallback, failureCallback);
+        },
+        selectable: true,
+        select: (info) => {
+            this.handleDateClick(info);
+        },
+        dateClick: (info) => {
+            this.handleDateClick(info);
         },
         eventClick: (info) => {
             info.jsEvent.preventDefault();

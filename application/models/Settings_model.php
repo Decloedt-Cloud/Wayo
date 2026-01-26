@@ -260,68 +260,6 @@ class Settings_model extends CI_Model
     $this->db->where('school_id', $schoolId);
     $this->db->update('settings_school', $data_settings_school);
 
-    // Récupérer l’école mise à jour
-    $school = $this->db->get_where('schools', ['id' => $schoolId])->row();
-
-    // Synchronisation avec HumHub
-    if (!empty($school->humhub_space_id)) {
-        $existing = $this->humhub_sso->getSpace($school->humhub_space_id);
-        if ($existing && isset($existing['guid'])) {
-            $guid = $existing['guid'];
-            $humhubUploadsPath = config_item('humhub_image'); // ex : /uploads/profile_image/
-    
-            // ✅ 1. Mise à jour du Space (nom, description)
-            $spaceUpdate = [
-                'name' => $data['name'],
-                'description' => '',
-                'defaultStreamSort' => $existing['defaultStreamSort'],
-            ];
-            $this->humhub_sso->updateSpace($school->humhub_space_id, $spaceUpdate);
-    
-            // ✅ 2. Copie du logo (photo principale)
-            $sourceLogo = FCPATH . 'uploads/schools/' . $schoolId . '.jpg';
-            if (file_exists($sourceLogo)) {
-                $destLogoOrg = $humhubUploadsPath . $guid . '_org.jpg';
-                $destLogo = $humhubUploadsPath . $guid . '.jpg';
-    
-                if (copy($sourceLogo, $destLogoOrg) && copy($sourceLogo, $destLogo)) {
-                    log_message('debug', "✅ Logo copié vers HumHub (GUID: {$guid})");
-                } else {
-                    log_message('error', "❌ Erreur lors de la copie du logo vers HumHub (GUID: {$guid})");
-                }
-            } else {
-                log_message('debug', "⚠️ Aucun logo trouvé pour l’école {$schoolId}");
-            }
-    
-            // ✅ 3. Copie de la couverture (bannière)
-            $sourceCover = FCPATH . 'uploads/communityCover/' . $schoolId . '.jpg';
-            $humhubBannerPath = $humhubUploadsPath . 'banner/';// ex : /uploads/profile_image/banner/
-            if (file_exists($sourceCover)) {
-                $destCoverOrg = $humhubBannerPath . $guid . '_org.jpg';
-                $destCover = $humhubBannerPath . $guid . '.jpg';
-    
-                if (copy($sourceCover, $destCoverOrg) && copy($sourceCover, $destCover)) {
-                    log_message('debug', "✅ Bannière copiée vers HumHub (GUID: {$guid})");
-                } else {
-                    log_message('error', "❌ Erreur lors de la copie de la bannière vers HumHub (GUID: {$guid})");
-                }
-            } else {
-                log_message('debug', "⚠️ Aucune bannière trouvée pour l’école {$schoolId}");
-            }
-    
-            // // ✅ 4. Mise à jour des colonnes personnalisées dans table space
-            // $dbHumhub = $this->load->database('humhub', TRUE);
-            // $dbHumhub->where('id', $school->humhub_space_id);
-            // $dbHumhub->update('space', [
-            //     'community_name' => $data['name'],
-            //     'community_id' => $schoolId
-            // ]);
-        } else {
-            log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$school->humhub_space_id}");
-        }
-    } else {
-        log_message('error', "ID HumHub manquant pour l’école ID {$schoolId}");
-    }
     $response = array(
       'status' => true,
       'notification' => get_phrase('school_settings_updated_successfully')

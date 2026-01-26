@@ -30,8 +30,7 @@ class Home extends CI_Controller
 		$this->load->model('Addon_model', 'addon_model');
 		$this->load->model('Frontend_model', 'frontend_model');
 
-		// Load Humhub SSO library prevents 500 error during community creation
-		$this->load->library('Humhub_sso');
+
 
 		if (addon_status('alumni')) {
 			$this->load->model('addons/Alumni_model', 'alumni_model');
@@ -1082,16 +1081,7 @@ function community_details($school_id = '')
 				'visibility' => $access ? 2 : 1
 			];
 
-			// Load library explicitly here to be super sure
-			$this->load->library('Humhub_sso');
-			if (isset($this->humhub_sso)) {
-				$humhubSpace = $this->humhub_sso->createSpace($spaceData);
-		
-				if (isset($humhubSpace['id'])) {
-					$this->db->where('id', $school_id)->update('schools', ['humhub_space_id' => $humhubSpace['id']]);
-					$this->humhub_sso->addUserSpace($humhubSpace['id'], $user['humhub_id'] ?? null);
-				}
-			}
+
 	
 			$this->db->where('id', $user_id);
 			$this->db->update('users', [

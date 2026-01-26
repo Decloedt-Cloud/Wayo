@@ -39,9 +39,6 @@
             background-attachment: fixed;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
         }
         
         .login-container {
@@ -51,6 +48,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            margin: auto;
         }
         
         .login-card {
@@ -398,6 +396,13 @@
         }
         
         /* Responsive Design */
+        @media (max-width: 1028px) {
+            .login-container {
+                margin: 20px auto;
+                align-items: flex-start;
+            }
+        }
+
         @media (max-width: 768px) {
             .login-card {
                 flex-direction: column;
@@ -474,13 +479,6 @@
         <div class="login-card">
             <!-- Login Form Section -->
             <div class="login-form-section">
-                <div class="logo">
-                    <a href="<?php echo site_url(); ?>">
-                        <?php $logo_dark = base_url('uploads/images/decloedt/logo/logo_mail.png'); ?>
-                        <span><img src="<?php echo $this->settings_model->get_logo_dark(); ?>" alt="Logo"></span>
-                    </a>
-                </div>
-                
                 <div id="loginFormSection">
                     <h1 class="form-title"><?php echo get_phrase('sign_in'); ?></h1>
                     <p class="form-subtitle"><?php echo get_phrase('enter_your_email_address_and_password_to_access_account'); ?>.</p>

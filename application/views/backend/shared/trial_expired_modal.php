@@ -169,21 +169,6 @@ if ($__school_id && $__trial_expired) {
     background: #f0f2f6;
     margin: 8px 0;
   }
-  #trialExpiredModal .trial-community-item.switch-member {
-    justify-content: flex-start;
-    gap: 10px;
-    font-weight: 600;
-  }
-  #trialExpiredModal .trial-community-item .switch-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #f5f7fb;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #4c6fff;
-  }
   <?php if ($__is_member || $__is_mentor): ?>
   #trialExpiredModal #paymentPageBtn {
     display: none !important;
@@ -246,44 +231,6 @@ if ($__school_id && $__trial_expired) {
       });
     }
 
-    function switchToMemberAccount() {
-      var params = new URLSearchParams();
-      var csrfInput = document.getElementById('csrf_token');
-      if (csrfInput) {
-        params.append(csrfInput.name, csrfInput.value);
-      }
-
-      fetch("<?php echo site_url('home/switch_to_member_account'); ?>", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: params.toString()
-      })
-        .then(function (response) {
-          return response.text();
-        })
-        .then(function (text) {
-          var data;
-          try {
-            data = JSON.parse(text);
-          } catch (error) {
-            throw new Error('parse_error');
-          }
-
-          if (data.status === 'success' && data.redirect_url) {
-            window.location.replace(data.redirect_url);
-          } else {
-            alert(data.message || "<?php echo get_phrase('unexpected_error'); ?>");
-          }
-        })
-        .catch(function () {
-          alert("<?php echo get_phrase('unexpected_error'); ?>");
-        });
-    }
-
-    // Masquer le bouton de paiement pour les comptes membres et mentors (double vérification)
     function hideButtonsForMembers() {
       var currentRole = "<?php echo strtolower($__current_role); ?>";
       var isMember = currentRole === 'student' || currentRole === 'member';
@@ -384,22 +331,6 @@ if ($__school_id && $__trial_expired) {
 
               trialCommunityList.appendChild(button);
             });
-          }
-
-          var currentRole = "<?php echo strtolower($__current_role); ?>";
-          if (currentRole !== 'student') {
-            var divider = document.createElement('div');
-            divider.className = 'trial-community-divider';
-            trialCommunityList.appendChild(divider);
-
-            var switchMemberBtn = document.createElement('button');
-            switchMemberBtn.type = 'button';
-            switchMemberBtn.className = 'trial-community-item switch-member';
-            switchMemberBtn.innerHTML =
-              '<span class="switch-icon"><i class="fas fa-user-circle"></i></span>' +
-              '<span><?php echo get_phrase('switch_to_member_account'); ?></span>';
-            switchMemberBtn.addEventListener('click', switchToMemberAccount);
-            trialCommunityList.appendChild(switchMemberBtn);
           }
         })
         .catch(function() {

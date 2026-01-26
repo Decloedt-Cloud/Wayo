@@ -27,6 +27,7 @@
   background: white;
   position: relative;
   min-height: 100px;
+  cursor: pointer;
 }
 
 .fc-daygrid-day:hover,

@@ -726,7 +726,7 @@ if ($student_data->num_rows() > 0) {
       </h1>
       <div class="date-badge">
         <i class="far fa-calendar-alt"></i>
-        <?php echo date('l, j F Y'); ?>
+         <?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?>
       </div>
     </div>
 
