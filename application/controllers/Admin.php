@@ -1932,7 +1932,7 @@ class Admin extends CI_Controller
 
         if (empty($param1)) {
             $page_data['folder_name'] = 'class';
-            $page_data['page_title'] = 'class';
+            $page_data['page_title'] = 'offers and prices';
             $this->load->view('backend/index', $page_data);
         }
     }

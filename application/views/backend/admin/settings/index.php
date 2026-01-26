@@ -10,16 +10,7 @@ else if($settings_type == 'sms_settings')
 $class = 'col-xl-10 offset-xl-1';
 ?>
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
-    <!--title-->
-    <div class="col-xl-12">
-        <div class="header-card">
-            <div class="card-body">
-                <h4 class="page-title d-inline-block">
-                     <i class="fas fa-cog"></i><?php echo ucfirst(get_phrase($settings_type)); ?> 
-                </h4>
-      </div> <!-- end card body-->
-    </div> <!-- end card -->
-  </div><!-- end col-->
+
 
 <!-- end page title -->
 <div class="row">

@@ -617,7 +617,7 @@
     </h1>
     <div class="date-badge">
       <i class="far fa-calendar-alt"></i>
-      <?php echo date('l, j F Y'); ?>
+      <?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?>
     </div>
   </div>
 
@@ -675,7 +675,7 @@
         <i class="fas fa-arrow-right"></i>
       </a>
       <div class="stat-icon">
-        <i class="fas fa-calendar-star"></i>
+        <i class="fas fa-calendar-day"></i>
       </div>
       <div class="stat-label"><?php echo get_phrase('events'); ?></div>
       <div class="stat-value" data-count="<?php $events_count = $this->crud_model->get_current_month_events(); echo $events_count->num_rows(); ?>">

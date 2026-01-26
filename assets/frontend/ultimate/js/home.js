@@ -417,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 'AUD': 'A$', 'MAD': 'MAD', 'BRL': 'R$', 'INR': '₹', 'CNY': '¥',
                 'RUB': '₽', 'MXN': '$', 'ZAR': 'R', 'KRW': '₩', 'SEK': 'kr',
                 'CHF': 'CHF', 'SGD': 'S$', 'NZD': 'NZ$', 'ARS': '$', 'CLP': '$',
-                'COP': '$', 'EGP': '£', 'NGN': '₦', 'SAR': '﷼', 'AED': 'د.إ',
+                'COP': '$', 'EGP': '£', 'NGN': '₦', 'SAR': '﷼', 'AED': 'AED',
                 'TRY': '₺', 'PLN': 'zł', 'IDR': 'Rp', 'THB': '฿', 'MYR': 'RM',
                 'PHP': '₱', 'VND': '₫', 'PKR': '₨', 'BDT': '৳', 'HKD': 'HK$',
                 'TWD': 'NT$', 'KWD': 'KD', 'QAR': 'QR', 'ILS': '₪', 'UAH': '₴',
