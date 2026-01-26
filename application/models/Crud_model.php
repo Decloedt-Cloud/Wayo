@@ -21,8 +21,7 @@ class Crud_model extends CI_Model
 		parent::__construct();
 		$this->school_id = school_id();
 		$this->active_session = active_session();
-		$this->load->library('Humhub_sso'); // Chargez la bibliothèque ici
-		$this->humhub_sso = $this->humhub_sso; // Initialisez la propriété
+	
 	}
 
 
@@ -109,17 +108,6 @@ class Crud_model extends CI_Model
 		$data['school_id'] = $this->school_id;
 		$this->db->insert('classes', $data);
 
-		$insert_id = $this->db->insert_id();
-		$communitySpaceId = $this->school_id; // school_id correspond à la community
-		$communitySpace = $this->humhub_sso->getSpaceBySchoolId($this->school_id);
-
-		if ($communitySpace) {
-			$communityName    = $communitySpace['name'];
-			$communitySpaceId = $communitySpace['id'];
-		} else {
-			$communityName    = '';
-			$communitySpaceId = null;
-		}
 
 		// Créer une class_room avec le même nom que la classe
 		// $room_data = [
@@ -130,80 +118,9 @@ class Crud_model extends CI_Model
 		//     'class_id' => $insert_id
 		// ];
 		// $this->db->insert('rooms', $room_data);
-
-		// Créer un espace correspondant dans HumHub
-		$spaceData = [
-			// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
-			'name' => $data['name'], // Nom :  <classe>
-			'description' => '',
-			'join_policy' => 0, // 0 = Ouvert : tout le monde peut rejoindre l’espace sans validation
-			'visibility' => 2,  // 2 = Public : visible par tout le monde
-		];
-
-		$humhubResponse = $this->humhub_sso->createSpace($spaceData);
-		if (isset($humhubResponse['id'])) {
-			// Mise à jour directe dans la base HumHub (seulement si les colonnes existent)
-			$dbHumhub = $this->load->database('humhub', TRUE);
-
-			// Vérifier si les colonnes community_name et community_id existent
-			$columns = $dbHumhub->list_fields('space');
-			$hasCommunityName = in_array('community_name', $columns);
-			$hasCommunityId = in_array('community_id', $columns);
-
-			if ($hasCommunityName && $hasCommunityId) {
-				$dbHumhub->where('id', $humhubResponse['id']);
-				$dbHumhub->update('space', [
-					'community_name' => $communityName,
-					'community_id'   => $communitySpaceId
-				]);
-			} else {
-				// Log pour indiquer que les colonnes sont manquantes
-				log_message('debug', 'Colonnes community_name et community_id manquantes dans table space HumHub. Migration SQL requise.');
-			}
-		}
-		log_message('debug', 'Réponse HumHub Space: ' . json_encode($humhubResponse));
-
-		// Ajouter l'admin comme membre
-		if (isset($humhubResponse['id'])) {
-			$adminEmail = $this->session->userdata('user')->email;
-			$adminHumhubUser = $this->humhub_sso->getUserByEmail($adminEmail);
-
-			if ($adminHumhubUser && isset($adminHumhubUser['id'])) {
-				$addResponse = $this->humhub_sso->addUserSpace(
-					$humhubResponse['id'],
-					$adminHumhubUser['id']
-				);
-				log_message('debug', "Réponse HumHub addUserSpace: " . json_encode($addResponse));
-			} else {
-				log_message('error', 'Utilisateur HumHub introuvable pour email: ' . $adminEmail);
-			}
-			$this->db->where('id', $insert_id);
-			$this->db->update('classes', ['humhub_space_id' => $humhubResponse['id']]);
-		}
-		// Sauvegarde de l’ID du space dans la classe
-		$this->db->where('id', $insert_id);
-		$this->db->update('classes', ['humhub_space_id' => $humhubResponse['id']]);
-
-		// Copier la photo vers HumHub (si présente)
-		if (!empty($data['photo']) && isset($humhubResponse['guid'])) {
-			$guid = $humhubResponse['guid'];
-			$sourceImage = FCPATH . 'uploads/class/' . $data['photo'];
-			$humhubUploadsPath = config_item('humhub_image');
-			$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
-			$destImage = $humhubUploadsPath . $guid . '.jpg';
-
-			if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
-				log_message('debug', '✅ Image de la classe copiée vers HumHub (GUID : ' . $guid . ')');
-			} else {
-				log_message('error', '❌ Erreur de copie de l’image de classe vers HumHub (GUID : ' . $guid . ')');
-			}
-		} else {
-			log_message('error', '⚠️ Aucune image de classe trouvée ou GUID manquant pour HumHub.');
-		}
 		$response = array(
 			'status' => true,
 			'notification' => get_phrase('class_added_successfully'),
-			'humhub_space' => $humhubResponse
 		);
 		return $response;
 	}
@@ -259,80 +176,6 @@ class Crud_model extends CI_Model
 		//     $this->db->where('class_id', $param1);
 		//     $this->db->update('rooms', $room_data);
 		// }
-
-		// Mise à jour de l'espace HumHub
-		$class = $this->db->get_where('classes', ['id' => $param1])->row();
-		// Récupérer la community associée à cette école
-		$communitySpace = $this->humhub_sso->getSpaceBySchoolId($this->school_id);
-		if ($communitySpace) {
-			$communityName    = $communitySpace['name'];
-			$communitySpaceId = $communitySpace['id'];
-		} else {
-			$communityName    = '';
-			$communitySpaceId = null;
-		}
-
-		// Mise à jour du Space HumHub lié à cette classe
-		if (!empty($class->humhub_space_id)) {
-			$existing = $this->humhub_sso->getSpace($class->humhub_space_id);
-
-			if ($existing) {
-				$spaceUpdate = [
-					// 'name' => $communityName . " - " . $data['name'], // Nom : <community> + <classe>
-					'name' => $data['name'], // Nom : <classe>
-					'description' => '',
-					'defaultStreamSort' => $existing['defaultStreamSort'] ?? ''
-				];
-
-				// Vérifier si les colonnes community_name et community_id existent avant de les ajouter
-				$dbHumhub = $this->load->database('humhub', TRUE);
-				$columns = $dbHumhub->list_fields('space');
-				$hasCommunityName = in_array('community_name', $columns);
-				$hasCommunityId = in_array('community_id', $columns);
-
-				if ($hasCommunityName) {
-					$spaceUpdate['community_name'] = $communityName;
-				}
-				if ($hasCommunityId) {
-					$spaceUpdate['community_id'] = $communitySpaceId;
-				}
-
-				// Envoi à l’API HumHub
-				$this->humhub_sso->updateSpace($class->humhub_space_id, $spaceUpdate);
-
-				// Mise à jour directe dans la base HumHub (seulement si les colonnes existent)
-				if ($hasCommunityName && $hasCommunityId) {
-					$dbHumhub->where('id', $class->humhub_space_id);
-					$dbHumhub->update('space', [
-						'community_name' => $communityName,
-						'community_id'   => $communitySpaceId
-					]);
-				} else {
-					// Log pour indiquer que les colonnes sont manquantes
-					log_message('debug', 'Colonnes community_name et community_id manquantes dans table space HumHub. Migration SQL requise.');
-				}
-				// Copier la nouvelle photo vers HumHub (si présente)
-				if (!empty($data['photo']) && isset($existing['guid'])) {
-					$guid = $existing['guid'];
-					$sourceImage = FCPATH . 'uploads/class/' . $data['photo'];
-					$humhubUploadsPath = config_item('humhub_image');
-					$destImageOrg = $humhubUploadsPath . $guid . '_org.jpg';
-					$destImage = $humhubUploadsPath . $guid . '.jpg';
-
-					if (copy($sourceImage, $destImageOrg) && copy($sourceImage, $destImage)) {
-						log_message('debug', '✅ Nouvelle image de la classe copiée vers HumHub (GUID : ' . $guid . ')');
-					} else {
-						log_message('error', '❌ Erreur lors de la copie de la nouvelle image vers HumHub (GUID : ' . $guid . ')');
-					}
-				} else {
-					log_message('debug', 'ℹ️ Aucune nouvelle photo à copier ou GUID HumHub manquant.');
-				}
-			} else {
-				log_message('error', "Erreur lors de la récupération de l’espace HumHub ID {$class->humhub_space_id}");
-			}
-		} else {
-			log_message('error', "ID HumHub manquant pour la classe ID {$param1}");
-		}
 		$response = array(
 			'status' => true,
 			'notification' => get_phrase('class_updated_successfully')
@@ -343,15 +186,6 @@ class Crud_model extends CI_Model
 
 	public function class_delete($param1 = '')
 	{
-		// Récupérer la classe
-		$class = $this->db->get_where('classes', ['id' => $param1])->row();
-
-		// Supprimer l’espace HumHub s’il existe
-		if (!empty($class->humhub_space_id)) {
-			$this->humhub_sso->deleteSpace($class->humhub_space_id);
-			log_message('debug', "Espace HumHub supprimé: ID {$class->humhub_space_id}");
-		}
-
 		// Supprimer la class_room associée
 		$this->db->where('class_id', $param1);
 		$this->db->delete('rooms');

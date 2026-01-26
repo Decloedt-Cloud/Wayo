@@ -23,7 +23,6 @@ $this->db->where('exams.school_id', $current_school_id);
 $this->db->where('exams.id NOT IN (SELECT exam_id FROM exam_responses WHERE user_id = ' . $this->db->escape($user_id) . ')', NULL, FALSE);
 $total_exams = $this->db->count_all_results();
 log_message('debug', 'Total exams not yet taken calculated for school_id ' . $current_school_id . ': ' . $total_exams);
-$unread_messages = $this->user_model->get_unread_messages_count($this->session->userdata('user_id'));
 $pending_students = $this->db->get_where('students', ['status' => 0, 'school_id' => $current_school_id])->num_rows();
 $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])->num_rows();
 ?>
@@ -768,10 +767,6 @@ if ($user_type == 'admin') {
                                     <a href="<?php echo site_url($main_route); ?>">
                                         <i class="<?php echo $main_menu['icon']; ?> fa-fw"></i>
                                         <span class="text-rtl-menu"><?php echo get_phrase($main_menu['displayed_name']); ?></span>
-
-                                        <?php if ($main_menu['unique_identifier'] == 'chat'): ?>
-                                            <span class="badge-nav"><?= $unread_messages > 0 ? $unread_messages : '0' ?></span>
-                                        <?php endif; ?>
 
                                         <?php if ($main_menu['unique_identifier'] == 'online_admission' && $pending_students > 0): ?>
                                             <span class="badge-nav"><?php echo $pending_students; ?></span>
