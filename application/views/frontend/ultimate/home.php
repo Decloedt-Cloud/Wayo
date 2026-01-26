@@ -122,7 +122,7 @@
     </div>
   </section>
   <!-- Comparaison Avant et Après Wayo ----->
-   <section class="position-relative bg-light py-5 min-vh-100 comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+   <section class="position-relative comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7 unified-title-container" style="z-index: 1;">
       <h2><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
       <p class="text-center text-dark mb-5 fs-6"><?php echo get_phrase("Wayo Academy brings together everything needed to create, sell, and run your training courses without stress.") ?></p>
@@ -172,7 +172,7 @@
   </section>
   <!-------->
   <!-- Choose your plan -->
-  <section class="py-3 position-relative pricing" style="padding-bottom:75px !important">
+  <section class="position-relative pricing">
     <div class="container position-relative unified-title-container" style="z-index: 1;">
       <h2><?php echo get_phrase("A unique offer for maximum impact") ?></h2>
       <p class="subtitle"><?php echo get_phrase("Everything you need to build, manage, and monetize your community from A to Z.") ?></p>
