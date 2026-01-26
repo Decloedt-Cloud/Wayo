@@ -403,14 +403,14 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 <div class="ai-stats-grid">
     <div class="ai-stat-card purple">
         <div class="ai-stat-header">
-            <div class="ai-stat-icon"><i class="mdi mdi-file-document-multiple"></i></div>
+            <div class="ai-stat-icon"><i class="fa-solid fa-file-invoice"></i></div>
         </div>
         <div class="ai-stat-value"><?php echo $stats['total']; ?></div>
         <div class="ai-stat-label"><?php echo get_phrase('total'); ?></div>
     </div>
     <div class="ai-stat-card green">
         <div class="ai-stat-header">
-            <div class="ai-stat-icon"><i class="mdi mdi-check-circle"></i></div>
+            <div class="ai-stat-icon"><i class="fa-solid fa-circle-check"></i></div>
             <span class="ai-stat-trend up"><?php echo $stats['payment_rate']; ?>%</span>
         </div>
         <div class="ai-stat-value"><?php echo $stats['paid']; ?></div>
@@ -419,29 +419,29 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
     </div>
     <div class="ai-stat-card red">
         <div class="ai-stat-header">
-            <div class="ai-stat-icon"><i class="mdi mdi-clock-alert"></i></div>
+            <div class="ai-stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <?php if ($stats['overdue'] > 0): ?><span class="ai-stat-trend down"><?php echo $stats['overdue']; ?></span><?php endif; ?>
         </div>
         <div class="ai-stat-value"><?php echo $stats['unpaid']; ?></div>
         <div class="ai-stat-label"><?php echo get_phrase('unpaid'); ?></div>
     </div>
     <div class="ai-stat-card blue">
-        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-cash-multiple"></i></div></div>
+        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div></div>
         <div class="ai-stat-value"><?php echo number_format($stats['total_paid'], 0); ?></div>
         <div class="ai-stat-label"><?php echo get_phrase('collected'); ?></div>
     </div>
     <div class="ai-stat-card orange">
-        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-cash-clock"></i></div></div>
+        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div></div>
         <div class="ai-stat-value"><?php echo number_format($stats['total_due'], 0); ?></div>
         <div class="ai-stat-label"><?php echo get_phrase('outstanding'); ?></div>
     </div>
     <div class="ai-stat-card cyan">
-        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-swap-horizontal-circle"></i></div></div>
+        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div></div>
         <div class="ai-stat-value"><?php echo $stats['fx_payments']; ?></div>
         <div class="ai-stat-label"><?php echo get_phrase('Exchanges'); ?></div>
     </div>
     <div class="ai-stat-card pink">
-        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="mdi mdi-cash-minus"></i></div></div>
+        <div class="ai-stat-header"><div class="ai-stat-icon"><i class="fa-solid fa-money-bill-transfer"></i></div></div>
         <div class="ai-stat-value"><?php echo number_format($stats['total_cost'], 0); ?> <small style="font-size: 0.7rem; color: var(--ai-gray);"><?php echo $school_currency; ?></small></div>
         <div class="ai-stat-label"><?php echo get_phrase('cost'); ?></div>
     </div>
@@ -450,7 +450,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
 <!-- Mini Charts -->
 <div class="ai-stats-secondary">
     <div class="ai-mini-chart">
-        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="mdi mdi-currency"></i> <?php echo get_phrase('by_currency'); ?></span></div>
+        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="fa-solid fa-coins"></i> <?php echo get_phrase('by_currency'); ?></span></div>
         <div class="ai-mini-chart-items">
             <?php $colors = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0891b2']; $i = 0;
             foreach ($stats['currencies'] as $curr => $amount): ?>
@@ -463,7 +463,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
         </div>
     </div>
     <div class="ai-mini-chart">
-        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="mdi mdi-credit-card"></i> <?php echo get_phrase('methods'); ?></span></div>
+        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="fa-solid fa-credit-card"></i> <?php echo get_phrase('methods'); ?></span></div>
         <div class="ai-mini-chart-items">
             <?php foreach ($stats['methods'] as $method => $count): ?>
                 <div class="ai-chart-item">
@@ -476,7 +476,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
         </div>
     </div>
     <div class="ai-mini-chart">
-        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="mdi mdi-chart-pie"></i> <?php echo get_phrase('summary'); ?></span></div>
+        <div class="ai-mini-chart-header"><span class="ai-mini-chart-title"><i class="fa-solid fa-chart-pie"></i> <?php echo get_phrase('summary'); ?></span></div>
         <div class="ai-mini-chart-items">
             <div class="ai-chart-item">
                 <span class="ai-chart-item-dot" style="background: #4f46e5;"></span>
@@ -497,25 +497,25 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
     <!-- Toolbar -->
     <div class="ai-table-toolbar">
         <div class="ai-search-box">
-            <i class="mdi mdi-magnify"></i>
+            <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" id="quickSearch" placeholder="<?php echo get_phrase('search'); ?>..." onkeyup="quickSearch()">
         </div>
         <div class="ai-filter-chips">
             <span class="ai-chip active" data-filter="all" onclick="filterStatus('all', this)">
-                <i class="mdi mdi-format-list-bulleted"></i> <?php echo get_phrase('all'); ?>
+                <i class="fa-solid fa-list"></i> <?php echo get_phrase('all'); ?>
                 <span class="count"><?php echo $stats['total']; ?></span>
             </span>
             <span class="ai-chip" data-filter="paid" onclick="filterStatus('paid', this)">
-                <i class="mdi mdi-check"></i> <?php echo get_phrase('paid'); ?>
+                <i class="fa-solid fa-check"></i> <?php echo get_phrase('paid'); ?>
                 <span class="count"><?php echo $stats['paid']; ?></span>
             </span>
             <span class="ai-chip" data-filter="unpaid" onclick="filterStatus('unpaid', this)">
-                <i class="mdi mdi-clock"></i> <?php echo get_phrase('unpaid'); ?>
+                <i class="fa-solid fa-clock"></i> <?php echo get_phrase('unpaid'); ?>
                 <span class="count"><?php echo $stats['unpaid']; ?></span>
             </span>
             <?php if ($stats['fx_payments'] > 0): ?>
             <span class="ai-chip" data-filter="fx" onclick="filterStatus('fx', this)">
-                <i class="mdi mdi-swap-horizontal"></i> <?php echo get_phrase('Exchanges'); ?>
+                <i class="fa-solid fa-arrow-right-arrow-left"></i> <?php echo get_phrase('Exchanges'); ?>
                 <span class="count"><?php echo $stats['fx_payments']; ?></span>
             </span>
             <?php endif; ?>
@@ -546,7 +546,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
             <?php if (empty($invoices)): ?>
             <tr><td colspan="8">
                 <div class="ai-empty">
-                    <i class="mdi mdi-file-document-outline"></i>
+                    <i class="fa-solid fa-file-invoice"></i>
                     <div class="ai-empty-title"><?php echo get_phrase('no_invoices_found'); ?></div>
                 </div>
             </td></tr>
@@ -576,7 +576,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
             <tr data-status="<?php echo $inv['status']; ?>" data-fx="<?php echo $fx ? '1' : '0'; ?>">
                 <td>
                     <span class="ai-inv-badge">#<?php echo sprintf('%06d', $inv['id']); ?></span>
-                    <div class="ai-inv-date"><i class="mdi mdi-calendar"></i> <?php echo date('d M Y', $inv['created_at']); ?></div>
+                    <div class="ai-inv-date"><i class="fa-solid fa-calendar-days"></i> <?php echo date('d M Y', $inv['created_at']); ?></div>
                 </td>
                 <td>
                     <div class="ai-student">
@@ -617,7 +617,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     <?php if ($is_paid): ?>
                         <?php if ($fx && $fx_curr && $fx_amt): ?>
                         <div class="ai-paid"><?php echo number_format($fx_amt, 2); ?> <?php echo $fx_curr; ?></div>
-                        <div class="ai-fx-badge"><i class="mdi mdi-swap-horizontal"></i> <?php echo number_format($inv['paid_amount'], 2); ?> <?php echo $inv['currency']; ?></div>
+                        <div class="ai-fx-badge"><i class="fa-solid fa-arrow-right-arrow-left"></i> <?php echo number_format($inv['paid_amount'], 2); ?> <?php echo $inv['currency']; ?></div>
                         <?php if ($fx_rate): ?><div class="ai-fx-rate">1 <?php echo $inv['currency']; ?> = <?php echo number_format($fx_rate, 4); ?> <?php echo $fx_curr; ?></div><?php endif; ?>
                         <?php else: ?>
                         <div class="ai-paid"><?php echo number_format($inv['paid_amount'], 2); ?> <?php echo $inv['currency']; ?></div>
@@ -657,7 +657,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                     
                     if ($method_display): ?>
                     <span class="ai-method <?php echo $method_class; ?>">
-                        <i class="mdi <?php echo $method_class === 'stripe' ? 'mdi-credit-card' : ($method_class === 'paypal' ? 'mdi-paypal' : ($method_class === 'free' ? 'mdi-lock-open-variant' : 'mdi-bank')); ?>"></i> 
+                        <i class="<?php echo $method_class === 'stripe' ? 'fa-solid fa-credit-card' : ($method_class === 'paypal' ? 'fa-brands fa-paypal' : ($method_class === 'free' ? 'fa-solid fa-unlock' : 'fa-solid fa-building-columns')); ?>"></i> 
                         <?php echo $method_display; ?>
                     </span>
                     <?php else: ?>—<?php endif; ?>
@@ -667,16 +667,16 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                         <span class="ai-status-dot"></span>
                         <?php echo $is_paid ? get_phrase('paid') : ($is_overdue ? get_phrase('overdue') : get_phrase('unpaid')); ?>
                     </span>
-                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="mdi mdi-currency-usd-circle"></i> <?php echo get_phrase('Exchanges'); ?></div><?php endif; ?>
+                    <?php if ($fx): ?><div class="ai-fx-tag"><i class="fa-solid fa-arrow-right-arrow-left"></i> <?php echo get_phrase('Exchanges'); ?></div><?php endif; ?>
                 </td>
                 <td>
                     <div class="ai-actions">
-                        <a href="<?php echo route('invoice/invoice/'.$inv['id']); ?>" class="ai-action view" target="_blank" title="<?php echo get_phrase('view'); ?>"><i class="mdi mdi-eye"></i></a>
-                        <a href="<?php echo route('invoice_pdf/'.$inv['id']); ?>" class="ai-action pdf" target="_blank" title="PDF"><i class="mdi mdi-file-pdf-box"></i></a>
+                        <a href="<?php echo route('invoice/invoice/'.$inv['id']); ?>" class="ai-action view" target="_blank" title="<?php echo get_phrase('view'); ?>"><i class="fa-solid fa-eye"></i></a>
+                        <a href="<?php echo route('invoice_pdf/'.$inv['id']); ?>" class="ai-action pdf" target="_blank" title="PDF"><i class="fa-solid fa-file-pdf"></i></a>
                         <?php if (empty($inv['payment_type']) || $inv['payment_type'] != 'subscription_admin'): ?>
-                        <a href="javascript:void(0);" class="ai-action edit" onclick="rightModal('<?php echo site_url('modal/popup/invoice/edit/'.$inv['id']); ?>', '<?php echo get_phrase('edit'); ?>')" title="<?php echo get_phrase('edit'); ?>"><i class="mdi mdi-pencil"></i></a>
+                        <a href="javascript:void(0);" class="ai-action edit" onclick="rightModal('<?php echo site_url('modal/popup/invoice/edit/'.$inv['id']); ?>', '<?php echo get_phrase('edit'); ?>')" title="<?php echo get_phrase('edit'); ?>"><i class="fa-solid fa-pencil"></i></a>
                         <?php endif; ?>
-                        <a href="javascript:void(0);" class="ai-action delete" onclick="confirmModal('<?php echo route('invoice/delete/'.$inv['id']); ?>', showAllInvoices)" title="<?php echo get_phrase('delete'); ?>"><i class="mdi mdi-delete"></i></a>
+                        <a href="javascript:void(0);" class="ai-action delete" onclick="confirmModal('<?php echo route('invoice/delete/'.$inv['id']); ?>', showAllInvoices)" title="<?php echo get_phrase('delete'); ?>"><i class="fa-solid fa-trash"></i></a>
                     </div>
                 </td>
             </tr>
@@ -735,8 +735,8 @@ function updateResults(visible, total, filter) {
         bar.classList.add('active');
         bar.classList.toggle('no-results', visible === 0);
         text.innerHTML = visible === 0 
-            ? '<i class="mdi mdi-alert-circle"></i> <?php echo get_phrase('no_results'); ?>'
-            : `<i class="mdi mdi-check-circle"></i> <strong>${visible}</strong> <?php echo get_phrase('found'); ?>`;
+            ? '<i class="fa-solid fa-circle-exclamation"></i> <?php echo get_phrase('no_results'); ?>'
+            : `<i class="fa-solid fa-circle-check"></i> <strong>${visible}</strong> <?php echo get_phrase('found'); ?>`;
     } else {
         bar.classList.remove('active');
     }
