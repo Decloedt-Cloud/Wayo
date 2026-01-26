@@ -617,7 +617,7 @@
     </h1>
     <div class="date-badge">
       <i class="far fa-calendar-alt"></i>
-      <?php echo date('l, j F Y'); ?>
+      <?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?>
     </div>
   </div>
 
@@ -675,7 +675,7 @@
         <i class="fas fa-arrow-right"></i>
       </a>
       <div class="stat-icon">
-        <i class="fas fa-calendar-star"></i>
+        <i class="fas fa-calendar-day"></i>
       </div>
       <div class="stat-label"><?php echo get_phrase('events'); ?></div>
       <div class="stat-value" data-count="<?php $events_count = $this->crud_model->get_current_month_events(); echo $events_count->num_rows(); ?>">
@@ -754,7 +754,7 @@
     <!-- Invoices -->
     <div class="modern-card fade-up delay-6">
       <div class="modern-card-header">
-        <h3><i class="fas fa-file-invoice-dollar"></i> <?php echo get_phrase('accounts_of'); ?> <?php echo date('F'); ?></h3>
+        <h3><i class="fas fa-file-invoice-dollar"></i> <?php echo get_phrase('accounts_of'); ?> <?php echo get_phrase(strtolower(date('F'))); ?></h3>
         <a href="<?php echo route('invoice'); ?>" class="view-link">
           <?php echo get_phrase('view_all'); ?> <i class="fas fa-chevron-right"></i>
         </a>
@@ -814,7 +814,7 @@
     <!-- Expenses -->
     <div class="modern-card fade-up delay-6">
       <div class="modern-card-header">
-        <h3><i class="fas fa-receipt"></i> <?php echo get_phrase('expense_of'); ?> <?php echo date('F'); ?></h3>
+        <h3><i class="fas fa-receipt"></i> <?php echo get_phrase('expense_of'); ?> <?php echo get_phrase(strtolower(date('F'))); ?></h3>
         <a href="<?php echo route('expense'); ?>" class="view-link">
           <?php echo get_phrase('view_all'); ?> <i class="fas fa-chevron-right"></i>
         </a>
