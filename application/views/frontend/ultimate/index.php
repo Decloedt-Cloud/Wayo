@@ -11,7 +11,7 @@
   $active_school_id = $this->frontend_model->get_active_school_id();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo (get_user_language() === 'arabic') ? 'ar' : 'en'; ?>" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <head>
   
     <?php include 'metas.php'; ?>

@@ -120,4 +120,9 @@ elseif ($page_name == "affiliation"){
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/affiliation.css">';
     
 }
+elseif (strpos($page_name, 'Articles') !== false){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/blog.css">';
+    
+}
 ?>

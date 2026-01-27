@@ -19,7 +19,7 @@
         <!-- Colonne Gauche: Texte -->
         <div class="col-lg-5 col-xl-5">
           <div class="hero-copy">
-            <h1><span class="accent"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
+            <h1><span class="accent" style="text-transform: capitalize;"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
             <p class="sub"><?php echo get_phrase("We_specialize_in_secure_payment_platforms_that_don’t_freeze_mentors’_accounts._Build,_engage,_and_grow_your_revenue_without_limitations.") ?></p>
             <div class="hero-ctas">
               <?php if (!$this->session->userdata('user_id')): ?>
