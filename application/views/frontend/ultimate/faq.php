@@ -211,6 +211,7 @@
             <a class="btn-login" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Explore communities") ?></a>
           </div>
           <div class="price" style="border-color:rgba(255,122,46,.45)">
+            <span class="popular-badge"><?php echo get_phrase("popular") ?></span>
             <h4><?php echo get_phrase("Mentor — Publish & Monetize") ?></h4>
             <div class="plan-price-split">
             <p class="big">

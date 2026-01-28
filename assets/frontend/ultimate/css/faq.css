@@ -623,8 +623,7 @@
       position: relative;
     }
 
-    .price[style*="border-color"]::before {
-      content: 'Popular';
+    .popular-badge {
       position: absolute;
       top: -12px;
       left: 50%;
@@ -637,6 +636,8 @@
       padding: 4px 12px;
       border-radius: 99px;
       letter-spacing: 0.05em;
+      z-index: 10;
+      white-space: nowrap;
     }
 
     details.faq {
