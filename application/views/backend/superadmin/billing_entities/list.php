@@ -49,7 +49,7 @@ $CI->load->model('BillingEntityCredentials_model', 'creds_model');
                 <div class="entity-info-item">
                     <span class="label"><?php echo get_phrase('Code'); ?></span>
                     <span class="value">
-                        <span class="badge badge-primary" style="font-size: 14px; padding: 6px 12px;"><?php echo $entity['code']; ?></span>
+                        <span class="badge badge-primary" style="font-size: 14px; padding: 6px 12px; color:black;"><?php echo $entity['code']; ?></span>
                     </span>
                 </div>
                 <div class="entity-info-item">
@@ -160,7 +160,7 @@ $CI->load->model('BillingEntityCredentials_model', 'creds_model');
                 ?>
                 <tr>
                     <td>
-                        <span class="badge badge-primary" style="font-size: 14px; padding: 8px 14px;">
+                        <span class="badge badge-primary" style="font-size: 14px; padding: 8px 14px; color:black;">
                             <?php echo $mapping['tax_residence_code']; ?>
                         </span>
                     </td>
@@ -189,13 +189,13 @@ $CI->load->model('BillingEntityCredentials_model', 'creds_model');
                         <?php endif; ?>
                     </td>
                     <td>
-                        <span class="badge badge-light"><?php echo $mapping['priority']; ?></span>
+                        <span class="badge badge-light" style="color: black;"><?php echo $mapping['priority']; ?></span>
                     </td>
                     <td>
                         <?php if ($mapping['is_active']): ?>
-                        <span class="badge badge-success"><i class="fas fa-check mr-1"></i><?php echo get_phrase('Active'); ?></span>
+                        <span class="badge badge-success" style="color: black;"><i class="fas fa-check mr-1"></i><?php echo get_phrase('Active'); ?></span>
                         <?php else: ?>
-                        <span class="badge badge-danger"><i class="fas fa-ban mr-1"></i><?php echo get_phrase('Inactive'); ?></span>
+                        <span class="badge badge-danger" style="color: black;"><i class="fas fa-ban mr-1"></i><?php echo get_phrase('Inactive'); ?></span>
                         <?php endif; ?>
                     </td>
                 </tr>

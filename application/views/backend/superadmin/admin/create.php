@@ -82,9 +82,9 @@ $(document).ready(function () {
     /* ============================
        REGEX VALIDATION
     ============================ */
-    const nameRegex = /^[a-zA-ZÀ-ÿ\s]{3,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9+\- ]{6,}$/;
+    var nameRegex = /^[a-zA-ZÀ-ÿ\s]{3,}$/;
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var phoneRegex = /^[0-9+\- ]{6,}$/;
 
     function showError(input, msg) {
         input.addClass('is-invalid');
@@ -178,7 +178,7 @@ $(document).ready(function () {
 
         // Disable button
         const submitBtn = $(this).find("button[type=submit]");
-        submitBtn.prop("disabled", true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase("creating"); ?>...');
+        submitBtn.prop("disabled", true).html('<i class="fa-solid fa-spinner fa-spin"></i> <?php echo get_phrase("creating"); ?>...');
 
         const formData = new FormData(this);
 

@@ -1184,6 +1184,7 @@ class Crud_model extends CI_Model
 		// $this->db->where('school_id', $this->school_id);
 		$this->db->where('payment_type', 'subscription_admin');
 		$this->db->where('session', $this->active_session);
+		$this->db->order_by('id', 'desc');
 		return $this->db->get('invoices');
 	}
 	public function get_invoice_by_student_id($user_id = "", $limit = null, $offset = null, $filter = 'all', $search = '')
