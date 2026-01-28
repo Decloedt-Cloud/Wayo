@@ -730,6 +730,16 @@ function community_details($school_id = '')
 		$current_role = $this->session->userdata('role'); // Rôle actif
 		$current_school_id = $this->session->userdata('active_school_id');
 
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode([
+				'status' => 'success',
+				'data' => [],
+				'count' => 0
+			]);
+			return;
+		}
+
 		// Récupérer toutes les entrées user_schools
 		$this->db->select('us.school_id, s.name as community_name, us.role');
 		$this->db->from('user_schools us');
@@ -855,6 +865,12 @@ function community_details($school_id = '')
 
 		if (!$user_id) {
 			echo json_encode(['status' => 'error', 'message' => 'session_expired']);
+			return;
+		}
+
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode(['status' => 'error', 'message' => 'Access_denied_for_superadmin']);
 			return;
 		}
 
@@ -1157,6 +1173,16 @@ function community_details($school_id = '')
 			return;
 		}
 
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode([
+				'status' => 'success',
+				'roles' => [],
+				'current_role' => 'superadmin'
+			]);
+			return;
+		}
+
 		// Récupérer les rôles distincts de l'utilisateur
 		$this->db->select('us.role');
 		$this->db->from('user_schools us');
@@ -1220,6 +1246,12 @@ function community_details($school_id = '')
 			return;
 		}
 
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode(['status' => 'error', 'message' => 'Access_denied_for_superadmin']);
+			return;
+		}
+
 		$role_key = strtolower($role);
 		
 		// Pour les students, vérifier que le status est 1 (approuvé) ou non
@@ -1263,6 +1295,12 @@ function community_details($school_id = '')
 
 		if (!$user_id) {
 			echo json_encode(['status' => 'error', 'message' => 'session_expired']);
+			return;
+		}
+
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode(['status' => 'error', 'message' => 'Access_denied_for_superadmin']);
 			return;
 		}
 
@@ -1326,6 +1364,12 @@ function community_details($school_id = '')
 
 		if (!$user_id || !$active_school_id) {
 			echo json_encode(['status' => 'error', 'message' => 'invalid_session']);
+			return;
+		}
+
+		// Security: Superadmin cannot switch roles
+		if ($this->session->userdata('superadmin_login') == 1) {
+			echo json_encode(['status' => 'error', 'message' => 'Access_denied_for_superadmin']);
 			return;
 		}
 

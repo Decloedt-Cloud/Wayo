@@ -49,6 +49,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+$route['superadmin/community_list'] = 'superadmin/school';
+$route['superadmin/community_list/(:any)'] = 'superadmin/school/$1';
+
 $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
@@ -769,6 +772,8 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/announcements/(.+)'] = $role_route . '/event_calendar/$1';
         $route['app/community_settings'] = $role_route . '/school_settings';
         $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
+        $route['app/community_list'] = $role_route . '/school';
+        $route['app/community_list/(.+)'] = $role_route . '/school/$1';
         $route['app/courses'] = 'addons/courses';
         $route['app/courses/(:num)'] = 'student/manage_class/courses/$1';
         $route['app/courses/(.+)'] = 'addons/courses/$1';

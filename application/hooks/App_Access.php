@@ -47,7 +47,8 @@ class App_Access {
             '/app/teacher' => '/app/mentor',
             '/app/exam'    => '/app/certifications',
             '/app/event_calendar' => '/app/announcements',
-            '/app/school_settings' => '/app/community_settings'
+            '/app/school_settings' => '/app/community_settings',
+            '/app/school' => '/app/community_list'
         );
 
         foreach ($special_maps as $target => $replacement) {
@@ -71,7 +72,8 @@ class App_Access {
             '/teacher' => '/app/mentor',
             '/exam'    => '/app/certifications',
             '/event_calendar' => '/app/announcements',
-            '/school_settings' => '/app/community_settings'
+            '/school_settings' => '/app/community_settings',
+            '/school' => '/app/community_list'
         );
 
         foreach ($manager_roles as $role) {
