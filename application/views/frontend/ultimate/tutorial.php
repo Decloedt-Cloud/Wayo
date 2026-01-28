@@ -18,7 +18,7 @@
           <ul class="tuto-list list-group">
             <li><?php echo get_phrase("Create your Community space and set your goals.") ?></li>
             <li><?php echo get_phrase("Customize the homepage: branding, rules, visuals.") ?></li>
-            <li><?php echo get_phrase("Add your first classes: live, replay, files.") ?> <?php echo get_phrase("quiz") ?></li>
+            <li><?php echo get_phrase("Add your first classes: live, replay, files") ?> <?php echo get_phrase("and_quiz") ?></li>
             <li><?php echo get_phrase("Invite members, manage roles, and subscription plans.") ?></li>
             <li><?php echo get_phrase("Track engagement, revenue, and feedback from the Mentor dashboard.") ?></li>
           </ul>
@@ -57,18 +57,7 @@
         <p><?php echo get_phrase("Follow these 4 steps to create your profile, set up your community, add your classes, and launch your offer.") ?></p>
       </header>
 
-      <!-- Stepper ribbon -->
-      <div class="obi-ribbon" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1">
-        <div class="obi-ribbon__track">
-          <div class="obi-ribbon__fill" style="--progress:25%"></div>
-        </div>
-        <ol class="obi-ribbon__steps">
-          <li class="is-active"><span>1</span><?php echo get_phrase("Profile") ?></li>
-          <li><span>2</span><?php echo get_phrase("Community") ?></li>
-          <li><span>3</span><?php echo get_phrase("Classes") ?></li>
-          <li><span>4</span><?php echo get_phrase("Launch") ?></li>
-        </ol>
-      </div>
+
 
       <!-- Cards -->
       <div class="obi-grid">
@@ -105,7 +94,7 @@
           <h3><span class="obi-num-inline">3</span> <?php echo get_phrase("Create classes") ?></h3>
           <p><?php echo get_phrase("Add your educational content and organize your catalog.") ?></p>
           <ul class="obi-bullets">
-            <li><i class="fa-solid fa-clapperboard"></i> <strong><?php echo get_phrase("Type") ?></strong> : <?php echo get_phrase("live, replay, files") ?> <?php echo get_phrase("quiz") ?></li>
+            <li><i class="fa-solid fa-clapperboard"></i> <strong><?php echo get_phrase("Type") ?></strong> : <?php echo get_phrase("live, replay, files") ?> <?php echo get_phrase("and_quiz") ?></li>
             <li><i class="fa-regular fa-clock"></i> <strong><?php echo get_phrase("Recommended duration") ?></strong> :<?php echo get_phrase("min per video") ?></li>
             <li><i class="fa-solid fa-list-check"></i> <strong><?php echo get_phrase("Structure") ?></strong> : <?php echo get_phrase("Intro → Goals → Demo → Exercise → Recap") ?></li>
             <li><i class="fa-solid fa-ticket"></i> <strong><?php echo get_phrase("Class price") ?></strong> <?php echo get_phrase("(per unit) or") ?> <strong><?php echo get_phrase("included") ?></strong> <?php echo get_phrase("in the subscription") ?></li>

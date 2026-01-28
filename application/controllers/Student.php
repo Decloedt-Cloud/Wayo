@@ -1077,6 +1077,12 @@ class Student extends CI_Controller {
         // 🔹 1. Récupération des données envoyées par le formulaire
         $data['student_id'] = $this->session->userdata('user_id'); 
         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
+
+        // Fallback: Si school_id est vide (ex: redirection qui perd le POST), utiliser le paramètre URL
+        if (empty($data['school_id']) && !empty($school_id)) {
+            $data['school_id'] = $school_id;
+        }
+
         $data['price']      = htmlspecialchars($this->input->post('price'));
         $data['currency']   = htmlspecialchars($this->input->post('currency'));
         $data['session']    = active_session();
@@ -1088,6 +1094,16 @@ class Student extends CI_Controller {
         if (!$school) {
             show_error('community not found.');
             return;
+        }
+
+        // Fallback: Si le prix est vide (car POST perdu), utiliser le prix de l'école
+        if ($data['price'] === '' || $data['price'] === null) {
+            $data['price'] = $school->price;
+            
+            // Si la devise est vide, essayer de la récupérer des settings (ou défaut)
+            if (empty($data['currency'])) {
+                 $data['currency'] = get_settings('system_currency');
+            }
         }
         $school_name = $school->name;
         

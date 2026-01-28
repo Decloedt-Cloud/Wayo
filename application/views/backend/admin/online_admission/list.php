@@ -61,6 +61,14 @@ $total_applications = $applications ? $applications->num_rows() : 0;
 .adm-empty-state h3 { margin: 0 0 0.5rem; font-size: 1.125rem; color: var(--adm-dark); }
 .adm-empty-state p { margin: 0; color: var(--adm-gray); font-size: 0.875rem; }
 
+/* Pagination Styles */
+.adm-pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; padding-bottom: 1rem; }
+.adm-page-btn { min-width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--adm-border); background: white; color: var(--adm-dark); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.adm-page-btn:hover:not(:disabled) { border-color: var(--adm-primary); color: var(--adm-primary); }
+.adm-page-btn.active { background: var(--adm-primary); color: white; border-color: var(--adm-primary); }
+.adm-page-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--adm-light); }
+.adm-page-dots { display: flex; align-items: center; justify-content: center; color: var(--adm-gray); }
+
 @media (max-width: 768px) {
     .adm-list-header { display: none; }
     .adm-list-item { grid-template-columns: 1fr; gap: 0.5rem; }
@@ -114,15 +122,96 @@ $total_applications = $applications ? $applications->num_rows() : 0;
 <?php endforeach; ?>
 </div>
 
+<div id="adm-pagination" class="adm-pagination"></div>
+
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    initPagination();
+});
+
+let currentPage = 1;
+const itemsPerPage = 10;
+
+function initPagination() {
+    renderPagination();
+}
+
 function filterAdmissions() {
-    var search = document.getElementById('adm-search').value.toLowerCase();
-    var items = document.querySelectorAll('.adm-list-item');
-    items.forEach(function(item) {
-        var name = item.dataset.name || '';
-        var email = item.dataset.email || '';
-        item.style.display = (name.includes(search) || email.includes(search)) ? '' : 'none';
+    currentPage = 1; // Reset to first page on search
+    renderPagination();
+}
+
+function renderPagination() {
+    const searchInput = document.getElementById('adm-search');
+    const search = searchInput ? searchInput.value.toLowerCase() : '';
+    const allItems = document.querySelectorAll('.adm-list-item');
+    const paginationContainer = document.getElementById('adm-pagination');
+    
+    let matchedItems = [];
+    
+    // 1. Filter items
+    allItems.forEach(item => {
+        const name = item.dataset.name || '';
+        const email = item.dataset.email || '';
+        
+        if (name.includes(search) || email.includes(search)) {
+            matchedItems.push(item);
+        } else {
+            item.style.display = 'none';
+        }
     });
+    
+    // 2. Paginate matched items
+    const totalItems = matchedItems.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Ensure currentPage is valid
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+    if (currentPage < 1) currentPage = 1;
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // Show/Hide items based on page
+    matchedItems.forEach((item, index) => {
+        if (index >= startIndex && index < endIndex) {
+            item.style.display = ''; // Show
+        } else {
+            item.style.display = 'none'; // Hide
+        }
+    });
+    
+    // 3. Render Pagination Controls
+    let paginationHTML = '';
+    
+    if (totalPages > 1) {
+        // Previous Button
+        paginationHTML += `<button class="adm-page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="mdi mdi-chevron-left"></i></button>`;
+        
+        // Page Numbers (Smart range)
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                paginationHTML += `<button class="adm-page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                paginationHTML += `<span class="adm-page-dots">...</span>`;
+            }
+        }
+        
+        // Next Button
+        paginationHTML += `<button class="adm-page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="mdi mdi-chevron-right"></i></button>`;
+    }
+    
+    if (paginationContainer) {
+        paginationContainer.innerHTML = paginationHTML;
+    }
+}
+
+function changePage(page) {
+    if (page < 1) return;
+    currentPage = page;
+    renderPagination();
+    // Optional: Scroll to top of list
+    // document.querySelector('.adm-list-header').scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 

@@ -2302,4 +2302,11 @@ if ($_FILES['image_file']['name'] != "") {
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
+
+	public function get_all_admins_count()
+	{
+		$this->db->where('role', 'admin');
+		$this->db->where('status', 1);
+		return $this->db->count_all_results('users');
+	}
 }
