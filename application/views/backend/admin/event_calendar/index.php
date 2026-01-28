@@ -111,6 +111,9 @@
    }
 
    function showNotification(type, message) {
+    <?php if ($this->config->item('enable_toasts') == FALSE): ?>
+        return;
+    <?php endif; ?>
     toastr.options = {
         closeButton: true,
         progressBar: true,
