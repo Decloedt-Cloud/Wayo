@@ -727,6 +727,9 @@ $(document).ready(function() {
     });
 
     function showNotification(type, message, duration = 3000) {
+        <?php if ($this->config->item('enable_toasts') == FALSE): ?>
+            return;
+        <?php endif; ?>
         Swal.fire({
             toast: true,
             position: 'top-end',
