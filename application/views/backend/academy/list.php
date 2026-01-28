@@ -177,6 +177,7 @@ $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise
 }
 
 .aca-list-body {
+    min-height: 300px;
     max-height: 600px;
     overflow-y: auto;
 }
@@ -545,6 +546,17 @@ $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise
     
     .aca-pagination-nav {
         order: -1; /* Buttons on top */
+    }
+
+    /* Fix dropdown positioning on mobile */
+    .aca-col-actions .dropdown-menu {
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+        margin-top: 0.5rem !important;
+        min-width: 160px;
     }
 }
 </style>
