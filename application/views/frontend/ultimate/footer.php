@@ -56,38 +56,33 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
       </div>
     </div>
     <div class="container footer-bottom">
-      <div class="footer-contact">
-        <p>
-          <strong><?php echo get_phrase('Contact'); ?></strong>
-          <div class="infoContact">
-                <a href="tel:+971501548923">+971 50 154 8923</a>
-                <a href="mailto:info@wayo.cloud">info@wayo.cloud</a>
-                <a href="https://maps.google.com/?q=R320+Um+Hurair+2,+Dubai,+UAE" target="_blank">
-                    R320 Um Hurair 2, Dubai, EAU
-                </a>
-          </div>
-        </p>
-      </div>
       <div class="footer-links">
-        <p><strong><?php echo get_phrase('Useful Links'); ?></strong></p>
-          <div class="infolinks-container">
-              <div class="infolinks">
-                  <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
-                  <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
-                  <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
-                  <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
-              </div>
-              <div class="infolinks">
-                  <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Affiliation'); ?></a>
-                  <a href="<?php echo site_url('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
-                  <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
-              </div>
+        <p><strong><?php echo get_phrase('wayo_and_partners'); ?></strong></p>
+          <div class="infolinks">
+            <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
+            <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Become a partner'); ?></a>
+            <a href="<?php echo site_url('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
+          </div>
+      </div>
+
+      <div class="footer-links">
+        <p><strong><?php echo get_phrase('Help'); ?></strong></p>
+          <div class="infolinks">
+              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
+              <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
+          </div>
+      </div>
+
+      <div class="footer-links">
+        <p><strong><?php echo get_phrase('legal'); ?></strong></p>
+          <div class="infolinks">
+              <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
+              <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
           </div>
       </div>
 
       <div class="footer-newsletter">
         <p> <strong><?php echo get_phrase('Newsletter'); ?></strong></p>
-       
         <form action="#" method="post" class="newsletter-form">
           <input type="email" name="email" placeholder="<?php echo get_phrase('Your email');?>" required/>
           <button type="submit" class="btn accent"><?php echo get_phrase('Subscribe');?></button>

@@ -61,8 +61,8 @@ Footer Styling
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 12px;
-  margin-bottom: 12px
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .footer-logo img {
@@ -117,8 +117,8 @@ Footer Styling
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
 .footer-contact ul li {
@@ -146,30 +146,20 @@ Footer Styling
   color: #000000;
 }
 
-.footer-links .infolinks-container {
-  display: flex;
-  gap: 30px;
-}
-
 .footer-links .infolinks {
   display: flex;
   flex-direction: column;
+  gap: 0.8rem;
   color: #000000;
 }
 
-.footer-links p {
-  padding-block: 1em;
-  color: #000000;
-  font-size: 16px;
-  margin-block: 20px;
-}
-
+.footer-links p,
 .footer-newsletter p {
-  padding-block: 1em;
   color: #000000;
-  font-size: 16px;
-  margin-block: 20px;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
 }
+
 
 .btn:hover {
   transform: translateY(-1px);
@@ -266,7 +256,9 @@ Footer Styling
 .footer-credits {
   text-align: center;
   font-size: 0.8rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
 }
 
 .footer-credits p {
@@ -317,20 +309,13 @@ Footer Styling
 }
 
 @media (max-width: 1180px) and (min-width: 480px) {
-  .footer-contact {
-    width: 27%;
-  }
-
   .footer-links {
-    width: 27%;
+    width: 30%;
   }
 
   .footer-newsletter {
-    width: 27%;
-  }
-
-  .newsletter-form {
-    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
   }
 }
 
@@ -359,11 +344,6 @@ Footer Styling
   .footer-links p {
     padding-block: 0;
     margin-block: 0;
-  }
-
-  .infolinks-container {
-    flex-direction: column;
-    gap: 0;
   }
 
   .footer-newsletter {
