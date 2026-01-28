@@ -166,7 +166,7 @@ if ($active_school_id && $user_belongs_to_school) {
                             $user_role = strtolower($this->db->get_where('users', array('id' => $user_id))->row('role'));
                             
                             if ($user_role == 'admin'): ?>
-                                <span class="account-position"><?php echo get_phrase('school_admin'); ?></span>
+                                <span class="account-position"><?php echo get_phrase('admin'); ?></span>
                             <?php elseif ($user_role == 'teacher'): ?>
                                 <span class="account-position"><?php echo get_phrase('mentor'); ?></span>
                             <?php elseif ($user_role == 'student'): ?>

@@ -762,7 +762,6 @@
     "pending": "معلق",
     "update_book_issue_information": "تحديث معلومات إصدار الكتاب",
     "return_this_book": "إعادة هذا الكتاب",
-    "school_admin": "إدارة المجتمعات",
     "student_id": "معرف العضو",
     "update": "تحديث",
     "section_list_updated_successfully": "تم تحديث قائمة الأقسام الفرعية بنجاح",
@@ -3745,7 +3744,7 @@
     "add_your_first_classes:_live,_replay,_files": "أضف حصصك الأولى: مباشر، إعادة، ملفات",
     "and_quiz": "واختبار",
     "wayo_and_partners": "وايو والشركاء",
-    "legal": "قانوني"
+    "legal": "قانوني",
     "الدعم": "الدعم",
     "total_number_of_communities": "إجمالي عدد المجتمعات",
     "total_number_of_admins": "إجمالي عدد المسؤولين",
