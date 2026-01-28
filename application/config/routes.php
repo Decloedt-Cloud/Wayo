@@ -72,6 +72,7 @@ $route['trends/(:any)'] = 'articles/show/$1';
 $route['tutorial'] = 'home/tutorial';
 $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
+$route['support/send'] = 'home/contact/send';
 $route['about'] = 'home/about';
 $route['faq'] = 'home/faq';
 $route['affiliation'] = 'home/affiliation';

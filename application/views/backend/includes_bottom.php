@@ -1,4 +1,7 @@
 <!-- bundle -->
+<script type="text/javascript">
+  const ENABLE_TOASTS = <?php echo json_encode($this->config->item('enable_toasts') === NULL ? TRUE : $this->config->item('enable_toasts')); ?>;
+</script>
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/app.min.js"></script>
 
@@ -18,6 +21,7 @@
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/fullcalendar.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/summernote-bs4.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/toastr.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
 
 <!-- JS de bootstrap-select -->
 <script src="<?php echo base_url(); ?>assets/backend/js/bootstrap-select.min.js"></script>

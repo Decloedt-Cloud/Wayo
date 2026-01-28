@@ -371,6 +371,9 @@ if (!isset($working_page)) {
 <script>
     // Ensure showNotification is globally available
     window.showNotification = function(type, message) {
+        if (typeof ENABLE_TOASTS !== 'undefined' && !ENABLE_TOASTS) {
+            return;
+        }
         if(typeof toastr !== 'undefined') {
             toastr.options = {
                 closeButton: true,

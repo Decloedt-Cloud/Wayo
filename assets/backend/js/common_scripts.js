@@ -75,6 +75,9 @@ function showOptions(number_of_options, context = 'quiz') {
 }
 
 function showNotification(type, message) {
+    if (typeof ENABLE_TOASTS !== 'undefined' && !ENABLE_TOASTS) {
+        return;
+    }
     // Configure Toastr options
     toastr.options = {
         closeButton: true,
