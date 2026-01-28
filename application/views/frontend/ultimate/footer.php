@@ -61,6 +61,7 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
           <div class="infolinks">
             <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
             <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Become a partner'); ?></a>
+            <a href="<?php echo site_url('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
           </div>
       </div>
 

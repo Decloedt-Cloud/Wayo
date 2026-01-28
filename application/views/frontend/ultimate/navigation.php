@@ -1007,7 +1007,7 @@ if ($current_user_id) {
                                 </div>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->session->userdata('user_id')) { ?>
+                        <?php if ($this->session->userdata('user_id') && $this->session->userdata('role') != 'superadmin') { ?>
                             <!-- === COMMUNITY SWITCHER (NOUVEAU STYLE MODERNE) === -->
                             <div class="community-switcher" id="community-switcher" style="margin: 0 8px;">
                                 <button class="switcher-trigger" id="switcher-trigger">
