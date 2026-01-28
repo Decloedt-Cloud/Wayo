@@ -70,13 +70,18 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
       </div>
       <div class="footer-links">
         <p><strong><?php echo get_phrase('Useful Links'); ?></strong></p>
-          <div class="infolinks">
-            <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
-              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
-              <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
-              <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
-              <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Affiliation'); ?></a>
-              <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
+          <div class="infolinks-container">
+              <div class="infolinks">
+                  <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
+                  <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
+                  <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
+                  <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
+              </div>
+              <div class="infolinks">
+                  <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Affiliation'); ?></a>
+                  <a href="<?php echo site_url('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
+                  <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
+              </div>
           </div>
       </div>
 
