@@ -1286,10 +1286,6 @@
                                 <span class="price-value"></span> <small><span class="price-currency"> </span><?php echo get_phrase('/_month'); ?></small>
                             </div>
                             
-                            <div class="sub-price-sub plan-price-split">
-                                <?php echo get_phrase('price_to_pay_:'); ?> <span class="price-value"></span> <span class="price-currency"></span>
-                            </div>
-                            
                             <p class="sub-desc">
                                 <?php echo get_phrase('you_benefit_from_a_14_day_free_trial_to_test_all_features'); ?>
                             </p>

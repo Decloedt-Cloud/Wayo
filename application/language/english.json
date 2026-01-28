@@ -4199,10 +4199,12 @@
     "people": "People",
     "chat": "Chat",
     "add_new_accountant_details": "Add new accountant details",
-    "offers_and_prices": "Offers and prices",
     "manage_class_syllabuses": "Manage class syllabuses",
     "total_syllabus": "Total syllabus",
     "upload_and_share_study_materials": "Upload and share study materials",
     "enter_syllabus_title": "Enter syllabus title",
-    "no_syllabus_found_for_this_selection": "No syllabus found for this selection"
+    "no_syllabus_found_for_this_selection": "No syllabus found for this selection",
+    "create_communities_a": "Build your community",
+    "add_your_first_classes:_live,_replay,_files": "Add your first classes: live, replay, files",
+    "and_quiz": "And quiz"
 }

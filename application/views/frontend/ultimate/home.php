@@ -40,7 +40,7 @@
                     <path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2" />
                     <path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z" />
                   </svg></span>
-                <strong><?php echo get_phrase("Create_communities") ?></strong>
+                <strong><?php echo get_phrase("Create_communities_a") ?></strong>
               </div>
               <div class="chip pill">
                 <span class="chip-icon course"><svg viewBox="0 0 24 24" width="18" height="18">
