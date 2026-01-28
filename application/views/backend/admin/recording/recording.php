@@ -465,7 +465,7 @@
     </div>
 </div>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 <script>
 (function() {
     'use strict';
@@ -798,14 +798,15 @@ $(document).ready(function() {
         var btn = $(this);
 
         Swal.fire({
-            title: '<?php echo get_phrase("Are you sure?"); ?>',
-            text: "<?php echo get_phrase("Are you sure you want to delete this recording?"); ?>",
+            title: '<?php echo addslashes(get_phrase("are_you_sure")); ?>',
+            text: '<?php echo addslashes(get_phrase("you_will_not_be_able_to_revert_this")); ?>',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: '<?php echo get_phrase("Delete"); ?>',
-            cancelButtonText: '<?php echo get_phrase("Cancel"); ?>'
+            confirmButtonColor: '#6366f1',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<?php echo addslashes(get_phrase("yes_delete_it")); ?>',
+            cancelButtonText: '<?php echo addslashes(get_phrase("cancel")); ?>',
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({

@@ -94,6 +94,16 @@ $config['charset'] = 'UTF-8';
  
 /*
 |--------------------------------------------------------------------------
+| Enable/Disable Toasts
+|--------------------------------------------------------------------------
+|
+| Set this to FALSE to disable all toast notifications in the views.
+|
+*/
+$config['enable_toasts'] = FALSE;
+
+/*
+|--------------------------------------------------------------------------
 | Enable/Disable System Hooks
 |--------------------------------------------------------------------------
 |
@@ -555,7 +565,7 @@ $config['csrf_exclude_uris'] = array(
     'bigbluebutton/webhook',
     'bigbluebutton/meeting_states',
     'profile/update_profile',
-    'home/contact/send',
+    'support/send',
     'superadmin/delete_event',
     'admin/delete_event',
     'teacher/delete_event',

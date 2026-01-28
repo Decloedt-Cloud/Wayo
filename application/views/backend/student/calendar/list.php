@@ -390,6 +390,8 @@
     
 <script>
 
+const enableToasts = <?php echo json_encode((bool)$this->config->item('enable_toasts')); ?>;
+
 const CalendarApp = {
   calendar: null,
   currentView: 'dayGridMonth',
@@ -834,6 +836,7 @@ const CalendarApp = {
 },
 
   showNotification(type, message, duration = 3000) {
+    if (!enableToasts) return;
     Swal.fire({
       toast: true,
       position: 'top-end',
