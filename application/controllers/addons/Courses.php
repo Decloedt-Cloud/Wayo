@@ -252,6 +252,22 @@ class Courses extends CI_Controller {
     echo $this->lms_model->get_subject_by_class($class_id);
   }
 
+  public function get_teachers_by_class_ids() {
+    $class_ids = $this->input->post('class_ids');
+    
+    $response = array();
+    $response['csrfName'] = $this->security->get_csrf_token_name();
+    $response['csrfHash'] = $this->security->get_csrf_hash();
+
+    if (empty($class_ids)) {
+        $response['teachers'] = [];
+    } else {
+        $response['teachers'] = $this->lms_model->get_teachers_by_class_selection($class_ids);
+    }
+    
+    echo json_encode($response);
+  }
+
   public function course_add(){
     $this->student_access_denied();
     $page_data['all_teachers']    = $this->user_model->get_all_teachers();
