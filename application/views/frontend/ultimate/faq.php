@@ -203,27 +203,31 @@
         </div>
         <div class="pricing">
           <div class="price">
-            <h4><?php echo get_phrase("Learner — À la carte") ?></h4>
-             <div class="plan-price-split">
-            <p class="big">
-               <?php echo get_phrase("From") ?> <span class="price-value"></span>
-               <span class="price-currency"></span>
-            </p>
+            <h4><?php echo get_phrase("Learner — Access by Mentor") ?></h4>
+            <div class="plan-price-split">
+                <p class="big"><?php echo get_phrase("Free or Paid (defined by the mentor)") ?></p>
+                <p><?php echo get_phrase("Access communities, courses, and sessions based on the plan set by each mentor.Some content may be free, others paid.") ?></p>
             </div>
-            <p><?php echo get_phrase("Purchase course by course, access depending on format (on-demand, live, coaching).") ?></p>
-            <a class="btn-login " href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Discover our communities") ?></a>
+            <a class="btn-login" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Explore communities") ?></a>
           </div>
           <div class="price" style="border-color:rgba(255,122,46,.45)">
-            <h4><?php echo get_phrase("Mentor — Publishing") ?></h4>
-            <p class="big"><?php echo get_phrase("Clear commission") ?></p>
-            <p><?php echo get_phrase("Commission displayed at publishing. Payouts scheduled.") ?></p>
+            <h4><?php echo get_phrase("Mentor — Publish & Monetize") ?></h4>
+            <div class="plan-price-split">
+            <p class="big">
+               <span class="price-value"></span>
+               <span class="price-currency"></span>
+            </p>
+            <p><?php echo get_phrase("Create and publish courses, live sessions, or coaching programs. Set free or paid plans. Wayo manages payments and delivery.") ?></p>
+            </div>
             <a class="btn-login" href="<?php echo site_url('admission/online_admission'); ?>"><?php echo get_phrase("Become a Mentor") ?></a>
           </div>
           <div class="price">
-            <h4><?php echo get_phrase("Easy use") ?></h4>
-            <p class="big"><?php echo get_phrase("Full control") ?></p>
-            <p><?php echo get_phrase("Private training, group access, reporting & certificates.") ?></p>
-            <a class="btn-login" href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase("For more infos") ?></a>
+            <h4><?php echo get_phrase("Platform Tools & Control") ?></h4>
+            <div class="plan-price-split">
+                <p class="big"><?php echo get_phrase("All included") ?></p>
+                <p><?php echo get_phrase("Private content, gated access, payment management, analytics, certificates, and community features.") ?></p>
+            </div>
+            <a class="btn-login" href="<?php echo site_url('home/tutorial'); ?>"><?php echo get_phrase("how it works") ?></a>
           </div>
         </div>
       </div>
