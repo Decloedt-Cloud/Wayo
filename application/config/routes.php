@@ -61,6 +61,14 @@ $route['getting_started'] = 'home/tutorial';
 $route['help-center'] = 'home/faq';
 $route['communities'] = 'home/communities';
 $route['communities/(.+)'] = 'home/communities/$1';
+
+// Trends Routes (formerly Blog)
+$route['trends'] = 'articles/index';
+$route['trends/category/(:any)'] = 'articles/category/$1';
+$route['trends/tag/(:any)'] = 'articles/tag/$1';
+$route['trends/page/(:any)'] = 'articles/page/$1';
+$route['trends/(:any)'] = 'articles/show/$1';
+
 $route['tutorial'] = 'home/tutorial';
 $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
