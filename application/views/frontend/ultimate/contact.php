@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+<link rel="stylesheet" href="<?php echo base_url('assets/frontend/ultimate/css/flag-icons/flag-icons.min.css'); ?>">
   <style>
  .glass {
       background: rgba(255, 255, 255, 0.95);
@@ -213,7 +213,7 @@
         font-weight: bold;
     }
     
-    .flag-icon {
+    .fi {
         font-size: 1.2em;
         line-height: 1em;
         border-radius: 4px;
@@ -259,6 +259,11 @@
     [dir="rtl"] .unified-phone-wrapper .form-control {
         text-align: right; 
         direction: ltr; /* Keep numbers LTR but align block right */
+    }
+
+    /* DEBUG: Force MA flag visibility */
+    .fi-ma {
+        background-image: url('<?php echo base_url("assets/frontend/ultimate/css/flag-icons/flags/4x3/ma.svg"); ?>') !important;
     }
   </style>
  
@@ -498,7 +503,7 @@ options.forEach(option => {
         const flag = this.getAttribute('data-flag');
 
         // Update UI
-        selectedFlag.className = `flag-icon flag-icon-${flag}`;
+        selectedFlag.className = `fi fi-${flag}`;
         countryInput.value = value;
         
         // Update selection state
@@ -541,52 +546,55 @@ window.addEventListener('DOMContentLoaded', () => {
     const initialOpt = document.querySelector(`.custom-option[data-value="${countryInput.value}"]`);
     if(initialOpt) {
        const flag = initialOpt.getAttribute('data-flag'); 
-       selectedFlag.className = `flag-icon flag-icon-${flag}`;
+       selectedFlag.className = `fi fi-${flag}`;
     }
 });
 
-// === LOGIQUE DE PROTECTION DU CODE PAYS "FIXÉ" ===
+// === REVERSE LOOKUP LOGIC: AUTO-SELECT FLAG WHEN TYPING CODE ===
+if (phoneInput && countryInput) {
+    phoneInput.addEventListener('input', () => {
+        const val = phoneInput.value.trim();
+        
+        // Allow user to clear input or type anything, but if it looks like a code, try to match
+        if (!val.startsWith('+')) return;
 
-// 1. Empêcher de placer le curseur dans la zone du code
-['click', 'focus', 'keyup', 'keydown'].forEach(evt => {
-    phoneInput.addEventListener(evt, (e) => {
-        const code = countryInput.value;
-        // Si on essaie de sélectionner ou cliquer avant la fin du code
-        if (phoneInput.selectionStart < code.length) {
-            e.preventDefault();
-            phoneInput.setSelectionRange(code.length, code.length);
+        // Find matching option
+        let bestMatch = null;
+        let bestLen = 0;
+
+        options.forEach(opt => {
+            const code = opt.getAttribute('data-value');
+            if (val.startsWith(code)) {
+                if (code.length > bestLen) {
+                    bestLen = code.length;
+                    bestMatch = opt;
+                }
+            }
+        });
+
+        if (bestMatch) {
+            const code = bestMatch.getAttribute('data-value');
+            const flag = bestMatch.getAttribute('data-flag');
+            
+            // Only update if changed
+            if (countryInput.value !== code) {
+                 countryInput.value = code;
+                 selectedFlag.className = `fi fi-${flag}`;
+                 previousCode = code; // Sync previousCode
+
+                 // Update selection in dropdown
+                 options.forEach(o => o.classList.remove('selected'));
+                 bestMatch.classList.add('selected');
+            }
         }
     });
-});
-
-// 2. Bloquer la suppression du code (Backspace / Delete)
-phoneInput.addEventListener('keydown', (e) => {
-    const code = countryInput.value;
-    // Si on appuie sur Backspace et qu'on est collé au code
-    if (e.key === 'Backspace' && phoneInput.selectionStart <= code.length) {
-         e.preventDefault();
-    }
-    // Si on appuie sur Delete et qu'on est avant le code (théoriquement bloqué par le point 1, mais sécurité)
-    if (e.key === 'Delete' && phoneInput.selectionStart < code.length) {
-         e.preventDefault();
-    }
-});
-
-// 3. Restauration ultime si le code est altéré (ex: copier/coller brutal)
-phoneInput.addEventListener('input', () => {
-    const code = countryInput.value;
-    if (!phoneInput.value.startsWith(code)) {
-         // On essaie de préserver ce qui suit
-         const raw = phoneInput.value.replace(code, '').replace(/^\+/, ''); 
-         phoneInput.value = code + raw;
-    }
-});
+}
 
 contactForm.addEventListener('reset', () => {
     setTimeout(() => {
         // Reset to default (MA)
         countryInput.value = "+212";
-        selectedFlag.className = "flag-icon flag-icon-ma";
+        selectedFlag.className = "fi fi-ma";
         phoneInput.value = "+212";
         previousCode = "+212";
     }, 10);
