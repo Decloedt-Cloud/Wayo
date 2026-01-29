@@ -1,7 +1,7 @@
 <?php if (get_common_settings('recaptcha_status')): ?>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <?php endif; ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+<link rel="stylesheet" href="<?php echo base_url('assets/frontend/ultimate/css/flag-icons/flag-icons.min.css'); ?>">
 <?php
 ?>
 
@@ -207,7 +207,7 @@
         font-weight: bold;
     }
 
-    .flag-icon {
+    .fi {
         font-size: 1.1em;
         line-height: 1em;
         border-radius: 3px;
@@ -2151,7 +2151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const flag = this.getAttribute('data-flag');
 
                 // Update UI
-                selectedFlag.className = `flag-icon flag-icon-${flag}`;
+                selectedFlag.className = `fi fi-${flag}`;
                 countryInput.value = value;
 
                 // Update selection state
@@ -2195,37 +2195,46 @@ document.addEventListener('DOMContentLoaded', function() {
         const initialOpt = document.querySelector(`.custom-option[data-value="${countryInput.value}"]`);
         if(initialOpt && selectedFlag) {
            const flag = initialOpt.getAttribute('data-flag'); 
-           selectedFlag.className = `flag-icon flag-icon-${flag}`;
+           selectedFlag.className = `fi fi-${flag}`;
         }
     }
 
-    // Protection logic
+    // Reverse lookup logic: Auto-select flag when typing code
     if (phoneInput && countryInput) {
-        ['click', 'focus', 'keyup', 'keydown'].forEach(evt => {
-            phoneInput.addEventListener(evt, (e) => {
-                const code = countryInput.value;
-                if (phoneInput.selectionStart < code.length) {
-                    e.preventDefault();
-                    phoneInput.setSelectionRange(code.length, code.length);
+        phoneInput.addEventListener('input', () => {
+            const val = phoneInput.value.trim();
+            
+            // Allow user to clear input or type anything, but if it looks like a code, try to match
+            if (!val.startsWith('+')) return;
+
+            // Find matching option
+            let bestMatch = null;
+            let bestLen = 0;
+
+            options.forEach(opt => {
+                const code = opt.getAttribute('data-value');
+                if (val.startsWith(code)) {
+                    if (code.length > bestLen) {
+                        bestLen = code.length;
+                        bestMatch = opt;
+                    }
                 }
             });
-        });
 
-        phoneInput.addEventListener('keydown', (e) => {
-            const code = countryInput.value;
-            if (e.key === 'Backspace' && phoneInput.selectionStart <= code.length) {
-                 e.preventDefault();
-            }
-            if (e.key === 'Delete' && phoneInput.selectionStart < code.length) {
-                 e.preventDefault();
-            }
-        });
+            if (bestMatch) {
+                const code = bestMatch.getAttribute('data-value');
+                const flag = bestMatch.getAttribute('data-flag');
+                
+                // Only update if changed
+                if (countryInput.value !== code) {
+                     countryInput.value = code;
+                     selectedFlag.className = `fi fi-${flag}`;
+                     previousCode = code; // Sync previousCode
 
-        phoneInput.addEventListener('input', () => {
-            const code = countryInput.value;
-            if (!phoneInput.value.startsWith(code)) {
-                 const raw = phoneInput.value.replace(code, '').replace(/^\+/, ''); 
-                 phoneInput.value = code + raw;
+                     // Update selection in dropdown
+                     options.forEach(o => o.classList.remove('selected'));
+                     bestMatch.classList.add('selected');
+                }
             }
         });
     }
@@ -2334,7 +2343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (ci) ci.value = data._country;
                 const opt = document.querySelector(`.custom-option[data-value="${data._country}"]`);
                 if (opt && sf) {
-                    sf.className = `flag-icon flag-icon-${opt.getAttribute('data-flag')}`;
+                    sf.className = `fi fi-${opt.getAttribute('data-flag')}`;
                     document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     opt.classList.add('selected');
                 }
