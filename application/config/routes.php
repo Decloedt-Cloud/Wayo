@@ -88,6 +88,11 @@ $route['join/community/(.+)'] = 'admission/online_admission/$1';
 $route['join/member'] = 'admission/online_admission_student';
 $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
 
+// Routes for app rewriter
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(.+)'] = 'student/join_school/$1';
+
+
 
 // API Routes
 $route['api/login'] = 'api/Admin/login';
@@ -705,7 +710,16 @@ $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
 $route['payment/community/(:num)'] = 'student/payment/community/$1';
+        $route['app/online_admission'] = 'student/online_admission';
+        $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
+$route['app/payment'] = 'student/payment';
+$route['app/payment/(:any)'] = 'student/payment/$1';
+$route['app/payment/(:any)/(:any)'] = 'student/payment/$1/$2';
 
+// FIX: Route for app/join_school
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(:any)'] = 'student/join_school/$1';
+$route['app/courses/(:num)'] = 'student/courses/$1';
 /*
 | -------------------------------------------------------------------------
 | CUSTOM ROUTE FOR APP URL MASKING
