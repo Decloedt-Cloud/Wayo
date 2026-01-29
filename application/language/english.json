@@ -4330,5 +4330,8 @@
     "create_and_publish_courses,_live_sessions,_or_coaching_programs._set_free_or_paid_plans._wayo_manages_payments_and_delivery.": "Create and publish courses, live sessions, or coaching programs. set free or paid plans. wayo manages payments and delivery.",
     "platform_tools_&_control": "Platform tools & control",
     "all_included": "All included",
-    "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Private content, gated access, payment management, analytics, certificates, and community features."
+    "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Private content, gated access, payment management, analytics, certificates, and community features.",
+    "value_required": "Value required",
+    "current_password_is_incorrect": "Current password is incorrect",
+    "password_must_be_at_least_8_characters": "Password must be at least 8 characters"
 }

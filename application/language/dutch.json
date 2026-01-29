@@ -3988,5 +3988,14 @@
     "platform_tools_&_control": "Platformtools en controle",
     "all_included": "Alles inbegrepen",
     "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Privécontent, afgeschermde toegang, betalingsbeheer, analyses, certificaten en communityfuncties.",
-    "popular": "Populair"
+    "popular": "Populair",
+    "are_you_sure_you_want_to_join_this_class": "Weet je zeker dat je deze klas wilt joinen?",
+    "confirm_and_join": "Bevestigen en deelnemen",
+    "upload_new_photo": "Nieuwe foto uploaden",
+    "allowed_files": "Toegestane bestanden",
+    "save_changes": "Wijzigingen opslaan",
+    "value_required": "Waarde vereist",
+    "password_must_be_at_least_8_characters": "Wachtwoord moet minimaal 8 tekens lang zijn",
+    "update_password": "Wachtwoord bijwerken",
+    "current_password_is_incorrect": "Huidig wachtwoord is onjuist"
 }

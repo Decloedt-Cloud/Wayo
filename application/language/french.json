@@ -3982,5 +3982,16 @@
     "platform_tools_&_control": "Outils et contrôle de la plateforme",
     "all_included": "Tout inclus",
     "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Contenus privés, accès restreint, gestion des paiements, analyses, certificats et fonctionnalités communautaires.",
-    "popular": "Populaire"
+    "popular": "Populaire",
+    "are_you_sure_you_want_to_join_this_class": "Rejoindre cette classe ?",
+    "confirm_and_join": "Confirmer",
+    "grade_list": "Liste des notes",
+    "no_grades_found": "Aucune note trouvée",
+    "value_required": "Valeur requise",
+    "upload_new_photo": "Télécharger une nouvelle photo",
+    "allowed_files": "Fichiers autorisés",
+    "save_changes": "Enregistrer les modifications",
+    "update_password": "Mettre à jour le mot de passe",
+    "password_must_be_at_least_8_characters": "Le mot de passe doit contenir au moins 8 caractères",
+    "current_password_is_incorrect": "Le mot de passe actuel est incorrect"
 }

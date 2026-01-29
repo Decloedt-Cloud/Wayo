@@ -2,6 +2,12 @@
 $profile_data = $this->user_model->get_profile_data();
 ?>
 
+<style>
+    .error-border {
+        border-color: #dc3545 !important;
+    }
+</style>
+
 <!-- Profile Update Card -->
 <div class="modern-card">
     <div class="modern-card-header">
@@ -115,27 +121,36 @@ $profile_data = $this->user_model->get_profile_data();
             <div class="row">
                 <div class="col-md-12">
                     <div class="modern-form-group">
-                        <label class="modern-label" for="current_password"><?php echo get_phrase('current_password'); ?></label>
-                        <input type="password" id="current_password" name="current_password" class="modern-input" required>
+                        <label class="modern-label" for="current_password"><?php echo get_phrase('current_password'); ?> <span class="required">*</span></label>
+                        <div class="position-relative">
+                            <input type="password" id="current_password" name="current_password" class="modern-input" required data-msg-required="<?php echo get_phrase('value_required'); ?>">
+                            <i class="fas fa-eye password-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="modern-form-group">
-                        <label class="modern-label" for="new_password"><?php echo get_phrase('new_password'); ?></label>
-                        <input type="password" id="new_password" name="new_password" class="modern-input" required>
+                        <label class="modern-label" for="new_password"><?php echo get_phrase('new_password'); ?> <span class="required">*</span></label>
+                        <div class="position-relative">
+                            <input type="password" id="new_password" name="new_password" class="modern-input" required data-msg-required="<?php echo get_phrase('value_required'); ?>" data-msg-minlength="<?php echo get_phrase('password_must_be_at_least_8_characters'); ?>">
+                            <i class="fas fa-eye password-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="modern-form-group">
-                        <label class="modern-label" for="confirm_password"><?php echo get_phrase('confirm_password'); ?></label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="modern-input" required>
+                        <label class="modern-label" for="confirm_password"><?php echo get_phrase('confirm_password'); ?> <span class="required">*</span></label>
+                        <div class="position-relative">
+                            <input type="password" id="confirm_password" name="confirm_password" class="modern-input" required data-msg-required="<?php echo get_phrase('value_required'); ?>">
+                            <i class="fas fa-eye password-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 text-end mt-3">
-                    <button type="submit" class="modern-btn" onclick="changePassword()">
+                    <button type="submit" class="modern-btn">
                         <i class="mdi mdi-lock-reset"></i>
                         <?php echo get_phrase('update_password'); ?>
                     </button>
@@ -168,6 +183,19 @@ $(document).ready(function () {
         });
     });
 
+    // Password toggle handler
+    $('.password-toggle').on('click', function() {
+        const input = $(this).siblings('input');
+        const icon = $(this);
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
     // Fonction pour récupérer et retourner le token CSRF
     function getCsrfToken() {
         var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
@@ -179,6 +207,20 @@ $(document).ready(function () {
     $('.profileAjaxForm, .changePasswordAjaxForm').submit(function(e) {
         e.preventDefault();
         
+        // Validation check
+        if (typeof $(this).valid === 'function') {
+            if (!$(this).valid()) {
+                return false;
+            }
+        } else {
+            if (!this.checkValidity()) {
+                if (typeof this.reportValidity === 'function') {
+                    this.reportValidity();
+                }
+                return false;
+            }
+        }
+
         var submitButton = $(this).find('button[type="submit"]');
         var originalContent = submitButton.html();
         var updating_text = "<?php echo get_phrase('updating'); ?>...";
@@ -193,6 +235,10 @@ $(document).ready(function () {
             contentType: false,
             dataType: 'json',
             success: function (response) {
+                // Remove previous errors
+                $('.input-error-message').remove();
+                $('.modern-input').removeClass('error-border');
+
                 if (response.status) {
                     // Mise à jour du token CSRF
                     if(response.csrf) {
@@ -205,7 +251,13 @@ $(document).ready(function () {
                         location.reload();
                     }, 1000);
                 } else {
-                    toastr.error('<?php echo get_phrase('an_error_occurred'); ?>');
+                    if (response.field) {
+                        var field = $('#' + response.field);
+                        field.addClass('error-border');
+                        field.closest('.modern-form-group').append('<small class="text-danger input-error-message">' + response.notification + '</small>');
+                    } else {
+                        toastr.error('<?php echo get_phrase('an_error_occurred'); ?>');
+                    }
                     submitButton.prop('disabled', false).html(originalContent);
                 }
             },

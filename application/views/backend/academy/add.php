@@ -112,7 +112,7 @@ if (empty($school_id)) {
     <h3 class="modal-title"><?php echo get_phrase('join_class'); ?></h3>
     
     <div class="modal-text">
-        <?php echo get_phrase('are_you_sure_you_want_to_join_this_class'); ?>?
+        <?php echo get_phrase('are_you_sure_you_want_to_join_this_class'); ?>
     </div>
 
     <?php if(!empty($price) && $price > 0): ?>

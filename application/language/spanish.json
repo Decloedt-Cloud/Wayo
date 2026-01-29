@@ -3902,5 +3902,15 @@
     "platform_tools_&_control": "Herramientas y control de la plataforma",
     "all_included": "Todo incluido",
     "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Contenido privado, acceso restringido, gestión de pagos, analíticas, certificados y funciones de comunidad.",
-    "popular": "Popular"
+    "popular": "Popular",
+    "are_you_sure_you_want_to_join_this_class": "¿Está seguro de que desea unirse a esta clase?",
+    "confirm_and_join": "Confirmar y unirse",
+    "class_courses": "Cursos de clase",
+    "upload_new_photo": "Subir nueva foto",
+    "allowed_files": "Archivos permitidos",
+    "save_changes": "Guardar cambios",
+    "value_required": "Valor requerido",
+    "password_must_be_at_least_8_characters": "La contraseña debe tener al menos 8 caracteres",
+    "update_password": "Actualizar contraseña",
+    "current_password_is_incorrect": "La contraseña actual es incorrecta"
 }

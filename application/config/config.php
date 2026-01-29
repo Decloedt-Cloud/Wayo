@@ -592,7 +592,8 @@ $config['csrf_exclude_uris'] = array(
     'cron/fx_.*',
     'StripeWebhook',
     'StripeWebhook/index',
-    'app/courses/extract_pdf_structure'
+    'app/courses/extract_pdf_structure',
+    'app/profile/update_password'
 );
  
 /*

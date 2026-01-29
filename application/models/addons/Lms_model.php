@@ -1280,6 +1280,7 @@ class Lms_model extends CI_Model
             $class_ids = explode(',', $class_ids);
         }
         
+        // 1. Get teachers with permissions
         $this->db->select('users.id, users.name');
         $this->db->from('users');
         $this->db->join('teachers', 'teachers.user_id = users.id');
@@ -1288,7 +1289,24 @@ class Lms_model extends CI_Model
         $this->db->where('teacher_permissions.attendance', 1);
         $this->db->where('users.school_id', school_id());
         $this->db->group_by('users.id'); 
-        
-        return $this->db->get()->result_array();
+        $teachers = $this->db->get()->result_array();
+
+        // 2. Get admins
+        $this->db->select('users.id, users.name');
+        $this->db->from('users');
+        $this->db->where('users.school_id', school_id());
+        $this->db->group_start();
+        $this->db->where('role', 'admin');
+        $this->db->group_end();
+        $admins = $this->db->get()->result_array();
+
+        // 3. Merge and deduplicate
+        $all_users = array_merge($teachers, $admins);
+        $unique_users = [];
+        foreach ($all_users as $user) {
+            $unique_users[$user['id']] = $user;
+        }
+
+        return array_values($unique_users);
     }
 }
