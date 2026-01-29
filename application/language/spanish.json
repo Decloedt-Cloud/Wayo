@@ -3793,6 +3793,7 @@
     "offers_and_prices": "Ofertas y precios",
     "create_communities_a": "Crea tu comunidad",
     "social": "Social",
+    "create_communities_a": "Crea tu comunidad",
     "add_your_first_classes:_live,_replay,_files": "Agrega tus primeras clases: en vivo, repetición, archivos",
     "and_quiz": "Y cuestionario",
     "total_number_of_communities": "Número total de comunidades",
@@ -3890,5 +3891,17 @@
     "tips": "Consejos",
     "tutorials": "Tutoriales",
     "read_more": "Leer más",
-    "clawdbot_reflects_how_ai_is_accelerating_content_creation_and_making_it_accessible_to_a_wider_audience._however,_the_future_lies_not_only_in_producing_content_faster,_but_in_transforming_that_content_into_structured_learning_experiences_and_engaged_communities._by_combining_ai-assisted_creation_with_course_building_and_community_management,_platforms_like_wayo_illustrate_how_creators_can_move_from_content_generation_to_long-term_value_creation.": "Clawdbot refleja cómo la IA está acelerando la creación de contenido y haciéndolo accesible a una audiencia más amplia. Sin embargo, el futuro no reside solo en producir contenido más rápido, sino en transformar ese contenido en experiencias de aprendizaje estructuradas y comunidades comprometidas. Al combinar la creación asistida por IA con la construcción de cursos y la gestión de comunidades, plataformas como Wayo muestran cómo los creadores pueden pasar de la generación de contenido a la creación de valor a largo plazo."
+    "clawdbot_reflects_how_ai_is_accelerating_content_creation_and_making_it_accessible_to_a_wider_audience._however,_the_future_lies_not_only_in_producing_content_faster,_but_in_transforming_that_content_into_structured_learning_experiences_and_engaged_communities._by_combining_ai-assisted_creation_with_course_building_and_community_management,_platforms_like_wayo_illustrate_how_creators_can_move_from_content_generation_to_long-term_value_creation.": "Clawdbot refleja cómo la IA está acelerando la creación de contenido y haciéndolo accesible a una audiencia más amplia. Sin embargo, el futuro no reside solo en producir contenido más rápido, sino en transformar ese contenido en experiencias de aprendizaje estructuradas y comunidades comprometidas. Al combinar la creación asistida por IA con la construcción de cursos y la gestión de comunidades, plataformas como Wayo muestran cómo los creadores pueden pasar de la generación de contenido a la creación de valor a largo plazo.",
+    "ai": "inteligencia artificial",
+    "wayo_and_partners": "Wayo y socios",
+    "legal": "Legal",
+    "learner_—_access_by_mentor": "Estudiante — acceso definido por el mentor",
+    "free_or_paid_(defined_by_the_mentor)": "Gratis o de pago (definido por el mentor)",
+    "access_communities,_courses,_and_sessions_based_on_the_plan_set_by_each_mentor.some_content_may_be_free,_others_paid.": "Acceso a comunidades, cursos y sesiones según el plan establecido por cada mentor. Algunos contenidos pueden ser gratuitos y otros de pago.",
+    "mentor_—_publish_&_monetize": "Mentor — publicar y monetizar",
+    "create_and_publish_courses,_live_sessions,_or_coaching_programs._set_free_or_paid_plans._wayo_manages_payments_and_delivery.": "Crear y publicar cursos, sesiones en directo o programas de coaching. Establecer planes gratuitos o de pago. Wayo gestiona los pagos y la entrega.",
+    "platform_tools_&_control": "Herramientas y control de la plataforma",
+    "all_included": "Todo incluido",
+    "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Contenido privado, acceso restringido, gestión de pagos, analíticas, certificados y funciones de comunidad.",
+    "popular": "Popular"
 }
