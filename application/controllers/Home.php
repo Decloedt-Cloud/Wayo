@@ -493,7 +493,8 @@ function community_details($school_id = '')
     $user_id = $this->session->userdata('user_id');
     $student_id = 0;
     if ($user_id) {
-        $student = $this->db->get_where('students', array('user_id' => $user_id))->row_array();
+        // Fetch student ID specific to THIS school
+        $student = $this->db->get_where('students', array('user_id' => $user_id, 'school_id' => $page_data['school_id']))->row_array();
         if ($student) {
             $student_id = $student['id'];
         }
