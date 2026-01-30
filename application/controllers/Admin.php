@@ -448,7 +448,11 @@ class Admin extends CI_Controller
 			];
 		}
 
-		$taux_change = round($montant_converti / $montant_mad, 6);
+		if ($montant_mad != 0) {
+			$taux_change = round($montant_converti / $montant_mad, 6);
+		} else {
+			$taux_change = 0;
+		}
 
 		log_message('info', "Conversion MAD → {$devise_stripe} via FxRatesService: {$montant_mad} MAD = {$montant_converti} {$devise_stripe}");
 
@@ -1069,34 +1073,85 @@ class Admin extends CI_Controller
             return;
         }
 
+        // ========== SÉCURITÉ: Contrôle d'accès ==========
+        // Vérifier que l'utilisateur a le droit de voir cette facture
+        $current_user_type = $this->session->userdata('user_type');
+        $current_school_id = $this->session->userdata('school_id');
+        $invoice_school_id = $page_data['invoice_details']['school_id'];
+
+        if ($current_user_type !== 'superadmin' && $invoice_school_id != $current_school_id) {
+            log_message('error', "Tentative d'accès non autorisé à la facture #{$invoice_id} par l'utilisateur #{$this->session->userdata('user_id')} (École: {$current_school_id})");
+            show_error('Access Denied: You are not authorized to view this invoice.');
+            return;
+        }
+
         // ========== SYSTÈME ADAPTATIF SELON COUNTRY ==========
         // Récupérer le pays de l'école (source unique de vérité pour la fiscalité)
         $school = $this->db->get_where('schools', ['id' => $page_data['invoice_details']['school_id']])->row_array();
-        $tax_residence = isset($school['country']) ? $school['country'] : null;
+        $tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
+        
+        // Normalisation
+        if ($tax_residence === 'AE') {
+            $tax_residence = 'UAE';
+        }
+        if ($tax_residence === 'MOROCCO') {
+            $tax_residence = 'MA';
+        }
 
-        // PRIX DE BASE : Toujours MAD stocké en base (790 MAD)
-        $prix_base_mad = (float) $page_data['invoice_details']['total_amount']; // Toujours en MAD
-        $original_currency = $page_data['invoice_details']['currency']; // Devrait être MAD
+        // Fallback par défaut pour les abonnements
+        if (empty($tax_residence) && isset($page_data['invoice_details']['payment_type']) && $page_data['invoice_details']['payment_type'] === 'subscription_admin') {
+            $tax_residence = 'MA';
+        }
+        $page_data['tax_residence'] = $tax_residence;
+
+        // PRIX DE BASE
+        $base_amount = (float) $page_data['invoice_details']['total_amount'];
+        $base_currency = $page_data['invoice_details']['currency'];
+        if (empty($base_currency)) $base_currency = 'MAD';
 
         // Affichage utilisateur : MAD ou AED selon country
         if ($tax_residence === 'UAE') {
-            // Pour UAE : convertir MAD → AED pour l'affichage
-            $conversion_rate = $this->get_conversion_rate('MAD', 'AED');
-            $prix_affiche = round($prix_base_mad * $conversion_rate, 2);
-            $devise_affiche = 'AED';
-            $page_data['conversion_info'] = [
-                'from_currency' => 'MAD',
-                'to_currency' => 'AED',
-                'rate' => $conversion_rate,
-                'original_amount' => $prix_base_mad
-            ];
+            // UAE Logic
+             if ($base_currency === 'AED') {
+                 $prix_affiche = $base_amount;
+                 $devise_affiche = 'AED';
+                 $conversion_rate = 1.0;
+             } else {
+                 $conversion_rate = $this->get_conversion_rate($base_currency, 'AED');
+                 $prix_affiche = round($base_amount * $conversion_rate, 2);
+                 $devise_affiche = 'AED';
+                 $page_data['conversion_info'] = [
+                    'from_currency' => $base_currency,
+                    'to_currency' => 'AED',
+                    'rate' => $conversion_rate,
+                    'original_amount' => $base_amount
+                ];
+            }
+        } elseif ($tax_residence === 'MA') {
+            // MA Logic
+             if ($base_currency === 'MAD') {
+                 $prix_affiche = $base_amount;
+                 $devise_affiche = 'MAD';
+                 $conversion_rate = 1.0;
+             } else {
+                 $conversion_rate = $this->get_conversion_rate($base_currency, 'MAD');
+                 $prix_affiche = round($base_amount * $conversion_rate, 2);
+                 $devise_affiche = 'MAD';
+                 $page_data['conversion_info'] = [
+                    'from_currency' => $base_currency,
+                    'to_currency' => 'MAD',
+                    'rate' => $conversion_rate,
+                    'original_amount' => $base_amount
+                ];
+            }
         } else {
-            // Pour autres pays : afficher en MAD
-            $prix_affiche = $prix_base_mad;
-            $devise_affiche = 'MAD';
+            // Default Logic
+            $prix_affiche = $base_amount;
+            $devise_affiche = $base_currency;
+            $conversion_rate = 1.0;
         }
 
-        $page_data['prix_affiche_mad'] = $prix_base_mad; // Toujours garder le MAD de référence
+        $page_data['prix_affiche_mad'] = $base_amount; // Legacy variable name
         $page_data['prix_affiche'] = $prix_affiche; // Prix affiché (MAD ou AED)
         $page_data['devise_affiche'] = $devise_affiche;
         $page_data['tax_residence'] = $tax_residence;
@@ -1111,17 +1166,9 @@ class Admin extends CI_Controller
         }
 
         // Calculer les montants dans la devise d'affichage
-        if ($tax_residence === 'UAE') {
-            // Pour UAE : calculs en AED
-            $sub_total = round($prix_affiche / (1 + $vat_rate / 100), 2);
-            $vat_amount = round($sub_total * $vat_rate / 100, 2);
-            $grand_total = $prix_affiche; // Prix affiché est TTC en AED
-        } else {
-            // Pour autres pays : calculs en MAD
-            $sub_total = round($prix_base_mad / (1 + $vat_rate / 100), 2);
-            $vat_amount = round($sub_total * $vat_rate / 100, 2);
-            $grand_total = $prix_base_mad;
-        }
+        $sub_total = round($prix_affiche / (1 + $vat_rate / 100), 2);
+        $vat_amount = round($sub_total * $vat_rate / 100, 2);
+        $grand_total = $prix_affiche; // Prix affiché est TTC
 
         // Passer les montants à la vue (dans la devise d'affichage)
         $page_data['sub_total'] = $sub_total;
@@ -1129,14 +1176,14 @@ class Admin extends CI_Controller
         $page_data['vat_amount'] = $vat_amount;
         $page_data['grand_total'] = $grand_total;
 
-        // Variables originales pour référence (toujours en MAD)
-        $page_data['original_sub_total'] = round($prix_base_mad / (1 + $vat_rate / 100), 2);
+        // Variables originales pour référence
+        $page_data['original_sub_total'] = round($base_amount / (1 + $vat_rate / 100), 2);
         $page_data['original_vat_amount'] = round($page_data['original_sub_total'] * $vat_rate / 100, 2);
-        $page_data['original_grand_total'] = $prix_base_mad;
-        $page_data['original_currency'] = 'MAD';
+        $page_data['original_grand_total'] = $base_amount;
+        $page_data['original_currency'] = $base_currency;
 
         // Pour paiement Stripe : Conversion si nécessaire
-        $converted_amount = $prix_base_mad; // Par défaut = prix MAD
+        $converted_amount = $base_amount; // Par défaut = prix base
         $payment_currency = 'MAD'; // Par défaut
         $conversion_info = null;
 
@@ -1156,25 +1203,32 @@ class Admin extends CI_Controller
         $stripe_currency = $this->get_stripe_currency($gateway_school_id);
         log_message('debug', "Devise Stripe configurée: {$stripe_currency}");
 
-        // 2. Convertir MAD → devise Stripe si nécessaire
-        $conversion_stripe = $this->convertir_mad_vers_stripe($prix_base_mad, $stripe_currency);
+        // 2. Convertir Base → devise Stripe si nécessaire
+        $stripe_rate = $this->get_conversion_rate($base_currency, $stripe_currency);
+        $stripe_converted_amount = round($base_amount * $stripe_rate, 2);
+        
+        $conversion_stripe = [
+            'montant_converti' => $stripe_converted_amount,
+            'taux_change' => $stripe_rate,
+            'devise' => $stripe_currency
+        ];
 
         // 3. Préparer les données pour Stripe
         $converted_amount = $conversion_stripe['montant_converti'];
         $payment_currency = $conversion_stripe['devise'];
 
         // 4. Informations de conversion (pour traçabilité)
-        if ($payment_currency !== 'MAD') {
+        if ($payment_currency !== $base_currency) {
             $conversion_info = [
-                'prix_base_mad' => $prix_base_mad,
+                'prix_base_mad' => $base_amount,
                 'montant_stripe' => $converted_amount,
                 'devise_stripe' => $payment_currency,
                 'taux_change' => $conversion_stripe['taux_change'],
                 'conversion_date' => date('Y-m-d H:i:s')
             ];
-            log_message('info', "Conversion préparée: {$prix_base_mad} MAD → {$converted_amount} {$payment_currency}");
+            log_message('info', "Conversion préparée: {$base_amount} {$base_currency} → {$converted_amount} {$payment_currency}");
         } else {
-            log_message('debug', "Pas de conversion nécessaire - Stripe configuré en MAD");
+            log_message('debug', "Pas de conversion nécessaire - Stripe configuré en {$base_currency}");
         }
         // Pass invoice ID to view
         $page_data['invoice_id'] = $invoice_id;
@@ -1210,9 +1264,8 @@ class Admin extends CI_Controller
         $invoice = $this->db->get_where('invoices', ['id' => $this->uri->segment(4)])->row();
         
         // ========== DONNÉES POUR LA VUE ==========
-        // Toujours afficher le prix en MAD pour l'utilisateur
-        $page_data['amount_to_pay'] = $prix_base_mad; // Toujours MAD pour l'affichage
-        $page_data['currency'] = 'MAD'; // Toujours MAD affiché
+        $page_data['amount_to_pay'] = $prix_affiche;
+        $page_data['currency'] = $devise_affiche;
 
         // Informations pour Stripe (montant converti)
         $page_data['stripe_amount'] = $converted_amount; // Montant envoyé à Stripe
@@ -1220,14 +1273,14 @@ class Admin extends CI_Controller
 
         // Informations de conversion pour traçabilité
         $page_data['conversion_info'] = $conversion_info;
-        $page_data['prix_base_mad'] = $prix_base_mad; // Prix de référence
+        $page_data['prix_base_mad'] = $base_amount; // Prix de référence
 
         // Informations géolocalisation (pour info seulement)
         $user_country = $this->detect_user_country();
         $page_data['geolocation_info'] = [
             'user_country' => $user_country,
             'stripe_currency' => $payment_currency,
-            'prix_affiche' => $prix_base_mad . ' MAD'
+            'prix_affiche' => $prix_affiche . ' ' . $devise_affiche
         ];
 
         // ========== DONNÉES DE CONVERSION POUR LA VUE ==========
@@ -1241,9 +1294,9 @@ class Admin extends CI_Controller
         $paypal_currency = isset($paypal_config[0]->paypal_currency) ? $paypal_config[0]->paypal_currency : 'USD';
 
         // Déterminer si une conversion est nécessaire
-        $conversion_needed = ($payment_currency !== 'MAD');
-        $stripe_needs_conversion = ($stripe_currency !== 'MAD');
-        $paypal_needs_conversion = ($paypal_currency !== 'MAD');
+        $conversion_needed = ($payment_currency !== $base_currency);
+        $stripe_needs_conversion = ($stripe_currency !== $base_currency);
+        $paypal_needs_conversion = ($paypal_currency !== $base_currency);
 
         // Passer les flags de conversion à la vue
         $page_data['conversion_needed'] = $conversion_needed;
@@ -1259,21 +1312,28 @@ class Admin extends CI_Controller
         $page_data['stripe_fx_rate_val'] = $conversion_stripe['taux_change'];
 
         // Montants convertis Stripe (pour la vue - calculés correctement)
-        $page_data['stripe_sub_total_converted'] = round($prix_base_mad * $conversion_stripe['taux_change'], 2);
-        $page_data['stripe_vat_amount_converted'] = round(($prix_base_mad * $vat_rate / 100) * $conversion_stripe['taux_change'], 2);
+        $page_data['stripe_sub_total_converted'] = round($base_amount * $conversion_stripe['taux_change'], 2);
+        $page_data['stripe_vat_amount_converted'] = round(($base_amount * $vat_rate / 100) * $conversion_stripe['taux_change'], 2);
 
         // Montant total converti Stripe (pour la vue)
         $page_data['stripe_converted_amount'] = $conversion_stripe['montant_converti'];
 
-        // Conversion PayPal (utilise la même logique que plus bas)
-        $conversion_paypal = $this->convertir_mad_vers_stripe($prix_base_mad, $paypal_currency);
+        // Conversion PayPal
+        $paypal_rate = $this->get_conversion_rate($base_currency, $paypal_currency);
+        $paypal_converted_amount = round($base_amount * $paypal_rate, 2);
+        
+        $conversion_paypal = [
+            'montant_converti' => $paypal_converted_amount,
+            'taux_change' => $paypal_rate,
+            'devise' => $paypal_currency
+        ];
 
         // Taux de change PayPal (pour la vue)
         $page_data['paypal_fx_rate_val'] = $conversion_paypal['taux_change'];
 
         // Montants convertis PayPal (pour la vue - calculés correctement)
-        $page_data['paypal_sub_total_converted'] = round($prix_base_mad * $conversion_paypal['taux_change'], 2);
-        $page_data['paypal_vat_amount_converted'] = round(($prix_base_mad * $vat_rate / 100) * $conversion_paypal['taux_change'], 2);
+        $page_data['paypal_sub_total_converted'] = round($base_amount * $conversion_paypal['taux_change'], 2);
+        $page_data['paypal_vat_amount_converted'] = round(($base_amount * $vat_rate / 100) * $conversion_paypal['taux_change'], 2);
 
         // Montant total converti PayPal (pour la vue)
         $page_data['paypal_converted_amount'] = $conversion_paypal['montant_converti'];
@@ -1380,6 +1440,19 @@ class Admin extends CI_Controller
 			redirect(site_url('admin/dashboard'), 'refresh');
 			return;
 		}
+
+        // ========== SÉCURITÉ: Contrôle d'accès ==========
+        // Vérifier que l'utilisateur a le droit de payer cette facture
+        $current_user_type = $this->session->userdata('user_type');
+        $current_school_id = $this->session->userdata('school_id');
+        $invoice_school_id = $invoice_details['school_id'];
+
+        if ($current_user_type !== 'superadmin' && $invoice_school_id != $current_school_id) {
+            log_message('error', "Tentative de paiement non autorisé pour la facture #{$invoice_id} par l'utilisateur #{$this->session->userdata('user_id')}");
+            $this->session->set_flashdata('error_message', get_phrase('access_denied'));
+            redirect(site_url('admin/dashboard'), 'refresh');
+            return;
+        }
 
 		// ========== SÉCURITÉ: Vérifier que la facture n'est pas déjà payée ==========
 		if ($invoice_details['status'] === 'paid') {

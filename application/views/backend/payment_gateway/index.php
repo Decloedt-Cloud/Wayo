@@ -44,20 +44,25 @@
 		if (!empty($school_data['country'])) {
 			$tax_residence = strtoupper($school_data['country']); // MA, AE, FR...
 		}
-		
+	
 		// IMPORTANT: Pour les paiements subscription_admin (abonnement communauté), 
 		// toujours appliquer TVA Maroc par défaut si pas de country configuré
-		if (empty($tax_residence) && isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
-			$tax_residence = 'MA'; // Default to Morocco for subscription payments
-			$vat_applicable = true; // Force VAT applicable
+        // ET forcer l'application de la TVA pour les juridictions connues (MA, UAE, AE)
+		if (isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
+            if (empty($tax_residence)) {
+			    $tax_residence = 'MA'; // Default to Morocco for subscription payments
+            }
+            
+            if (in_array($tax_residence, ['MA', 'AE', 'UAE'])) {
+			    $vat_applicable = true; // Force VAT applicable regardless of school settings
+            }
 		}
-
 		// DEBUG: Afficher les valeurs pour le debug
 		// error_log("DEBUG VAT: school_id=$school_id_for_vat, vat_applicable=$vat_applicable, tax_residence='$tax_residence'");
 
 		// Déterminer la devise d'affichage selon country (AE ou UAE pour Emirats)
 		$display_currency = (in_array($tax_residence, ['UAE', 'AE'])) ? 'AED' : 'MAD';
-		$original_currency = 'MAD'; // Toujours MAD en base
+		$original_currency = isset($invoice_details['currency']) ? $invoice_details['currency'] : 'MAD'; // Toujours MAD en base par défaut
 
 		// Initialiser les variables VAT par défaut
 		$sub_total = (float)$amount_to_pay;
@@ -69,10 +74,25 @@
 		if (in_array($tax_residence, ['UAE', 'AE']) && $display_currency === 'AED') {
 			// Calculs simplifiés pour UAE
 			$vat_rate = 5;
-			$sub_total = round($amount_to_pay / 1.05, 2);
-			$vat_amount = round($sub_total * 0.05, 2);
-			$grand_total = round($sub_total + $vat_amount, 2);
-		}
+            
+            // Si la devise d'origine est déjà AED, pas de conversion
+            if ($original_currency === 'AED') {
+                $sub_total = round($amount_to_pay / 1.05, 2);
+                $vat_amount = round($amount_to_pay - $sub_total, 2);
+                $grand_total = (float)$amount_to_pay; // Keep original amount to avoid rounding issues
+            } else {
+                // Conversion approximative si devise MAD (legacy)
+                $sub_total = round($amount_to_pay / 1.05, 2); 
+                $vat_amount = round($sub_total * 0.05, 2);
+                $grand_total = round($sub_total + $vat_amount, 2);
+            }
+		} elseif ($tax_residence === 'MA') {
+            // Calculs simplifiés pour MA (20%) - Comportement identique à AE
+            $vat_rate = 20;
+            $sub_total = round($amount_to_pay / 1.20, 2);
+            $vat_amount = round($amount_to_pay - $sub_total, 2);
+            $grand_total = (float)$amount_to_pay;
+        }
 
 		// Load Morocco B2B service for calculations
 		$CI =& get_instance();
@@ -83,7 +103,7 @@
 		// =====================================================
 		$CI->load->library('BillingEntityService', null, 'billingEntityService');
 		$billing_entity = $CI->billingEntityService->get_entity_for_tax_residence($tax_residence);
-		
+
 		// Si une entité est trouvée, utiliser ses paramètres
 		if ($billing_entity) {
 			$entity_vat_rate = $billing_entity['vat_rate'] ?? ($tax_residence === 'MA' ? 20 : 5);
@@ -236,19 +256,42 @@
 
 				// Pour UAE, convertir les montants vers AED
 				if ($tax_residence === 'UAE' || $tax_residence === 'AE') {
-					// Récupérer le taux de conversion MAD → AED via FxRatesService
-					$CI->load->library('FxRatesService', null, 'fxrates_service');
-					
-					// Utiliser la méthode convert pour obtenir le taux
-					$test_convert = $CI->fxrates_service->convert(1, 'MAD', 'AED');
-					$conversion_rate = ($test_convert !== false) ? $test_convert : 0.37; // Fallback rate
-					
-					$sub_total = round($sub_total_mad * $conversion_rate, 2);
-					$vat_amount = round($vat_amount_mad * $conversion_rate, 2);
-					$grand_total = round($grand_total_mad * $conversion_rate, 2);
+                    // Check if invoice is already in AED
+                    $invoice_currency = isset($invoice_details['currency']) ? $invoice_details['currency'] : 'MAD';
+                    
+                    // IGNORE CONVERSION: Always treat amounts as 1:1 regardless of currency label
+                    // This assumes that for AE context, the amount provided IS the AED amount
+                    $conversion_rate = 1.0;
+                    
+                    // Recalculate VAT from the total amount (assuming total is TTC)
+                    // We use the total from VAT calculation (which is in MAD/Base currency) as the AED total
+                    $grand_total = $grand_total_mad;
+                    $sub_total = round($grand_total / 1.05, 2);
+                    $vat_amount = round($grand_total - $sub_total, 2);
+                    
+                    /* 
+                    if ($invoice_currency === 'AED') {
+                        // Already in AED, no conversion needed
+                        $conversion_rate = 1.0;
+                        $sub_total = round($amount_to_pay / 1.05, 2);
+                        $vat_amount = round($amount_to_pay - $sub_total, 2);
+                        $grand_total = (float)$amount_to_pay;
+                    } else {
+                        // Récupérer le taux de conversion MAD → AED via FxRatesService
+                        $CI->load->library('FxRatesService', null, 'fxrates_service');
+                        
+                        // Utiliser la méthode convert pour obtenir le taux
+                        $test_convert = $CI->fxrates_service->convert(1, 'MAD', 'AED');
+                        $conversion_rate = ($test_convert !== false) ? $test_convert : 0.37; // Fallback rate
+                        
+                        $sub_total = round($sub_total_mad * $conversion_rate, 2);
+                        $vat_amount = round($vat_amount_mad * $conversion_rate, 2);
+                        $grand_total = round($grand_total_mad * $conversion_rate, 2);
+                    }
+                    */
 					
 					// Log pour debug
-					error_log("UAE Conversion: MAD->AED rate={$conversion_rate}, sub_total={$sub_total}, vat={$vat_amount}, total={$grand_total}");
+					error_log("UAE Conversion IGNORED: Rate=1.0, sub_total={$sub_total}, vat={$vat_amount}, total={$grand_total}");
 				} else {
 					$sub_total = $sub_total_mad;
 					$vat_amount = $vat_amount_mad;
@@ -272,19 +315,15 @@
 			} catch (Exception $e) {
 				// Fallback if VAT calculation fails
 				error_log("VAT calculation failed for tax_residence {$tax_residence}: " . $e->getMessage());
-				$sub_total = (float)$amount_to_pay;
-				$vat_amount = 0;
-				$vat_rate = 0;
-				$grand_total = (float)$amount_to_pay;
+				// Keep existing values (from Simplified or B2B logic) instead of resetting to 0
+				// $sub_total = (float)$amount_to_pay;
+				// $vat_amount = 0;
+				// $vat_rate = 0;
+				// $grand_total = (float)$amount_to_pay;
 			}
-		} else {
-			// No VAT configuration - use amounts as-is
-			$sub_total = (float)$amount_to_pay;
-			$vat_amount = 0;
-			$vat_rate = 0;
-			$grand_total = (float)$amount_to_pay;
-			$display_currency = 'MAD';
-		}
+		} 
+		// REMOVED ELSE BLOCK to prevent overwriting B2B/Simplified logic
+		// If no VAT logic applies, values remain at defaults (initialized at top) or as set by Simplified Logic
 		
 		// --------- CURRENCY CONVERSION (FX RATES) ---------
 		// Devise originale de la facture
@@ -293,6 +332,24 @@
 		$fx_stale_flag = isset($fx_stale) ? $fx_stale : false;
 		$fx_rate_date = isset($fx_rate_date) ? $fx_rate_date : date('Y-m-d');
 		
+		// IMPORTANT: DISABLE ALL CONVERSIONS FOR SUBSCRIPTION_ADMIN
+		// Payments between Admin and Superadmin should always use the invoice amount directly
+		if ($is_subscription_admin) {
+			$conversion_needed = false;
+			$stripe_fx_rate = 1.0;
+			$stripe_converted_amount = $grand_total;
+			$paypal_fx_rate_val = 1.0;
+			$paypal_converted_amount = $grand_total;
+			$paypal_sub_total_converted = $sub_total;
+			$paypal_vat_amount_converted = $vat_amount;
+			$stripe_sub_total_converted = $sub_total;
+			$stripe_vat_amount_converted = $vat_amount;
+			
+			// Force display currencies to match invoice currency
+			$stripe_currency = $display_currency;
+			$paypal_currency = $display_currency;
+		}
+
 		// Montants originaux dans la devise de la facture
 		$original_sub_total = $sub_total;
 		$original_vat_amount = $vat_amount;
@@ -321,8 +378,8 @@
 		$paypal_grand_total = isset($paypal_converted_amount) ? (float)$paypal_converted_amount : $grand_total;
 		
 		// Déterminer si Stripe ou PayPal a besoin de conversion
-		$stripe_needs_conversion = (strtoupper($stripe_currency) !== $original_currency);
-		$paypal_needs_conversion = (strtoupper($paypal_currency) !== $original_currency);
+		$stripe_needs_conversion = ($is_subscription_admin) ? false : (strtoupper($stripe_currency) !== $original_currency);
+		$paypal_needs_conversion = ($is_subscription_admin) ? false : (strtoupper($paypal_currency) !== $original_currency);
 		?>
 
 		<div class="checkout-container container p-0" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
@@ -368,12 +425,7 @@
 								<i class="fa fa-building"></i> <?php echo htmlspecialchars($entity_legal_name); ?>
 							</span>
 						</div>
-						<?php if ($is_morocco_b2b): ?>
-						<div class="vat-banner-b2b">
-							<i class="fa fa-building"></i>
-							<strong>B2B transaction:</strong> <?php echo get_phrase('Morocco B2B tax calculations applied'); ?>
-						</div>
-						<?php endif; ?>
+
 					</div>
 					<?php endif; ?>
 
@@ -495,7 +547,7 @@
 													<div class="info-box">
 														<?php 
 															if (!empty($user_details['email'])) {
-																echo $user_details['email']; 
+																echo htmlspecialchars($user_details['email']); 
 															} elseif (!empty($invoice_details['student_id'])) {
 																$ci =& get_instance();
 																$stu_id = $invoice_details['student_id'];
@@ -513,7 +565,7 @@
 																		$usr_email = $usr_direct['email'];
 																	}
 																}
-																echo $usr_email;
+																echo htmlspecialchars($usr_email);
 															} else {
 																echo 'N/A';
 															}
@@ -526,7 +578,7 @@
 													<div class="info-box">
 														<?php 
 															if (!empty($user_details['name'])) {
-																echo $user_details['name']; 
+																echo htmlspecialchars($user_details['name']); 
 															} elseif (!empty($invoice_details['student_id'])) {
 																$ci =& get_instance();
 																$stu_id = $invoice_details['student_id'];
@@ -544,7 +596,7 @@
 																		$usr_name = $usr_direct['name'];
 																	}
 																}
-																echo $usr_name;
+																echo htmlspecialchars($usr_name);
 															} else {
 																echo 'N/A';
 															}
@@ -597,7 +649,7 @@
 												</div>
 												
 												<div class="package-details mt-3">
-													<strong><?php echo get_phrase('Member_name');?> | <?php echo $user_details['name'];?></strong>
+													<strong><?php echo get_phrase('Member_name');?> | <?php echo htmlspecialchars($user_details['name']);?></strong>
 												</div>
 												<input type="hidden" name="stripeToken" value="">
 					</form>
@@ -771,7 +823,7 @@
 							<div class="row" style="font-size: 12px;">
 								<div class="col-6 mb-2">
 									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('VAT Rate'); ?></div>
-									<strong style="color: #1565c0; font-size: 14px;"><?php echo ($vat_rate > 0 ? $vat_rate : 5); ?>%</strong>
+									<strong style="color: #1565c0; font-size: 14px;"><?php echo ($vat_rate > 0 ? $vat_rate : 0); ?>%</strong>
 								</div>
 								<div class="col-6 mb-2">
 									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('Currency'); ?></div>
@@ -794,7 +846,7 @@
 					<?php endif; ?>
 
 					<!-- Currency Conversion Info (for UAE showing MAD equivalent) - ONLY FOR SUBSCRIPTION_ADMIN -->
-					<?php if ($is_subscription_admin && ($tax_residence === 'UAE' || $tax_residence === 'AE') && isset($conversion_rate) && $conversion_rate != 1.0): ?>
+					<?php if ($is_subscription_admin && ($tax_residence === 'UAE' || $tax_residence === 'AE') && isset($conversion_rate) && $conversion_rate != 1.0 && $original_currency !== 'AED'): ?>
 					<div class="conversion-info mt-3 p-3" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: 8px; border: 1px solid #ffb74d;">
 						<div class="text-center mb-2">
 							<span style="font-size: 11px; font-weight: 600; color: #e65100; text-transform: uppercase; letter-spacing: 0.5px;">
