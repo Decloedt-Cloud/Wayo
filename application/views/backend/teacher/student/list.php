@@ -1,5 +1,22 @@
 <?php
 $school_id = school_id();
+
+// Récupérer l'ID de l'enseignant connecté
+$user_id = $this->session->userdata('user_id');
+$teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+$teacher_id = $teacher['id'] ?? null;
+
+// Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+$permitted_class_ids = [];
+if ($teacher_id) {
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+}
+
 $where = array('school_id' => $school_id, 'session' => active_session());
 if (!empty($class_id) && $class_id != 'all') {
     $where['class_id'] = $class_id;
@@ -20,6 +37,10 @@ foreach($enrols as $enroll){
     // Fetch user details directly for performance
     $user = $this->db->get_where('users', array('id' => $student['user_id']))->row_array();
     if(!$user) continue;
+    
+    // Exclure tous les teachers de la liste des étudiants
+    $is_teacher = $this->db->get_where('teachers', array('user_id' => $student['user_id']))->row_array();
+    if($is_teacher) continue;
 
     if($user['status'] == 1) $active_count++;
     
@@ -67,7 +88,13 @@ foreach($enrols as $enroll){
             <select id="class_id" onchange="filter_student()" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--exp-border); border-radius: 10px; outline: none; transition: all 0.2s; background: white; color: var(--exp-dark); cursor: pointer; height: 45px;">
                 <option value="all"><?php echo get_phrase('all_classes'); ?></option>
                 <?php
-                $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array();
+                if (!empty($permitted_class_ids)) {
+                    $this->db->where_in('id', $permitted_class_ids);
+                    $this->db->where('school_id', $school_id);
+                    $classes = $this->db->get('classes')->result_array();
+                } else {
+                    $classes = [];
+                }
                 foreach ($classes as $class): ?>
                     <option value="<?php echo $class['id']; ?>" <?php if (isset($class_id) && $class_id == $class['id']) echo 'selected'; ?>>
                         <?php echo $class['name']; ?>
