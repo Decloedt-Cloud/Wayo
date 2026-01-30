@@ -3862,5 +3862,7 @@
     "value_required": "القيمة مطلوبة",
     "password_must_be_at_least_8_characters": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
     "update_password": "تحديث كلمة المرور",
-    "current_password_is_incorrect": "كلمة المرور الحالية غير صحيحة"
+    "current_password_is_incorrect": "كلمة المرور الحالية غير صحيحة",
+    "select_date_and_class": "اختر التاريخ والفصل",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "عذراً، أنت غير مخول بتسجيل الحضور في هذه الحصة."
 }

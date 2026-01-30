@@ -191,6 +191,7 @@
     "update_settings": "Update settings",
     "access_denied": "Access denied",
     "sorry_you_are_not_permitted_to_access_this_view": "Sorry you are not permitted to access this view",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Sorry, you do not have permission to take attendance for this class.",
     "admin_handles_it": "Admin handles it",
     "teacher_permissions": "Mentor permissions",
     "assigned_permission_for_teacher": "Assigned permission for Mentor",
@@ -4333,5 +4334,8 @@
     "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "Private content, gated access, payment management, analytics, certificates, and community features.",
     "value_required": "Value required",
     "current_password_is_incorrect": "Current password is incorrect",
-    "password_must_be_at_least_8_characters": "Password must be at least 8 characters"
+    "password_must_be_at_least_8_characters": "Password must be at least 8 characters",
+    "connecting": "Connecting",
+    "connecting_to_meeting...": "Connecting to meeting...",
+    "pop-up_blocked._please_allow_pop-ups_for_this_site_to_join_the_meeting.": "Pop-up blocked. please allow pop-ups for this site to join the meeting."
 }

@@ -3993,5 +3993,11 @@
     "save_changes": "Enregistrer les modifications",
     "update_password": "Mettre à jour le mot de passe",
     "password_must_be_at_least_8_characters": "Le mot de passe doit contenir au moins 8 caractères",
-    "current_password_is_incorrect": "Le mot de passe actuel est incorrect"
+    "current_password_is_incorrect": "Le mot de passe actuel est incorrect",
+    "filter_attendance": "Filtrer par présence",
+    "please_select_in_all_fields!": "Veuillez sélectionner dans tous les champs!",
+    "select_date_and_class": "Sélectionnez la date et la classe",
+    "last_updated": "Dernière mise à jour",
+    "print_report": "Imprimer le rapport",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Désolé(e), vous n'êtes pas autorisé(e) à faire l'appel pour cette classe."
 }

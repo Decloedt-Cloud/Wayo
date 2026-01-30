@@ -3912,5 +3912,7 @@
     "value_required": "Valor requerido",
     "password_must_be_at_least_8_characters": "La contraseña debe tener al menos 8 caracteres",
     "update_password": "Actualizar contraseña",
-    "current_password_is_incorrect": "La contraseña actual es incorrecta"
+    "current_password_is_incorrect": "La contraseña actual es incorrecta",
+    "select_date_and_class": "Selecciona fecha y clase",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Lo sentimos, no estás autorizado a tomar asistencia para esta clase."
 }

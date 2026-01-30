@@ -3997,5 +3997,7 @@
     "value_required": "Waarde vereist",
     "password_must_be_at_least_8_characters": "Wachtwoord moet minimaal 8 tekens lang zijn",
     "update_password": "Wachtwoord bijwerken",
-    "current_password_is_incorrect": "Huidig wachtwoord is onjuist"
+    "current_password_is_incorrect": "Huidig wachtwoord is onjuist",
+    "select_date_and_class": "Selecteer de datum en het lesuur.",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Sorry, u bent niet gemachtigd om de aanwezigheid bij deze les te registreren."
 }
