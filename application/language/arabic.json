@@ -3853,5 +3853,16 @@
     "platform_tools_&_control": "أدوات المنصة والتحكم",
     "all_included": "الكل مشمول",
     "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "محتوى خاص، وصول مقيّد، إدارة المدفوعات، التحليلات، الشهادات وميزات المجتمع.",
-    "popular": "الأكثر شيوعًا"
+    "popular": "الأكثر شيوعًا",
+    "are_you_sure_you_want_to_join_this_class": "هل تريد الانضمام لهذه الصف ؟",
+    "confirm_and_join": "تأكيد الانضمام",
+    "upload_new_photo": "رفع صورة جديدة",
+    "allowed_files": "الملفات المسموح بها",
+    "save_changes": "حفظ التغييرات",
+    "value_required": "القيمة مطلوبة",
+    "password_must_be_at_least_8_characters": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "update_password": "تحديث كلمة المرور",
+    "current_password_is_incorrect": "كلمة المرور الحالية غير صحيحة",
+    "select_date_and_class": "اختر التاريخ والفصل",
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "عذراً، أنت غير مخول بتسجيل الحضور في هذه الحصة."
 }

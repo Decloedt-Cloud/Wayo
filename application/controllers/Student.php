@@ -3234,6 +3234,7 @@ public function get_user_school() {
     $end_date = $this->input->get('end_date', true);
     $event_id = $this->input->get('id', true);
     $class_id = $this->input->get('class_id', true);
+    $nocache = $this->input->get('nocache', true);
 
     // Valider school_id (école active)
     if (!in_array((string)$school_id, $permitted_school_ids, true)) {
@@ -3289,7 +3290,7 @@ public function get_user_school() {
     $bbb_secret = $this->config->item('bbb_secret');
 
     // Construction de la requête pour les événements
-    $this->db->select('event_calendars.id AS event_id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
+    $this->db->select('event_calendars.id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('users', 'event_calendars.created_by = users.id', 'left');
@@ -3297,16 +3298,24 @@ public function get_user_school() {
     $this->db->join('classes', 'participants.guest = classes.id AND participants.type = "class"', 'left');
     // Filtrer par l'école active
     $this->db->where('event_calendars.school_id', $school_id);
-    $this->db->where('
-        (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
-        OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
-    ');
-        
-        if ($event_id) {
+    
+    // Si on recherche un événement spécifique, vérifier d'abord l'accès
+    if ($event_id) {
+        // Vérifier que l'utilisateur a accès à cet événement via les participants
         $this->db->where('event_calendars.id', $event_id);
-        } else {
+        // Vérifier l'accès via les participants
+        $this->db->where('(
+            (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+            OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
+        )');
+    } else {
+        // Pour la liste des événements, appliquer les filtres normaux
+        $this->db->where('(
+            (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+            OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
+        )');
         $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
-        }
+    }
 
         if ($class_id) {
         $this->db->where('participants.type', 'class');
@@ -3328,7 +3337,7 @@ public function get_user_school() {
 
         // Ajouter les informations des participants
         $event['participants'] = [];
-        $participants = $this->db->get_where('participants', ['event_id' => $event['event_id']])->result_array();
+        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
         foreach ($participants as $participant) {
             $participant_data = [
                 'id' => $participant['guest'],
@@ -3427,7 +3436,7 @@ public function get_user_school() {
         if ($event['visio'] == 1) {
             $this->db->select('start_date, meeting_id');
             $this->db->from('appointments');
-            $this->db->where('event_id', $event['event_id']);
+            $this->db->where('event_id', $event['id']);
             $this->db->where('Etat', 1);
             $this->db->where('DATE(start_date) >=', $start_date);
             $this->db->where('DATE(start_date) <=', $end_date);
