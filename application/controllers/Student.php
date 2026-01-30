@@ -33,7 +33,8 @@ class Student extends CI_Controller {
 		'skrill_checkout',
 		'instamojo_checkout',
 		'toyyibpay_checkout',
-		'payumoney_checkout'
+		'payumoney_checkout',
+		'online_admission'
 	];
 	
 	public function __construct(){
@@ -985,6 +986,12 @@ class Student extends CI_Controller {
 		$data['session'] = active_session();
 	
 	  	$this->session->set_userdata('enrolment_data', $data);
+
+		// Switch session to the target school context immediately
+		if (!empty($data['school_id'])) {
+			$this->session->set_userdata('active_school_id', $data['school_id']);
+			$this->session->set_userdata('school_id', $data['school_id']);
+		}
 
 
 		// Si le prix est 0 (gratuit), on inscrit directement l'étudiant

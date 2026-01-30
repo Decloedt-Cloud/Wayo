@@ -971,7 +971,7 @@
     "quiz_has_been_added_successfully": "تم إضافة الاختبار بنجاح",
     "manage_quiz_questions": "إدارة أسئلة الاختبار",
     "update_quiz_information": "تحديث معلومات الاختبار",
-    "quiz": "",
+    "quiz": "اختبار قصير",
     "list_of_sections": "قائمة الأقسام",
     "section_has_been_updated_successfully": "تم تحديث القسم بنجاح",
     "section_has_been_deleted_successfully": "تم حذف القسم بنجاح",
@@ -3841,5 +3841,17 @@
     "tips": "نصائح",
     "tutorials": "دروس تعليمية",
     "read_more": "اقرأ المزيد",
-    "clawdbot_reflects_how_ai_is_accelerating_content_creation_and_making_it_accessible_to_a_wider_audience._however,_the_future_lies_not_only_in_producing_content_faster,_but_in_transforming_that_content_into_structured_learning_experiences_and_engaged_communities._by_combining_ai-assisted_creation_with_course_building_and_community_management,_platforms_like_wayo_illustrate_how_creators_can_move_from_content_generation_to_long-term_value_creation.": "يعكس Clawdbot كيف تعمل الذكاء الاصطناعي على تسريع إنشاء المحتوى وجعله متاحًا لجمهور أوسع."
+    "clawdbot_reflects_how_ai_is_accelerating_content_creation_and_making_it_accessible_to_a_wider_audience._however,_the_future_lies_not_only_in_producing_content_faster,_but_in_transforming_that_content_into_structured_learning_experiences_and_engaged_communities._by_combining_ai-assisted_creation_with_course_building_and_community_management,_platforms_like_wayo_illustrate_how_creators_can_move_from_content_generation_to_long-term_value_creation.": "يعكس Clawdbot كيف تعمل الذكاء الاصطناعي على تسريع إنشاء المحتوى وجعله متاحًا لجمهور أوسع.",
+    "members": "أعضاء",
+    "ai": "الذكاء الاصطناعي",
+    "مركز_المساعدة": "مركز المساعدة",
+    "learner_—_access_by_mentor": "المتعلم — الوصول يحدده المرشد",
+    "free_or_paid_(defined_by_the_mentor)": "مجاني أو مدفوع (يحدده المرشد)",
+    "access_communities,_courses,_and_sessions_based_on_the_plan_set_by_each_mentor.some_content_may_be_free,_others_paid.": "الوصول إلى المجتمعات والدورات والجلسات حسب الخطة التي يحددها كل مرشد. قد يكون بعض المحتوى مجانيًا والبعض الآخر مدفوعًا.",
+    "mentor_—_publish_&_monetize": "المرشد — النشر وتحقيق الدخل",
+    "create_and_publish_courses,_live_sessions,_or_coaching_programs._set_free_or_paid_plans._wayo_manages_payments_and_delivery.": "إنشاء ونشر الدورات، الجلسات المباشرة أو برامج الإرشاد. تحديد خطط مجانية أو مدفوعة. تتولى وايو إدارة المدفوعات وتقديم المحتوى.",
+    "platform_tools_&_control": "أدوات المنصة والتحكم",
+    "all_included": "الكل مشمول",
+    "private_content,_gated_access,_payment_management,_analytics,_certificates,_and_community_features.": "محتوى خاص، وصول مقيّد، إدارة المدفوعات، التحليلات، الشهادات وميزات المجتمع.",
+    "popular": "الأكثر شيوعًا"
 }

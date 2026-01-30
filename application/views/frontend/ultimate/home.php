@@ -101,7 +101,7 @@
           <h2 class="text-center"><?php echo get_phrase("Our key features") ?></h2>
           <ul class="feature-nav">
             <li class="active" data-feature="bbb" tabindex="0"><?php echo get_phrase("Online course") ?></li>
-            <li data-feature="social" tabindex="0"><?php echo get_phrase("Social") ?></li>
+            <li data-feature="social" tabindex="0"><?php echo get_phrase("Ai") ?></li>
             <li data-feature="quiz" tabindex="0"><?php echo get_phrase("Quiz") ?></li>
           </ul>
           <div class="feature-progress">
@@ -112,10 +112,10 @@
             <img src="uploads/images/decloedt/home/online_course.webp" alt="Online Course" loading="lazy" />
           </div>
           <div id="social" class="feature-pane">
-            <img src="uploads/images/decloedt/home/social.webp" alt="Social" loading="lazy" />
+            <img src="uploads/images/decloedt/home/Ai.png" alt="Ai" loading="lazy" />
           </div>
           <div id="quiz" class="feature-pane">
-            <img src="uploads/images/decloedt/home/quiz.webp" alt="Quiz" loading="lazy" />
+            <img src="uploads/images/decloedt/home/quiz_recent.png" alt="Quiz" loading="lazy" />
           </div>
         </div>
       </div>
