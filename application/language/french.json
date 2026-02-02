@@ -3999,5 +3999,15 @@
     "select_date_and_class": "Sélectionnez la date et la classe",
     "last_updated": "Dernière mise à jour",
     "print_report": "Imprimer le rapport",
-    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Désolé(e), vous n'êtes pas autorisé(e) à faire l'appel pour cette classe."
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Désolé(e), vous n'êtes pas autorisé(e) à faire l'appel pour cette classe.",
+    "subscription_expired": "Abonnement expiré",
+    "access_restricted": "Accès restreint",
+    "select_community_to_access": "Sélectionnez une communauté pour accéder",
+    "loading_communities": "Chargement des communautés",
+    "renew_subscription_now": "Renouveler l’abonnement maintenant",
+    "no_communities_found": "Aucune communauté trouvée",
+    "card_details": "Détails de la carte",
+    "secured_by_stripe": "Sécurisé par Stripe",
+    "select_payment_method": "Sélectionnez un mode de paiement",
+    "paypal_checkout": "Paiement via PayPal"
 }

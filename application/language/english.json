@@ -4324,8 +4324,6 @@
     "wayo_and_partners": "Wayo and partners",
     "legal": "Legal",
     "ai": "Ai",
-    "wayo_and_partners": "Wayo and partners",
-    "legal": "Legal",
     "learner_—_access_by_mentor": "Learner — access by mentor",
     "free_or_paid_(defined_by_the_mentor)": "Free or paid (defined by the mentor)",
     "access_communities,_courses,_and_sessions_based_on_the_plan_set_by_each_mentor.some_content_may_be_free,_others_paid.": "Access communities, courses, and sessions based on the plan set by each mentor.some content may be free, others paid.",
@@ -4339,5 +4337,15 @@
     "password_must_be_at_least_8_characters": "Password must be at least 8 characters",
     "connecting": "Connecting",
     "connecting_to_meeting...": "Connecting to meeting...",
-    "pop-up_blocked._please_allow_pop-ups_for_this_site_to_join_the_meeting.": "Pop-up blocked. please allow pop-ups for this site to join the meeting."
+    "pop-up_blocked._please_allow_pop-ups_for_this_site_to_join_the_meeting.": "Pop-up blocked. please allow pop-ups for this site to join the meeting.",
+    "subscription_expired": "Subscription expired",
+    "access_restricted": "Access restricted",
+    "select_community_to_access": "Select community to access",
+    "loading_communities": "Loading communities",
+    "renew_subscription_now": "Renew subscription now",
+    "no_communities_found": "No communities found",
+    "card_details": "Card details",
+    "secured_by_stripe": "Secured by stripe",
+    "select_payment_method": "Select payment method",
+    "paypal_checkout": "Paypal checkout"
 }

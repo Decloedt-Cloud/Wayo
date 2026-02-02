@@ -508,11 +508,24 @@
 					$form_amount = $is_subscription_admin ? $grand_total : $amount_to_pay;
 					$form_currency = $is_subscription_admin ? $display_currency : ($currency ?? 'MAD');
 					
-					// Pour les paiements school_join ou community, toujours utiliser student/payment_success
-					// car admin/teacher utilisent le flux student pour rejoindre une communauté
-					$is_community_payment = ($payment_type === 'school_join' || $type === 'community');
+					// Détecter le type d'utilisateur connecté
+					$current_user_type = $this->session->userdata('user_type');
+					$is_admin_logged = ($this->session->userdata('admin_login') == 1);
+					$is_teacher_logged = ($this->session->userdata('teacher_login') == 1);
+					
+					// Pour les paiements school_join ou community, rediriger selon le type d'utilisateur
+				$is_community_payment = ($payment_type === 'school_join' || $type === 'community');
 					if ($is_community_payment) {
-						$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						if ($is_admin_logged) {
+							// Admin: utiliser admin/payment_success avec paramètre community
+							$stripe_action_url = site_url('admin/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						} elseif ($is_teacher_logged) {
+							// Teacher: utiliser student/payment_success (fallback)
+							$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						} else {
+							// Student: utiliser student/payment_success
+							$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						}
 					} else {
 						$stripe_action_url = route('payment_success/stripe/' . $invoice_id.'/'.$form_amount);
 					}
@@ -629,7 +642,11 @@
 														<br/>
 														<small>
 															<?php if (in_array($tax_residence, ['UAE', 'AE'])): ?>
-																Base: <?php echo number_format($amount_to_pay, 2); ?> MAD → <?php echo number_format($grand_total, 2); ?> AED
+																<?php if ($original_currency === 'AED'): ?>
+																	HT: <?php echo number_format($sub_total, 2); ?> + VAT <?php echo $vat_rate; ?>%: <?php echo number_format($vat_amount, 2); ?> = <?php echo number_format($grand_total, 2); ?> AED
+																<?php else: ?>
+																	Base: <?php echo number_format($amount_to_pay, 2); ?> MAD → <?php echo number_format($grand_total, 2); ?> AED
+																<?php endif; ?>
 															<?php else: ?>
 																HT: <?php echo number_format($sub_total, 2); ?> + TVA <?php echo $vat_rate; ?>%: <?php echo number_format($vat_amount, 2); ?> = <?php echo number_format($grand_total, 2); ?> <?php echo $display_currency; ?>
 															<?php endif; ?>
@@ -669,7 +686,7 @@
 					<!-- Security Badge Enhanced -->
 					<div class="security-features mt-4">
 						<div class="security-badge-main">
-							<i class="fa fa-shield-alt"></i>
+							<i class="fa fa-shield"></i>
 							<span><?php echo get_phrase('100% secure payment')?></span>
 						</div>
 						<div class="security-icons mt-3">
@@ -682,8 +699,12 @@
 								<span>PCI DSS</span>
 							</div>
 							<div class="security-item">
-								<i class="fa fa-user-shield"></i>
+								<i class="fa fa-check-circle"></i>
 								<span>3D Secure</span>
+							</div>
+							<div class="security-item">
+								<i class="fa fa-user-secret"></i>
+								<span>Privacy</span>
 							</div>
 						</div>
 					</div>
@@ -790,7 +811,7 @@
 						<?php endif; ?>
 
 						<!-- Total -->
-						<div class="d-flex justify-content-between p-3 summary-total" style="background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white;">
+						<div class="d-flex justify-content-between p-3 summary-total">
 							<span style="font-size: 16px;">
 								<i class="fa fa-calculator mr-2"></i>
 								<?php echo get_phrase('Total'); ?> 
@@ -901,23 +922,7 @@
 					</div>
 					<?php endif; ?>
 
-					<!-- Security & Trust Badges -->
-					<div class="trust-badges mt-4 pt-3" style="border-top: 1px solid #e9ecef;">
-						<div class="row text-center" style="font-size: 11px; color: #6c757d;">
-							<div class="col-4">
-								<i class="fa fa-lock mb-1" style="font-size: 18px; color: #28a745;"></i>
-								<div><?php echo get_phrase('Secure'); ?></div>
-							</div>
-							<div class="col-4">
-								<i class="fa fa-shield-alt mb-1" style="font-size: 18px; color: #17a2b8;"></i>
-								<div><?php echo get_phrase('Protected'); ?></div>
-							</div>
-							<div class="col-4">
-								<i class="fa fa-check-circle mb-1" style="font-size: 18px; color: #007bff;"></i>
-								<div><?php echo get_phrase('Verified'); ?></div>
-							</div>
-						</div>
-					</div>
+
 				</section>
 			</div>
 		</div>
@@ -1464,42 +1469,86 @@
 				100% { transform: scale(1); }
 			}
 
-			/* ========== SECURITY FEATURES ========== */
+			/* ========== SECURITY FEATURES PREMIUM ========== */
 			.security-features {
-				padding-top: 20px;
-				border-top: 1px solid var(--gray-200);
+				background: #f8fafc;
+				border: 1px solid #e2e8f0;
+				border-radius: 20px;
+				padding: 30px 24px 24px;
+				margin-top: 40px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 20px;
+				position: relative;
 			}
 
 			.security-badge-main {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 8px;
-				padding: 12px;
-				background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-				border-radius: var(--radius-md);
+				background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+				padding: 10px 24px;
+				border-radius: 100px;
 				color: white;
-				font-weight: 600;
+				font-weight: 700;
+				font-size: 13px;
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+				position: absolute;
+				top: -18px; /* Half height to overlap border */
+				left: 50%;
+				transform: translateX(-50%);
+				white-space: nowrap;
+				z-index: 2;
+			}
+
+			.security-badge-main i {
 				font-size: 14px;
 			}
 
 			.security-icons {
 				display: flex;
-				justify-content: space-around;
+				justify-content: center;
+				gap: 30px;
+				width: 100%;
+				margin-top: 10px;
+				flex-wrap: wrap;
 			}
 
 			.security-item {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				gap: 4px;
-				font-size: 10px;
-				color: var(--gray-500);
+				gap: 8px;
+				color: #64748b;
+				transition: all 0.3s ease;
+				cursor: default;
+				padding: 8px 12px;
+				border-radius: 12px;
+			}
+
+			.security-item:hover {
+				color: #334155;
+				transform: translateY(-2px);
+				background: white;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 			}
 
 			.security-item i {
-				font-size: 16px;
-				color: var(--gray-400);
+				font-size: 22px;
+				color: #94a3b8;
+				transition: all 0.3s ease;
+			}
+
+			.security-item:hover i {
+				color: #6366f1; /* Brand color on hover */
+			}
+
+			.security-item span {
+				font-size: 11px;
+				font-weight: 600;
+				letter-spacing: 0.5px;
+				text-transform: uppercase;
 			}
 
 			/* ========== CURRENCY & AMOUNT UPDATES ========== */
@@ -1599,7 +1648,119 @@
 					gap: 12px;
 				}
 			}
-		</style>
+		/* --- RESPONSIVE PRO OPTIMIZATIONS (FINAL LAYER) --- */
+
+/* Sticky Summary on Desktop */
+@media (min-width: 992px) {
+    .summary-section {
+        position: sticky !important;
+        top: 40px !important;
+        height: fit-content !important;
+    }
+}
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 10px auto !important;
+        padding: 0 12px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 24px !important;
+        /* Disable heavy blur on mobile for performance */
+        backdrop-filter: none !important;
+        background: #ffffff !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 16px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* Très petits écrans (< 480px) */
+@media (max-width: 480px) {
+    .payment-section, .summary-section {
+        padding: 20px !important;
+        border-radius: 20px !important;
+    }
+
+    /* Keep Total and Price on same line always */
+    .summary-total {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0 !important;
+        padding: 20px !important;
+    }
+    
+    .summary-total span {
+        font-size: 16px !important;
+    }
+    
+    .summary-total strong {
+        align-self: center !important;
+        font-size: 22px !important;
+        margin-top: 0 !important;
+        white-space: nowrap !important;
+        display: flex !important;
+        gap: 4px !important;
+    }
+    
+    .header-icon {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 24px !important;
+    }
+    
+    .payment-header h2 {
+        font-size: 20px !important;
+    }
+}
+
+/* Safe Area for Modern Phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .checkout-container {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    }
+}
+</style>
 
 		<!-- Payment method switcher -->
 		<script>
@@ -1919,11 +2080,22 @@
                             
                             // Make AJAX call to save payment info
                             <?php 
-                            // Pour les paiements school_join ou community, toujours utiliser student/payment_success
+                            // Pour les paiements school_join ou community, rediriger selon le type d'utilisateur
                             $is_community_payment = ($payment_type === 'school_join' || $type === 'community');
                             if ($is_community_payment) {
-                                $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
-                                $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                if ($is_admin_logged) {
+                                    // Admin: utiliser admin/payment_success et rediriger vers admin/dashboard
+                                    $paypal_success_url = site_url('admin/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('admin/dashboard');
+                                } elseif ($is_teacher_logged) {
+                                    // Teacher: utiliser student comme fallback, rediriger vers community_details
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                } else {
+                                    // Student: utiliser student/payment_success
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                }
                             } else {
                                 $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);
                                 $paypal_redirect_url = route('invoice');
@@ -1985,5 +2157,479 @@
     });
 </script>
 
+<style>
+/* ========== ULTRA PREMIUM DESIGN SYSTEM ========== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+    background: radial-gradient(circle at top right, #e0e7ff 0%, #f3f4f6 40%, #ffffff 100%) !important;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
+    color: #1e293b !important;
+    min-height: 100vh !important;
+}
+
+/* --- Container & Layout --- */
+.checkout-container {
+    max-width: 1100px !important;
+    margin: 60px auto !important;
+    padding: 0 24px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.row.g-0 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 32px !important;
+    margin: 0 !important;
+}
+
+/* --- Cards Common Styles --- */
+.payment-section, .summary-section {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 24px !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.02),
+        0 20px 40px -4px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(0,0,0,0.02) !important;
+    padding: 40px !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.payment-section:hover, .summary-section:hover {
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.03),
+        0 30px 60px -8px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(99, 102, 241, 0.1) !important;
+}
+
+@media (min-width: 992px) {
+    .payment-section {
+        flex: 1 1 58% !important;
+        max-width: 58% !important;
+    }
+    .summary-section {
+        flex: 1 1 38% !important;
+        max-width: 38% !important;
+    }
+}
+
+/* --- Typography & Header --- */
+.payment-header {
+    border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+    padding-bottom: 24px !important;
+    margin-bottom: 32px !important;
+}
+
+.payment-header h2 {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    margin-bottom: 8px !important;
+    letter-spacing: -0.5px !important;
+}
+
+.header-icon {
+    width: 64px !important;
+    height: 64px !important;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 28px !important;
+    margin-right: 20px !important;
+}
+
+/* --- Payment Methods Buttons --- */
+.method-btn {
+    width: 100% !important;
+    height: 90px !important;
+    background: #ffffff !important;
+    border: 2px solid #f1f5f9 !important;
+    border-radius: 18px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.method-btn:hover {
+    border-color: #818cf8 !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 24px -6px rgba(99, 102, 241, 0.15) !important;
+}
+
+.method-btn.active {
+    background: #ffffff !important;
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1), 0 12px 24px -6px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Badge "Selected" */
+.method-btn.active::after {
+    content: "✓" !important;
+    position: absolute !important;
+    top: -10px !important;
+    right: -10px !important;
+    width: 28px !important;
+    height: 28px !important;
+    background: #4f46e5 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4) !important;
+    border: 2px solid white !important;
+    z-index: 10 !important;
+}
+
+.method-btn img {
+    height: 32px !important;
+    width: auto !important;
+    transition: transform 0.3s ease !important;
+}
+
+.method-btn:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* --- Summary & Product --- */
+.summary-header h2 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+}
+
+.product-card {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+}
+
+.product-name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+}
+
+/* --- Price Breakdown --- */
+.price-breakdown {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    border: 1px solid #f1f5f9 !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02) !important;
+}
+
+.amount-total {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: -1px !important;
+}
+
+/* --- Summary Total Enhanced --- */
+.summary-total {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+    color: #ffffff !important;
+    padding: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4), 0 8px 10px -6px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Force text white for all children */
+.summary-total * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+.summary-total::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -50% !important; left: -50% !important;
+    width: 200% !important; height: 200% !important;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%) !important;
+    transform: rotate(30deg) !important;
+    pointer-events: none !important;
+}
+
+.summary-total span {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    letter-spacing: 0.5px !important;
+}
+
+.summary-total i {
+    background: rgba(255,255,255,0.2) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 12px !important;
+    font-size: 16px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    opacity: 1 !important;
+}
+
+.summary-total strong {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    letter-spacing: -1px !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    font-variant-numeric: tabular-nums !important;
+    /* Maintain inline fix */
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+}
+
+.summary-total small {
+    font-size: 11px !important;
+    background: rgba(255,255,255,0.2) !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    margin-left: 8px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    opacity: 1 !important;
+}
+
+/* --- Security Badge --- */
+.security-features {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+    border: 1px dashed #86efac !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin-top: 32px !important;
+}
+
+.security-badge-main {
+    color: #166534 !important;
+    background: white !important;
+    padding: 8px 16px !important;
+    border-radius: 50px !important;
+    box-shadow: 0 2px 4px rgba(22, 101, 52, 0.1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    font-weight: 600 !important;
+}
+
+/* --- Animations --- */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.checkout-container > div > * {
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.summary-section {
+    animation-delay: 0.15s !important;
+}
+
+/* --- Mobile Responsive Optimizations --- */
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 20px auto !important;
+        padding: 0 16px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 20px !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: 72px !important;
+        padding: 12px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* --- RESPONSIVE PRO OPTIMIZATIONS --- */
+
+/* Sticky Summary on Desktop */
+@media (min-width: 992px) {
+    .summary-section {
+        position: sticky !important;
+        top: 40px !important;
+        height: fit-content !important;
+    }
+}
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 10px auto !important;
+        padding: 0 12px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 24px !important;
+        /* Disable heavy blur on mobile for performance */
+        backdrop-filter: none !important;
+        background: #ffffff !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 16px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* Très petits écrans (< 480px) */
+@media (max-width: 480px) {
+    .payment-section, .summary-section {
+        padding: 15px !important;
+        border-radius: 16px !important;
+    }
+
+    .summary-total {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0 !important;
+        padding: 10px 15px !important; /* Optimized padding */
+    }
+    
+    .summary-total span {
+        font-size: 14px !important;
+    }
+    
+    /* Hide (TTC) on very small screens to save space */
+    .summary-total small {
+        display: none !important;
+    }
+    
+    /* FIX ULTIME: Force inline display to prevent ANY wrapping */
+    .summary-total strong {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: baseline !important;
+        white-space: nowrap !important;
+        font-size: 17px !important; /* Smaller price */
+        width: auto !important;
+        margin: 0 !important;
+    }
+    
+    .summary-total strong span {
+        display: inline-block !important;
+        white-space: nowrap !important;
+    }
+    
+    .header-icon {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 20px !important;
+    }
+    
+    .payment-header h2 {
+        font-size: 18px !important;
+    }
+}
+
+/* Safe Area for Modern Phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .checkout-container {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    }
+}
+</style>
 	</body>
 </html>
