@@ -1,4 +1,21 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<?php
+// Récupérer l'ID de l'enseignant connecté
+$user_id = $this->session->userdata('user_id');
+$teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+$teacher_id = $teacher['id'] ?? null;
+
+// Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+$permitted_class_ids = [];
+if ($teacher_id) {
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+}
+?>
 
 <style>
 :root {
@@ -82,11 +99,16 @@
             <select name="class" id="class_id_syllabus" class="syllabus-filter-input" required>
                 <option value="all"><?php echo get_phrase('all_programs'); ?></option>
                 <?php
-                $classes = $this->db->get_where('classes', array('school_id' => school_id()))->result_array();
-                $school_id = school_id();
+                if (!empty($permitted_class_ids)) {
+                    $this->db->where_in('id', $permitted_class_ids);
+                    $this->db->where('school_id', school_id());
+                    $classes = $this->db->get('classes')->result_array();
+                } else {
+                    $classes = [];
+                }
                 foreach ($classes as $class):
                     $this->db->where('class_id', $class['id']);
-                    $this->db->where('school_id', $school_id);
+                    $this->db->where('school_id', school_id());
                     $total_student = $this->db->get('enrols');
                 ?>
                     <option value="<?php echo $class['id']; ?>">

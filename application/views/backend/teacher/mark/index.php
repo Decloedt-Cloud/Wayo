@@ -338,6 +338,24 @@
 }
 </style>
 
+<?php
+// Récupérer l'ID de l'enseignant connecté
+$user_id = $this->session->userdata('user_id');
+$teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+$teacher_id = $teacher['id'] ?? null;
+
+// Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+$permitted_class_ids = [];
+if ($teacher_id) {
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+}
+?>
+
 <!-- Header -->
 <div class="mark-header">
     <div class="mark-header-left">
@@ -377,7 +395,13 @@
                         <select name="class" id="class_id_mark" class="form-control-modern select2" required>
                             <option value=""><?php echo get_phrase('select_a_class'); ?></option>
                             <?php
-                            $classes = $this->db->get_where('classes', array('school_id' =>  $school_id))->result_array();
+                            if (!empty($permitted_class_ids)) {
+                                $this->db->where_in('id', $permitted_class_ids);
+                                $this->db->where('school_id', $school_id);
+                                $classes = $this->db->get('classes')->result_array();
+                            } else {
+                                $classes = [];
+                            }
                             foreach($classes as $class){
                                 $this->db->where('class_id', $class['id']);
                                 $this->db->where('school_id', $school_id);

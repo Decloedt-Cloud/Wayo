@@ -558,6 +558,7 @@ $config['csrf_exclude_uris'] = array(
     'app/courses/generate_quiz_questions', //addons
     'app/courses/extract_pdf_structure', //addons
     'app/profile/update_password', //admin-teacher-student
+    'app/announcements/.*', //admin-teacher
     'bigbluebutton/create_breakout_room',
     'bigbluebutton/create_room',
     'BigBlueButton/get_meetings',
