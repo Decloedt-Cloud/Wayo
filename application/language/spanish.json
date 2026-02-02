@@ -3916,5 +3916,15 @@
     "update_password": "Actualizar contraseña",
     "current_password_is_incorrect": "La contraseña actual es incorrecta",
     "select_date_and_class": "Selecciona fecha y clase",
-    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Lo sentimos, no estás autorizado a tomar asistencia para esta clase."
+    "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Lo sentimos, no estás autorizado a tomar asistencia para esta clase.",
+    "subscription_expired": "Suscripción caducada",
+    "access_restricted": "Acceso restringido",
+    "select_community_to_access": "Selecciona una comunidad para acceder",
+    "loading_communities": "Cargando comunidades",
+    "renew_subscription_now": "Renovar suscripción ahora",
+    "no_communities_found": "No se encontraron comunidades",
+    "card_details": "Detalles de la tarjeta",
+    "secured_by_stripe": "Protegido por Stripe",
+    "select_payment_method": "Selecciona un método de pago",
+    "paypal_checkout": "Pagar con PayPal"
 }
