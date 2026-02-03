@@ -79,7 +79,8 @@ class App_rewriter {
         // Handle addons replacements
         $addons_map = array(
             'addons/courses' => 'app/courses',
-            'addons/lessons' => 'app/lessons'
+            'addons/lessons' => 'app/lessons',
+            'chat' => 'app/chat'
         );
 
         foreach ($addons_map as $addon_search => $addon_replace) {

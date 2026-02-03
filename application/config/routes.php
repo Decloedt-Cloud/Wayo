@@ -50,6 +50,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'home';
+
+// Custom Routes for Chat
+$route['app/chat'] = 'chat';
+
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
 
@@ -78,6 +83,7 @@ $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
 
 
 // API Routes
+$route['api/user'] = 'api/Admin/user';
 $route['api/login'] = 'api/Admin/login';
 $route['api/menu'] = 'api/Admin/menu';
 

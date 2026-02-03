@@ -69,3 +69,6 @@ $(document).ready(function() {
 
 
 </script>
+
+<!-- Global Chat Notification Script -->
+<?php include APPPATH . 'views/backend/global_chat_notification.php'; ?>

@@ -265,6 +265,21 @@ $pending_schools = $this->db->get_where('schools', ['status' => 0, 'Etat' => 1])
         animation: pulse-badge 2s infinite;
     }
 
+    .chat-notification-dot {
+        width: 10px;
+        height: 10px;
+        background-color: var(--nav-danger);
+        border-radius: 50%;
+        margin-left: auto;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        animation: pulse-dot 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes pulse-dot {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        50% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
     @keyframes pulse-badge {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
@@ -683,6 +698,9 @@ if ($user_type == 'admin') {
                     } elseif ($main_menu['unique_identifier'] == 'event-calender') {
                         $main_route = $controller . '/event_calendar';
                         $has_direct_route = true;
+                    } elseif ($main_menu['unique_identifier'] == 'chat'){
+                        $main_route = 'app/chat';
+                        $has_direct_route = true;
                     } elseif (!$has_submenus) {
                         $main_route = $main_menu['is_addon']
                             ? 'addons/' . $main_menu['route_name']
@@ -768,7 +786,11 @@ if ($user_type == 'admin') {
                                         <i class="<?php echo $main_menu['icon']; ?> fa-fw"></i>
                                         <span class="text-rtl-menu"><?php echo get_phrase($main_menu['displayed_name']); ?></span>
 
-                                        <?php if ($main_menu['unique_identifier'] == 'online_admission' && $pending_students > 0): ?>
+        <?php if ($main_menu['unique_identifier'] == 'chat'): ?>
+            <span id="chat-notification-bubble" class="chat-notification-dot" style="display: none;"></span>
+        <?php endif; ?>
+
+        <?php if ($main_menu['unique_identifier'] == 'online_admission' && $pending_students > 0): ?>
                                             <span class="badge-nav"><?php echo $pending_students; ?></span>
                                         <?php endif; ?>
 
