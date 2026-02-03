@@ -125,6 +125,7 @@
 
         let typingTimeout = null;
         let lastTypingTime = 0;
+        let currentPlayingAudioId = null; // Track currently playing audio
 
         // --- Core Functions ---
 
