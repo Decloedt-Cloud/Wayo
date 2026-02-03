@@ -1213,8 +1213,9 @@ if ($_FILES['image_file']['name'] != "") {
 	// Get User Image Starts
 	public function get_user_image($user_id)
 	{
-		if (file_exists('uploads/users/' . $user_id . '.jpg'))
-			return base_url() . 'uploads/users/' . $user_id . '.jpg';
+		$image_path = 'uploads/users/' . $user_id . '.jpg';
+		if (file_exists($image_path))
+			return base_url() . $image_path . '?v=' . filemtime($image_path);
 		else
 			return base_url() . 'uploads/users/placeholder.jpg';
 	}
@@ -1591,6 +1592,13 @@ if ($_FILES['image_file']['name'] != "") {
 			// Par défaut, succès
 			$notification = get_phrase('updated_successfully');
 			$user = $this->db->get_where('users', array('id' => $user_id))->row();
+
+			// SYNC CHAT SERVICE
+			$this->_sync_user_to_chat_service($user_id);
+
+			// UPDATE SESSION (Nom & User Object)
+			$this->session->set_userdata('user_name', $user->name);
+			$this->session->set_userdata('user', $user);
 
 			$response = array(
 				'status' => true,
@@ -2308,18 +2316,65 @@ if ($_FILES['image_file']['name'] != "") {
 	}
 
 
-      public function get_schools_per_category_count($category)
+      public function count_schools_by_category($category)
 	{
 		$this->db->where('category', $category);
 		$this->db->where('status', 1);
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
+private function _sync_user_to_chat_service($user_id)
+	{
+		// Récupérer les données fraîches de l'utilisateur
+		$user = $this->db->get_where('users', array('id' => $user_id))->row();
+		if (!$user) return;
 
-	public function get_all_admins_count()
+		// Construire l'URL de l'avatar
+		$avatar_path = 'uploads/users/' . $user->id . '.jpg';
+		$avatar_url = null;
+		if (file_exists($avatar_path)) {
+			$avatar_url = base_url($avatar_path);
+		}
+
+		$payload = [
+			'user_id' => $user->id,
+			'email' => $user->email,
+			'name' => $user->name,
+			'gender' => $user->gender, // Peut être null
+			'avatar' => $avatar_url
+		];
+
+		// URL du Chat Service (hardcodé comme ailleurs dans le projet)
+		$url = 'http://localhost:8000/api/auth/sync-user';
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+		curl_setopt($ch, CURLOPT_TIMEOUT, 2); // Timeout court pour ne pas bloquer l'UI
+		
+		$response = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		
+		if (curl_errno($ch)) {
+			log_message('error', 'Chat Sync Error: ' . curl_error($ch));
+		} else {
+			if ($http_code >= 400) {
+				log_message('error', 'Chat Sync Failed (' . $http_code . '): ' . $response);
+			} else {
+				log_message('info', 'Chat Sync Success for user ' . $user_id);
+			}
+		}
+		
+		curl_close($ch);
+	}
+
+  public function get_all_admins_count()
 	{
 		$this->db->where('role', 'admin');
 		$this->db->where('status', 1);
 		return $this->db->count_all_results('users');
+
 	}
+
 }

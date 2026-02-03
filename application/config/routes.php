@@ -53,6 +53,11 @@ $route['superadmin/community_list'] = 'superadmin/school';
 $route['superadmin/community_list/(:any)'] = 'superadmin/school/$1';
 
 $route['default_controller'] = 'home';
+
+// Custom Routes for Chat
+$route['app/chat'] = 'chat';
+
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
 
@@ -95,6 +100,7 @@ $route['app/join_school/(.+)'] = 'student/join_school/$1';
 
 
 // API Routes
+$route['api/user'] = 'api/Admin/user';
 $route['api/login'] = 'api/Admin/login';
 $route['api/menu'] = 'api/Admin/menu';
 

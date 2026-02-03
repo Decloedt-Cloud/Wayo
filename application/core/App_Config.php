@@ -89,7 +89,8 @@ class App_Config extends CI_Config {
         // Mask addons paths
         $addons_map = array(
             'addons/courses' => 'app/courses',
-            'addons/lessons' => 'app/lessons'
+            'addons/lessons' => 'app/lessons',
+            'chat' => 'app/chat'
         );
 
         foreach ($addons_map as $addon_path => $app_path) {

@@ -4,7 +4,11 @@
 $user_type = $this->session->userdata('user_type');
 $user_id   = $this->session->userdata('user_id');
 $logged_in_user_details = $this->user_model->get_user_details($user_id);
-$user_name = $logged_in_user_details['name'];
+if (empty($logged_in_user_details)) {
+    $user_name = $this->session->userdata('name') ? $this->session->userdata('name') : 'Unknown User';
+} else {
+    $user_name = $logged_in_user_details['name'];
+}
 $school_id = school_id();
 
 ?>
@@ -81,7 +85,7 @@ $school_id = school_id();
                         $page_name = $page_name . '.php';
                     }
 
-                    if ($folder_name == 'academy') {
+                    if ($folder_name == 'academy' || $folder_name == 'chat') {
                         include $folder_name . '/' . $page_name;
                     } else {
                         include $user_type . '/' . $folder_name . '/' . $page_name;
