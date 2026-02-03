@@ -3905,6 +3905,7 @@
     "current_password_is_incorrect": "كلمة المرور الحالية غير صحيحة",
     "select_date_and_class": "اختر التاريخ والفصل",
     "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "عذراً، أنت غير مخول بتسجيل الحضور في هذه الحصة.",
+    "wayo_meta_description": "الوصف التعريفي لـ Wayo",
     "subscription_expired": "انتهت صلاحية الاشتراك",
     "access_restricted": "الوصول مقيّد",
     "select_community_to_access": "يرجى اختيار المجتمع للوصول",

@@ -68,7 +68,7 @@
                 </ul>
 
                 <a class="btn btn-outline-wayo mt-auto" 
-                   href="<?php echo base_url('home/community_details/' . $c['id']); ?>">
+                   href="<?php echo lang_route('community_details', $c['id']); ?>">
                   <!-- <?php echo ($c['language'] ?? '') == 'ar' ? 'التفاصيل' : 'Détails'; ?> -->
                    <?php echo get_phrase('Details'); ?>
                 </a>

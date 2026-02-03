@@ -221,7 +221,7 @@
         <p class="lead mb-4 text-white fs-md-4 fs-lg-3" style="letter-spacing: 1px; font-size: 1.5rem; margin-bottom: 1rem;"><?php echo get_phrase("A community of experts and learners united to turn skills into opportunities.") ?></p>
     <div class="row g-2 justify-content-center">
       <div class="col-12 col-md-auto">
-        <a class="btn btn-accent btn-pill w-100" href="<?php echo site_url('home/communities'); ?>">
+        <a class="btn btn-accent btn-pill w-100" href="<?php echo lang_route('communities'); ?>">
           <?php echo get_phrase("Join the community ") ?>
         </a>
       </div>

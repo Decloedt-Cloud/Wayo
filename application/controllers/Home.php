@@ -13,6 +13,17 @@ class Home extends CI_Controller
 {
 	protected $theme;
 	protected $active_school_id;
+	
+	/**
+	 * Supported language codes
+	 */
+	protected $supported_lang_codes = array(
+		'fr' => 'french',
+		'en' => 'english',
+		'ar' => 'arabic',
+		'es' => 'spanish',
+		'nl' => 'dutch'
+	);
 
 	public function __construct()
 	{
@@ -52,62 +63,133 @@ class Home extends CI_Controller
 			$this->active_school_id_for_frontend();
 		}
 	}
+	
+	/**
+	 * Set language from URL parameter
+	 * @param string $lang_code Language code (fr, en, ar, es, nl)
+	 */
+	protected function set_language_from_url($lang_code)
+	{
+		if (!empty($lang_code) && isset($this->supported_lang_codes[$lang_code])) {
+			$lang_name = $this->supported_lang_codes[$lang_code];
+			
+			// Check if user is logged in
+			$user_id = $this->session->userdata('user_id');
+			
+			if ($user_id) {
+				// Update user's language preference
+				$this->db->where('id', $user_id);
+				$this->db->update('users', array('language' => $lang_name));
+			} else {
+				// Guest - store in session
+				$this->session->set_userdata('language', $lang_name);
+			}
+			
+			// Store language code for URL generation
+			$this->session->set_userdata('lang_code', $lang_code);
+		}
+	}
+	
+	/**
+	 * Check if parameter is a language code
+	 * @param string $param Parameter to check
+	 * @return bool
+	 */
+	protected function is_lang_code($param)
+	{
+		return !empty($param) && isset($this->supported_lang_codes[$param]);
+	}
 
 	// INDEX FUNCTION
 	// default function
-	public function index()
+	public function index($lang_code = null)
 	{
+		// Set language if provided
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'home';
 		$page_data['page_title'] = get_phrase('home');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	//ABOUT PAGE
-	function about()
+	function about($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'about';
 		$page_data['page_title'] = get_phrase('about_us');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	//WEBINARE PAGE
-	function webinaire()
+	function webinaire($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'webinaire';
 		$page_data['page_title'] = get_phrase('webinaire');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	//AFFILIATION PAGE
-	function affiliation(){
+	function affiliation($lang_code = null)
+	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'affiliation';
 		$page_data['page_title'] = get_phrase('affiliation');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	// TUTORIAL PAGE
-	function tutorial()
+	function tutorial($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'tutorial';
 		$page_data['page_title'] = get_phrase('tutorial');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
-		// TUTORIAL PAGE
-	function faq()
+	// FAQ / HELP CENTER PAGE
+	function faq($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'faq';
 		$page_data['page_title'] = get_phrase("help_center");
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	// TEACHERS PAGE
-	function teachers()
+	function teachers($param1 = null, $lang_code = null)
 	{
+		// Check if param1 is actually a lang_code
+		if ($this->is_lang_code($param1)) {
+			$lang_code = $param1;
+			$param1 = null;
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$count_teachers = $this->db->get_where('users', array('role' => 'teacher', 'school_id' => $this->active_school_id))->num_rows();
 		$config = array();
 		$config = manager($count_teachers, 9);
-		$config['base_url'] = site_url('home/teachers/');
+		$config['base_url'] = lang_route('teachers');
 		$this->pagination->initialize($config);
 
 		$page_data['per_page'] = $config['per_page'];
@@ -117,12 +199,21 @@ class Home extends CI_Controller
 	}
 
 	// EVENTS GETTING
-	function events()
+	function events($param1 = null, $lang_code = null)
 	{
+		// Check if param1 is actually a lang_code
+		if ($this->is_lang_code($param1)) {
+			$lang_code = $param1;
+			$param1 = null;
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$count_events = $this->db->get_where('frontend_events', array('status' => 1, 'school_id' => $this->active_school_id))->num_rows();
 		$config = array();
 		$config = manager($count_events, 8);
-		$config['base_url'] = site_url('home/events/');
+		$config['base_url'] = lang_route('events');
 		$this->pagination->initialize($config);
 
 		$page_data['per_page'] = $config['per_page'];
@@ -132,12 +223,21 @@ class Home extends CI_Controller
 	}
 
 	// SCHOOL WISE GALLERY
-	function gallery()
+	function gallery($param1 = null, $lang_code = null)
 	{
+		// Check if param1 is actually a lang_code
+		if ($this->is_lang_code($param1)) {
+			$lang_code = $param1;
+			$param1 = null;
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$count_gallery = $this->db->get_where('frontend_gallery', array('show_on_website' => 1, 'school_id' => $this->active_school_id))->num_rows();
 		$config = array();
 		$config = manager($count_gallery, 6);
-		$config['base_url'] = site_url('home/gallery/');
+		$config['base_url'] = lang_route('gallery');
 		$this->pagination->initialize($config);
 
 		$page_data['per_page'] = $config['per_page'];
@@ -147,8 +247,19 @@ class Home extends CI_Controller
 	}
 
 	// GALLERY DETAILS
-	function gallery_view($gallery_id = '')
+	function gallery_view($gallery_id = '', $param2 = null, $lang_code = null)
 	{
+		// Check if gallery_id is actually a lang_code
+		if ($this->is_lang_code($gallery_id)) {
+			$lang_code = $gallery_id;
+			$gallery_id = '';
+		} elseif ($this->is_lang_code($param2)) {
+			$lang_code = $param2;
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$count_images = $this->db->get_where(
 			'frontend_gallery_image',
 			array(
@@ -157,7 +268,7 @@ class Home extends CI_Controller
 		)->num_rows();
 		$config = array();
 		$config = manager($count_images, 9);
-		$config['base_url'] = site_url('home/gallery_view/' . $gallery_id . '/');
+		$config['base_url'] = lang_route('gallery_view', $gallery_id);
 		$this->pagination->initialize($config);
 
 		$page_data['per_page'] = $config['per_page'];
@@ -168,12 +279,20 @@ class Home extends CI_Controller
 	}
 
 	//GET THE CONTACT PAGE
-	function contact($param1 = '')
+	function contact($param1 = '', $lang_code = null)
 	{
+		// Check if param1 is actually a lang_code
+		if ($this->is_lang_code($param1)) {
+			$lang_code = $param1;
+			$param1 = '';
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
 
 		if ($param1 == 'send') {
 			if (!$this->crud_model->check_recaptcha() && get_common_settings('recaptcha_status') == true) {
-				redirect(site_url('home/contact'), 'refresh');
+				redirect(lang_route('contact'), 'refresh');
 			}
 			$this->frontend_model->send_contact_message();
 
@@ -189,16 +308,24 @@ class Home extends CI_Controller
 
 
 	//GET THE PRIVACY POLICY PAGE
-	function privacy_policy()
+	function privacy_policy($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'privacy_policy';
 		$page_data['page_title'] = get_phrase('privacy_policy');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
 	//GET THE TERMS AND CONDITION PAGE
-	function terms_conditions()
+	function terms_conditions($lang_code = null)
 	{
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['page_name'] = 'terms_conditions';
 		$page_data['page_title'] = get_phrase('terms_and_conditions');
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
@@ -254,12 +381,21 @@ class Home extends CI_Controller
 	}
 
 	// NOTICEBOARD
-	function noticeboard()
+	function noticeboard($param1 = null, $lang_code = null)
 	{
+		// Check if param1 is actually a lang_code
+		if ($this->is_lang_code($param1)) {
+			$lang_code = $param1;
+			$param1 = null;
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$count_notice = $this->db->get_where('noticeboard', array('show_on_website' => 1, 'school_id' => $this->active_school_id, 'session' => active_session()))->num_rows();
 		$config = array();
 		$config = manager($count_notice, 9);
-		$config['base_url'] = site_url('home/noticeboard/');
+		$config['base_url'] = lang_route('noticeboard');
 		$this->pagination->initialize($config);
 
 		$page_data['per_page'] = $config['per_page'];
@@ -268,8 +404,17 @@ class Home extends CI_Controller
 		$this->load->view('frontend/' . $this->theme . '/index', $page_data);
 	}
 
-	function notice_details($notice_id = '')
+	function notice_details($notice_id = '', $lang_code = null)
 	{
+		// Check if notice_id is actually a lang_code
+		if ($this->is_lang_code($notice_id)) {
+			$lang_code = $notice_id;
+			$notice_id = '';
+		}
+		if ($this->is_lang_code($lang_code)) {
+			$this->set_language_from_url($lang_code);
+		}
+		
 		$page_data['notice_id'] = $notice_id;
 		$page_data['page_name'] = 'notice_details';
 		$page_data['page_title'] = get_phrase('notice_details');
@@ -280,35 +425,54 @@ class Home extends CI_Controller
 	//communities Overview Page
 	function communities($param1 = null, $param2 = null)
 {
+    // Handle language prefix - param1 could be a lang code
+    $lang_code = null;
+    if ($this->is_lang_code($param1)) {
+        $lang_code = $param1;
+        $this->set_language_from_url($lang_code);
+        // Shift parameters - param2 becomes the actual param1
+        $param1 = $param2;
+        $param2 = null;
+    } elseif ($this->is_lang_code($param2)) {
+        $lang_code = $param2;
+        $this->set_language_from_url($lang_code);
+        $param2 = null;
+    }
+    
     $config = array();
-    $config['base_url'] = site_url('home/communities/');
+    $config['base_url'] = lang_route('communities');
     $config['per_page'] = 8;
     $config['use_page_numbers'] = true;
 
     // Vérifier si une catégorie est spécifiée
     $is_category = false;
     $category = null;
-    if ($param1 != null) {
+    if ($param1 != null && !$this->is_lang_code($param1)) {
         $cat_formated = str_replace("_", " ", $param1);
         $category = $cat_formated;
         $is_category = $this->frontend_model->contains("categories", "name", $category);
     }
 
+    // Determine URI segment offset for language-prefixed URLs
+    $uri_offset = $lang_code ? 1 : 0;
+
     // Déterminer la page actuelle et l'offset
     if ($is_category) {
-        // Si c'est une catégorie, la page est dans le segment 4 (home/communities/category/page)
-        $page = $this->uri->segment(4) ? (int)$this->uri->segment(4) : 1;
-        $config['base_url'] = site_url('home/communities/' . str_replace(" ", "_", $category));
+        // Si c'est une catégorie, la page est dans le segment 4 or 5 with lang prefix
+        $page_segment = 4 + $uri_offset;
+        $page = $this->uri->segment($page_segment) ? (int)$this->uri->segment($page_segment) : 1;
+        $config['base_url'] = lang_route('communities/' . str_replace(" ", "_", $category));
     } else {
-        // Si ce n'est pas une catégorie, la page est dans le segment 3 (home/communities/page)
-        $page = ($param1 != null && is_numeric($param1)) ? (int)$param1 : ($this->uri->segment(3) ? (int)$this->uri->segment(3) : 1);
+        // Si ce n'est pas une catégorie, la page est dans le segment 3 or 4 with lang prefix
+        $page_segment = 3 + $uri_offset;
+        $page = ($param1 != null && is_numeric($param1)) ? (int)$param1 : ($this->uri->segment($page_segment) ? (int)$this->uri->segment($page_segment) : 1);
     }
 
     $offset = ($page - 1) * $config['per_page'];
 
     // Si une catégorie est spécifiée et qu'il y a des écoles dans cette catégorie
     if ($is_category && $this->db->get_where('schools', array('category' => $category, 'status' => 1, 'Etat' => 1))->num_rows() > 0) {
-        $config['uri_segment'] = 4;
+        $config['uri_segment'] = 4 + $uri_offset;
         try {
             $page_data['schools'] = $this->user_model->get_schools_per_category($category, $config['per_page'], $offset);
             $config['total_rows'] = $this->user_model->get_schools_per_category_count($category);
@@ -320,7 +484,7 @@ class Home extends CI_Controller
     }
     // Si une catégorie est spécifiée mais qu'il n'y a pas d'écoles
     elseif ($is_category) {
-        $config['uri_segment'] = 4;
+        $config['uri_segment'] = 4 + $uri_offset;
         $page_data['schools'] = array();
         $config['total_rows'] = 0;
         $page_data['no_courses_found'] = get_phrase('0_communities_found_in_category') . ' ' . $category;
@@ -328,7 +492,7 @@ class Home extends CI_Controller
     }
     // Si aucune catégorie n'est spécifiée (cas "All")
     else {
-        $config['uri_segment'] = 3;
+        $config['uri_segment'] = 3 + $uri_offset;
         $page_data['schools'] = $this->user_model->get_schools($config['per_page'], $offset);
         $config['total_rows'] = $this->user_model->get_schools_count();
         $page_data['statement'] = 4;
@@ -484,8 +648,17 @@ class Home extends CI_Controller
 
 
 
-function community_details($school_id = '')
+function community_details($school_id = '', $lang_code = null)
 {
+    // Check if school_id is actually a lang_code
+    if ($this->is_lang_code($school_id)) {
+        $lang_code = $school_id;
+        $school_id = '';
+    }
+    if ($this->is_lang_code($lang_code)) {
+        $this->set_language_from_url($lang_code);
+    }
+    
     $school_id = urldecode($school_id);
     $page_data['school'] = $this->user_model->get_school_details($school_id);
     $page_data['school_id'] = $page_data['school']['id'];
@@ -699,15 +872,55 @@ function community_details($school_id = '')
         echo '<a class="dropdown-item'.($current_language == $language ? ' active' : '').'" href="#" onclick="setGuestLanguage(\''.$language.'\')">' . ucfirst(get_phrase($language)) . '</a>';
     }
 	}
+	
+	/**
+	 * Get guest language dropdown with URL-based language switching
+	 */
+	public function dropdown_guest_lang() {
+		$languages = $this->settings_model->get_all_languages();
+		$current_language = function_exists('get_user_language') ? get_user_language() : 'english';
+		
+		// Map language names to codes
+		$lang_codes = array(
+			'french' => 'fr',
+			'english' => 'en',
+			'arabic' => 'ar',
+			'spanish' => 'es',
+			'dutch' => 'nl'
+		);
+		
+		foreach ($languages as $language) {
+			$lang_lower = strtolower($language);
+			$code = isset($lang_codes[$lang_lower]) ? $lang_codes[$lang_lower] : 'en';
+			$is_active = ($current_language == $language) ? ' active' : '';
+			
+			echo '<a class="dropdown-item'.$is_active.'" href="#" onclick="setGuestLanguage(\''.$language.'\')" data-lang-code="'.$code.'">' . ucfirst(get_phrase($language)) . '</a>';
+		}
+	}
 
 // Change la langue pour les guests (stockée en session)
 	public function set_guest_language() {
     $lang = $this->input->post('language', TRUE); // Filtrage XSS
     if ($lang) {
+        // Map language names to codes
+        $lang_codes = array(
+            'french' => 'fr',
+            'english' => 'en',
+            'arabic' => 'ar',
+            'spanish' => 'es',
+            'dutch' => 'nl'
+        );
+        
+        $lang_lower = strtolower($lang);
+        $code = isset($lang_codes[$lang_lower]) ? $lang_codes[$lang_lower] : 'en';
+        
         $this->session->set_userdata('language', $lang);
+        $this->session->set_userdata('lang_code', $code);
+        
         $response = array(
             'status' => 'success',
             'message' => get_phrase('language_updated_successfully'),
+            'lang_code' => $code,
             'csrfName' => $this->security->get_csrf_token_name(),
             'csrfHash' => $this->security->get_csrf_hash()
         );

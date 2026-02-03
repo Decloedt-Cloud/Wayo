@@ -310,7 +310,7 @@ if ($active_school_id && $user_belongs_to_school) {
             <?php endif; ?>
 
             <!-- Bouton Discover -->
-            <a href="<?php echo site_url('home/communities'); ?>" class="btn btn-outline-dark website-button d-none d-md-inline-block">
+            <a href="<?php echo lang_route('communities'); ?>" class="btn btn-outline-dark website-button d-none d-md-inline-block">
                 <span class="dot"></span>
                 <?php echo get_phrase("Discover_our_communities"); ?>
                 <i class="mdi mdi-arrow-right ms-2 arrow-animate" aria-hidden="true"></i>

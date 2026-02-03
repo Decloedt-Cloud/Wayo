@@ -2090,11 +2090,11 @@
                                 } elseif ($is_teacher_logged) {
                                     // Teacher: utiliser student comme fallback, rediriger vers community_details
                                     $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
-                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                    $paypal_redirect_url = site_url('community_details/' . ($invoice_details['school_id'] ?? ''));
                                 } else {
                                     // Student: utiliser student/payment_success
                                     $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
-                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                    $paypal_redirect_url = site_url('community_details/' . ($invoice_details['school_id'] ?? ''));
                                 }
                             } else {
                                 $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);

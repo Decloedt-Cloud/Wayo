@@ -913,7 +913,7 @@ if ($current_user_id) {
         <nav class="navbar navbar-expand-lg">
             <div class="container container-customize">
                 <!-- Logo -->
-                <a class="navbar-brand" href="<?php echo base_url('home'); ?>" aria-label="Wayo Academy">
+                <a class="navbar-brand" href="<?php echo lang_route('home'); ?>" aria-label="Wayo Academy">
                     <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
                 </a>
                 <!-- Mobile Toggle -->
@@ -951,13 +951,13 @@ if ($current_user_id) {
                 <div class="collapse navbar-collapse" id="navbarNav" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo site_url('home'); ?>"><?php echo get_phrase('Home'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo lang_route('home'); ?>"><?php echo get_phrase('Home'); ?></a>
                         </li>
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase('Our_Communities'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo lang_route('communities'); ?>"><?php echo get_phrase('Our_Communities'); ?></a>
                         </li>
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo site_url('home/tutorial'); ?>"><?php echo get_phrase('How_it_works'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo lang_route('tutorial'); ?>"><?php echo get_phrase('How_it_works'); ?></a>
                         </li>
                     </ul>
 
@@ -1058,7 +1058,7 @@ if ($current_user_id) {
                                 <?php include 'components/navigation-components/login_register_component.php'; ?>
                             </li>
                             <li class="nav-item navbar-user" style="list-style: none;">
-                                <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-accent btn-custom" style="cursor:pointer !important;">
+                                <a href="<?php echo lang_route('join/community'); ?>" class="btn btn-accent btn-custom" style="cursor:pointer !important;">
                                     <?php echo get_phrase('Create_Community'); ?>
                                 </a>
                             </li>
@@ -1076,17 +1076,17 @@ if ($current_user_id) {
             <div class="offcanvas-body">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo site_url('home'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo lang_route('home'); ?>">
                             <?php echo get_phrase('Home'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo site_url('home/communities'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo lang_route('communities'); ?>">
                             <?php echo get_phrase('Our_Communities'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo site_url('home/tutorial'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo lang_route('tutorial'); ?>">
                             <?php echo get_phrase('How_it_works'); ?>
                         </a>
                     </li>
@@ -1148,7 +1148,7 @@ if ($current_user_id) {
                             </div>
                         </li>
                     <?php } else { ?>
-                        <a class="btn btn-accent btn-custom w-100" href="<?php echo site_url('admission/online_admission'); ?>">
+                        <a class="btn btn-accent btn-custom w-100" href="<?php echo lang_route('join/community'); ?>">
                             <?php echo get_phrase('Create_Community'); ?>
                         </a>
                     <?php } ?>
@@ -1380,6 +1380,15 @@ if ($current_user_id) {
     </script>
     <script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
     <script>
+        // Language code mapping
+        var langCodeMap = {
+            'french': 'fr',
+            'english': 'en',
+            'arabic': 'ar',
+            'spanish': 'es',
+            'dutch': 'nl'
+        };
+
         function getLanguageList() {
             $.ajax({
                 url: "<?php echo route('language/dropdown'); ?>",
@@ -1393,7 +1402,7 @@ if ($current_user_id) {
 
         function getGuestLanguageList() {
             $.ajax({
-                url: "<?php echo site_url('home/dropdown_guest'); ?>",
+                url: "<?php echo site_url('home/dropdown_guest_lang'); ?>",
                 success: function(response) {
                     // Remplir à la fois desktop et mobile
                     $('#guest-language-list').html(response);
@@ -1403,11 +1412,73 @@ if ($current_user_id) {
         }
 
         function setGuestLanguage(lang) {
+            // Get the language code for URL
+            var langCode = langCodeMap[lang.toLowerCase()] || 'fr';
+            
             $.post("<?php echo site_url('home/set_guest_language'); ?>", {
                 language: lang,
                 <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
-            }, function() {
-                location.reload();
+            }, function(response) {
+                var supportedCodes = ['fr', 'en', 'ar', 'es', 'nl'];
+                var currentUrl = window.location.href;
+                var currentPath = window.location.pathname;
+                
+                // Get base URL without trailing slash
+                var baseUrl = '<?php echo rtrim(base_url(), "/"); ?>';
+                
+                // Extract the path part after the base URL
+                var fullPath = currentPath;
+                
+                // Get base path from the base URL  
+                try {
+                    var urlObj = new URL(baseUrl);
+                    var basePath = urlObj.pathname.replace(/\/$/, '');
+                    
+                    // Remove base path from current path
+                    if (basePath && fullPath.indexOf(basePath) === 0) {
+                        fullPath = fullPath.substring(basePath.length);
+                    }
+                } catch(e) {
+                    // Fallback for older browsers
+                    var basePath = baseUrl.replace(/^https?:\/\/[^\/]+/, '').replace(/\/$/, '');
+                    if (basePath && fullPath.indexOf(basePath) === 0) {
+                        fullPath = fullPath.substring(basePath.length);
+                    }
+                }
+                
+                // Clean up the path
+                fullPath = fullPath.replace(/^\/+/, ''); // Remove leading slashes
+                
+                // Split path into parts
+                var pathParts = fullPath.split('/').filter(function(p) { 
+                    return p !== '' && p !== 'home' && p !== 'index.php'; 
+                });
+                
+                // Check if first part is a language code and replace/add
+                if (pathParts.length > 0 && supportedCodes.indexOf(pathParts[0]) !== -1) {
+                    // Replace existing language prefix
+                    pathParts[0] = langCode;
+                } else if (pathParts.length > 0) {
+                    // Add new language prefix at the beginning
+                    pathParts.unshift(langCode);
+                } else {
+                    // Just the language code for home page
+                    pathParts = [langCode];
+                }
+                
+                // Build the new URL using site_url pattern
+                var newUrl = baseUrl + '/' + pathParts.join('/');
+                
+                // Debug (remove after testing)
+                console.log('Language switch debug:', {
+                    baseUrl: baseUrl,
+                    currentPath: currentPath,
+                    fullPath: fullPath,
+                    pathParts: pathParts,
+                    newUrl: newUrl
+                });
+                
+                window.location.href = newUrl;
             });
         }
     </script>
