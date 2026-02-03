@@ -2076,7 +2076,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.getElementById('submitBtnSchool');
         if (submitBtn) submitBtn.disabled = true;
 
-        fetch(this.action, {
+        // Use direct endpoint to bypass URL rewriting
+        const submitUrl = '<?= base_url("register/community"); ?>';
+        
+        fetch(submitUrl, {
             method: 'POST',
             body: formData
         })
