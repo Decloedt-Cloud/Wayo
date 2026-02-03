@@ -3865,5 +3865,15 @@
     "current_password_is_incorrect": "كلمة المرور الحالية غير صحيحة",
     "select_date_and_class": "اختر التاريخ والفصل",
     "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "عذراً، أنت غير مخول بتسجيل الحضور في هذه الحصة.",
-    "wayo_meta_description": "الوصف التعريفي لـ Wayo"
+    "wayo_meta_description": "الوصف التعريفي لـ Wayo",
+    "subscription_expired": "انتهت صلاحية الاشتراك",
+    "access_restricted": "الوصول مقيّد",
+    "select_community_to_access": "يرجى اختيار المجتمع للوصول",
+    "loading_communities": "جارٍ تحميل المجتمعات",
+    "renew_subscription_now": "جدّد الاشتراك الآن",
+    "no_communities_found": "لم يتم العثور على أي مجتمعات",
+    "card_details": "تفاصيل البطاقة",
+    "secured_by_stripe": "مؤمَّن بواسطة Stripe",
+    "select_payment_method": "اختر طريقة الدفع",
+    "paypal_checkout": "الدفع عبر بايبال"
 }

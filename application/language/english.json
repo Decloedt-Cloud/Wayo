@@ -4340,5 +4340,15 @@
     "pop-up_blocked._please_allow_pop-ups_for_this_site_to_join_the_meeting.": "Pop-up blocked. please allow pop-ups for this site to join the meeting.",
     "popular": "Popular",
     "announcement_list": "Announcement list",
-    "wayo_meta_description": "Wayo meta description"
+    "wayo_meta_description": "Wayo meta description",
+    "subscription_expired": "Subscription expired",
+    "access_restricted": "Access restricted",
+    "select_community_to_access": "Select community to access",
+    "loading_communities": "Loading communities",
+    "renew_subscription_now": "Renew subscription now",
+    "no_communities_found": "No communities found",
+    "card_details": "Card details",
+    "secured_by_stripe": "Secured by stripe",
+    "select_payment_method": "Select payment method",
+    "paypal_checkout": "Paypal checkout"
 }

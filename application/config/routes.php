@@ -831,11 +831,11 @@ $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
 $route['payment/community/(:num)'] = 'student/payment/community/$1';
-        $route['app/online_admission'] = 'student/online_admission';
-        $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
+$route['app/online_admission'] = 'student/online_admission';
+$route['app/online_admission/(:any)'] = 'student/online_admission/$1';
 $route['app/payment'] = 'student/payment';
-$route['app/payment/(:any)'] = 'student/payment/$1';
-$route['app/payment/(:any)/(:any)'] = 'student/payment/$1/$2';
+$route['app/payment/(:any)'] = 'admin/payment/$1';
+$route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 
 // FIX: Route for app/join_school
 $route['app/join_school'] = 'student/join_school';

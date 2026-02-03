@@ -1505,8 +1505,15 @@ class Admin extends CI_Controller
         $current_user_type = $this->session->userdata('user_type');
         $current_school_id = $this->session->userdata('school_id');
         $invoice_school_id = $invoice_details['school_id'];
+        
+        // Détecter si c'est un paiement community (admin rejoint une communauté)
+        $is_community_payment = ($reference === 'community' || 
+                                 $invoice_details['payment_type'] === 'school_join' ||
+                                 $invoice_details['payment_type'] === 'community');
 
-        if ($current_user_type !== 'superadmin' && $invoice_school_id != $current_school_id) {
+        // Pour les paiements community, l'admin peut payer même si school_id différent
+        // Car il rejoint une nouvelle communauté (pas sa communauté actuelle)
+        if (!$is_community_payment && $current_user_type !== 'superadmin' && $invoice_school_id != $current_school_id) {
             log_message('error', "Tentative de paiement non autorisé pour la facture #{$invoice_id} par l'utilisateur #{$this->session->userdata('user_id')}");
             $this->session->set_flashdata('error_message', get_phrase('access_denied'));
             redirect(site_url('admin/dashboard'), 'refresh');
@@ -1558,32 +1565,37 @@ class Admin extends CI_Controller
 				$payment_currency = 'NGN'; // Paystack est principalement pour NGN
 			}
 
-			// ========== DÉTECTION CONVERSION UAE (MAD → AED côté client) ==========
-			// Pour UAE, le frontend convertit MAD → AED pour l'affichage/paiement
-			// Mais Stripe peut être configuré en MAD. On doit détecter cette situation.
+			// ========== DÉTECTION CONVERSION UAE (AED) ==========
+			// Pour UAE, vérifier si la facture est déjà en AED ou en MAD
 			$tax_residence = $school['country'] ?? '';
 			$client_sent_currency = $this->input->post('currency') ?? $payment_currency;
 			
-			// Pour UAE : le client envoie un montant en AED (converti depuis MAD par le frontend)
-			// On doit convertir ce montant AED vers MAD pour valider contre la facture
+			// Pour UAE/AE : vérifier la devise de la facture
 			if (($tax_residence === 'UAE' || $tax_residence === 'AE') && $has_vat_config) {
-				// UAE avec TVA configurée : le montant client est en AED, la facture est en MAD
-				// Convertir AED → MAD pour vérification
-				$converted_to_mad = $this->fxService->convert($client_amount, 'AED', 'MAD');
-				
-				if ($converted_to_mad !== false) {
-					$conversion_info = [
-						'original_amount' => $client_amount,
-						'original_currency' => 'AED',
-						'converted_amount' => $converted_to_mad,
-						'invoice_currency' => 'MAD',
-						'fx_rate' => round($client_amount / $converted_to_mad, 6),
-						'fx_rate_date' => date('Y-m-d')
-					];
-					$converted_amount = $converted_to_mad;
-					log_message('info', "UAE Conversion: {$client_amount} AED → {$converted_amount} MAD (Facture #{$invoice_id})");
+				// Si la facture est DÉJÀ en AED, pas de conversion nécessaire
+				if ($invoice_currency === 'AED') {
+					// Facture en AED, client paie en AED → pas de conversion
+					$converted_amount = $secure_amount;
+					$payment_currency = 'AED';
+					log_message('info', "UAE (AED Invoice): Pas de conversion, facture déjà en AED: {$secure_amount} AED (Facture #{$invoice_id})");
 				} else {
-					log_message('error', "Échec conversion AED → MAD pour UAE (Facture #{$invoice_id})");
+					// Facture en MAD (legacy), client paie en AED → convertir AED → MAD
+					$converted_to_mad = $this->fxService->convert($client_amount, 'AED', 'MAD');
+					
+					if ($converted_to_mad !== false) {
+						$conversion_info = [
+							'original_amount' => $client_amount,
+							'original_currency' => 'AED',
+							'converted_amount' => $converted_to_mad,
+							'invoice_currency' => 'MAD',
+							'fx_rate' => round($client_amount / $converted_to_mad, 6),
+							'fx_rate_date' => date('Y-m-d')
+						];
+						$converted_amount = $converted_to_mad;
+						log_message('info', "UAE Conversion (Legacy MAD Invoice): {$client_amount} AED → {$converted_amount} MAD (Facture #{$invoice_id})");
+					} else {
+						log_message('error', "Échec conversion AED → MAD pour UAE (Facture #{$invoice_id})");
+					}
 				}
 			}
 			// Exception pour le Maroc (MA) : On paie toujours en MAD, même si Stripe est configuré en EUR/USD
@@ -1704,11 +1716,13 @@ class Admin extends CI_Controller
 				$final_stripe_currency = $stripe_currency; // Par défaut, utiliser la config
 				$stripe_amount = $amount_paid;
 				
-				// UAE : DOIT payer en AED - le montant $amount_paid est déjà en AED (converti par frontend)
+				// UAE : DOIT payer en AED
 				if ($tax_residence === 'UAE' || $tax_residence === 'AE') {
 					$final_stripe_currency = 'AED';
-					$stripe_amount = $amount_paid; // Montant AED du frontend
-					log_message('info', "Stripe UAE: Envoi {$stripe_amount} AED à Stripe (country: {$tax_residence})");
+					// Si la facture est en AED, utiliser le montant sécurisé de la BDD
+					// Sinon utiliser le montant client (pour les anciennes factures en MAD)
+					$stripe_amount = ($invoice_currency === 'AED') ? $secure_amount : $amount_paid;
+					log_message('info', "Stripe UAE: Envoi {$stripe_amount} AED à Stripe (country: {$tax_residence}, invoice_currency: {$invoice_currency})");
 				}
 				// MA : DOIT payer en MAD - utiliser le montant original de la facture
 				elseif ($tax_residence === 'MA') {
@@ -1849,7 +1863,7 @@ class Admin extends CI_Controller
 					redirect(site_url('admin/dashboard'), 'refresh');
 					return;
 				} else {
-					// Pour les autres types de factures (class_enrol, etc.)
+					// Pour les autres types de factures (class_enrol, community/school_join, etc.)
 					$updater = [
 						'status' => 'paid',
 						'payment_method' => $payment_method,
@@ -1859,6 +1873,34 @@ class Admin extends CI_Controller
 					];
 					$this->db->where('id', $invoice_id);
 					$this->db->update('invoices', $updater);
+					
+					// ========== GESTION PAIEMENT COMMUNITY ==========
+					// Si c'est un paiement community, enroller l'admin dans la communauté
+					if ($is_community_payment) {
+						$user_id = $this->session->userdata('user_id');
+						$community_school_id = $invoice_details['school_id'];
+						
+						// Vérifier si l'admin n'est pas déjà membre de cette communauté
+						// via la table admins (pour les admins de communauté)
+						$existing_admin = $this->db->get_where('admins', [
+							'user_id' => $user_id,
+							'school_id' => $community_school_id
+						])->row();
+						
+						if (!$existing_admin) {
+							// Ajouter l'admin comme membre de la communauté
+							$this->db->insert('admins', [
+								'user_id' => $user_id,
+								'school_id' => $community_school_id,
+								'created_at' => time()
+							]);
+							log_message('info', "Admin #{$user_id} enrolled in community #{$community_school_id} after payment");
+						}
+						
+						$this->session->set_flashdata('flash_message', get_phrase('payment_successful_community_joined'));
+						redirect(site_url('admin/dashboard'), 'refresh');
+						return;
+					}
 					
 					$this->session->set_flashdata('flash_message', get_phrase('payment_successful'));
 					redirect(site_url('admin/dashboard'), 'refresh');

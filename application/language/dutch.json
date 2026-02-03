@@ -4000,5 +4000,15 @@
     "current_password_is_incorrect": "Huidig wachtwoord is onjuist",
     "select_date_and_class": "Selecteer de datum en het lesuur.",
     "sorry_you_do_not_have_permission_to_take_attendance_for_this_class": "Sorry, u bent niet gemachtigd om de aanwezigheid bij deze les te registreren.",
-    "wayo_meta_description": "Wayo meta-beschrijving"
+    "wayo_meta_description": "Wayo meta-beschrijving",
+    "subscription_expired": "Abonnement verlopen",
+    "access_restricted": "Toegang beperkt",
+    "select_community_to_access": "Selecteer een community om toegang te krijgen",
+    "loading_communities": "Communities worden geladen",
+    "renew_subscription_now": "Abonnement nu verlengen",
+    "no_communities_found": "Geen communities gevonden",
+    "card_details": "Kaartgegevens",
+    "secured_by_stripe": "Beveiligd door Stripe",
+    "select_payment_method": "Selecteer een betaalmethode",
+    "paypal_checkout": "Afrekenen met PayPal"
 }

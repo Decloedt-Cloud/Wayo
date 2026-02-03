@@ -51,3 +51,6 @@ INSERT INTO `subscription_plans`
 VALUES 
 ('AE Starter Plan', 'AE', 'Starter plan for Affiliate Entrepreneurs in UAE', 300.00, 'AED', 'month', 1, 1, 0, 14, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
 ('AE Pro Plan', 'AE', 'Pro plan for Affiliate Entrepreneurs in UAE', 3000.00, 'AED', 'year', 1, 1, 0, 14, UNIX_TIMESTAMP(), UNIX_TIMESTAMP());
+
+
+ALTER TABLE schools DROP COLUMN humhub_space_id;

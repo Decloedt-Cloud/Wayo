@@ -15,8 +15,8 @@ if ($vat_applicable) {
     if ($tax_residence === 'MA') {
         // 1 - Communauté au Maroc  => 20% de TVA
         $vat_rate = 20;
-    } elseif ($tax_residence === 'UAE') {
-        // 2 - Communauté aux EAU => 5% de TVA
+    } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+        // 2 - Communauté aux EAU => 5% de TVA (support both UAE and AE codes)
         $vat_rate = 5;
     }
 }
