@@ -844,6 +844,8 @@ $route['payment/community/(:num)'] = 'student/payment/community/$1';
 $route['app/online_admission'] = 'student/online_admission';
 $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
 $route['app/payment'] = 'student/payment';
+$route['app/online_admission'] = 'admin/online_admission';
+$route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
 $route['app/payment/(:any)'] = 'admin/payment/$1';
 $route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 
