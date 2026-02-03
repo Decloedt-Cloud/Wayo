@@ -1,39 +1,46 @@
 
 <!-- ========== FOOTER ========== -->
 <?php 
-$current1 = $this->uri->segment(1);   // "home"
+$current1 = $this->uri->segment(1);   // "home" or language code
 $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
+// Check if first segment is a language code
+$supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
+if (in_array($current1, $supported_codes)) {
+    // Language prefix in URL - shift segments
+    $current1 = $this->uri->segment(2);
+    $current2 = $this->uri->segment(3);
+}
 ?>
  <footer class="site-footer" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container footer-top">
-      <a href="#" class="footer-logo"><img class="logo-img footer" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo"/></a>
+      <a href="<?php echo lang_route('home'); ?>" class="footer-logo"><img class="logo-img footer" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo"/></a>
       <nav class="footer-nav" aria-label="Liens pied de page">
         <ul>
             <li>
-                <a href="<?= base_url('home'); ?>"
-                  class="<?= ($current1 == 'home' && empty($current2)) ? 'active' : '' ?>">
+                <a href="<?php echo lang_route('home'); ?>"
+                  class="<?= ($current1 == 'home' && empty($current2)) || (empty($current1) && empty($current2)) ? 'active' : '' ?>">
                   <?php echo get_phrase('Home');?>
                   
                 </a>
             </li>
 
             <li>
-                <a href="<?= site_url('home/communities'); ?>"
-                  class="<?= ($current2 == 'communities') ? 'active' : '' ?>">
+                <a href="<?php echo lang_route('communities'); ?>"
+                  class="<?= ($current1 == 'communities' || $current2 == 'communities') ? 'active' : '' ?>">
                   <?php echo get_phrase('our_communities');?>
                 </a>
             </li>
 
             <li>
-                <a href="<?= site_url('home/tutorial'); ?>"
-                  class="<?= ($current2 == 'tutorial') ? 'active' : '' ?>"> 
+                <a href="<?php echo lang_route('tutorial'); ?>"
+                  class="<?= ($current1 == 'tutorial' || $current2 == 'tutorial') ? 'active' : '' ?>"> 
                   <?php echo get_phrase('How it Works');?>
                 </a>
             </li>
 
             <li>
-                <a href="<?= site_url('home/contact'); ?>"
-                  class="<?= ($current2 == 'contact') ? 'active' : '' ?>">
+                <a href="<?php echo lang_route('contact'); ?>"
+                  class="<?= ($current1 == 'contact' || $current2 == 'contact') ? 'active' : '' ?>">
                   
                   <?php echo get_phrase('Support');?>
                 </a>
@@ -59,25 +66,25 @@ $current2 = $this->uri->segment(2);   // communities, tutorial, contact, etc.
       <div class="footer-links">
         <p><strong><?php echo get_phrase('wayo_and_partners'); ?></strong></p>
           <div class="infolinks">
-            <a href="<?php echo site_url('home/about'); ?>"><?php echo get_phrase('About'); ?></a>
-            <a href="<?php echo site_url('home/affiliation'); ?>"><?php echo get_phrase('Become a partner'); ?></a>
-            <a href="<?php echo site_url('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
+            <a href="<?php echo lang_route('about'); ?>"><?php echo get_phrase('About'); ?></a>
+            <a href="<?php echo lang_route('affiliation'); ?>"><?php echo get_phrase('Become a partner'); ?></a>
+            <a href="<?php echo lang_route('trends'); ?>"><?php echo get_phrase('Trends'); ?></a>
           </div>
       </div>
 
       <div class="footer-links">
         <p><strong><?php echo get_phrase('Help'); ?></strong></p>
           <div class="infolinks">
-              <a href="<?php echo site_url('home/faq'); ?>"><?php echo get_phrase('Help Center'); ?></a>
-              <a href="<?php echo site_url('home/contact'); ?>"><?php echo get_phrase('Support');?></a>
+              <a href="<?php echo lang_route('help-center'); ?>"><?php echo get_phrase('Help Center'); ?></a>
+              <a href="<?php echo lang_route('contact'); ?>"><?php echo get_phrase('Support');?></a>
           </div>
       </div>
 
       <div class="footer-links">
         <p><strong><?php echo get_phrase('legal'); ?></strong></p>
           <div class="infolinks">
-              <a href="<?php echo site_url('home/terms_conditions'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
-              <a href="<?php echo site_url('home/privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
+              <a href="<?php echo lang_route('terms'); ?>"><?php echo get_phrase('Terms_and_conditions'); ?></a>
+              <a href="<?php echo lang_route('privacy_policy'); ?>"><?php echo get_phrase('Privacy Policy'); ?></a>
           </div>
       </div>
 

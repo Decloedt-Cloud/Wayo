@@ -569,14 +569,31 @@ class Settings_model extends CI_Model
 
  // Settings_model.php
   public function update_system_language($user_id = "", $selected_language = "") {
+    // Map language names to codes for URL prefixes
+    $lang_codes = array(
+        'french' => 'fr',
+        'english' => 'en',
+        'arabic' => 'ar',
+        'spanish' => 'es',
+        'dutch' => 'nl'
+    );
+    
     if (!empty($user_id)) {
         $this->db->where('id', $user_id);
         $this->db->update('users', ['language' => $selected_language]);
-
     } else {
         $this->db->where('id', 1);
         $this->db->update('settings', ['language' => $selected_language]);
     }
+    
+    // Update session with the new language and lang_code
+    $CI =& get_instance();
+    $CI->session->set_userdata('language', $selected_language);
+    
+    // Set the language code for URL prefixes
+    $lang_lower = strtolower($selected_language);
+    $code = isset($lang_codes[$lang_lower]) ? $lang_codes[$lang_lower] : 'en';
+    $CI->session->set_userdata('lang_code', $code);
   }
   function get_currencies()
   {

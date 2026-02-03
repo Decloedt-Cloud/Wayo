@@ -19,7 +19,15 @@ $hook['display_override'] = array(
     'filepath' => 'hooks'
 );
 
-$hook['post_controller_constructor'] = array(
+// Language detection hook - runs after controller constructor
+$hook['post_controller_constructor'][] = array(
+    'class'    => 'Language_detector',
+    'function' => 'detect',
+    'filename' => 'Language_detector.php',
+    'filepath' => 'hooks'
+);
+
+$hook['post_controller_constructor'][] = array(
     'class'    => 'App_Access',
     'function' => 'block_direct_access',
     'filename' => 'App_Access.php',

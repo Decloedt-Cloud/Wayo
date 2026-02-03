@@ -142,7 +142,7 @@ if ($page_name == "home") {
 
 } elseif ($page_name == "about") {
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
 
 } elseif ($page_name == "contact") {
 
@@ -158,24 +158,25 @@ if ($page_name == "home") {
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/contact-map.js"></script>';
 
   // Initialiser l'effet Rellax
-  echo '<script defer>var rellax = new Rellax(".rellax");</script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
 }
 
 else if ($page_name == "online_admission"){
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.js"></script>';
 
 }
 else if ($page_name == "online_admission_student"){
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.js"></script>';
 
 }
 
 else if($page_name == "communities"){
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
+  // Rellax only if elements exist
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/courses.js"></script>';
 
 }

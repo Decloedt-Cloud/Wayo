@@ -35,12 +35,12 @@
               </span>
               <select name="categories" id="catSelect"
                 class="form-select border-0 bg-transparent flex-grow-1 select_course text-dark">
-                <option value="<?php echo base_url('home/communities/'); ?>"><?php echo get_phrase('All_categorie'); ?></option>
+                <option value="<?php echo lang_route('communities'); ?>"><?php echo get_phrase('All_categorie'); ?></option>
                 <?php foreach ($categories as $category): ?>
                   <?php
                   $cat_formated = $this->frontend_model->get_category_formated($category['name']);
                   ?>
-                  <option value="<?php echo base_url('home/communities/' . $cat_formated); ?>">
+                  <option value="<?php echo lang_route('communities', $cat_formated); ?>">
                     <?php echo get_phrase($category['name']); ?>
                   </option>
                 <?php endforeach; ?>
@@ -97,52 +97,7 @@
 
 
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const search = document.getElementById("searchInputs");
-      const catSel = document.getElementById("catSelect");
-      const langSel = document.getElementById("langSelect");
-      const cards = document.querySelectorAll(".course");
-      const topBtn = document.getElementById("scrollTopBtn");
-      let currentCat = "all";
-      let currentLang = "all";
-      let query = "";
-
-      function refresh() {
-        cards.forEach(card => {
-          const okCat = (currentCat === "all" || card.dataset.cat === currentCat);
-          const okLang = (currentLang === "all" || card.dataset.lang === currentLang);
-          const okTxt = card.textContent.toLowerCase().includes(query);
-          card.style.display = (okCat && okLang && okTxt) ? "" : "none";
-        });
-      }
-      // Search
-      search.addEventListener("input", () => {
-        query = search.value.trim().toLowerCase();
-        refresh();
-      });
-      // Category
-      catSel.addEventListener("change", () => {
-        currentCat = catSel.value;
-        refresh();
-      });
-      // Language select
-      langSel.addEventListener("change", () => {
-        currentLang = langSel.value;
-        refresh();
-      });
-      // Scroll-to-top show/hide
-      window.addEventListener("scroll", () => {
-        topBtn.style.display = window.scrollY > 600 ? "inline-flex" : "none";
-      });
-      // Smooth scroll top
-      topBtn.addEventListener("click", () => window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      }));
-    });
-  </script>
-  <!-- //ajax form recherche -->
+  <!-- Communities AJAX Search & Filter -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("searchForm");

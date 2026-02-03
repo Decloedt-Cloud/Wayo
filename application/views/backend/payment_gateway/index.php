@@ -1923,7 +1923,7 @@
                             $is_community_payment = ($payment_type === 'school_join' || $type === 'community');
                             if ($is_community_payment) {
                                 $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
-                                $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                $paypal_redirect_url = lang_route('community_details', ($invoice_details['school_id'] ?? ''));
                             } else {
                                 $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);
                                 $paypal_redirect_url = route('invoice');

@@ -109,7 +109,7 @@
     }
 
     function handleCTA() {
-        window.location.href = "<?php echo site_url('home/contact'); ?>";
+        window.location.href = "<?php echo lang_route('contact'); ?>";
     }
 
     calculateCommission();

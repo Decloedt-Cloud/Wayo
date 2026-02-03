@@ -49,6 +49,127 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+
+// =====================================================
+// LANGUAGE PREFIX CONFIGURATION
+// =====================================================
+// Supported language codes mapped to language names
+$supported_langs = array(
+    'fr' => 'french',
+    'en' => 'english',
+    'ar' => 'arabic',
+    'es' => 'spanish',
+    'nl' => 'dutch'
+);
+
+// Detect language prefix from URL (handles subdirectory installations)
+$lang_prefix = '';
+$lang_segment = '';
+if (isset($_SERVER['REQUEST_URI'])) {
+    $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    // Get the script path to determine base directory
+    $script_name = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+    $base_dir = rtrim(dirname($script_name), '/');
+    
+    // Remove base directory from request URI to get relative path
+    $relative_path = $request_uri;
+    if (!empty($base_dir) && strpos($request_uri, $base_dir) === 0) {
+        $relative_path = substr($request_uri, strlen($base_dir));
+    }
+    
+    // Parse the relative path
+    $uri_parts = explode('/', trim($relative_path, '/'));
+    
+    // Check if first segment is a language code
+    if (!empty($uri_parts[0]) && array_key_exists($uri_parts[0], $supported_langs)) {
+        $lang_prefix = $uri_parts[0];
+        $lang_segment = $uri_parts[0] . '/';
+        
+        // Store detected language in a constant for later use
+        if (!defined('DETECTED_LANG_CODE')) {
+            define('DETECTED_LANG_CODE', $lang_prefix);
+            define('DETECTED_LANG_NAME', $supported_langs[$lang_prefix]);
+        }
+    }
+}
+
+// =====================================================
+// LANGUAGE-PREFIXED FRONTEND ROUTES
+// =====================================================
+foreach ($supported_langs as $code => $lang_name) {
+    // Home routes with language prefix
+    $route[$code] = 'home/index/' . $code;
+    $route[$code . '/home'] = 'home/index/' . $code;
+    
+    // Communities
+    $route[$code . '/communities'] = 'home/communities/' . $code;
+    $route[$code . '/communities/(.+)'] = 'home/communities/' . $code . '/$1';
+    
+    // Tutorial / How it works
+    $route[$code . '/tutorial'] = 'home/tutorial/' . $code;
+    $route[$code . '/getting_started'] = 'home/tutorial/' . $code;
+    
+    // Help Center / FAQ
+    $route[$code . '/help-center'] = 'home/faq/' . $code;
+    $route[$code . '/faq'] = 'home/faq/' . $code;
+    
+    // Contact / Support
+    $route[$code . '/contact'] = 'home/contact/' . $code;
+    $route[$code . '/support'] = 'home/contact/' . $code;
+    $route[$code . '/support/send'] = 'home/contact/send/' . $code;
+    
+    // About
+    $route[$code . '/about'] = 'home/about/' . $code;
+    
+    // Affiliation
+    $route[$code . '/affiliation'] = 'home/affiliation/' . $code;
+    
+    // Terms and Privacy
+    $route[$code . '/terms'] = 'home/terms_conditions/' . $code;
+    $route[$code . '/terms_conditions'] = 'home/terms_conditions/' . $code;
+    $route[$code . '/privacy_policy'] = 'home/privacy_policy/' . $code;
+    
+    // Community details
+    $route[$code . '/community_details'] = 'home/community_details/' . $code;
+    $route[$code . '/community_details/(.+)'] = 'home/community_details/$1/' . $code;
+    
+    // Trends / Articles
+    $route[$code . '/trends'] = 'articles/index/' . $code;
+    $route[$code . '/trends/category/(:any)'] = 'articles/category/$1/' . $code;
+    $route[$code . '/trends/tag/(:any)'] = 'articles/tag/$1/' . $code;
+    $route[$code . '/trends/page/(:any)'] = 'articles/page/$1/' . $code;
+    $route[$code . '/trends/(:any)'] = 'articles/show/$1/' . $code;
+    
+    // Teachers
+    $route[$code . '/teachers'] = 'home/teachers/' . $code;
+    $route[$code . '/teachers/(.+)'] = 'home/teachers/$1/' . $code;
+    
+    // Events
+    $route[$code . '/events'] = 'home/events/' . $code;
+    $route[$code . '/events/(.+)'] = 'home/events/$1/' . $code;
+    
+    // Gallery
+    $route[$code . '/gallery'] = 'home/gallery/' . $code;
+    $route[$code . '/gallery/(.+)'] = 'home/gallery/$1/' . $code;
+    $route[$code . '/gallery_view/(:any)'] = 'home/gallery_view/$1/' . $code;
+    $route[$code . '/gallery_view/(:any)/(.+)'] = 'home/gallery_view/$1/$2/' . $code;
+    
+    // Noticeboard
+    $route[$code . '/noticeboard'] = 'home/noticeboard/' . $code;
+    $route[$code . '/noticeboard/(.+)'] = 'home/noticeboard/$1/' . $code;
+    $route[$code . '/notice_details/(:any)'] = 'home/notice_details/$1/' . $code;
+    
+    // Admission routes with language prefix
+    $route[$code . '/join/community'] = 'admission/online_admission/' . $code;
+    $route[$code . '/join/community/(.+)'] = 'admission/online_admission/$1/' . $code;
+    $route[$code . '/join/member'] = 'admission/online_admission_student/' . $code;
+    $route[$code . '/join/member/(.+)'] = 'admission/online_admission_student/$1/' . $code;
+    
+    // Webinaire
+    $route[$code . '/webinaire'] = 'home/webinaire/' . $code;
+}
+
 $route['superadmin/community_list'] = 'superadmin/school';
 $route['superadmin/community_list/(:any)'] = 'superadmin/school/$1';
 

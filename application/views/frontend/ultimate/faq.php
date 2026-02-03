@@ -208,7 +208,7 @@
                 <p class="big"><?php echo get_phrase("Free or Paid (defined by the mentor)") ?></p>
                 <p><?php echo get_phrase("Access communities, courses, and sessions based on the plan set by each mentor.Some content may be free, others paid.") ?></p>
             </div>
-            <a class="btn-login" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase("Explore communities") ?></a>
+            <a class="btn-login" href="<?php echo lang_route('communities'); ?>"><?php echo get_phrase("Explore communities") ?></a>
           </div>
           <div class="price" style="border-color:rgba(255,122,46,.45)">
             <span class="popular-badge"><?php echo get_phrase("popular") ?></span>
@@ -220,7 +220,7 @@
             </p>
             <p><?php echo get_phrase("Create and publish courses, live sessions, or coaching programs. Set free or paid plans. Wayo manages payments and delivery.") ?></p>
             </div>
-            <a class="btn-login" href="<?php echo site_url('admission/online_admission'); ?>"><?php echo get_phrase("Become a Mentor") ?></a>
+            <a class="btn-login" href="<?php echo lang_route('join/community'); ?>"><?php echo get_phrase("Become a Mentor") ?></a>
           </div>
           <div class="price">
             <h4><?php echo get_phrase("Platform Tools & Control") ?></h4>
@@ -228,7 +228,7 @@
                 <p class="big"><?php echo get_phrase("All included") ?></p>
                 <p><?php echo get_phrase("Private content, gated access, payment management, analytics, certificates, and community features.") ?></p>
             </div>
-            <a class="btn-login" href="<?php echo site_url('home/tutorial'); ?>"><?php echo get_phrase("how it works") ?></a>
+            <a class="btn-login" href="<?php echo lang_route('tutorial'); ?>"><?php echo get_phrase("how it works") ?></a>
           </div>
         </div>
       </div>
