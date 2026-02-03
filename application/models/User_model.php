@@ -2210,7 +2210,8 @@ if ($_FILES['image_file']['name'] != "") {
 	public function register_user_form()
 	{
 		$emailPattern = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
-		$plainPassword = $this->input->post('password-student'); // Utilisation cohérente du champ
+		$plainPassword = $this->input->post('password-student');
+		
 		// Valider les champs requis
 		if (
 			$this->input->post('student_email') == '' ||

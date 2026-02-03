@@ -214,6 +214,10 @@ $route['join/community/(.+)'] = 'admission/online_admission/$1';
 $route['join/member'] = 'admission/online_admission_student';
 $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
 
+// Direct routes for registration (bypasses URL rewriting)
+$route['register/member'] = 'admission/register_member';
+$route['register/community'] = 'admission/register_community';
+
 // Routes for app rewriter
 $route['app/join_school'] = 'student/join_school';
 $route['app/join_school/(.+)'] = 'student/join_school/$1';

@@ -572,14 +572,14 @@ $config['csrf_exclude_uris'] = array(
     'bigbluebutton/meeting_states',
     'BigBlueButton/',
     'bigbluebutton/create',
-    'home/set_guest_language',
-    'home/online_admission_school',
     'home/switch_community_role_front',
     'home/get_communities_by_role',
     'home/switch_community_role',
     'home/check_community_name_exists',
-    'join/community/online_admission/.*', //admission
-    'join/community/check_duplication_ajax', //admission
+    'join/member/.*', //admission
+    'join/community/.*', //admission
+    'admission/.*', //admission
+    'register/.*', //member registration
     'login/set_student_just_registered',
     'login/validate_login_frontend',
     'class_room/create',

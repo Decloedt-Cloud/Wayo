@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function () {
       event.preventDefault();
       event.stopImmediatePropagation();
 
-      console.log("🟢 Interception du formulaire via JS");
+      // Form intercepted by JS
 
       if (!studentForm.checkValidity()) {
         studentForm.reportValidity();
@@ -803,14 +803,15 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(studentForm);
       formData.append(csrfName, csrfHash);
 
-      fetch(studentForm.action, {
+      // Use direct endpoint to bypass URL rewriting
+      const submitUrl = '<?= base_url("register/member"); ?>';
+
+      fetch(submitUrl, {
         method: 'POST',
         body: formData
       })
       .then(response => response.json())
       .then(data => {
-        console.log("🟢 Réponse reçue:", data);
-
         // Mise à jour du token CSRF
         if (data.csrf) {
           csrfInput.name = data.csrf.csrfName;
@@ -830,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(error => {
-        console.error("❌ Erreur fetch:", error);
+        console.error("Erreur fetch:", error);
         toastr.error('Erreur réseau ou serveur.');
       });
 
