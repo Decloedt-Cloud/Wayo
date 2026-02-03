@@ -19,7 +19,7 @@
         <!-- Colonne Gauche: Texte -->
         <div class="col-lg-5 col-xl-5">
           <div class="hero-copy">
-            <h1><span class="accent"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
+            <h1><span class="accent" style="text-transform: capitalize;"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
             <p class="sub"><?php echo get_phrase("We_specialize_in_secure_payment_platforms_that_don’t_freeze_mentors’_accounts._Build,_engage,_and_grow_your_revenue_without_limitations.") ?></p>
             <div class="hero-ctas">
               <?php if (!$this->session->userdata('user_id')): ?>
@@ -40,7 +40,7 @@
                     <path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2" />
                     <path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z" />
                   </svg></span>
-                <strong><?php echo get_phrase("Create_communities") ?></strong>
+                <strong><?php echo get_phrase("Create_communities_a") ?></strong>
               </div>
               <div class="chip pill">
                 <span class="chip-icon course"><svg viewBox="0 0 24 24" width="18" height="18">
@@ -101,7 +101,7 @@
           <h2 class="text-center"><?php echo get_phrase("Our key features") ?></h2>
           <ul class="feature-nav">
             <li class="active" data-feature="bbb" tabindex="0"><?php echo get_phrase("Online course") ?></li>
-            <li data-feature="social" tabindex="0"><?php echo get_phrase("Social") ?></li>
+            <li data-feature="social" tabindex="0"><?php echo get_phrase("Ai") ?></li>
             <li data-feature="quiz" tabindex="0"><?php echo get_phrase("Quiz") ?></li>
           </ul>
           <div class="feature-progress">
@@ -112,10 +112,10 @@
             <img src="uploads/images/decloedt/home/online_course.webp" alt="Online Course" loading="lazy" />
           </div>
           <div id="social" class="feature-pane">
-            <img src="uploads/images/decloedt/home/social.webp" alt="Social" loading="lazy" />
+            <img src="uploads/images/decloedt/home/Ai.png" alt="Ai" loading="lazy" />
           </div>
           <div id="quiz" class="feature-pane">
-            <img src="uploads/images/decloedt/home/quiz.webp" alt="Quiz" loading="lazy" />
+            <img src="uploads/images/decloedt/home/quiz_recent.png" alt="Quiz" loading="lazy" />
           </div>
         </div>
       </div>

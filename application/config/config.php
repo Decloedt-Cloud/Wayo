@@ -94,6 +94,16 @@ $config['charset'] = 'UTF-8';
  
 /*
 |--------------------------------------------------------------------------
+| Enable/Disable Toasts
+|--------------------------------------------------------------------------
+|
+| Set this to FALSE to disable all toast notifications in the views.
+|
+*/
+$config['enable_toasts'] = FALSE;
+
+/*
+|--------------------------------------------------------------------------
 | Enable/Disable System Hooks
 |--------------------------------------------------------------------------
 |
@@ -456,133 +466,131 @@ $config['csrf_cookie_name'] = 'csrf_cookie_name';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array(
-    'api/login',
-    'app/courses/manage_multiple_choices_options',
-    'app/courses/generate_outline_schemas',
-    'app/courses/apply_outline_schema',
-    'app/courses/generate_quiz_from_lessons',
-    'app/courses/generate_lesson_from_ai',
-    'bigbluebutton/create',
-    'Liveclasse/create',
-    'superadmin/add_appointment',
-    'superadmin/update_appointment',
-    'superadmin/delete_appointment',
-    'superadmin/get_sections',
-    'admin/add_appointment',
-    'admin/update_appointment',
-    'admin/delete_appointment',
-    'admin/get_sections',
-    'teacher/add_appointment',
-    'teacher/update_appointment',
-    'teacher/delete_appointment',
-    'teacher/get_sections',
-    'student/get_sections',
+    'app/add_appointment', //superadmin
+    'app/update_appointment', //superadmin
+    'app/delete_appointment', //superadmin
+    'app/get_sections', //superadmin
+    'app/delete_room', //superadmin
+    'app/exam/delete.*', //superadmin
+    'app/exam/create', //superadmin
+    'app/exam/update.*', //superadmin
+    'app/get_sections_by_class', //superadmin
+    'app/exam/list', //superadmin
+    'app/filter_exams', //superadmin
+    'app/filter_recordings', //superadmin
+    'app/get_recordings', //superadmin
+    'app/get_recordings_by_meeting_id', //superadmin
+    'app/calendar.*', //superadmin
+    'app/get_meeting_status', //superadmin
+    'app/get_classes_by_school', //superadmin
+    'app/create_event', //superadmin
+    'app/update_event', //superadmin
+    'app/get_classes_with_events', //superadmin
+    'app/start_meeting', //superadmin
+    'app/delete_event', //superadmin
+    'app/get_users_by_school', //superadmin
+    'app/check_teacher_email', //superadmin
+    'app/add_appointment', //admin
+    'app/update_appointment', //admin
+    'app/delete_appointment', //admin
+    'app/get_sections', //admin
+    'app/filter_exams', //admin
+    'app/exam/delete.*', //admin
+    'app/exam/create', //admin
+    'app/exam/update.*', //admin
+    'app/get_sections_by_class', //admin
+    'app/exam/list', //admin
+    'app/delete_room', //admin
+    'app/filter_recordings', //admin
+    'app/get_recordings', //admin
+    'app/get_recordings_by_meeting_id', //admin
+    'app/calendar.*', //admin
+    'app/get_meeting_status', //admin
+    'app/get_classes_by_school', //admin
+    'app/create_event', //admin
+    'app/update_event', //admin
+    'app/start_meeting', //admin
+    'app/get_classes_with_events', //admin
+    'app/delete_event', //admin
+    'app/get_users_by_school', //admin
+    'app/get_school_data', //admin
+    'app/check_teacher_email', //admin
+    'app/teacher/create', //admin
+    'app/delete_room', //teacher
+    'app/add_appointment', //teacher
+    'app/update_appointment', //teacher
+    'app/delete_appointment', //teacher
+    'app/get_sections', //teacher
+    'app/filter_recordings', //teacher
+    'app/get_recordings', //teacher
+    'app/get_recordings_by_meeting_id', //teacher
+    'app/calendar.*', //teacher
+    'app/get_meeting_status', //teacher
+    'app/get_classes_by_school', //teacher
+    'app/create_event', //teacher
+    'app/update_event', //teacher
+    'app/start_meeting', //teacher
+    'app/get_classes_with_events', //teacher
+    'app/delete_event', //teacher
+    'app/get_users_by_school', //teacher
+    'app/get_school_data', //teacher
+    'app/get_sections', //student
+    'app/calendar.*', //student
+    'app/get_meeting_status', //student
+    'app/get_classes_by_school', //student
+    'app/get_classes_with_events', //student
+    'app/filter_recordings', //student
+    'app/get_school_data', //student
+    'app/recording/.*', //student
+    'app/attendance/filter', //student
+    'app/courses/manage_multiple_choices_options', //addons
+    'app/courses/generate_outline_schemas', //addons
+    'app/courses/apply_outline_schema', //addons
+    'app/courses/generate_quiz_from_lessons', //addons
+    'app/courses/generate_lesson_from_ai', //addons
+    'app/courses/exam_questions/.*', //addons
+    'app/courses/manage_exam_multiple_choices_options', //addons
+    'app/courses/ajax_sort_question', //addons
+    'app/courses/generate_questions_from_pdf', //addons
+    'app/courses/generate_quiz_from_pdf', //addons
+    'app/courses/get_lessons_for_quiz', //addons
+    'app/courses/update_lesson_from_ai', //addons
+    'app/courses/generate_quiz_questions', //addons
+    'app/courses/extract_pdf_structure', //addons
+    'app/profile/update_password', //admin-teacher-student
+    'app/announcements/.*', //admin-teacher
     'bigbluebutton/create_breakout_room',
     'bigbluebutton/create_room',
     'BigBlueButton/get_meetings',
     'BigBlueButton/is_meeting_running',
-     'BigBlueButton/start_meeting',
-     'BigBlueButton/check_active_meetings',
-     'BigBlueButton/get_active_meetings',
-     'BigBlueButton/join_meeting',
-     'superadmin/delete_room',
-    'superadmin/exam/delete.*',
-    'superadmin/exam/create',
-    'superadmin/exam/update.*',
-    'superadmin/get_sections_by_class',
-    'superadmin/exam/list',
-    'superadmin/filter_exams',
-    'admin/filter_exams',
-    'admin/exam/delete.*',
-    'admin/exam/create',
-    'admin/exam/update.*',
-    'admin/get_sections_by_class',
-    'admin/exam/list',
-    'app/courses/exam_questions/.*',
-    'app/courses/manage_exam_multiple_choices_options',
-    'app/courses/manage_multiple_choices_options',
-    'app/courses/ajax_sort_question',
-    'app/courses/generate_questions_from_pdf',
-    'app/courses/generate_quiz_from_pdf',
-    'app/courses/get_lessons_for_quiz',
-    'app/courses/update_lesson_from_ai',
-    'app/courses/generate_quiz_questions',
-     'admin/delete_room',
-     'teacher/delete_room',
-    'BigBlueButton/',
-    'superadmin/filter_recordings',
-    'superadmin/get_recordings',
-    'superadmin/get_recordings_by_meeting_id',
-    'admin/filter_recordings',
-    'admin/get_recordings',
-    'admin/get_recordings_by_meeting_id',
-    'teacher/filter_recordings',
-    'teacher/get_recordings',
-    'teacher/get_recordings_by_meeting_id',
-
-
-    'class_room/create',
+    'BigBlueButton/start_meeting',
+    'BigBlueButton/check_active_meetings',
+    'BigBlueButton/get_active_meetings',
+    'BigBlueButton/join_meeting',
     'bigbluebutton/check_meeting_status',
-    'superadmin/calendar.*',
-    'superadmin/get_meeting_status',
-    'superadmin/get_classes_by_school',
-    'superadmin/create_event',
-    'superadmin/update_event',
-    'superadmin/get_classes_with_events',
-    'superadmin/start_meeting',
-    'admin/calendar.*',
-    'admin/get_meeting_status',
-    'admin/get_classes_by_school',
-    'admin/create_event',
-    'admin/update_event',
-    'admin/start_meeting',
-    'admin/get_classes_with_events',
-    'teacher/calendar.*',
-    'teacher/get_meeting_status',
-    'teacher/get_classes_by_school',
-    'teacher/create_event',
-    'teacher/update_event',
-    'teacher/start_meeting',
-    'teacher/get_classes_with_events',
-    'student/calendar.*',
-    'student/get_meeting_status',
-    'student/get_classes_by_school',
-    'student/get_classes_with_events',
-
-    'student/filter_recordings',
-    'login/set_student_just_registered',
-    'home/set_guest_language',
     'bigbluebutton/webhook',
     'bigbluebutton/meeting_states',
-    'profile/update_profile',
-    'home/contact/send',
-    'superadmin/delete_event',
-    'admin/delete_event',
-    'teacher/delete_event',
-    'superadmin/get_users_by_school',
-    'admin/get_users_by_school',
-    'teacher/get_users_by_school',
-    'admin/get_school_data',
-    'teacher/get_school_data',
-    'student/get_school_data',
-    'student/recording/.*',
-    'student/attendance/filter',
-    'admission/online_admission/.*',
-    'login/validate_login_frontend',
+    'BigBlueButton/',
+    'bigbluebutton/create',
+    'home/set_guest_language',
     'home/online_admission_school',
     'home/switch_community_role_front',
-    'superadmin/check_teacher_email',
-    'admin/check_teacher_email',
-    'admin/teacher/create',
-    'admission/check_duplication_ajax',
     'home/get_communities_by_role',
     'home/switch_community_role',
     'home/check_community_name_exists',
+    'join/community/online_admission/.*', //admission
+    'join/community/check_duplication_ajax', //admission
+    'login/set_student_just_registered',
+    'login/validate_login_frontend',
+    'class_room/create',
+    'Liveclasse/create',
+    'profile/update_profile',
+    'support/send',
     'api/fx/.*',
+    'api/login',
     'cron/fx_.*',
     'StripeWebhook',
-    'StripeWebhook/index',
-    'app/courses/extract_pdf_structure'
+    'StripeWebhook/index'
 );
  
 /*

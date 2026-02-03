@@ -154,6 +154,75 @@
         transform: translateY(-2px);
     }
 
+    /* Responsive Media Queries */
+    @media (max-width: 768px) {
+        .exp-attendance-toggle {
+            flex-direction: column;
+            gap: 4px;
+            padding: 2px;
+        }
+        
+        .exp-attendance-label {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            justify-content: center;
+            min-width: 80px;
+        }
+        
+        .exp-actions-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .exp-action-btn {
+            font-size: 0.85rem;
+            padding: 0.75rem;
+        }
+        
+        .exp-user-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .exp-user-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        
+        .exp-table th,
+        .exp-table td {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .exp-attendance-toggle {
+            width: 100%;
+        }
+        
+        .exp-attendance-label {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            min-width: 70px;
+        }
+        
+        .exp-table-wrapper {
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+        
+        .exp-table th {
+            font-size: 0.7rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .exp-table td {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+
 </style>
 
 <?php $check_permission = has_permission($class_id, 'attendance'); ?>
@@ -261,7 +330,7 @@
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading"><?php echo get_phrase('access_denied'); ?>!</h4>
             <hr>
-            <p class="mb-0"><?php echo get_phrase('sorry_you_are_not_permitted_to_access_this_view').'. <br/>'.get_phrase('admin_handles_it'); ?>.</p>
+            <p class="mb-0"><?php echo get_phrase('sorry_you_do_not_have_permission_to_take_attendance_for_this_class') ?></p>
         </div>
     </div>
 <?php endif; ?>

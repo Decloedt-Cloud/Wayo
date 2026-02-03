@@ -199,6 +199,23 @@
 </style>
 
 <?php $school_id = school_id(); ?>
+<?php
+// Récupérer l'ID de l'enseignant connecté
+$user_id = $this->session->userdata('user_id');
+$teacher = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+$teacher_id = $teacher['id'] ?? null;
+
+// Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+$permitted_class_ids = [];
+if ($teacher_id) {
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $teacher_id);
+    $this->db->where('attendance', 1);
+    $permitted_classes = $this->db->get()->result_array();
+    $permitted_class_ids = array_column($permitted_classes, 'class_id');
+}
+?>
 
 <div class="exp-form-container">
     <div class="exp-form-header">
@@ -222,7 +239,7 @@
                 <span class="exp-required">*</span>
             </label>
             <div class="exp-input-wrapper">
-                <input type="text" class="exp-form-input date" id="date_on_taking_attendance" data-bs-toggle="date-picker" data-single-date-picker="true" name="date" value="" required placeholder="<?php echo get_phrase('select_date'); ?>">
+                <input type="date" class="exp-form-input" id="date_on_taking_attendance" name="date" value="" required>
                 <i class="mdi mdi-calendar-range exp-input-icon"></i>
             </div>
         </div>
@@ -236,7 +253,15 @@
             <div class="exp-input-wrapper">
                 <select name="class_id" id="class_id_on_taking_attendance" class="exp-form-select" required>
                     <option value=""><?php echo get_phrase('select_a_class'); ?></option>
-                    <?php $classes = $this->db->get_where('classes', array('school_id' => $school_id))->result_array(); ?>
+                    <?php 
+                    if (!empty($permitted_class_ids)) {
+                        $this->db->where_in('id', $permitted_class_ids);
+                        $this->db->where('school_id', $school_id);
+                        $classes = $this->db->get('classes')->result_array();
+                    } else {
+                        $classes = [];
+                    }
+                    ?>
                     <?php foreach($classes as $class): ?>
                         <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
                     <?php endforeach; ?>
@@ -246,6 +271,13 @@
         </div>
 
         <div id="student_content"></div>
+
+        <div class="exp-form-group" id="alertDiv" style="display: none;">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="mdi mdi-alert-circle-outline"></i>
+                <span id="alertMessage"><?php echo get_phrase('please_select_in_all_fields'); ?></span>
+            </div>
+        </div>
 
         <div class="exp-form-group" id="showStudentDiv">
             <a href="javascript:void(0);" class="exp-btn exp-btn-primary" id="update-btn" onclick="getStudentList()">
@@ -270,11 +302,19 @@
             $('#showStudentDiv').show();
             $('#updateAttendanceDiv').hide();
             $('#student_content').hide();
+            // Cacher l'alerte si les champs sont remplis
+            if($('#date_on_taking_attendance').val() != '' && $('#class_id_on_taking_attendance').val() != '') {
+                $('#alertDiv').hide();
+            }
         });
         $('#class_id_on_taking_attendance').change(function(){
             $('#showStudentDiv').show();
             $('#updateAttendanceDiv').hide();
             $('#student_content').hide();
+            // Cacher l'alerte si les champs sont remplis
+            if($('#date_on_taking_attendance').val() != '' && $('#class_id_on_taking_attendance').val() != '') {
+                $('#alertDiv').hide();
+            }
         });
 
         // Auto-open calendar on click
@@ -340,8 +380,7 @@
             });
         });
     });
-
-    $('#date_on_taking_attendance').daterangepicker();
+    
 
     function getStudentList() {
         var date = $('#date_on_taking_attendance').val();
@@ -383,7 +422,8 @@
                 }
             });
         }else{
-            toastr.error('<?php echo get_phrase('please_select_in_all_fields !'); ?>');
+            $('#alertDiv').show();
+            $('#alertMessage').text('<?php echo get_phrase('please_select_in_all_fields'); ?>');
         }
     }
 </script>

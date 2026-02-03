@@ -44,20 +44,25 @@
 		if (!empty($school_data['country'])) {
 			$tax_residence = strtoupper($school_data['country']); // MA, AE, FR...
 		}
-		
+	
 		// IMPORTANT: Pour les paiements subscription_admin (abonnement communauté), 
 		// toujours appliquer TVA Maroc par défaut si pas de country configuré
-		if (empty($tax_residence) && isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
-			$tax_residence = 'MA'; // Default to Morocco for subscription payments
-			$vat_applicable = true; // Force VAT applicable
+        // ET forcer l'application de la TVA pour les juridictions connues (MA, UAE, AE)
+		if (isset($invoice_details['payment_type']) && $invoice_details['payment_type'] === 'subscription_admin') {
+            if (empty($tax_residence)) {
+			    $tax_residence = 'MA'; // Default to Morocco for subscription payments
+            }
+            
+            if (in_array($tax_residence, ['MA', 'AE', 'UAE'])) {
+			    $vat_applicable = true; // Force VAT applicable regardless of school settings
+            }
 		}
-
 		// DEBUG: Afficher les valeurs pour le debug
 		// error_log("DEBUG VAT: school_id=$school_id_for_vat, vat_applicable=$vat_applicable, tax_residence='$tax_residence'");
 
 		// Déterminer la devise d'affichage selon country (AE ou UAE pour Emirats)
 		$display_currency = (in_array($tax_residence, ['UAE', 'AE'])) ? 'AED' : 'MAD';
-		$original_currency = 'MAD'; // Toujours MAD en base
+		$original_currency = isset($invoice_details['currency']) ? $invoice_details['currency'] : 'MAD'; // Toujours MAD en base par défaut
 
 		// Initialiser les variables VAT par défaut
 		$sub_total = (float)$amount_to_pay;
@@ -69,10 +74,25 @@
 		if (in_array($tax_residence, ['UAE', 'AE']) && $display_currency === 'AED') {
 			// Calculs simplifiés pour UAE
 			$vat_rate = 5;
-			$sub_total = round($amount_to_pay / 1.05, 2);
-			$vat_amount = round($sub_total * 0.05, 2);
-			$grand_total = round($sub_total + $vat_amount, 2);
-		}
+            
+            // Si la devise d'origine est déjà AED, pas de conversion
+            if ($original_currency === 'AED') {
+                $sub_total = round($amount_to_pay / 1.05, 2);
+                $vat_amount = round($amount_to_pay - $sub_total, 2);
+                $grand_total = (float)$amount_to_pay; // Keep original amount to avoid rounding issues
+            } else {
+                // Conversion approximative si devise MAD (legacy)
+                $sub_total = round($amount_to_pay / 1.05, 2); 
+                $vat_amount = round($sub_total * 0.05, 2);
+                $grand_total = round($sub_total + $vat_amount, 2);
+            }
+		} elseif ($tax_residence === 'MA') {
+            // Calculs simplifiés pour MA (20%) - Comportement identique à AE
+            $vat_rate = 20;
+            $sub_total = round($amount_to_pay / 1.20, 2);
+            $vat_amount = round($amount_to_pay - $sub_total, 2);
+            $grand_total = (float)$amount_to_pay;
+        }
 
 		// Load Morocco B2B service for calculations
 		$CI =& get_instance();
@@ -83,7 +103,7 @@
 		// =====================================================
 		$CI->load->library('BillingEntityService', null, 'billingEntityService');
 		$billing_entity = $CI->billingEntityService->get_entity_for_tax_residence($tax_residence);
-		
+
 		// Si une entité est trouvée, utiliser ses paramètres
 		if ($billing_entity) {
 			$entity_vat_rate = $billing_entity['vat_rate'] ?? ($tax_residence === 'MA' ? 20 : 5);
@@ -236,19 +256,42 @@
 
 				// Pour UAE, convertir les montants vers AED
 				if ($tax_residence === 'UAE' || $tax_residence === 'AE') {
-					// Récupérer le taux de conversion MAD → AED via FxRatesService
-					$CI->load->library('FxRatesService', null, 'fxrates_service');
-					
-					// Utiliser la méthode convert pour obtenir le taux
-					$test_convert = $CI->fxrates_service->convert(1, 'MAD', 'AED');
-					$conversion_rate = ($test_convert !== false) ? $test_convert : 0.37; // Fallback rate
-					
-					$sub_total = round($sub_total_mad * $conversion_rate, 2);
-					$vat_amount = round($vat_amount_mad * $conversion_rate, 2);
-					$grand_total = round($grand_total_mad * $conversion_rate, 2);
+                    // Check if invoice is already in AED
+                    $invoice_currency = isset($invoice_details['currency']) ? $invoice_details['currency'] : 'MAD';
+                    
+                    // IGNORE CONVERSION: Always treat amounts as 1:1 regardless of currency label
+                    // This assumes that for AE context, the amount provided IS the AED amount
+                    $conversion_rate = 1.0;
+                    
+                    // Recalculate VAT from the total amount (assuming total is TTC)
+                    // We use the total from VAT calculation (which is in MAD/Base currency) as the AED total
+                    $grand_total = $grand_total_mad;
+                    $sub_total = round($grand_total / 1.05, 2);
+                    $vat_amount = round($grand_total - $sub_total, 2);
+                    
+                    /* 
+                    if ($invoice_currency === 'AED') {
+                        // Already in AED, no conversion needed
+                        $conversion_rate = 1.0;
+                        $sub_total = round($amount_to_pay / 1.05, 2);
+                        $vat_amount = round($amount_to_pay - $sub_total, 2);
+                        $grand_total = (float)$amount_to_pay;
+                    } else {
+                        // Récupérer le taux de conversion MAD → AED via FxRatesService
+                        $CI->load->library('FxRatesService', null, 'fxrates_service');
+                        
+                        // Utiliser la méthode convert pour obtenir le taux
+                        $test_convert = $CI->fxrates_service->convert(1, 'MAD', 'AED');
+                        $conversion_rate = ($test_convert !== false) ? $test_convert : 0.37; // Fallback rate
+                        
+                        $sub_total = round($sub_total_mad * $conversion_rate, 2);
+                        $vat_amount = round($vat_amount_mad * $conversion_rate, 2);
+                        $grand_total = round($grand_total_mad * $conversion_rate, 2);
+                    }
+                    */
 					
 					// Log pour debug
-					error_log("UAE Conversion: MAD->AED rate={$conversion_rate}, sub_total={$sub_total}, vat={$vat_amount}, total={$grand_total}");
+					error_log("UAE Conversion IGNORED: Rate=1.0, sub_total={$sub_total}, vat={$vat_amount}, total={$grand_total}");
 				} else {
 					$sub_total = $sub_total_mad;
 					$vat_amount = $vat_amount_mad;
@@ -272,19 +315,15 @@
 			} catch (Exception $e) {
 				// Fallback if VAT calculation fails
 				error_log("VAT calculation failed for tax_residence {$tax_residence}: " . $e->getMessage());
-				$sub_total = (float)$amount_to_pay;
-				$vat_amount = 0;
-				$vat_rate = 0;
-				$grand_total = (float)$amount_to_pay;
+				// Keep existing values (from Simplified or B2B logic) instead of resetting to 0
+				// $sub_total = (float)$amount_to_pay;
+				// $vat_amount = 0;
+				// $vat_rate = 0;
+				// $grand_total = (float)$amount_to_pay;
 			}
-		} else {
-			// No VAT configuration - use amounts as-is
-			$sub_total = (float)$amount_to_pay;
-			$vat_amount = 0;
-			$vat_rate = 0;
-			$grand_total = (float)$amount_to_pay;
-			$display_currency = 'MAD';
-		}
+		} 
+		// REMOVED ELSE BLOCK to prevent overwriting B2B/Simplified logic
+		// If no VAT logic applies, values remain at defaults (initialized at top) or as set by Simplified Logic
 		
 		// --------- CURRENCY CONVERSION (FX RATES) ---------
 		// Devise originale de la facture
@@ -293,6 +332,24 @@
 		$fx_stale_flag = isset($fx_stale) ? $fx_stale : false;
 		$fx_rate_date = isset($fx_rate_date) ? $fx_rate_date : date('Y-m-d');
 		
+		// IMPORTANT: DISABLE ALL CONVERSIONS FOR SUBSCRIPTION_ADMIN
+		// Payments between Admin and Superadmin should always use the invoice amount directly
+		if ($is_subscription_admin) {
+			$conversion_needed = false;
+			$stripe_fx_rate = 1.0;
+			$stripe_converted_amount = $grand_total;
+			$paypal_fx_rate_val = 1.0;
+			$paypal_converted_amount = $grand_total;
+			$paypal_sub_total_converted = $sub_total;
+			$paypal_vat_amount_converted = $vat_amount;
+			$stripe_sub_total_converted = $sub_total;
+			$stripe_vat_amount_converted = $vat_amount;
+			
+			// Force display currencies to match invoice currency
+			$stripe_currency = $display_currency;
+			$paypal_currency = $display_currency;
+		}
+
 		// Montants originaux dans la devise de la facture
 		$original_sub_total = $sub_total;
 		$original_vat_amount = $vat_amount;
@@ -321,8 +378,8 @@
 		$paypal_grand_total = isset($paypal_converted_amount) ? (float)$paypal_converted_amount : $grand_total;
 		
 		// Déterminer si Stripe ou PayPal a besoin de conversion
-		$stripe_needs_conversion = (strtoupper($stripe_currency) !== $original_currency);
-		$paypal_needs_conversion = (strtoupper($paypal_currency) !== $original_currency);
+		$stripe_needs_conversion = ($is_subscription_admin) ? false : (strtoupper($stripe_currency) !== $original_currency);
+		$paypal_needs_conversion = ($is_subscription_admin) ? false : (strtoupper($paypal_currency) !== $original_currency);
 		?>
 
 		<div class="checkout-container container p-0" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
@@ -368,12 +425,7 @@
 								<i class="fa fa-building"></i> <?php echo htmlspecialchars($entity_legal_name); ?>
 							</span>
 						</div>
-						<?php if ($is_morocco_b2b): ?>
-						<div class="vat-banner-b2b">
-							<i class="fa fa-building"></i>
-							<strong>B2B transaction:</strong> <?php echo get_phrase('Morocco B2B tax calculations applied'); ?>
-						</div>
-						<?php endif; ?>
+
 					</div>
 					<?php endif; ?>
 
@@ -456,11 +508,24 @@
 					$form_amount = $is_subscription_admin ? $grand_total : $amount_to_pay;
 					$form_currency = $is_subscription_admin ? $display_currency : ($currency ?? 'MAD');
 					
-					// Pour les paiements school_join ou community, toujours utiliser student/payment_success
-					// car admin/teacher utilisent le flux student pour rejoindre une communauté
-					$is_community_payment = ($payment_type === 'school_join' || $type === 'community');
+					// Détecter le type d'utilisateur connecté
+					$current_user_type = $this->session->userdata('user_type');
+					$is_admin_logged = ($this->session->userdata('admin_login') == 1);
+					$is_teacher_logged = ($this->session->userdata('teacher_login') == 1);
+					
+					// Pour les paiements school_join ou community, rediriger selon le type d'utilisateur
+				$is_community_payment = ($payment_type === 'school_join' || $type === 'community');
 					if ($is_community_payment) {
-						$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						if ($is_admin_logged) {
+							// Admin: utiliser admin/payment_success avec paramètre community
+							$stripe_action_url = site_url('admin/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						} elseif ($is_teacher_logged) {
+							// Teacher: utiliser student/payment_success (fallback)
+							$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						} else {
+							// Student: utiliser student/payment_success
+							$stripe_action_url = site_url('student/payment_success/stripe/' . $invoice_id.'/'.$form_amount.'/0/community');
+						}
 					} else {
 						$stripe_action_url = route('payment_success/stripe/' . $invoice_id.'/'.$form_amount);
 					}
@@ -495,7 +560,7 @@
 													<div class="info-box">
 														<?php 
 															if (!empty($user_details['email'])) {
-																echo $user_details['email']; 
+																echo htmlspecialchars($user_details['email']); 
 															} elseif (!empty($invoice_details['student_id'])) {
 																$ci =& get_instance();
 																$stu_id = $invoice_details['student_id'];
@@ -513,7 +578,7 @@
 																		$usr_email = $usr_direct['email'];
 																	}
 																}
-																echo $usr_email;
+																echo htmlspecialchars($usr_email);
 															} else {
 																echo 'N/A';
 															}
@@ -526,7 +591,7 @@
 													<div class="info-box">
 														<?php 
 															if (!empty($user_details['name'])) {
-																echo $user_details['name']; 
+																echo htmlspecialchars($user_details['name']); 
 															} elseif (!empty($invoice_details['student_id'])) {
 																$ci =& get_instance();
 																$stu_id = $invoice_details['student_id'];
@@ -544,7 +609,7 @@
 																		$usr_name = $usr_direct['name'];
 																	}
 																}
-																echo $usr_name;
+																echo htmlspecialchars($usr_name);
 															} else {
 																echo 'N/A';
 															}
@@ -577,7 +642,11 @@
 														<br/>
 														<small>
 															<?php if (in_array($tax_residence, ['UAE', 'AE'])): ?>
-																Base: <?php echo number_format($amount_to_pay, 2); ?> MAD → <?php echo number_format($grand_total, 2); ?> AED
+																<?php if ($original_currency === 'AED'): ?>
+																	HT: <?php echo number_format($sub_total, 2); ?> + VAT <?php echo $vat_rate; ?>%: <?php echo number_format($vat_amount, 2); ?> = <?php echo number_format($grand_total, 2); ?> AED
+																<?php else: ?>
+																	Base: <?php echo number_format($amount_to_pay, 2); ?> MAD → <?php echo number_format($grand_total, 2); ?> AED
+																<?php endif; ?>
 															<?php else: ?>
 																HT: <?php echo number_format($sub_total, 2); ?> + TVA <?php echo $vat_rate; ?>%: <?php echo number_format($vat_amount, 2); ?> = <?php echo number_format($grand_total, 2); ?> <?php echo $display_currency; ?>
 															<?php endif; ?>
@@ -597,7 +666,7 @@
 												</div>
 												
 												<div class="package-details mt-3">
-													<strong><?php echo get_phrase('Member_name');?> | <?php echo $user_details['name'];?></strong>
+													<strong><?php echo get_phrase('Member_name');?> | <?php echo htmlspecialchars($user_details['name']);?></strong>
 												</div>
 												<input type="hidden" name="stripeToken" value="">
 					</form>
@@ -617,7 +686,7 @@
 					<!-- Security Badge Enhanced -->
 					<div class="security-features mt-4">
 						<div class="security-badge-main">
-							<i class="fa fa-shield-alt"></i>
+							<i class="fa fa-shield"></i>
 							<span><?php echo get_phrase('100% secure payment')?></span>
 						</div>
 						<div class="security-icons mt-3">
@@ -630,8 +699,12 @@
 								<span>PCI DSS</span>
 							</div>
 							<div class="security-item">
-								<i class="fa fa-user-shield"></i>
+								<i class="fa fa-check-circle"></i>
 								<span>3D Secure</span>
+							</div>
+							<div class="security-item">
+								<i class="fa fa-user-secret"></i>
+								<span>Privacy</span>
 							</div>
 						</div>
 					</div>
@@ -738,7 +811,7 @@
 						<?php endif; ?>
 
 						<!-- Total -->
-						<div class="d-flex justify-content-between p-3 summary-total" style="background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white;">
+						<div class="d-flex justify-content-between p-3 summary-total">
 							<span style="font-size: 16px;">
 								<i class="fa fa-calculator mr-2"></i>
 								<?php echo get_phrase('Total'); ?> 
@@ -771,7 +844,7 @@
 							<div class="row" style="font-size: 12px;">
 								<div class="col-6 mb-2">
 									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('VAT Rate'); ?></div>
-									<strong style="color: #1565c0; font-size: 14px;"><?php echo ($vat_rate > 0 ? $vat_rate : 5); ?>%</strong>
+									<strong style="color: #1565c0; font-size: 14px;"><?php echo ($vat_rate > 0 ? $vat_rate : 0); ?>%</strong>
 								</div>
 								<div class="col-6 mb-2">
 									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('Currency'); ?></div>
@@ -794,7 +867,7 @@
 					<?php endif; ?>
 
 					<!-- Currency Conversion Info (for UAE showing MAD equivalent) - ONLY FOR SUBSCRIPTION_ADMIN -->
-					<?php if ($is_subscription_admin && ($tax_residence === 'UAE' || $tax_residence === 'AE') && isset($conversion_rate) && $conversion_rate != 1.0): ?>
+					<?php if ($is_subscription_admin && ($tax_residence === 'UAE' || $tax_residence === 'AE') && isset($conversion_rate) && $conversion_rate != 1.0 && $original_currency !== 'AED'): ?>
 					<div class="conversion-info mt-3 p-3" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: 8px; border: 1px solid #ffb74d;">
 						<div class="text-center mb-2">
 							<span style="font-size: 11px; font-weight: 600; color: #e65100; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -849,23 +922,7 @@
 					</div>
 					<?php endif; ?>
 
-					<!-- Security & Trust Badges -->
-					<div class="trust-badges mt-4 pt-3" style="border-top: 1px solid #e9ecef;">
-						<div class="row text-center" style="font-size: 11px; color: #6c757d;">
-							<div class="col-4">
-								<i class="fa fa-lock mb-1" style="font-size: 18px; color: #28a745;"></i>
-								<div><?php echo get_phrase('Secure'); ?></div>
-							</div>
-							<div class="col-4">
-								<i class="fa fa-shield-alt mb-1" style="font-size: 18px; color: #17a2b8;"></i>
-								<div><?php echo get_phrase('Protected'); ?></div>
-							</div>
-							<div class="col-4">
-								<i class="fa fa-check-circle mb-1" style="font-size: 18px; color: #007bff;"></i>
-								<div><?php echo get_phrase('Verified'); ?></div>
-							</div>
-						</div>
-					</div>
+
 				</section>
 			</div>
 		</div>
@@ -1412,42 +1469,86 @@
 				100% { transform: scale(1); }
 			}
 
-			/* ========== SECURITY FEATURES ========== */
+			/* ========== SECURITY FEATURES PREMIUM ========== */
 			.security-features {
-				padding-top: 20px;
-				border-top: 1px solid var(--gray-200);
+				background: #f8fafc;
+				border: 1px solid #e2e8f0;
+				border-radius: 20px;
+				padding: 30px 24px 24px;
+				margin-top: 40px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 20px;
+				position: relative;
 			}
 
 			.security-badge-main {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 8px;
-				padding: 12px;
-				background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-				border-radius: var(--radius-md);
+				background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+				padding: 10px 24px;
+				border-radius: 100px;
 				color: white;
-				font-weight: 600;
+				font-weight: 700;
+				font-size: 13px;
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+				position: absolute;
+				top: -18px; /* Half height to overlap border */
+				left: 50%;
+				transform: translateX(-50%);
+				white-space: nowrap;
+				z-index: 2;
+			}
+
+			.security-badge-main i {
 				font-size: 14px;
 			}
 
 			.security-icons {
 				display: flex;
-				justify-content: space-around;
+				justify-content: center;
+				gap: 30px;
+				width: 100%;
+				margin-top: 10px;
+				flex-wrap: wrap;
 			}
 
 			.security-item {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				gap: 4px;
-				font-size: 10px;
-				color: var(--gray-500);
+				gap: 8px;
+				color: #64748b;
+				transition: all 0.3s ease;
+				cursor: default;
+				padding: 8px 12px;
+				border-radius: 12px;
+			}
+
+			.security-item:hover {
+				color: #334155;
+				transform: translateY(-2px);
+				background: white;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 			}
 
 			.security-item i {
-				font-size: 16px;
-				color: var(--gray-400);
+				font-size: 22px;
+				color: #94a3b8;
+				transition: all 0.3s ease;
+			}
+
+			.security-item:hover i {
+				color: #6366f1; /* Brand color on hover */
+			}
+
+			.security-item span {
+				font-size: 11px;
+				font-weight: 600;
+				letter-spacing: 0.5px;
+				text-transform: uppercase;
 			}
 
 			/* ========== CURRENCY & AMOUNT UPDATES ========== */
@@ -1547,7 +1648,119 @@
 					gap: 12px;
 				}
 			}
-		</style>
+		/* --- RESPONSIVE PRO OPTIMIZATIONS (FINAL LAYER) --- */
+
+/* Sticky Summary on Desktop */
+@media (min-width: 992px) {
+    .summary-section {
+        position: sticky !important;
+        top: 40px !important;
+        height: fit-content !important;
+    }
+}
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 10px auto !important;
+        padding: 0 12px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 24px !important;
+        /* Disable heavy blur on mobile for performance */
+        backdrop-filter: none !important;
+        background: #ffffff !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 16px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* Très petits écrans (< 480px) */
+@media (max-width: 480px) {
+    .payment-section, .summary-section {
+        padding: 20px !important;
+        border-radius: 20px !important;
+    }
+
+    /* Keep Total and Price on same line always */
+    .summary-total {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0 !important;
+        padding: 20px !important;
+    }
+    
+    .summary-total span {
+        font-size: 16px !important;
+    }
+    
+    .summary-total strong {
+        align-self: center !important;
+        font-size: 22px !important;
+        margin-top: 0 !important;
+        white-space: nowrap !important;
+        display: flex !important;
+        gap: 4px !important;
+    }
+    
+    .header-icon {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 24px !important;
+    }
+    
+    .payment-header h2 {
+        font-size: 20px !important;
+    }
+}
+
+/* Safe Area for Modern Phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .checkout-container {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    }
+}
+</style>
 
 		<!-- Payment method switcher -->
 		<script>
@@ -1867,11 +2080,22 @@
                             
                             // Make AJAX call to save payment info
                             <?php 
-                            // Pour les paiements school_join ou community, toujours utiliser student/payment_success
+                            // Pour les paiements school_join ou community, rediriger selon le type d'utilisateur
                             $is_community_payment = ($payment_type === 'school_join' || $type === 'community');
                             if ($is_community_payment) {
-                                $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
-                                $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                if ($is_admin_logged) {
+                                    // Admin: utiliser admin/payment_success et rediriger vers admin/dashboard
+                                    $paypal_success_url = site_url('admin/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('admin/dashboard');
+                                } elseif ($is_teacher_logged) {
+                                    // Teacher: utiliser student comme fallback, rediriger vers community_details
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                } else {
+                                    // Student: utiliser student/payment_success
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_redirect_url = site_url('home/community_details/' . ($invoice_details['school_id'] ?? ''));
+                                }
                             } else {
                                 $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);
                                 $paypal_redirect_url = route('invoice');
@@ -1933,5 +2157,479 @@
     });
 </script>
 
+<style>
+/* ========== ULTRA PREMIUM DESIGN SYSTEM ========== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+    background: radial-gradient(circle at top right, #e0e7ff 0%, #f3f4f6 40%, #ffffff 100%) !important;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
+    color: #1e293b !important;
+    min-height: 100vh !important;
+}
+
+/* --- Container & Layout --- */
+.checkout-container {
+    max-width: 1100px !important;
+    margin: 60px auto !important;
+    padding: 0 24px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.row.g-0 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 32px !important;
+    margin: 0 !important;
+}
+
+/* --- Cards Common Styles --- */
+.payment-section, .summary-section {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 24px !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.02),
+        0 20px 40px -4px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(0,0,0,0.02) !important;
+    padding: 40px !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.payment-section:hover, .summary-section:hover {
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.03),
+        0 30px 60px -8px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(99, 102, 241, 0.1) !important;
+}
+
+@media (min-width: 992px) {
+    .payment-section {
+        flex: 1 1 58% !important;
+        max-width: 58% !important;
+    }
+    .summary-section {
+        flex: 1 1 38% !important;
+        max-width: 38% !important;
+    }
+}
+
+/* --- Typography & Header --- */
+.payment-header {
+    border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+    padding-bottom: 24px !important;
+    margin-bottom: 32px !important;
+}
+
+.payment-header h2 {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    margin-bottom: 8px !important;
+    letter-spacing: -0.5px !important;
+}
+
+.header-icon {
+    width: 64px !important;
+    height: 64px !important;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 28px !important;
+    margin-right: 20px !important;
+}
+
+/* --- Payment Methods Buttons --- */
+.method-btn {
+    width: 100% !important;
+    height: 90px !important;
+    background: #ffffff !important;
+    border: 2px solid #f1f5f9 !important;
+    border-radius: 18px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.method-btn:hover {
+    border-color: #818cf8 !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 24px -6px rgba(99, 102, 241, 0.15) !important;
+}
+
+.method-btn.active {
+    background: #ffffff !important;
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1), 0 12px 24px -6px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Badge "Selected" */
+.method-btn.active::after {
+    content: "✓" !important;
+    position: absolute !important;
+    top: -10px !important;
+    right: -10px !important;
+    width: 28px !important;
+    height: 28px !important;
+    background: #4f46e5 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4) !important;
+    border: 2px solid white !important;
+    z-index: 10 !important;
+}
+
+.method-btn img {
+    height: 32px !important;
+    width: auto !important;
+    transition: transform 0.3s ease !important;
+}
+
+.method-btn:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* --- Summary & Product --- */
+.summary-header h2 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+}
+
+.product-card {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+}
+
+.product-name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+}
+
+/* --- Price Breakdown --- */
+.price-breakdown {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    border: 1px solid #f1f5f9 !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02) !important;
+}
+
+.amount-total {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: -1px !important;
+}
+
+/* --- Summary Total Enhanced --- */
+.summary-total {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+    color: #ffffff !important;
+    padding: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4), 0 8px 10px -6px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Force text white for all children */
+.summary-total * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+.summary-total::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -50% !important; left: -50% !important;
+    width: 200% !important; height: 200% !important;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%) !important;
+    transform: rotate(30deg) !important;
+    pointer-events: none !important;
+}
+
+.summary-total span {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    letter-spacing: 0.5px !important;
+}
+
+.summary-total i {
+    background: rgba(255,255,255,0.2) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 12px !important;
+    font-size: 16px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    opacity: 1 !important;
+}
+
+.summary-total strong {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    letter-spacing: -1px !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    font-variant-numeric: tabular-nums !important;
+    /* Maintain inline fix */
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+}
+
+.summary-total small {
+    font-size: 11px !important;
+    background: rgba(255,255,255,0.2) !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    margin-left: 8px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    opacity: 1 !important;
+}
+
+/* --- Security Badge --- */
+.security-features {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+    border: 1px dashed #86efac !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin-top: 32px !important;
+}
+
+.security-badge-main {
+    color: #166534 !important;
+    background: white !important;
+    padding: 8px 16px !important;
+    border-radius: 50px !important;
+    box-shadow: 0 2px 4px rgba(22, 101, 52, 0.1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    font-weight: 600 !important;
+}
+
+/* --- Animations --- */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.checkout-container > div > * {
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.summary-section {
+    animation-delay: 0.15s !important;
+}
+
+/* --- Mobile Responsive Optimizations --- */
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 20px auto !important;
+        padding: 0 16px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 20px !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: 72px !important;
+        padding: 12px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* --- RESPONSIVE PRO OPTIMIZATIONS --- */
+
+/* Sticky Summary on Desktop */
+@media (min-width: 992px) {
+    .summary-section {
+        position: sticky !important;
+        top: 40px !important;
+        height: fit-content !important;
+    }
+}
+
+/* Tablette et Mobile (< 992px) */
+@media (max-width: 991px) {
+    .row.g-0 {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .payment-section, .summary-section {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .checkout-container {
+        margin-top: 30px !important;
+        margin-bottom: 40px !important;
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .checkout-container {
+        margin: 10px auto !important;
+        padding: 0 12px !important;
+    }
+
+    .payment-section, .summary-section {
+        padding: 24px !important;
+        border-radius: 24px !important;
+        /* Disable heavy blur on mobile for performance */
+        backdrop-filter: none !important;
+        background: #ffffff !important;
+    }
+
+    .payment-header {
+        text-align: center !important;
+    }
+
+    .header-icon {
+        margin: 0 auto 16px auto !important;
+    }
+
+    .method-btn {
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 16px !important;
+    }
+
+    .amount-total {
+        font-size: 26px !important;
+    }
+}
+
+/* Très petits écrans (< 480px) */
+@media (max-width: 480px) {
+    .payment-section, .summary-section {
+        padding: 15px !important;
+        border-radius: 16px !important;
+    }
+
+    .summary-total {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0 !important;
+        padding: 10px 15px !important; /* Optimized padding */
+    }
+    
+    .summary-total span {
+        font-size: 14px !important;
+    }
+    
+    /* Hide (TTC) on very small screens to save space */
+    .summary-total small {
+        display: none !important;
+    }
+    
+    /* FIX ULTIME: Force inline display to prevent ANY wrapping */
+    .summary-total strong {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: baseline !important;
+        white-space: nowrap !important;
+        font-size: 17px !important; /* Smaller price */
+        width: auto !important;
+        margin: 0 !important;
+    }
+    
+    .summary-total strong span {
+        display: inline-block !important;
+        white-space: nowrap !important;
+    }
+    
+    .header-icon {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 20px !important;
+    }
+    
+    .payment-header h2 {
+        font-size: 18px !important;
+    }
+}
+
+/* Safe Area for Modern Phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .checkout-container {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    }
+}
+</style>
 	</body>
 </html>

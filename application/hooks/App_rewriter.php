@@ -26,7 +26,8 @@ class App_rewriter {
             'teacher' => 'mentor',
             'exam'    => 'certifications',
             'event_calendar' => 'announcements',
-            'school_settings' => 'community_settings'
+            'school_settings' => 'community_settings',
+            'school' => 'community_list'
         );
 
         foreach ($manager_roles as $role) {

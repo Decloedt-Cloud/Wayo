@@ -161,9 +161,6 @@
                 </div>
             </div>
             <div class="text-end">
-                  <select class="school-filter school-filter-student me-3" id="schoolFilter">
-                        <option value=""><?php echo get_phrase('All schools'); ?></option>
-                    </select>
                     <select class="view-filter view-filter-student me-3" id="viewFilter">
                         <option value="dayGridMonth"><?php echo get_phrase('Month'); ?></option>
                         <option value="timeGridWeek"><?php echo get_phrase('Week'); ?></option>
@@ -390,11 +387,11 @@
     
 <script>
 
+const enableToasts = <?php echo json_encode((bool)$this->config->item('enable_toasts')); ?>;
+
 const CalendarApp = {
   calendar: null,
   currentView: 'dayGridMonth',
-  selectedSchool: '',
-  selectedClass: '',
   isLoading: false,
   selectedDays: [],
   pollingInterval: null,
@@ -431,7 +428,14 @@ const CalendarApp = {
       sessionStorage.removeItem(key);
     }
   });
-  this.loadSchools();
+  
+  this.initCalendar();
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  this.loadClassesWithEvents(start, end);
+  this.pollActiveMeetings();
+
   this.bindGlobalEvents();
   this.setupResizeListener();
 
@@ -537,9 +541,7 @@ const CalendarApp = {
           $('#monthYear').text(displayText);
           this.checkAndRestoreActiveMeetings();
           this.pollActiveMeetings();
-          if (this.selectedSchool) {
-            this.loadClassesWithEvents(info.start, info.end);
-          }
+          this.loadClassesWithEvents(info.start, info.end);
         },
         eventContent: (arg) => {
             const isExpired = arg.event.end && (new Date() - new Date(arg.event.end) > 24 * 60 * 60 * 1000);
@@ -584,56 +586,9 @@ const CalendarApp = {
     return `${y}-${m}-${d}`;
   },
 
- loadSchools() {
-        $.ajax({
-          url: '<?php echo site_url('student/get_student_schools'); ?>',
-          type: 'GET',
-          data: {
-            [csrfName]: csrfHash
-          },
-          success: (response) => {
-            try {
-              const data = JSON.parse(response);
-              if (data.status === 'success') {
-                const schoolSelect = $('#schoolFilter');
-                schoolSelect.empty();
-                schoolSelect.append('<option value=""><?php echo get_phrase("All schools"); ?></option>');
-                data.schools.forEach(school => {
-                  schoolSelect.append(`<option value="${school.id}">${this.escapeHtml(school.name)}</option>`);
-                });
-                // Auto-select first school if available
-                schoolSelect.val('');
-                this.selectedSchool = ''; // Garder this.selectedSchool vide
-                // Initialiser le calendrier
-                this.initCalendar();
-                // Charger les classes pour toutes les écoles si nécessaire
-                const today = new Date();
-                const start = new Date(today.getFullYear(), today.getMonth(), 1);
-                const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                this.loadClassesWithEvents(start, end);
-                // Lancer le polling des réunions actives
-                this.pollActiveMeetings();
-                csrfHash = data.csrf.csrfHash;
-              } else {
-                this.showNotification('error', data.message);
-                // Initialize calendar to avoid breaking UI
-                this.initCalendar();
-              }
-            } catch (e) {
-              this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>');
-              // Initialize calendar to avoid breaking UI
-              this.initCalendar();
-            }
-          },
-          error: () => {
-            this.showNotification('error', '<?php echo get_phrase("⚠️ Your calendar is empty To see events, join a class or wait for your registration to be validated."); ?>');
-            // Initialize calendar to avoid breaking UI
-            this.initCalendar();
-          }
-        });
-      },
 
-  loadEvents(start, end, successCallback, failureCallback) {
+
+  loadEvents(start, end, successCallback, failureCallback, nocache = false) {
     if (this.isLoading) return;
     this.isLoading = true;
 
@@ -644,10 +599,10 @@ const CalendarApp = {
     const adjustedStart = startDate.toISOString().split('T')[0];
     const adjustedEnd = endDate.toISOString().split('T')[0];
 
-    const cacheKey = `events_${start}_${end}_${this.selectedSchool || 'all'}_${this.selectedClass || 'all'}`;
-    const cachedEvents = sessionStorage.getItem(cacheKey);
+    const cacheKey = `events_${start}_${end}_${this.selectedClass || 'all'}`;
+    const cachedEvents = nocache ? null : sessionStorage.getItem(cacheKey);
 
-    if (cachedEvents) {
+    if (cachedEvents && !nocache) {
         try {
             const events = JSON.parse(cachedEvents);
             // Preserve isRunning and participant_count from existing events
@@ -695,10 +650,7 @@ const CalendarApp = {
         [csrfName]: csrfHash
     };
 
-    // Include school_id if a specific school is selected
-    if (this.selectedSchool) {
-        data.school_id = this.selectedSchool;
-    }
+
     $.ajax({
         url: '<?php echo site_url('student/get_events'); ?>',
         type: 'GET',
@@ -828,12 +780,11 @@ const CalendarApp = {
 
 
   loadClassesWithEvents(start, end) {
-  if (!this.selectedSchool) {
-    return;
-  }
+  // Logic simplified as we no longer filter by selectedSchool
 },
 
   showNotification(type, message, duration = 3000) {
+    if (!enableToasts) return;
     Swal.fire({
       toast: true,
       position: 'top-end',
@@ -882,13 +833,11 @@ const CalendarApp = {
         id: eventId,
         start_date: startDate,
         end_date: endDate,
+        nocache: '1', // Éviter le cache pour les détails d'événement
         [csrfName]: csrfHash
     };
 
     // Include school_id if selected
-    if (this.selectedSchool && this.selectedSchool !== '') {
-        data.school_id = this.selectedSchool;
-    }
     $.ajax({
         url: '<?php echo site_url('student/get_events'); ?>',
         type: 'GET',
@@ -897,7 +846,11 @@ const CalendarApp = {
             try {
                 const data = JSON.parse(response);
                 if (data.status === 'success' && data.data && data.data.length > 0) {
-                    const event = data.data[0];
+                    // Trouver l'événement correspondant à l'ID demandé
+                    let event = data.data.find(e => String(e.id) === String(eventId));
+                    if (!event && data.data.length > 0) {
+                        event = data.data[0]; // Fallback si non trouvé
+                    }
                     const isVisio = event.visio == 1;
                     const occurrenceData = event.occurrences && event.occurrences[occurrenceDate] ? event.occurrences[occurrenceDate] : {};
 
@@ -1286,7 +1239,6 @@ const CalendarApp = {
       id: eventId, 
       start_date: startDate, 
       end_date: endDate, 
-      school_id: this.selectedSchool,
       [csrfName]: csrfHash 
     },
     success: (response) => {
@@ -1413,9 +1365,16 @@ const CalendarApp = {
                         return;
                     }
 
-                    const buttonText = $('#joinMeetingBtn').text();
+                    // Helper to clean text (remove HTML entities and non-breaking spaces)
+                    const cleanText = (str) => {
+                        return $('<div>').html(str).text().replace(/\u00A0/g, ' ').trim();
+                    };
 
-                    if (buttonText === '<?php echo get_phrase('Start Meeting'); ?>') {
+                    const buttonText = cleanText($('#joinMeetingBtn').text());
+                    const startMeetingPhrase = cleanText('<?php echo get_phrase('Start Meeting'); ?>');
+                    const joinMeetingPhrase = cleanText('<?php echo get_phrase('Join Meeting'); ?>');
+
+                    if (buttonText === startMeetingPhrase) {
                         $.ajax({
                             url: '<?php echo site_url('student/start_meeting'); ?>',
                             type: 'POST',
@@ -1486,9 +1445,19 @@ const CalendarApp = {
                                  $('#joinMeetingBtn').show();
                             }
                         });
-                    } else if (buttonText === '<?php echo get_phrase('Join Meeting'); ?>') {
+                    } else if (buttonText === joinMeetingPhrase) {
+                        
+                        // Fallback: Check calendar event for meeting ID if missing in fresh data
                         if (!occurrenceData.meeting_id) {
-                            this.showNotification('error', '<?php echo get_phrase("No meeting ID available for joining"); ?>');
+                            const uniqueEventId = occurrenceDate ? `${eventId}_${occurrenceDate}` : eventId;
+                            const calendarEvent = this.calendar.getEventById(uniqueEventId);
+                            if (calendarEvent && calendarEvent.extendedProps && calendarEvent.extendedProps.meeting_id) {
+                                occurrenceData.meeting_id = calendarEvent.extendedProps.meeting_id;
+                            }
+                        }
+
+                        if (!occurrenceData.meeting_id) {
+                            
                              $('#joinMeetingBtn').show();
                             return;
                         }
@@ -1607,7 +1576,6 @@ const CalendarApp = {
         start_date: startDate, 
         end_date: endDate, 
         visio: 1, 
-        school_id: this.selectedSchool,
         [csrfName]: csrfHash 
       },
       success: (response) => {
@@ -1922,12 +1890,6 @@ const CalendarApp = {
     const startDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() - 1)));
     const endDate = this.formatDate(new Date(today.setFullYear(today.getFullYear() + 2)));
 
-    if (!this.selectedSchool) {
-        this.hasActiveMeetings = false;
-        this.stopActiveMeetingsPolling();
-        return;
-    }
-
     $.ajax({
         url: '<?php echo site_url('student/get_events'); ?>',
         type: 'GET',
@@ -1935,7 +1897,6 @@ const CalendarApp = {
             start_date: startDate, 
             end_date: endDate, 
             visio: 1, 
-            school_id: this.selectedSchool, // Ajout de school_id
             [csrfName]: csrfHash 
         },
         success: (response) => {
@@ -2070,20 +2031,6 @@ stopActiveMeetingsPolling() {
   goToToday() { this.calendar.today(); },
 
   bindGlobalEvents() {
-  $('#schoolFilter').on('change', () => {
-    this.selectedSchool = $('#schoolFilter').val();
-    this.selectedClass = '';
-    $('#classFilter').empty().append('<option value=""><?php echo get_phrase("All classes"); ?></option>').val('');
-    this.clearEventCache(); // Clear event cache when school changes
-    if (this.selectedSchool) {
-      const view = this.calendar.view;
-      const start = view.activeStart;
-      const end = view.activeEnd;
-      this.loadClassesWithEvents(start, end);
-    }
-    this.calendar.refetchEvents();
-  });
-
   $('#classFilter').on('change', () => {
     this.selectedClass = $('#classFilter').val();
     this.clearEventCache(); // Clear event cache when class changes

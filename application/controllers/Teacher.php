@@ -3821,9 +3821,34 @@ public function get_school_data() {
     }
 
     try {
+        // Récupérer l'ID de l'enseignant connecté
+        $current_user_id = $this->session->userdata('user_id');
+        $teacher = $this->db->get_where('teachers', ['user_id' => $current_user_id])->row_array();
+        $teacher_id = $teacher['id'] ?? null;
+        
+        // Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+        $permitted_class_ids = [];
+        if ($teacher_id) {
+            $this->db->select('class_id');
+            $this->db->from('teacher_permissions');
+            $this->db->where('teacher_id', $teacher_id);
+            $this->db->where('attendance', 1);
+            $permitted_classes = $this->db->get()->result_array();
+            $permitted_class_ids = array_column($permitted_classes, 'class_id');
+        }
+        
         // Récupérer les classes
         $this->db->select('id, name');
         $this->db->where('school_id', $school_id);
+        
+        // Filtrer les classes selon les permissions de l'enseignant
+        if (!empty($permitted_class_ids)) {
+            $this->db->where_in('id', $permitted_class_ids);
+        } else {
+            // Si aucune permission, ne pas retourner de classes
+            $this->db->where('id', 0); // Condition impossible
+        }
+        
         $classes = $this->db->get('classes')->result_array();
 
         // Récupérer l'ID du superadmin connecté

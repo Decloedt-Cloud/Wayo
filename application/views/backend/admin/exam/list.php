@@ -174,7 +174,7 @@ function deleteExam(url) {
         text: '<?php echo addslashes(get_phrase('you_will_not_be_able_to_revert_this')); ?>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<?php echo addslashes(get_phrase('yes_delete_it')); ?>',
         cancelButtonText: '<?php echo addslashes(get_phrase('cancel')); ?>',

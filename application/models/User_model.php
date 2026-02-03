@@ -1640,7 +1640,26 @@ if ($_FILES['image_file']['name'] != "") {
 			$current_password = $this->input->post('current_password');
 			$new_password = $this->input->post('new_password');
 			$confirm_password = $this->input->post('confirm_password');
-			if ($user_details['password'] == sha1($current_password) && $new_password == $confirm_password) {
+
+			if ($user_details['password'] != sha1($current_password)) {
+				$response = array(
+					'status' => false,
+					'field' => 'current_password',
+					'notification' => get_phrase('current_password_is_incorrect')
+				);
+			} elseif (strlen($new_password) < 8) {
+				$response = array(
+					'status' => false,
+					'field' => 'new_password',
+					'notification' => get_phrase('password_must_be_at_least_8_characters')
+				);
+			} elseif ($new_password != $confirm_password) {
+				$response = array(
+					'status' => false,
+					'field' => 'confirm_password',
+					'notification' => get_phrase('passwords_do_not_match')
+				);
+			} else {
 				$data['password'] = sha1($new_password);
 				$this->db->where('id', $user_id);
 				$this->db->update('users', $data);
@@ -1648,12 +1667,6 @@ if ($_FILES['image_file']['name'] != "") {
 				$response = array(
 					'status' => true,
 					'notification' => get_phrase('password_updated_successfully')
-				);
-			} else {
-
-				$response = array(
-					'status' => false,
-					'notification' => get_phrase('mismatch_password')
 				);
 			}
 		} else {
@@ -2310,12 +2323,7 @@ if ($_FILES['image_file']['name'] != "") {
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
-
-	/**
-	 * Synchronise l'utilisateur avec le Chat Service (Laravel)
-	 * Appelé après mise à jour du profil ou upload photo
-	 */
-	private function _sync_user_to_chat_service($user_id)
+private function _sync_user_to_chat_service($user_id)
 	{
 		// Récupérer les données fraîches de l'utilisateur
 		$user = $this->db->get_where('users', array('id' => $user_id))->row();
@@ -2360,4 +2368,13 @@ if ($_FILES['image_file']['name'] != "") {
 		
 		curl_close($ch);
 	}
+
+  public function get_all_admins_count()
+	{
+		$this->db->where('role', 'admin');
+		$this->db->where('status', 1);
+		return $this->db->count_all_results('users');
+
+	}
+
 }

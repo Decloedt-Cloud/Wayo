@@ -428,7 +428,7 @@
     </div>
 </div>
 <script>
-
+const enableToasts = <?php echo json_encode((bool)$this->config->item('enable_toasts')); ?>;
 
 const CalendarApp = {
   calendar: null,
@@ -914,6 +914,7 @@ setupResizeListener() {
   },
 
   showNotification(type, message, duration = 3000) {
+    if (!enableToasts) return;
     Swal.fire({
       toast: true,
       position: 'top-end',
@@ -1813,11 +1814,15 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
   }
 
   Swal.fire({
-    title: '<?php echo get_phrase("Are you sure?"); ?>',
+    title: '<?php echo addslashes(get_phrase("are_you_sure")); ?>',
+    text: '<?php echo addslashes(get_phrase("you_will_not_be_able_to_revert_this")); ?>',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: '<?php echo get_phrase("Yes, delete it!"); ?>',
-    cancelButtonText: '<?php echo get_phrase("Cancel"); ?>',
+    confirmButtonColor: '#6366f1',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: '<?php echo addslashes(get_phrase("yes_delete_it")); ?>',
+    cancelButtonText: '<?php echo addslashes(get_phrase("cancel")); ?>',
+    reverseButtons: true
   }).then((result) => {
     if (result.isConfirmed) {
       $.ajax({

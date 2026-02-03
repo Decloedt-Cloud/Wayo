@@ -15,8 +15,8 @@ if ($vat_applicable) {
     if ($tax_residence === 'MA') {
         // 1 - Communauté au Maroc  => 20% de TVA
         $vat_rate = 20;
-    } elseif ($tax_residence === 'UAE') {
-        // 2 - Communauté aux EAU => 5% de TVA
+    } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+        // 2 - Communauté aux EAU => 5% de TVA (support both UAE and AE codes)
         $vat_rate = 5;
     }
 }
@@ -135,6 +135,44 @@ foreach ($classes as $key => $class) {
                   // Get community status once
                   $community_status = $this->user_model->check_student_status($school_id);
                   $is_logged_in = (bool)$this->session->userdata('user_id');
+
+                  // Check if user is admin/teacher of THIS school or superadmin
+                  $is_admin = $this->session->userdata('admin_login') == 1;
+                  $is_teacher = $this->session->userdata('teacher_login') == 1;
+                  $is_superadmin = $this->session->userdata('superadmin_login') == 1;
+                  $session_school_id = $this->session->userdata('school_id');
+
+                  // Check actual DB roles for this specific school (handle cross-role browsing)
+                  $has_admin_rights = false;
+                  if ($is_logged_in) {
+                      $user_id = $this->session->userdata('user_id');
+                      // Check for admin role
+                      $admin_check = $this->db->get_where('user_schools', array(
+                          'user_id' => $user_id, 
+                          'school_id' => $school_id, 
+                          'role' => 'admin'
+                      ));
+                      // Check for teacher role
+                      $teacher_check = $this->db->get_where('user_schools', array(
+                          'user_id' => $user_id, 
+                          'school_id' => $school_id, 
+                          'role' => 'teacher'
+                      ));
+                      
+                      if ($admin_check->num_rows() > 0 || $teacher_check->num_rows() > 0) {
+                          $has_admin_rights = true;
+                      }
+                  }
+
+                  $is_authority = $is_superadmin || (($is_admin || $is_teacher) && $session_school_id == $school_id) || $has_admin_rights;
+
+                  // Determine role to switch for modal/buttons
+                  $role_to_switch_authority = '';
+                  if ($is_authority) {
+                      $is_teacher_role = (isset($teacher_check) && $teacher_check->num_rows() > 0) || ($is_teacher && $session_school_id == $school_id);
+                      $role_to_switch_authority = $is_teacher_role ? 'teacher' : 'admin';
+                  }
+
                 ?>
                 
                 <?php foreach ($classes as $key => $class): ?>
@@ -211,16 +249,21 @@ foreach ($classes as $key => $class) {
                         data-school-currency="<?php echo $settings_data['system_currency']; ?>"
                         data-is-logged-in="<?php echo $is_logged_in ? '1' : '0'; ?>"
                         data-user-role="<?php echo $this->session->userdata('admin_login') == 1 ? 'admin' : ($this->session->userdata('teacher_login') == 1 ? 'teacher' : ''); ?>"
+                        data-is-authority="<?php echo $is_authority ? '1' : '0'; ?>"
+                        data-role-to-switch="<?php echo $role_to_switch_authority; ?>"
                       >
                         <?php echo get_phrase("See more"); ?>
                       </button>
                           <?php
                             // Vérifier si déjà inscrit à la classe
-                            $enrols_datas = $this->db->get_where('enrols', array(
-                                'student_id' => $student_id,
-                                'school_id' => $school_id,
-                                'class_id' => $class['id']
-                            ))->num_rows();
+                            $enrols_datas = 0;
+                            if ($student_id > 0) {
+                                $enrols_datas = $this->db->get_where('enrols', array(
+                                    'student_id' => $student_id,
+                                    'school_id' => $school_id,
+                                    'class_id' => $class['id']
+                                ))->num_rows();
+                            }
 
                             $enrols_max = $this->db->get_where('enrols', array(
                                 'school_id' => $school_id,
@@ -230,8 +273,18 @@ foreach ($classes as $key => $class) {
                             $nombre_max = isset($class['nombre_max_membre']) ? (int)$class['nombre_max_membre'] : 0;
                             $is_max_reached = ($nombre_max > 0 && $enrols_max >= $nombre_max);
 
+                            // Priority check: if authority, show dashboard link
+                            if ($is_authority): 
+                                $role_to_switch = ($is_teacher || (isset($teacher_check) && $teacher_check->num_rows() > 0)) ? 'teacher' : 'admin';
+                            ?>
+                              <form action="<?php echo site_url('login/logout'); ?>" method="post" style="display:inline;">
+                                  <button type="button" class="btn btn-wayo fw-bold" onclick="switch_to_admin_role_for_community(<?php echo $school_id; ?>, '<?php echo $role_to_switch; ?>')">
+                                      <?php echo get_phrase('dashboard'); ?>
+                                  </button>
+                              </form>
+                            <?php 
                             // CASE 1 : déjà inscrit à la classe → Start course
-                            if ($enrols_datas > 0): ?>
+                            elseif ($enrols_datas > 0): ?>
                               <button class="btn btn-outline-wayo-join fw-bold start-course-btn"
                                       data-class-id="<?php echo $class['id']; ?>">
                                 <?php echo get_phrase("start_course"); ?>
@@ -252,6 +305,7 @@ foreach ($classes as $key => $class) {
                               // CASE 3.1 : pas encore dans la communauté
                               if ($status == -1): ?>
 
+                                <?php if (!$is_authority): ?>
                                 <form action="<?php echo base_url('student/join_school/assigned/' . $school_id); ?>" method="post">
                                   <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>"
                                         value="<?php echo $this->security->get_csrf_hash(); ?>" />
@@ -260,9 +314,25 @@ foreach ($classes as $key => $class) {
                                   <input type="hidden" name="currency" value="<?php echo $settings_data['system_currency']; ?>" />
 
                                   <button type="submit" class="btn btn-wayo fw-bold <?php if(!$this->session->userdata('user_id')) echo 'join-community-login-popup'; ?>">
-                                    <?php echo htmlspecialchars(get_phrase("join_community")); ?>
+                                    <?php 
+                                      if ($this->session->userdata('user_id')) {
+                                          echo htmlspecialchars(get_phrase("join_as_member"));
+                                      } else {
+                                          echo htmlspecialchars(get_phrase("join_community"));
+                                      }
+                                    ?>
                                   </button>
                                 </form>
+                                <?php else: 
+                                  $role_to_switch = ($is_teacher || (isset($teacher_check) && $teacher_check->num_rows() > 0)) ? 'teacher' : 'admin';
+                                ?>
+                                  <!-- User is authority (Admin/Teacher) of this school but viewing as student -->
+                                  <form action="<?php echo site_url('login/logout'); ?>" method="post" style="display:inline;">
+                                      <button type="button" class="btn btn-wayo fw-bold" onclick="switch_to_admin_role_for_community(<?php echo $school_id; ?>, '<?php echo $role_to_switch; ?>')">
+                                          <?php echo get_phrase('dashboard'); ?>
+                                      </button>
+                                  </form>
+                                <?php endif; ?>
 
                               <?php 
                               // CASE 3.2 : déjà dans la communauté (approuvé ou en attente)
@@ -280,10 +350,20 @@ foreach ($classes as $key => $class) {
                                 // NOUVELLE CONDITION : classe gratuite → Start course direct
                                 if ((float)$class['price'] == 0): ?>
                                   
-                                  <button class="btn btn-outline-wayo-join fw-bold start-course-btn"
-                                          data-class-id="<?php echo $class['id']; ?>">
-                                    <?php echo get_phrase("start_course"); ?>
-                                  </button>
+                                  <form action="<?php echo site_url('student/online_admission/assigned'); ?>" method="post">
+                                    <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>"
+                                          value="<?php echo $this->security->get_csrf_hash(); ?>" />
+
+                                    <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
+                                    <input type="hidden" name="school_id" value="<?php echo $school_id; ?>" />
+                                    <input type="hidden" name="class_id" id="class_id" value="<?php echo $class['id']; ?>">
+                                    <input type="hidden" name="price" value="<?php echo $class['price']; ?>" />
+                                    <input type="hidden" name="currency" value="<?php echo $currencies; ?>" />
+
+                                    <button type="submit" class="btn btn-outline-wayo-join fw-bold">
+                                      <?php echo htmlspecialchars(get_phrase("join_class")); ?>
+                                    </button>
+                                  </form>
 
                                 <?php else: ?>
 
@@ -437,6 +517,12 @@ foreach ($classes as $key => $class) {
 
 <script>
 const base_url = "<?php echo base_url(); ?>";
+const csrfName = "<?php echo $this->security->get_csrf_token_name(); ?>";
+const csrfHash = "<?php echo $this->security->get_csrf_hash(); ?>";
+const currentSchoolId = "<?php echo $this->session->userdata('active_school_id'); ?>";
+const currentRole = "<?php echo $this->session->userdata('role'); ?>";
+const targetSchoolId = "<?php echo $school_id; ?>";
+
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -461,8 +547,24 @@ document.addEventListener("DOMContentLoaded", function() {
       const schoolCurrency = this.dataset.schoolCurrency;
       const isLoggedIn = this.dataset.isLoggedIn === '1';
       const userRole = this.dataset.userRole || "<?php echo $this->session->userdata('admin_login') == 1 ? 'admin' : ($this->session->userdata('teacher_login') == 1 ? 'teacher' : ''); ?>";
+      const isAuthority = this.dataset.isAuthority === '1';
+      const roleToSwitch = this.dataset.roleToSwitch || 'admin';
+
+      if (isAuthority) {
+          const dashboardBtn = document.createElement('button');
+          dashboardBtn.className = 'btn btn-wayo fw-bold';
+          dashboardBtn.textContent = "<?php echo get_phrase('dashboard'); ?>";
+          dashboardBtn.onclick = function() {
+              switch_to_admin_role_for_community(schoolId, roleToSwitch);
+          };
+          container.appendChild(dashboardBtn);
+          return;
+      }
 
           if (communityStatus === -1) {
+          
+          if (isAuthority) return;
+
           // Not a member -> Join Community
           // Toujours utiliser student/join_school (même pour admin/teacher qui rejoignent en tant que member)
           const form = document.createElement('form');
@@ -476,7 +578,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
           // Changer le texte selon le rôle
           let buttonText = "<?php echo get_phrase('join_community'); ?>";
-          if (userRole === 'admin' || userRole === 'teacher') {
+          if (isLoggedIn) {
             buttonText = "<?php echo get_phrase('join_as_member'); ?>";
           }
 
@@ -522,13 +624,28 @@ document.addEventListener("DOMContentLoaded", function() {
         pendingBtn.disabled = true;
         pendingBtn.textContent = "<?php echo get_phrase('pending'); ?>";
         container.appendChild(pendingBtn);
-      } else if (enrolled > 0 || classPrice === 0) {
-        // L'utilisateur a déjà payé ou la classe est gratuite → Start Course
+      } else if (enrolled > 0) {
+        // Déjà inscrit -> Start Course (Redirect via JS handler)
         const startBtn = document.createElement('button');
         startBtn.className = 'btn btn-outline-wayo-join fw-bold start-course-btn';
         startBtn.dataset.classId = classId;
         startBtn.textContent = "<?php echo get_phrase('start_course'); ?>";
         container.appendChild(startBtn);
+      } else if (classPrice === 0) {
+        // Pas inscrit mais Gratuit -> Start Course (Enroll via Form)
+        const form = document.createElement('form');
+        form.action = base_url + "student/online_admission/assigned";
+        form.method = 'post';
+        form.innerHTML = `
+          <input type="hidden" name="${csrfName}" value="${csrfHash}">
+          <input type="hidden" name="student_id" value="${studentId}">
+          <input type="hidden" name="school_id" value="${schoolId}">
+          <input type="hidden" name="class_id" value="${classId}">
+          <input type="hidden" name="price" value="${classPrice}">
+          <input type="hidden" name="currency" value="${currency}">
+          <button type="submit" class="btn btn-outline-wayo-join fw-bold"><?php echo get_phrase('join_class'); ?></button>
+        `;
+        container.appendChild(form);
       } else {
         // Classe payante → Join Class (paiement)
         const form = document.createElement('form');
@@ -551,9 +668,44 @@ document.addEventListener("DOMContentLoaded", function() {
   // Start Course redirection
   document.addEventListener('click', function(e){
     if (!e.target.classList.contains('start-course-btn')) return;
+    e.preventDefault();
+    
     const classId = e.target.dataset.classId;
     if (!classId) return;
-    window.location.href = base_url + "student/courses/" + classId;
+
+    const courseUrl = base_url + "student/courses/" + classId;
+
+    // Check if we need to switch context (Role or School)
+    if (currentRole !== 'student' || currentSchoolId !== targetSchoolId) {
+        // Prepare form data for switch
+        const formData = new FormData();
+        formData.append('school_id', targetSchoolId);
+        formData.append('role', 'student');
+        formData.append(csrfName, csrfHash);
+
+        fetch(base_url + 'home/switch_community_role_front', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Switch successful, redirect to the specific course
+                window.location.href = courseUrl;
+            } else {
+                console.error('Switch failed:', data);
+                // Fallback to direct link
+                window.location.href = courseUrl; 
+            }
+        })
+        .catch(error => {
+            console.error('Error during switch:', error);
+            window.location.href = courseUrl;
+        });
+    } else {
+        // Already in correct context
+        window.location.href = courseUrl;
+    }
   });
 
 });
@@ -583,12 +735,37 @@ document.addEventListener("DOMContentLoaded", function() {
   // Pour tous les boutons avec la classe join-community-login
   joinCommunityBtns.forEach(btn => {
     btn.addEventListener("click", function(e) {
-      e.preventDefault();       // empêche submit
-      openPopup();              // ouvre popup
+      e.preventDefault();
+      openPopup();
     });
   });
 
 });
+
+function switch_to_admin_role_for_community(targetSchoolId, role = 'admin') {
+    // Prepare form data for switch
+    const formData = new FormData();
+    formData.append('school_id', targetSchoolId);
+    formData.append('role', role); 
+    formData.append(csrfName, csrfHash);
+
+    fetch(base_url + 'home/switch_community_role_front', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = data.redirect_url ? data.redirect_url : base_url + role + '/dashboard';
+        } else {
+            console.error('Switch failed:', data);
+            alert('Could not switch to ' + role + ' role.');
+        }
+    })
+    .catch(error => {
+        console.error('Error during switch:', error);
+    });
+}
 </script>
 
 <!-- script de button join community affichage poupup and hide modal -->

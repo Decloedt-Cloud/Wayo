@@ -49,6 +49,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+$route['superadmin/community_list'] = 'superadmin/school';
+$route['superadmin/community_list/(:any)'] = 'superadmin/school/$1';
+
 $route['default_controller'] = 'home';
 
 // Custom Routes for Chat
@@ -63,9 +66,18 @@ $route['getting_started'] = 'home/tutorial';
 $route['help-center'] = 'home/faq';
 $route['communities'] = 'home/communities';
 $route['communities/(.+)'] = 'home/communities/$1';
+
+// Trends Routes (formerly Blog)
+$route['trends'] = 'articles/index';
+$route['trends/category/(:any)'] = 'articles/category/$1';
+$route['trends/tag/(:any)'] = 'articles/tag/$1';
+$route['trends/page/(:any)'] = 'articles/page/$1';
+$route['trends/(:any)'] = 'articles/show/$1';
+
 $route['tutorial'] = 'home/tutorial';
 $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
+$route['support/send'] = 'home/contact/send';
 $route['about'] = 'home/about';
 $route['faq'] = 'home/faq';
 $route['affiliation'] = 'home/affiliation';
@@ -80,6 +92,11 @@ $route['join/community'] = 'admission/online_admission';
 $route['join/community/(.+)'] = 'admission/online_admission/$1';
 $route['join/member'] = 'admission/online_admission_student';
 $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
+
+// Routes for app rewriter
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(.+)'] = 'student/join_school/$1';
+
 
 
 // API Routes
@@ -699,7 +716,16 @@ $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
 $route['payment/community/(:num)'] = 'student/payment/community/$1';
+$route['app/online_admission'] = 'student/online_admission';
+$route['app/online_admission/(:any)'] = 'student/online_admission/$1';
+$route['app/payment'] = 'student/payment';
+$route['app/payment/(:any)'] = 'admin/payment/$1';
+$route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 
+// FIX: Route for app/join_school
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(:any)'] = 'student/join_school/$1';
+$route['app/courses/(:num)'] = 'student/courses/$1';
 /*
 | -------------------------------------------------------------------------
 | CUSTOM ROUTE FOR APP URL MASKING
@@ -767,6 +793,8 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/announcements/(.+)'] = $role_route . '/event_calendar/$1';
         $route['app/community_settings'] = $role_route . '/school_settings';
         $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
+        $route['app/community_list'] = $role_route . '/school';
+        $route['app/community_list/(.+)'] = $role_route . '/school/$1';
         $route['app/courses'] = 'addons/courses';
         $route['app/courses/(:num)'] = 'student/manage_class/courses/$1';
         $route['app/courses/(.+)'] = 'addons/courses/$1';

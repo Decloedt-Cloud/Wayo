@@ -883,7 +883,7 @@
     </div>
 </div>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 <script>
     let csrfToken = {
         name: '<?php echo $this->security->get_csrf_token_name(); ?>',

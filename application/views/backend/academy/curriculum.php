@@ -9,7 +9,7 @@
 </style>
 
 <!-- SweetAlert2 -->
-<script type="text/javascript" src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 
 <!-- Quill Editor 1.3.7 (compatible avec les extensions) -->
 <link href="<?php echo base_url(); ?>assets/backend/css/quilljs/quill.snow.css" rel="stylesheet" type="text/css" />
@@ -2675,8 +2675,8 @@ function confirmDelete(url) {
         text: '<?php echo addslashes(get_phrase("you_wont_be_able_to_revert_this")); ?>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#64748b',
+        confirmButtonColor: '#6366f1',
+        cancelButtonColor: '#6c757d',
         confirmButtonText: '<?php echo addslashes(get_phrase("yes_delete_it")); ?>',
         cancelButtonText: '<?php echo addslashes(get_phrase("cancel")); ?>',
         reverseButtons: true

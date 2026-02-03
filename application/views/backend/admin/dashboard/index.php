@@ -612,7 +612,7 @@
   <!-- Header -->
   <div class="dash-header fade-up">
     <h1>
-      <span class="icon-box"><i class="fas fa-th-large"></i></span>
+      <span class="icon-box"><i class="fas fa-home"></i></span>
       <?php echo get_phrase('dashboard'); ?>
     </h1>
     <div class="date-badge">

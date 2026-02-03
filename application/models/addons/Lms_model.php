@@ -433,6 +433,11 @@ class Lms_model extends CI_Model
     $class_ids = $this->input->post('class_id');   // tableau d'ids
     $teacher_ids = $this->input->post('user_id');  // tableau d'ids
 
+    // Ensure teacher_ids is an array
+    if (!empty($teacher_ids) && !is_array($teacher_ids)) {
+        $teacher_ids = array($teacher_ids);
+    }
+
     // Insérer dans table pivot course_classes
     if (!empty($class_ids)) {
         foreach ($class_ids as $class_id) {
@@ -518,6 +523,11 @@ class Lms_model extends CI_Model
         // Mettre à jour les relations multi-classes et multi-teachers
         $class_ids = $this->input->post('class_id');
         $teacher_ids = $this->input->post('user_id');
+
+        // Ensure teacher_ids is an array
+        if (!empty($teacher_ids) && !is_array($teacher_ids)) {
+            $teacher_ids = array($teacher_ids);
+        }
 
         $this->update_course_classes($course_id, $class_ids);
         $this->update_course_teachers($course_id, $teacher_ids);
@@ -1257,5 +1267,46 @@ class Lms_model extends CI_Model
             $this->db->where('id', $value);
             $this->db->update('exam_questions', $updater);
         }
+    }
+
+    // Get teachers by class selection
+    public function get_teachers_by_class_selection($class_ids = []) {
+        if (empty($class_ids)) {
+            return [];
+        }
+        
+        // Ensure class_ids is an array
+        if (!is_array($class_ids)) {
+            $class_ids = explode(',', $class_ids);
+        }
+        
+        // 1. Get teachers with permissions
+        $this->db->select('users.id, users.name');
+        $this->db->from('users');
+        $this->db->join('teachers', 'teachers.user_id = users.id');
+        $this->db->join('teacher_permissions', 'teacher_permissions.teacher_id = teachers.id');
+        $this->db->where_in('teacher_permissions.class_id', $class_ids);
+        $this->db->where('teacher_permissions.attendance', 1);
+        $this->db->where('users.school_id', school_id());
+        $this->db->group_by('users.id'); 
+        $teachers = $this->db->get()->result_array();
+
+        // 2. Get admins
+        $this->db->select('users.id, users.name');
+        $this->db->from('users');
+        $this->db->where('users.school_id', school_id());
+        $this->db->group_start();
+        $this->db->where('role', 'admin');
+        $this->db->group_end();
+        $admins = $this->db->get()->result_array();
+
+        // 3. Merge and deduplicate
+        $all_users = array_merge($teachers, $admins);
+        $unique_users = [];
+        foreach ($all_users as $user) {
+            $unique_users[$user['id']] = $user;
+        }
+
+        return array_values($unique_users);
     }
 }
