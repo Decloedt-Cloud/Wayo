@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/payment-settings.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/payment-settings.min.css">
 <?php
   $paypal = json_decode(get_payment_settings('paypal_settings',1));
   $stripe = json_decode(get_payment_settings('stripe_settings',1));

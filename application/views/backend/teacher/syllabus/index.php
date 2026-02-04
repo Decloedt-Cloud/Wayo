@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <?php
 // Récupérer l'ID de l'enseignant connecté
 $user_id = $this->session->userdata('user_id');

@@ -27,7 +27,7 @@ $is_chat_page = (strpos($_SERVER['REQUEST_URI'], 'app/chat') !== false || strpos
 if (!$is_chat_page): 
 ?>
 <script src="<?php echo base_url('assets/backend/js/pusher.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/backend/js/echo.iife.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/echo.iife.min.js'); ?>"></script>
 <?php endif; ?>
 
 <script>

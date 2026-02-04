@@ -17,8 +17,8 @@
 <link href="<?php echo base_url(); ?>assets/backend/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
 <!-- third party css end -->
 
-<link href="<?php echo base_url(); ?>assets/backend/css/custom.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url(); ?>assets/backend/css/content-placeholder.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/backend/css/custom.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/backend/css/content-placeholder.min.css" rel="stylesheet" type="text/css" />
 
 <style>
 /* ========== MODERN LESSONS GLOBAL STYLES ========== */

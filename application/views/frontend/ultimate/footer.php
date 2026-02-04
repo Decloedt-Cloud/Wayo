@@ -13,7 +13,7 @@ if (in_array($current1, $supported_codes)) {
 ?>
  <footer class="site-footer" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
     <div class="container footer-top">
-      <a href="<?php echo lang_route('home'); ?>" class="footer-logo"><img class="logo-img footer" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo"/></a>
+      <a href="<?php echo lang_route('home'); ?>" class="footer-logo"><img class="logo-img" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>"></a>
       <nav class="footer-nav" aria-label="Liens pied de page">
         <ul>
             <li>
@@ -88,16 +88,16 @@ if (in_array($current1, $supported_codes)) {
           </div>
       </div>
 
-      <div class="footer-newsletter">
+      <!-- <div class="footer-newsletter">
         <p> <strong><?php echo get_phrase('Newsletter'); ?></strong></p>
         <form action="#" method="post" class="newsletter-form">
           <input type="email" name="email" placeholder="<?php echo get_phrase('Your email');?>" required/>
           <button type="submit" class="btn accent"><?php echo get_phrase('Subscribe');?></button>
         </form>
-      </div>
+      </div> -->
     </div>
     <div class="container footer-credits">
-      <p><?php echo get_phrase('© 2025 Wayo Academy. All rights reserved.');?></p>
+      <p>&copy; <?php echo date('Y'); ?> <?php echo get_phrase('Wayo Academy. All rights reserved.');?></p>
       <p><?php echo get_phrase('Developed by the Wayo team')?></p>
     </div>
   </footer>

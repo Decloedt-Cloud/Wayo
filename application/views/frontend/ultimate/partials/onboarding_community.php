@@ -2,7 +2,7 @@
 <div id="onbOverlay" class="onb-overlay"></div>
 
 <!-- Modal -->
-<div id="onbModal" class="onb-modal" aria-hidden="true">
+<div id="onbModal" class="onb-modal" inert>
   <div class="onb-card">
 
     <!-- Close -->
@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="onb-header">
       <div class="d-flex align-items-center gap-2">
-        <img src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo" style="height:24px;">
+        <img alt="Wayo" style="height:24px;" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>">
         <div class="onb-brand"><?php echo get_phrase("Wayo"); ?></div>
       </div>
 
@@ -116,12 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function openOnboarding() {
     overlay.classList.add("active");
     modal.classList.add("active");
+    modal.removeAttribute("inert"); // Rendre le modal interactif
     showStep(0);
   }
 
   function closeOnboarding() {
     overlay.classList.remove("active");
     modal.classList.remove("active");
+    modal.setAttribute("inert", ""); // Désactiver l'interactivité
   }
 
   function showStep(index) {
@@ -138,7 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
         : "<?php echo get_phrase('Next'); ?>";
   }
 
-  nextBtn.addEventListener("click", () => {
+  nextBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (current < steps.length - 1) {
       showStep(current + 1);
     } else {
@@ -146,12 +149,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  prevBtn.addEventListener("click", () => {
+  prevBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (current > 0) showStep(current - 1);
   });
 
-  skipBtn.addEventListener("click", closeOnboarding);
-  closeBtn.addEventListener("click", closeOnboarding);
+  skipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeOnboarding();
+  });
+
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeOnboarding();
+  });
+
   overlay.addEventListener("click", closeOnboarding);
 
   document.addEventListener("keydown", (e) => {

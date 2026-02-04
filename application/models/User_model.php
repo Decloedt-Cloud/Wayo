@@ -1297,6 +1297,12 @@ if ($_FILES['image_file']['name'] != "") {
 		return $result;
 	}
 
+	public function get_schools_per_category_count($category)
+	{
+		$result = $this->db->get_where('schools', array('status' => 1, 'Etat' => 1, 'category' => $category));
+		return $result->num_rows();
+	}
+
 	public function get_schools_search($input, $limit, $start)
 	{
 		$this->db->limit($limit, $start);

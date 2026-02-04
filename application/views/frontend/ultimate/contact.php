@@ -666,13 +666,6 @@ submitBtn.innerText = 'Sending...';
  
 const formData = new FormData(contactForm);
  
-// 🟩 Afficher toutes les données du formulaire dans la console
-console.log("===== Données du formulaire =====");
-for (let [key, value] of formData.entries()) {
-  console.log(`${key}:`, value);
-}
-console.log("=================================");
- 
 fetch(contactForm.action, {
   method: 'POST',
   body: formData,

@@ -17,7 +17,7 @@
 
 
 
-<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/theme.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/theme.min.css">
 
 <!-- CSS Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -52,30 +52,30 @@
 <!-- Custom CSS-->
 
 
-<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/footer.css">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/navigation.css">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/general.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/footer.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/navigation.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/general.min.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/toastr.min.css">
 
 
 <?php
 if ($page_name == "home") {
 
-  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/custom.css">';
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/custom.min.css">';
 
 } elseif ($page_name == "about") {
 
-  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/about-page.css">';
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/about-page.min.css">';
 
 } elseif ($page_name == "contact") {
 
   // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.min.css">';
 
 }elseif ($page_name == "online_admission"){
 
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
 
 
   
@@ -84,45 +84,45 @@ if ($page_name == "home") {
 elseif ($page_name == "online_admission_student"){
 
   // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
-  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.css">';
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
   
 }elseif ($page_name == "communities"){
 
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/courses-page.css">';
-     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/communities.css">';
+     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/communities.min.css">';
 }elseif ($page_name == "community_details"){
 
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/community-details.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/community-details.min.css">';
 }
 elseif ($page_name == "tutorial"){
 
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.min.css">';
 }
 elseif ($page_name == "faq"){
 
     // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.min.css">';
 }
 elseif ($page_name == "terms_conditions"){
 
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/terms-conditions.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/terms-conditions.min.css">';
     
 }
 elseif ($page_name == "privacy_policy"){
 
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/privacy-policy.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/privacy-policy.min.css">';
     
 }
 elseif ($page_name == "affiliation"){
 
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/affiliation.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/affiliation.min.css">';
     
 }
 elseif (strpos($page_name, 'Articles') !== false){
 
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/blog.css">';
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/blog.min.css">';
     
 }
 ?>
