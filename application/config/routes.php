@@ -224,6 +224,8 @@ $route['app/join_school/(.+)'] = 'student/join_school/$1';
 
 
 
+$route['academy/student/filter'] = 'student/academy/filter';
+
 // API Routes
 $route['api/user'] = 'api/Admin/user';
 $route['api/login'] = 'api/Admin/login';

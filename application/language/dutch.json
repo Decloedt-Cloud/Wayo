@@ -4049,5 +4049,16 @@
     "card_details": "Kaartgegevens",
     "secured_by_stripe": "Beveiligd door Stripe",
     "select_payment_method": "Selecteer een betaalmethode",
-    "paypal_checkout": "Afrekenen met PayPal"
+    "paypal_checkout": "Afrekenen met PayPal",
+    "school_tax_settings": "Belastinginstellingen van de school",
+    "vat_calculated_automatically_based_on_school_tax_settings": "De btw wordt automatisch berekend op basis van de belastinginstellingen van de school",
+    "school_vat_settings": "Btw-instellingen van de school",
+    "join_now": "Nu deelnemen",
+    "proceed_to_payment": "Doorgaan naar betaling",
+    "access_class": "Toegang tot de les",
+    "price_details": "Prijsdetails",
+    "select_community": "Community selecteren",
+    "member_since": "Lid sinds",
+    "active_membership": "Actief lidmaatschap",
+    "join_free": "Gratis deelnemen"
 }
