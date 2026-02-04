@@ -224,6 +224,8 @@ $route['app/join_school/(.+)'] = 'student/join_school/$1';
 
 
 
+$route['academy/student/filter'] = 'student/academy/filter';
+
 // API Routes
 $route['api/user'] = 'api/Admin/user';
 $route['api/login'] = 'api/Admin/login';
@@ -845,7 +847,7 @@ $route['app/online_admission'] = 'student/online_admission';
 $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
 $route['app/payment'] = 'student/payment';
 $route['app/online_admission'] = 'admin/online_admission';
-$route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
+// $route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
 $route['app/payment/(:any)'] = 'admin/payment/$1';
 $route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 

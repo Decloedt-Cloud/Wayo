@@ -34,13 +34,16 @@ class Modal extends CI_Controller {
 		
 	}
 
-	function popup($folder_name = '', $page_name = '' , $param1 = '' , $param2 = '', $param3 = '' , $param4 = '' , $param5 = '')
+	function popup($folder_name = '', $page_name = '' , $param1 = '' , $param2 = '', $param3 = '' , $param4 = '' , $param5 = '', $param6 = '', $param7 = '', $param8 = '')
 	{
 		$page_data['param1']		=	$param1;
 		$page_data['param2']		=	$param2;
 		$page_data['param3']		=	$param3;
 		$page_data['param4']		=	$param4;
 		$page_data['param5']		=	$param5;
+		$page_data['param6']		=	$param6; // VAT applicable (0/1)
+		$page_data['param7']		=	$param7; // VAT rate
+		$page_data['param8']		=	$param8; // Sub total (HT)
 		
 		// Special handling for billing_entity
 		if ($folder_name == 'billing_entity') {

@@ -4408,5 +4408,16 @@
     "all_languages": "All languages",
     "communities_found": "Communities found",
     "view_community": "View community",
-    "communities_pagination": "Communities pagination"
+    "communities_pagination": "Communities pagination",
+    "school_tax_settings": "School tax settings",
+    "vat_calculated_automatically_based_on_school_tax_settings": "Vat calculated automatically based on school tax settings",
+    "school_vat_settings": "School vat settings",
+    "join_now": "Join now",
+    "proceed_to_payment": "Proceed to payment",
+    "access_class": "Access class",
+    "price_details": "Price details",
+    "select_community": "Select community",
+    "member_since": "Member since",
+    "active_membership": "Active membership",
+    "join_free": "Join free"
 }

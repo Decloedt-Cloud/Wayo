@@ -1010,6 +1010,17 @@ class Student extends CI_Controller {
       $page_data['school_id'] = $id;
       $this->load->view('backend/academy/liste_classe', $page_data);
     }
+
+    if ($action == 'filter') {
+        $selected_class_id = $this->input->post('class_id');
+        $selected_user_id = $this->input->post('user_id');
+        // $selected_school_id = $this->session->userdata('active_school_id');
+        
+        $page_data['selected_class_id'] = $selected_class_id;
+        $page_data['selected_user_id'] = $selected_user_id;
+        // $page_data['selected_school_id'] = $selected_school_id;
+        $this->load->view('backend/academy/grid_view_for_student', $page_data);
+    }
   }
   //	academy ENDED
   public function online_admission($param1 = "", $user_id = "")
@@ -1026,6 +1037,12 @@ class Student extends CI_Controller {
 		$data['price'] = htmlspecialchars($this->input->post('price'));
 		$data['currency'] = htmlspecialchars($this->input->post('currency'));
 		$data['session'] = active_session();
+		
+		// VAT data from form (new)
+		$data['vat_applicable'] = (int)$this->input->post('vat_applicable');
+		$data['vat_rate'] = (float)$this->input->post('vat_rate');
+		$data['vat_amount'] = (float)$this->input->post('vat_amount');
+		$data['sub_total'] = (float)$this->input->post('sub_total');
 	
 	  	$this->session->set_userdata('enrolment_data', $data);
 
@@ -1058,25 +1075,47 @@ class Student extends CI_Controller {
 		$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
 		// print_r($num_rows_invoices);die;
 		if($num_rows_invoices == 0){
-			// Calculer la TVA pour les classes
-			$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
-			$school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
-			$vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
-			$tax_residence  = isset($school['country']) ? $school['country'] : null;
+			// ========== VAT CALCULATION FOR CLASS INVOICE ==========
+			// IMPORTANT: Le prix reçu est TTC (inclut déjà la TVA)
+			// Les données VAT peuvent venir du formulaire OU être recalculées
 			
-			$vat_rate = 0;
-			if ($vat_applicable) {
-				if ($tax_residence === 'MA') {
-					$vat_rate = 20;
-				} elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
-					$vat_rate = 5;
+			$total_amount = (float)$data['price']; // Prix TTC
+			
+			// Utiliser les données VAT du formulaire si disponibles
+			if (!empty($data['vat_applicable']) && $data['vat_applicable'] == 1 && !empty($data['sub_total'])) {
+				// Données VAT fournies par le formulaire
+				$vat_applicable = true;
+				$vat_rate = $data['vat_rate'];
+				$sub_total = $data['sub_total'];
+				$vat_amount = $data['vat_amount'];
+			} else {
+				// Fallback: Recalculer la TVA depuis les settings école
+				$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
+				$school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
+				$vat_enabled = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
+				$tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
+				
+				$vat_rate = 0;
+				$vat_applicable = false;
+				
+				if ($vat_enabled && !empty($tax_residence)) {
+					$vat_applicable = true;
+					if ($tax_residence === 'MA') {
+						$vat_rate = 20;
+					} elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+						$vat_rate = 5;
+					}
+				}
+				
+				// IMPORTANT: Le prix est TTC, donc on fait le calcul inversé
+				if ($vat_applicable && $vat_rate > 0) {
+					$sub_total = round($total_amount / (1 + ($vat_rate / 100)), 2);
+					$vat_amount = round($total_amount - $sub_total, 2);
+				} else {
+					$sub_total = $total_amount;
+					$vat_amount = 0;
 				}
 			}
-			
-			// Le prix reçu est HT pour les classes
-			$sub_total = (float)$data['price'];
-			$vat_amount = $sub_total * ($vat_rate / 100);
-			$total_amount = $sub_total + $vat_amount; // TTC
 			
 			$name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
 			$classe_name = $this->db->get_where('classes', array('id' => $data['class_id']))->row('name');
@@ -1919,12 +1958,19 @@ public function get_exams_paginated()
             
         } else {
             // Pas de conversion - validation standard
-            if (abs($secure_amount - $client_amount) > 0.01) {
-                log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}");
+            // TOLÉRANCE: 5% pour les arrondis TVA (au lieu de 0.01)
+            $tolerance = $secure_amount * 0.05; // 5% du montant
+            if (abs($secure_amount - $client_amount) > max($tolerance, 0.50)) {
+                log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}, Diff: " . abs($secure_amount - $client_amount));
                 $this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
                 redirect(route('invoice'), 'refresh');
                 return;
             }
+            // Log warning si différence existe (mais tolérée)
+            if (abs($secure_amount - $client_amount) > 0.01) {
+                log_message('debug', "Payment: Différence tolérée pour facture #{$invoice_id} - BDD: {$secure_amount}, Client: {$client_amount}");
+            }
+            // TOUJOURS utiliser le montant de la BDD pour sécurité
             $amount_paid = $secure_amount;
         }
         
@@ -2127,17 +2173,18 @@ public function get_exams_paginated()
 
                 // UPDATE INVOICE IF CLASS PRICE CHANGED
                 if ($class) {
-                    $current_price = (float)$class->price;
+                    // IMPORTANT: Le prix de la classe est TTC (inclut déjà la TVA)
+                    $current_price_ttc = (float)$class->price;
                     $school_id = $page_data['invoice_details']['school_id'];
                     
-                    // Recalculate VAT
+                    // Get VAT settings
                     $settings_school = $this->settings_model->get_settings_school_data($school_id);
                     $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
                     $vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
-                    $tax_residence  = isset($school['country']) ? $school['country'] : null;
+                    $tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
                     
                     $vat_rate = 0;
-                    if ($vat_applicable) {
+                    if ($vat_applicable && !empty($tax_residence)) {
                         if ($tax_residence === 'MA') {
                             $vat_rate = 20;
                         } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
@@ -2145,14 +2192,23 @@ public function get_exams_paginated()
                         }
                     }
 
-                    $vat_amount = $current_price * ($vat_rate / 100);
-                    $new_total_amount = $current_price + $vat_amount;
+                    // IMPORTANT: Calcul inversé car le prix est TTC
+                    // sub_total (HT) = TTC / (1 + taux)
+                    // vat_amount = TTC - HT
+                    if ($vat_rate > 0) {
+                        $sub_total = round($current_price_ttc / (1 + ($vat_rate / 100)), 2);
+                        $vat_amount = round($current_price_ttc - $sub_total, 2);
+                    } else {
+                        $sub_total = $current_price_ttc;
+                        $vat_amount = 0;
+                    }
+                    $new_total_amount = $current_price_ttc; // Le total reste le prix TTC
 
                     // If total amount differs, update invoice
                     if (abs($page_data['invoice_details']['total_amount'] - $new_total_amount) > 0.01) {
                          $update_data = [
                             'total_amount' => $new_total_amount,
-                            'sub_total'    => $current_price,
+                            'sub_total'    => $sub_total,
                             'vat_amount'   => $vat_amount,
                             'vat_rate'     => $vat_rate,
                             'updated_at'   => strtotime(date('d-M-Y'))
@@ -2162,7 +2218,7 @@ public function get_exams_paginated()
                         
                         // Update page data
                         $page_data['invoice_details']['total_amount'] = $new_total_amount;
-                        $page_data['invoice_details']['sub_total'] = $current_price;
+                        $page_data['invoice_details']['sub_total'] = $sub_total;
                         $page_data['invoice_details']['vat_amount'] = $vat_amount;
                         $page_data['invoice_details']['vat_rate'] = $vat_rate;
                     }
