@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <?php $announcements = $this->db->get_where('announcement', array('id' => $param1))->result_array(); ?>
 <?php foreach($announcements as $announcement){ ?>

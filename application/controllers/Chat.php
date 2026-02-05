@@ -28,7 +28,7 @@ class Chat extends CI_Controller {
         }
 
         // Configuration de l'API backend (URL du microservice)
-        $this->chat_service_url = "http://localhost:8000/api/v1"; 
+        $this->chat_service_url = "https://chat.wayo.site/api/v1"; 
         
         // Load TokenHandler to generate WAP Token for Chat Service
         require_once APPPATH . '/libraries/TokenHandler.php';

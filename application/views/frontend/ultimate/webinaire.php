@@ -153,8 +153,11 @@
 </section> -->
 
   <div class="video-background">
-  <video autoplay muted loop playsinline>
-    <source src="<?php echo base_url('uploads/videos/webinar-hero.mp4'); ?>" type="video/mp4">
+  <video autoplay muted loop playsinline poster="<?php echo base_url('uploads/videos/posters/webinar-hero.webp'); ?>">
+    <!-- Mobile (720p, 180 KB) -->
+    <source src="<?php echo base_url('uploads/videos/optimized/webinar-hero_mobile.mp4'); ?>" type="video/mp4" media="(max-width: 768px)">
+    <!-- Desktop (1080p, 1.3 MB) -->
+    <source src="<?php echo base_url('uploads/videos/optimized/webinar-hero.mp4'); ?>" type="video/mp4">
     Your browser does not support HTML5 videos.
   </video>
   <div class="video-overlay"></div>

@@ -516,6 +516,7 @@ $config['csrf_exclude_uris'] = array(
     'app/get_school_data', //admin
     'app/check_teacher_email', //admin
     'app/teacher/create', //admin
+    'app/manage_class/.*', //admin
     'app/delete_room', //teacher
     'app/add_appointment', //teacher
     'app/update_appointment', //teacher

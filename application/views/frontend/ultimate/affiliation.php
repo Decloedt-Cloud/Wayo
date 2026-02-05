@@ -109,7 +109,7 @@
     }
 
     function handleCTA() {
-        window.location.href = "<?php echo lang_route('contact'); ?>";
+        window.open("https://tidycal.com/wayo", "_blank");
     }
 
     calculateCommission();

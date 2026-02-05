@@ -13,9 +13,9 @@
             // URLs
             baseUrl: '<?php echo base_url(); ?>',
             siteUrl: '<?php echo rtrim(site_url(), "/"); ?>',
-            chatServiceUrl: 'http://localhost:8000/api/v1',
-            chatServiceBaseUrl: 'http://localhost:8000', // Added base URL for storage
-            authUrl: 'http://localhost:8000/api/auth/cross-auth',
+            chatServiceUrl: 'https://chat.wayo.site/api/v1',
+            chatServiceBaseUrl: 'https://chat.wayo.site', // Updated to production
+            authUrl: 'https://chat.wayo.site/api/auth/cross-auth',
             
             // Auth Data
             wapToken: '<?php echo $wap_token; ?>',
@@ -41,9 +41,13 @@
             // Reverb (Laravel Echo)
             reverb: {
                 key: 'iuvcjjlml7xkwbdfaxo3',
-                host: 'localhost',
-                port: 8080,
-                scheme: 'http'
+                host: 'chat.wayo.site',
+                port: 443,
+                scheme: 'https',
+                forceTLS: true,
+                encrypted: true,
+                disableStats: true,
+                enabledTransports: ['ws', 'wss'],
             },
             
             currentChatId: null,

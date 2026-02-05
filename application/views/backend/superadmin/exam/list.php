@@ -139,7 +139,7 @@ $exam_calendar_json = json_encode($exam_calendar);
 </div>
 
 <!-- Scripts -->
-<script src="<?php echo base_url('assets/backend/js/common_scripts.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/common_scripts.min.js'); ?>"></script>
 
 <script>
 function initDataTable() {

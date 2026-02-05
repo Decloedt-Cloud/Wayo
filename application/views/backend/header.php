@@ -362,7 +362,7 @@ if ($active_school_id && $user_belongs_to_school) {
 
     
 </script>
-<script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/create_community_modal.min.js'); ?>"></script>
 <script type="text/javascript">
     let CURRENT_USER_ROLE = '<?php echo strtolower($this->session->userdata('role')); ?>';
     const ACTIVE_SCHOOL_ID = '<?php echo $active_school_id; ?>';

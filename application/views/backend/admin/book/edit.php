@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <?php $book_details = $this->crud_model->get_book_by_id($param1); ?>
 <form method="POST" class="d-block ajaxForm" action="<?php echo route('book/update/'.$param1); ?>">

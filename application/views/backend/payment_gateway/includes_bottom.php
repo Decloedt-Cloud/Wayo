@@ -35,8 +35,6 @@
 <!-- end demo js-->
 
 <!--Custom JS-->
-<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/custom.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/addon.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/init.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/init.min.js"></script>

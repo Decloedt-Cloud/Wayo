@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/smtp-settings.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/smtp-settings.min.css">
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
         <div class="mb-3">

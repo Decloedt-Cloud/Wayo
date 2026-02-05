@@ -1,7 +1,7 @@
 <?php
 $school_id = school_id();
 ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <!--title-->
 
 <table id="basic-datatable" class="table table-striped dt-responsive nowrap table-modern" width="100%">

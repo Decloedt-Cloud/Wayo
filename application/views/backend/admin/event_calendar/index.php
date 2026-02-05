@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <style>
 :root { --exp-primary: #6366f1; --exp-primary-light: #eef2ff; --exp-success: #059669; --exp-dark: #1e293b; --exp-gray: #64748b; --exp-light: #f8fafc; --exp-border: #e2e8f0; --exp-warning: #f59e0b; }
 .exp-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3); }

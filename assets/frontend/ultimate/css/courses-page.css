@@ -99,21 +99,21 @@
 .course-card:hover {
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
 
-  .course-card-overlay {
-    height: 100%;
-    border-radius: 12px;
-  }
+.course-card:hover .course-card-overlay {
+  height: 100%;
+  border-radius: 12px;
+}
 
-  .course-title {
-    bottom: 65%;
-  }
+.course-card:hover .course-title {
+  bottom: 65%;
+}
 
-  .course-description {
-    max-height: 200px;
-    bottom: 3%;
-    white-space: normal;
-  }
+.course-card:hover .course-description {
+  max-height: 200px;
+  bottom: 3%;
+  white-space: normal;
 }
 
 .category {

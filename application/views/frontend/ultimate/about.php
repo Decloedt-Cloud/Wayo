@@ -25,7 +25,10 @@
         }
 
     /* Hero */
-    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/bg-about-us.png'); ?>'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/optimized/bg-about-us.webp'); ?>'); background-size:cover; background-position:center; }
+    @supports (background-image: url("test.avif")) {
+        .hero { background-image:url('<?php echo base_url('uploads/images/decloedt/img/optimized/bg-about-us.avif'); ?>'); }
+    }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
@@ -348,7 +351,11 @@
                 <!-- Team Member 1 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/bouhouti.jpg'); ?>" alt="Mohamed Bouhouti<?php echo get_phrase("Our_teams") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/bouhouti.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/bouhouti.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/bouhouti.jpg'); ?>" alt="<?php echo get_phrase('Mohamed_Bouhouti'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Mohamed_Bouhouti") ?></h3>
@@ -364,7 +371,11 @@
                 <!-- Team Member 2 -->
                 <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/decloedt.jpg'); ?>" alt="<?php echo get_phrase("decloedt") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/decloedt.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/decloedt.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/decloedt.jpg'); ?>" alt="<?php echo get_phrase('Stéphanie_Decloedt'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Stéphanie_Decloedt") ?></h3>
@@ -379,7 +390,11 @@
                 <!-- Team Member 3 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/bennani.jpg'); ?>" alt="<?php echo get_phrase("Fatine_Bennani") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/bennani.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/bennani.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/bennani.jpg'); ?>" alt="<?php echo get_phrase('Fatine_Bennani'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Fatine_Bennani") ?></h3>
@@ -394,7 +409,11 @@
                 <!-- Team Member 4 -->
                   <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/aboulfath.jpg'); ?>" alt="<?php echo get_phrase("Ahmed Aboulfath") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/aboulfath.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/aboulfath.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/aboulfath.jpg'); ?>" alt="<?php echo get_phrase('Ahmed_Aboulfath'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Ahmed_Aboulfath") ?></h3>
@@ -410,7 +429,11 @@
                 <!-- Team Member 5 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/naji.png'); ?>" alt="naji">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/naji.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/naji.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/naji.png'); ?>" alt="<?php echo get_phrase('Aymane_Naji'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Aymane_Naji") ?></h3>
@@ -427,7 +450,11 @@
                 <!-- Team Member 6 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/sandale.jpg'); ?>" alt="<?php echo get_phrase("Zakaria_Sandal") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/sandale.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/sandale.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/sandale.jpg'); ?>" alt="<?php echo get_phrase('Zakaria_Sandal'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Zakaria_Sandal") ?></h3>
@@ -443,7 +470,11 @@
                 <!-- Team Member 7 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/khiat.png'); ?>" alt="<?php echo get_phrase("Mehdi El khiat") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/khiat.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/khiat.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/khiat.png'); ?>" alt="<?php echo get_phrase('Mehdi_El_khiat'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Mehdi El khiat") ?></h3>
@@ -460,7 +491,11 @@
                 <!-- Team Member 8 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/fettah.jpg'); ?>" alt="<?php echo get_phrase("Abdelfattah_Allam") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/fettah.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/fettah.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/fettah.jpg'); ?>" alt="<?php echo get_phrase('Abdelfattah_Allam'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Abdelfattah_Allam") ?></h3>
@@ -471,29 +506,15 @@
                     </div>
                   </div>
                 </div>
-                 
                 
-
                 <!-- Team Member 9 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/tchoubi.png'); ?>" alt="<?php echo get_phrase("Mouhssine_Tchoubi") ?>">
-                  </div>
-                  <div class="card-content">
-                    <h3><?php echo get_phrase("Mouhssine_Tchoubi") ?></h3>
-                    <div class="position"><?php echo get_phrase("Full-Stack_Web_Developer") ?></div>
-                    <div class="social-links">
-                      <a href="https://www.linkedin.com/in/mouhssine-tchoubi-8a2b02176/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="mailto:Mouhssine.Tchoubi@decloedt.cloud"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-                
-
-                <!-- Team Member 10 -->
-                 <div class="team-card">
-                  <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/bastor.png'); ?>" alt="<?php echo get_phrase("Hamza_Bastor") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/bastor.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/bastor.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/bastor.png'); ?>" alt="<?php echo get_phrase('Hamza_Bastor'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Hamza_Bastor") ?></h3>
@@ -506,10 +527,14 @@
                 </div>
                
 
-                <!-- Team Member 11 -->
+                <!-- Team Member 10 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/abbaoui.png'); ?>" alt="<?php echo get_phrase("Khalil_Abbaoui") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/abbaoui.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/abbaoui.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/abbaoui.png'); ?>" alt="<?php echo get_phrase('Khalil_Abbaoui'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Khalil_Abbaoui") ?></h3>
@@ -522,10 +547,14 @@
                 </div>
                 
 
-                <!-- Team Member 12 -->
+                <!-- Team Member 11 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/maski.png'); ?>" alt="<?php echo get_phrase("Aymen_Maski") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/maski.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/maski.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/maski.png'); ?>" alt="<?php echo get_phrase('Aymen_Maski'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Aymen_Maski") ?> </h3>
@@ -537,11 +566,14 @@
                   </div>
                 </div>
                 
-                
-                <!-- Team Member 13 -->
+                <!-- Team Member 12 -->
                  <div class="team-card">
                   <div class="card-image">
-                    <img src="<?php echo base_url('uploads/teams/zmane.png'); ?>" alt="<?php echo get_phrase("Ilyas Zmane") ?>">
+                    <picture>
+                      <source type="image/avif" srcset="<?php echo base_url('uploads/teams/optimized/zmane.avif'); ?>">
+                      <source type="image/webp" srcset="<?php echo base_url('uploads/teams/optimized/zmane.webp'); ?>">
+                      <img src="<?php echo base_url('uploads/teams/zmane.png'); ?>" alt="<?php echo get_phrase('Ilyas_Zmane'); ?>" loading="lazy">
+                    </picture>
                   </div>
                   <div class="card-content">
                     <h3><?php echo get_phrase("Ilyas Zmane") ?></h3>
@@ -590,119 +622,133 @@
 
 
   <script>
-    // Intersection reveal
-    (function(){
-      const els = document.querySelectorAll('[data-animate]');
-      const io = new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          if(entry.isIntersecting){ entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
+  // Code consolidé et optimisé
+  (function() {
+    'use strict';
+    
+    // === Intersection Observer pour animations ===
+    const animatedEls = document.querySelectorAll('[data-animate]');
+    if (animatedEls.length) {
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
         });
-      },{threshold:0.15});
-      els.forEach(el=>io.observe(el));
-    })();
+      }, { threshold: 0.15 });
+      animatedEls.forEach(function(el) { observer.observe(el); });
+    }
 
-    // Smooth in-page scroll for browsers lacking CSS smooth behavior
-    document.querySelectorAll('a[href^="#"]').forEach(a=>{
-      a.addEventListener('click', (e)=>{
+    // === Smooth scroll pour ancres ===
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
         const id = a.getAttribute('href').slice(1);
         const target = document.getElementById(id);
-        if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       });
     });
 
+    // === Menu mobile toggle ===
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('show');
+      });
+    }
 
-  </script> 
+    // === Carousel optimisé (évite les forced reflows) ===
+    const wrapper = document.getElementById('sliderWrapper');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const cards = document.querySelectorAll('.team-card');
+    
+    if (!wrapper || !cards.length || !dotsContainer) return;
+    
+    let currentIndex = 0;
+    const totalCards = cards.length;
+    let cardsPerView = 3;
+    let maxIndex = 0;
+    let cardWidth = 0;
+    const gap = 30;
+    
+    function getCardsPerView() {
+      const width = window.innerWidth;
+      return width <= 768 ? 1 : width <= 992 ? 2 : 3;
+    }
 
-  <script>
-
-  // Révélations au scroll + smooth scroll + menu mobile
-(function(){
-  const els = document.querySelectorAll('[data-animate]');
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add('is-visible');
-        io.unobserve(entry.target);
+    function createDots() {
+      const fragment = document.createDocumentFragment();
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i <= maxIndex; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === currentIndex ? ' active' : '');
+        dot.dataset.index = i;
+        fragment.appendChild(dot);
+      }
+      dotsContainer.appendChild(fragment);
+    }
+    
+    // Délégation d'événements pour les dots
+    dotsContainer.addEventListener('click', function(e) {
+      if (e.target.classList.contains('dot')) {
+        currentIndex = parseInt(e.target.dataset.index, 10);
+        updateSlider();
       }
     });
-  },{threshold: 0.15});
-  els.forEach(el=>io.observe(el));
 
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener('click', (e)=>{
-      const id = a.getAttribute('href').slice(1);
-      const target = document.getElementById(id);
-      if(target){
-        e.preventDefault();
-        target.scrollIntoView({behavior:'smooth', block:'start'});
-      }
-    });
-  });
+    function updateSlider() {
+      const offset = currentIndex * (cardWidth + gap) * cardsPerView;
+      wrapper.style.transform = 'translateX(-' + offset + 'px)';
+      
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach(function(dot, index) {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+    }
 
-  const menuToggle = document.getElementById('menu-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  menuToggle?.addEventListener('click', ()=> navLinks?.classList.toggle('show'));
-})();
+    function nextSlide() {
+      currentIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
+      updateSlider();
+    }
 
-    // caroussel
+    function prevSlide() {
+      currentIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
+      updateSlider();
+    }
 
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
 
-        const wrapper = document.getElementById('sliderWrapper');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const dotsContainer = document.getElementById('dotsContainer');
-        const cards = document.querySelectorAll('.team-card');
-        
-        let currentIndex = 0;
-        const totalCards = cards.length;
-        const cardsPerView = window.innerWidth <= 768 ? 1 : window.innerWidth <= 992 ? 2 : 3;
-        const maxIndex = Math.ceil(totalCards / cardsPerView) - 1;
-
-        // Create dots
-        for (let i = 0; i <= maxIndex; i++) {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => goToSlide(i));
-            dotsContainer.appendChild(dot);
-        }
-
-        const dots = document.querySelectorAll('.dot');
-
-        function updateSlider() {
-            const cardWidth = cards[0].offsetWidth;
-            const gap = 30;
-            const offset = currentIndex * (cardWidth + gap) * cardsPerView;
-            wrapper.style.transform = `translateX(-${offset}px)`;
-
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-        }
-
-        function nextSlide() {
-            currentIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
-            updateSlider();
-        }
-
-        function prevSlide() {
-            currentIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
-            updateSlider();
-        }
-
-        function goToSlide(index) {
-            currentIndex = index;
-            updateSlider();
-        }
-
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-
-        // Auto-play
-        // setInterval(nextSlide, 5000);
-
-        // Responsive handling
-        window.addEventListener('resize', updateSlider);
-
-
-</script>
+    // Debounce pour le resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(initCarousel, 200);
+    }, { passive: true });
+    
+    // Initialisation différée après le chargement complet
+    function initCarousel() {
+      cardsPerView = getCardsPerView();
+      maxIndex = Math.ceil(totalCards / cardsPerView) - 1;
+      currentIndex = Math.min(currentIndex, maxIndex);
+      if (cards[0]) cardWidth = cards[0].offsetWidth;
+      createDots();
+      updateSlider();
+    }
+    
+    // Attendre que la page soit complètement chargée
+    if (document.readyState === 'complete') {
+      setTimeout(initCarousel, 0);
+    } else {
+      window.addEventListener('load', function() {
+        setTimeout(initCarousel, 0);
+      });
+    }
+  })();
+  </script>

@@ -142,13 +142,13 @@
           <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
           <label class="login-field" for="loginEmail">
             <span><?php echo get_phrase("e-mail") ?>*</span>
-            <input type="email" id="loginEmail" placeholder="<?php echo get_phrase("e-mail") ?>" aria-describedby="emailHelp" name="login_email">
+            <input type="email" id="loginEmail" placeholder="<?php echo get_phrase("e-mail") ?>" aria-describedby="emailHelp" name="login_email" autocomplete="email">
           </label>
  
           <label for="loginPassword" class="login-field">
             <span><?php echo get_phrase("password") ?> *</span>
             <div style="position:relative; width: 100%;">
-              <input type="password" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password" style="width:100%; padding-right: 40px; box-sizing: border-box;">
+              <input type="password" id="loginPassword" placeholder="<?php echo get_phrase("password") ?>" name="login_password" autocomplete="current-password" style="width:100%; padding-right: 40px; box-sizing: border-box;">
               <i id="togglePassword" class="fa-regular fa-eye-slash" onclick="toggleLoginPassword(event)" style="position:absolute; right:12px; top:23px; bottom:0; margin:auto; height:18px; line-height:18px; cursor:pointer; color:#6b7280; font-size:13px; transition: color 0.2s; z-index: 100; text-decoration: none; border: none;"></i>
             </div>
           </label>
@@ -305,11 +305,14 @@ function toggleLoginPassword(e) {
     return emailRegex.test(email);
   }
 
-  document.getElementById("loginSubmit").addEventListener("click", function (event) {
-    if (!loginSubmit()) {
-      event.preventDefault();
-    }
-  });
+  var loginSubmitBtn = document.getElementById("loginSubmit");
+  if (loginSubmitBtn) {
+    loginSubmitBtn.addEventListener("click", function (event) {
+      if (!loginSubmit()) {
+        event.preventDefault();
+      }
+    });
+  }
 
   function loginSubmit() {
     var email = document.getElementById("loginEmail").value;
@@ -362,26 +365,31 @@ function toggleLoginPassword(e) {
 </script>
 
  <script>
-  /* Drawer (pour mobile) : rien à faire, c’est CSS avec #drawerToggle */
+  /* Drawer (pour mobile) : rien à faire, c'est CSS avec #drawerToggle */
 
-/* Parallax doux des orbes + reveal */
-const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (!prefersReduced) {
-  const orbs = document.querySelectorAll(".bg-orbs .orb");
-  const lerp = (a,b,t)=>a+(b-a)*t;
-  window.addEventListener("scroll", ()=>{
-    const t = Math.min(1, window.scrollY/1200);
-    orbs.forEach((o,i)=>{
-      const dx = lerp(0, (i%2? 22 : -22), t);
-      const dy = lerp(0, (i%2? -18 : 26), t);
-      o.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-  }, {passive:true});
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
-  },{threshold:.14});
-  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
-}
+/* Parallax doux des orbes + reveal - encapsulé pour éviter les conflits */
+(function() {
+  if (window._orbParallaxInit) return; // Évite l'exécution multiple
+  window._orbParallaxInit = true;
+  
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced) {
+    const orbs = document.querySelectorAll(".bg-orbs .orb");
+    const lerp = (a,b,t)=>a+(b-a)*t;
+    window.addEventListener("scroll", ()=>{
+      const t = Math.min(1, window.scrollY/1200);
+      orbs.forEach((o,i)=>{
+        const dx = lerp(0, (i%2? 22 : -22), t);
+        const dy = lerp(0, (i%2? -18 : 26), t);
+        o.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+    }, {passive:true});
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
+    },{threshold:.14});
+    document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+  }
+})();
 
 /* Tabs des fonctionnalités (CSS radios) – pas de JS requis */
 
@@ -594,11 +602,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return emailRegex.test(email);
   }
 
-  document.getElementById("loginSubmit").addEventListener("click", function (event) {
-    if (!loginSubmit()) {
-      event.preventDefault();
-    }
-  });
+  var loginSubmitBtn = document.getElementById("loginSubmit");
+  if (loginSubmitBtn) {
+    loginSubmitBtn.addEventListener("click", function (event) {
+      if (!loginSubmit()) {
+        event.preventDefault();
+      }
+    });
+  }
 
   function loginSubmit() {
     var email = document.getElementById("loginEmail").value;
@@ -651,26 +662,31 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
  <script>
-  /* Drawer (pour mobile) : rien à faire, c’est CSS avec #drawerToggle */
+  /* Drawer (pour mobile) : rien à faire, c'est CSS avec #drawerToggle */
 
-/* Parallax doux des orbes + reveal */
-const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (!prefersReduced) {
-  const orbs = document.querySelectorAll(".bg-orbs .orb");
-  const lerp = (a,b,t)=>a+(b-a)*t;
-  window.addEventListener("scroll", ()=>{
-    const t = Math.min(1, window.scrollY/1200);
-    orbs.forEach((o,i)=>{
-      const dx = lerp(0, (i%2? 22 : -22), t);
-      const dy = lerp(0, (i%2? -18 : 26), t);
-      o.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-  }, {passive:true});
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
-  },{threshold:.14});
-  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
-}
+/* Parallax doux des orbes + reveal - encapsulé pour éviter les conflits */
+(function() {
+  if (window._orbParallaxInit) return; // Évite l'exécution multiple
+  window._orbParallaxInit = true;
+  
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced) {
+    const orbs = document.querySelectorAll(".bg-orbs .orb");
+    const lerp = (a,b,t)=>a+(b-a)*t;
+    window.addEventListener("scroll", ()=>{
+      const t = Math.min(1, window.scrollY/1200);
+      orbs.forEach((o,i)=>{
+        const dx = lerp(0, (i%2? 22 : -22), t);
+        const dy = lerp(0, (i%2? -18 : 26), t);
+        o.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+    }, {passive:true});
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
+    },{threshold:.14});
+    document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+  }
+})();
 
 /* Tabs des fonctionnalités (CSS radios) – pas de JS requis */
 

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <?php $grade = $this->db->get_where('grades', array('id' => $param1))->row_array(); ?>
 <form method="POST" class="d-block ajaxForm" action="<?php echo route('grade/update/'.$grade['id']); ?>">

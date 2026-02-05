@@ -188,6 +188,99 @@
             font-size: 2.25rem;
         }
     }
+
+    /* Social Share Buttons */
+    .share-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        text-decoration: none;
+        border: 2px solid;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .share-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .share-btn:hover::before {
+        left: 100%;
+    }
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Facebook */
+    .share-btn--facebook {
+        color: #1877f2;
+        border-color: #1877f2;
+    }
+    .share-btn--facebook:hover {
+        background: #1877f2;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+    }
+    
+    /* X (Twitter) */
+    .share-btn--x {
+        color: #14171a;
+        border-color: #14171a;
+    }
+    .share-btn--x:hover {
+        background: #14171a;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(20, 23, 26, 0.4);
+    }
+    
+    /* LinkedIn */
+    .share-btn--linkedin {
+        color: #0a66c2;
+        border-color: #0a66c2;
+    }
+    .share-btn--linkedin:hover {
+        background: #0a66c2;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+    }
+    
+    /* WhatsApp */
+    .share-btn--whatsapp {
+        color: #25d366;
+        border-color: #25d366;
+    }
+    .share-btn--whatsapp:hover {
+        background: #25d366;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+    
+    /* Copy Link */
+    .share-btn--copy {
+        color: #6c757d;
+        border-color: #dee2e6;
+    }
+    .share-btn--copy:hover {
+        background: linear-gradient(135deg, #F06423, #ff8a50);
+        color: #fff;
+        border-color: #F06423;
+        box-shadow: 0 6px 20px rgba(240, 100, 35, 0.4);
+    }
 </style>
 
 <div class="article-header">
@@ -202,14 +295,14 @@
         
         <div class="article-main-meta">
             <div class="author-info">
-                <img src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Author" class="author-avatar">
+                <img alt="Author" class="author-avatar" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>">
                 <div>
                     <span class="author-name"><?php echo $article['author']; ?></span>
                     <span class="meta-item"><?php echo get_phrase('author'); ?></span>
                 </div>
             </div>
             <div class="meta-item">
-                <i class="far fa-calendar-alt"></i>
+                <i class="fa-regular fa-calendar-days"></i>
                 <?php echo date('d M, Y', strtotime($article['created_at'])); ?>
             </div>
             <!-- <div class="meta-item">
@@ -230,17 +323,7 @@
 
                 <div class="article-body-content">
                     <?php echo $article['content']; ?>
-                    
-                    <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                    
-                    <h2>Pourquoi est-ce important ?</h2>
-                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    
-                    <blockquote>
-                        "Wayo Academy change la façon dont nous apprenons et partageons nos connaissances au quotidien."
-                    </blockquote>
 
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p> -->
                 </div>
 
                 <div class="mt-5 d-flex justify-content-between align-items-center">
@@ -256,70 +339,63 @@
                     <?php 
                     // Prepare share data
                     $current_url = current_url();
-                    $share_title = urlencode($article['title']);
-                    $share_description = urlencode($article['summary']);
+                    $share_title = $article['title'];
+                    $share_text = $article['title'] . ' - ' . (isset($article['summary']) ? $article['summary'] : '');
                     
                     // Social share URLs
-                    // Facebook with quote parameter to pre-fill the post
-                    $facebook_share = 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode($current_url) . '&quote=' . urlencode($article['title'] . ' - ' . $article['summary']);
-                    
-                    $twitter_share = 'https://twitter.com/intent/tweet?url=' . urlencode($current_url) . '&text=' . $share_title;
+                    $facebook_share = 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode($current_url);
+                    $twitter_share = 'https://x.com/intent/post?url=' . urlencode($current_url) . '&text=' . urlencode($share_title);
                     $linkedin_share = 'https://www.linkedin.com/sharing/share-offsite/?url=' . urlencode($current_url);
-                    $whatsapp_share = 'https://api.whatsapp.com/send?text=' . $share_title . '%20' . urlencode($current_url);
+                    $whatsapp_share = 'https://api.whatsapp.com/send?text=' . urlencode($share_text . ' ' . $current_url);
                     ?>
                     
-                    <div class="share-btns d-flex align-items-center flex-wrap gap-2">
-                        <span class="fw-bold" style="color: #666;"><?php echo get_phrase('share'); ?>:</span>
+                    <div class="share-btns d-flex align-items-center flex-wrap gap-3">
+                        <span class="fw-bold" style="color: #888;"><?php echo get_phrase('share'); ?>:</span>
                         
                         <!-- Facebook Share -->
                         <a href="<?php echo $facebook_share; ?>" 
                            target="_blank" 
                            rel="noopener noreferrer"
-                           class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                           style="width: 40px; height: 40px; border-color: #1877f2; color: #1877f2;"
-                           title="Share on Facebook"
+                           class="share-btn share-btn--facebook"
+                           title="<?php echo get_phrase('share_on_facebook'); ?>"
                            onclick="window.open(this.href, 'facebook-share-dialog', 'width=626,height=436'); return false;">
-                            <i class="fab fa-facebook-f"></i>
+                            <i class="fa-brands fa-facebook-f"></i>
                         </a>
                         
-                        <!-- Twitter Share -->
+                        <!-- X (Twitter) Share -->
                         <a href="<?php echo $twitter_share; ?>" 
                            target="_blank" 
                            rel="noopener noreferrer"
-                           class="btn btn-outline-info btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                           style="width: 40px; height: 40px; border-color: #1da1f2; color: #1da1f2;"
-                           title="Share on Twitter"
+                           class="share-btn share-btn--x"
+                           title="<?php echo get_phrase('share_on_x'); ?>"
                            onclick="window.open(this.href, 'twitter-share-dialog', 'width=626,height=436'); return false;">
-                            <i class="fab fa-twitter"></i>
+                            <i class="fa-brands fa-x-twitter"></i>
                         </a>
                         
                         <!-- LinkedIn Share -->
                         <a href="<?php echo $linkedin_share; ?>" 
                            target="_blank" 
                            rel="noopener noreferrer"
-                           class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                           style="width: 40px; height: 40px; border-color: #0077b5; color: #0077b5;"
-                           title="Share on LinkedIn"
+                           class="share-btn share-btn--linkedin"
+                           title="<?php echo get_phrase('share_on_linkedin'); ?>"
                            onclick="window.open(this.href, 'linkedin-share-dialog', 'width=626,height=500'); return false;">
-                            <i class="fab fa-linkedin-in"></i>
+                            <i class="fa-brands fa-linkedin-in"></i>
                         </a>
                         
                         <!-- WhatsApp Share -->
                         <a href="<?php echo $whatsapp_share; ?>" 
                            target="_blank" 
                            rel="noopener noreferrer"
-                           class="btn btn-outline-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                           style="width: 40px; height: 40px; border-color: #25d366; color: #25d366;"
-                           title="Share on WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
+                           class="share-btn share-btn--whatsapp"
+                           title="<?php echo get_phrase('share_on_whatsapp'); ?>">
+                            <i class="fa-brands fa-whatsapp"></i>
                         </a>
                         
                         <!-- Copy Link -->
                         <button onclick="copyToClipboard('<?php echo $current_url; ?>')"
-                                class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 40px; height: 40px;"
-                                title="Copy link">
-                            <i class="fas fa-link"></i>
+                                class="share-btn share-btn--copy"
+                                title="<?php echo get_phrase('copy_link'); ?>">
+                            <i class="fa-solid fa-link"></i>
                         </button>
                     </div>
                     

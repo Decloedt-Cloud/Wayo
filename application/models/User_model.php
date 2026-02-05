@@ -1297,6 +1297,12 @@ if ($_FILES['image_file']['name'] != "") {
 		return $result;
 	}
 
+	public function get_schools_per_category_count($category)
+	{
+		$result = $this->db->get_where('schools', array('status' => 1, 'Etat' => 1, 'category' => $category));
+		return $result->num_rows();
+	}
+
 	public function get_schools_search($input, $limit, $start)
 	{
 		$this->db->limit($limit, $start);
@@ -2346,7 +2352,7 @@ private function _sync_user_to_chat_service($user_id)
 		];
 
 		// URL du Chat Service (hardcodé comme ailleurs dans le projet)
-		$url = 'http://localhost:8000/api/auth/sync-user';
+		$url = 'https://chat.wayo.site/api/auth/sync-user';
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

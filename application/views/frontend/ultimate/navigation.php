@@ -140,8 +140,24 @@ if ($current_user_id) {
         background: #fff;
         font-weight: 800;
         color: var(--text);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-lang::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(252, 123, 48, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-lang:hover::before {
+        left: 100%;
+    }
     .btn-lang:hover {
         background: #f7f7f7;
     }
@@ -152,8 +168,24 @@ if ($current_user_id) {
         border-radius: 14px;
         font-weight: 900;
         transition: transform 0.18s, filter 0.18s, box-shadow 0.18s;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-custom::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-custom:hover::before {
+        left: 100%;
+    }
     .btn-custom:hover {
         transform: translateY(-1px);
     }
@@ -162,8 +194,24 @@ if ($current_user_id) {
         background: #fff;
         border: 1px solid var(--line);
         color: var(--text);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-ghost::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(252, 123, 48, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-ghost:hover::before {
+        left: 100%;
+    }
     .btn-ghost:hover {
         background: #f7f7f7;
         color: var(--orange) !important;
@@ -174,8 +222,24 @@ if ($current_user_id) {
         color: #fff;
         border: none;
         box-shadow: 0 14px 28px rgba(244, 122, 31, 0.22);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-accent::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-accent:hover::before {
+        left: 100%;
+    }
     .btn-accent:hover {
         background: linear-gradient(135deg, var(--orange), var(--orange-2));
         color: #fff;
@@ -770,13 +834,46 @@ if ($current_user_id) {
         border: none;
         cursor: pointer;
         transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-saas::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-saas:hover::before {
+        left: 100%;
     }
 
     .btn-community {
         background-color: #F06423;
         color: white;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-community::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-community:hover::before {
+        left: 100%;
+    }
     .btn-community:hover {
         opacity: 0.9;
     }
@@ -785,8 +882,24 @@ if ($current_user_id) {
         background-color: #FFFFFF;
         color: #1F2937;
         border: 1px solid #E5E7EB;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-community-2::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(31, 41, 55, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-community-2:hover::before {
+        left: 100%;
+    }
     .btn-community-2:hover {
         background-color: #F3F4F6;
     }
@@ -914,7 +1027,7 @@ if ($current_user_id) {
             <div class="container container-customize">
                 <!-- Logo -->
                 <a class="navbar-brand" href="<?php echo lang_route('home'); ?>" aria-label="Wayo Academy">
-                    <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
+                    <img class="logo-img" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>">
                 </a>
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler ms-auto" id="nav-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
@@ -1378,7 +1491,7 @@ if ($current_user_id) {
         window.csrfTokenName = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.csrfTokenValue = '<?php echo $this->security->get_csrf_hash(); ?>';
     </script>
-    <script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
+    <script src="<?php echo base_url('assets/backend/js/create_community_modal.min.js'); ?>"></script>
     <script>
         // Language code mapping
         var langCodeMap = {
@@ -1507,6 +1620,11 @@ if ($current_user_id) {
             const menu = document.getElementById('community-menu');
             const roleMenu = document.getElementById('role-dropdown-menu');
             const currentLabel = document.getElementById('current-role-label');
+
+            // Si les éléments n'existent pas (utilisateur non connecté), on arrête
+            if (!switcher || !trigger || !menu || !roleMenu || !currentLabel) {
+                return;
+            }
 
             const currentRole = '<?php echo strtolower($this->session->userdata("role")); ?>';
 
