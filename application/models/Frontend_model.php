@@ -817,7 +817,8 @@ class Frontend_model extends CI_Model
         'trial_end' => $now + (60 * 60 * 24 * $trial_days),
         'is_trial' => 1,
         'is_paid' => 0,
-        'subscription_status' => 'trialing'
+        'subscription_status' => 'trialing',
+        'country' => $country_code
     ];
 
     // Insert school
@@ -847,7 +848,7 @@ class Frontend_model extends CI_Model
         'currency_position' => 'left',
         'language' => 'english',
         'type' => htmlspecialchars($this->input->post('i_am')),
-        'Tax_residence' => $country_code,
+        // 'Tax_residence' => $country_code, // Removed: Moved to schools.country
         'vat_enabled' => 1, // TVA activée par défaut ou selon besoin
         'vat_rate' => $rate
     ];

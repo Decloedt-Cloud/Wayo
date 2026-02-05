@@ -215,7 +215,6 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="col-12 text-center py-5">
-                    <img src="https://i.postimg.cc/q7S7tX2N/empty-state.png" alt="No Articles" style="max-width: 200px; opacity: 0.5;">
                     <p class="mt-4 text-muted"><?php echo get_phrase('no_articles_found'); ?></p>
                 </div>
             <?php endif; ?>

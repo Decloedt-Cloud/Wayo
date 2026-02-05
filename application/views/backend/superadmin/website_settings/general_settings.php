@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/generalSettings.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/generalSettings.min.css">
 
 
 <div class="mb-3">

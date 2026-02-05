@@ -60,6 +60,210 @@ $supported_langs = array(
     'ar' => 'arabic',
     'es' => 'spanish',
     'nl' => 'dutch'
+$config['sess_driver'] = 'database';
+$config['sess_cookie_name'] = 'ci_session';
+$config['sess_expiration'] = 7200;
+$config['sess_save_path'] = 'ci_sessions';
+$config['sess_match_ip'] = FALSE;
+$config['sess_time_to_update'] = 300;
+$config['sess_regenerate_destroy'] = FALSE;
+$config['composer_autoload'] = FCPATH.'vendor/autoload.php';
+/*
+|--------------------------------------------------------------------------
+| Cookie Related Variables
+|--------------------------------------------------------------------------
+|
+| 'cookie_prefix'   = Set a cookie name prefix if you need to avoid collisions
+| 'cookie_domain'   = Set to .your-domain.com for site-wide cookies
+| 'cookie_path'     = Typically will be a forward slash
+| 'cookie_secure'   = Cookie will only be set if a secure HTTPS connection exists.
+| 'cookie_httponly' = Cookie will only be accessible via HTTP(S) (no javascript)
+|
+| Note: These settings (with the exception of 'cookie_prefix' and
+|       'cookie_httponly') will also affect sessions.
+|
+*/
+$config['cookie_prefix']    = '';
+$config['cookie_domain']    = '';
+$config['cookie_path']      = '/';
+$config['cookie_secure']    = FALSE;
+$config['cookie_httponly']  = TRUE;
+ 
+/*
+|--------------------------------------------------------------------------
+| Standardize newlines
+|--------------------------------------------------------------------------
+|
+| Determines whether to standardize newline characters in input data,
+| meaning to replace \r\n, \r, \n occurrences with the PHP_EOL value.
+|
+| WARNING: This feature is DEPRECATED and currently available only
+|          for backwards compatibility purposes!
+|
+*/
+$config['standardize_newlines'] = FALSE;
+ 
+/*
+|--------------------------------------------------------------------------
+| Global XSS Filtering
+|--------------------------------------------------------------------------
+|
+| Determines whether the XSS filter is always active when GET, POST or
+| COOKIE data is encountered
+|
+| WARNING: This feature is DEPRECATED and currently available only
+|          for backwards compatibility purposes!
+|
+*/
+$config['global_xss_filtering'] = FALSE;
+ 
+/*
+|--------------------------------------------------------------------------
+| Cross Site Request Forgery
+|--------------------------------------------------------------------------
+| Enables a CSRF cookie token to be set. When set to TRUE, token will be
+| checked on a submitted form. If you are accepting user data, it is strongly
+| recommended CSRF protection be enabled.
+|
+| 'csrf_token_name' = The token name
+| 'csrf_cookie_name' = The cookie name
+| 'csrf_expire' = The number in seconds the token should expire.
+| 'csrf_regenerate' = Regenerate token on every submission
+| 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
+|
+*/
+$config['csrf_protection'] = TRUE;
+$config['csrf_token_name'] = 'CSRF';
+$config['csrf_cookie_name'] = 'csrf_cookie_name';
+$config['csrf_expire'] = 7200;
+$config['csrf_regenerate'] = TRUE;
+$config['csrf_exclude_uris'] = array(
+    'app/add_appointment', //superadmin
+    'app/update_appointment', //superadmin
+    'app/delete_appointment', //superadmin
+    'app/get_sections', //superadmin
+    'app/delete_room', //superadmin
+    'app/exam/delete.*', //superadmin
+    'app/exam/create', //superadmin
+    'app/exam/update.*', //superadmin
+    'app/get_sections_by_class', //superadmin
+    'app/exam/list', //superadmin
+    'app/filter_exams', //superadmin
+    'app/filter_recordings', //superadmin
+    'app/get_recordings', //superadmin
+    'app/get_recordings_by_meeting_id', //superadmin
+    'app/calendar.*', //superadmin
+    'app/get_meeting_status', //superadmin
+    'app/get_classes_by_school', //superadmin
+    'app/create_event', //superadmin
+    'app/update_event', //superadmin
+    'app/get_classes_with_events', //superadmin
+    'app/start_meeting', //superadmin
+    'app/delete_event', //superadmin
+    'app/get_users_by_school', //superadmin
+    'app/check_teacher_email', //superadmin
+    'app/add_appointment', //admin
+    'app/update_appointment', //admin
+    'app/delete_appointment', //admin
+    'app/get_sections', //admin
+    'app/filter_exams', //admin
+    'app/exam/delete.*', //admin
+    'app/exam/create', //admin
+    'app/exam/update.*', //admin
+    'app/get_sections_by_class', //admin
+    'app/exam/list', //admin
+    'app/delete_room', //admin
+    'app/filter_recordings', //admin
+    'app/get_recordings', //admin
+    'app/get_recordings_by_meeting_id', //admin
+    'app/calendar.*', //admin
+    'app/get_meeting_status', //admin
+    'app/get_classes_by_school', //admin
+    'app/create_event', //admin
+    'app/update_event', //admin
+    'app/start_meeting', //admin
+    'app/get_classes_with_events', //admin
+    'app/delete_event', //admin
+    'app/get_users_by_school', //admin
+    'app/get_school_data', //admin
+    'app/check_teacher_email', //admin
+    'app/teacher/create', //admin
+    'app/manage_class/.*', //admin
+    'app/delete_room', //teacher
+    'app/add_appointment', //teacher
+    'app/update_appointment', //teacher
+    'app/delete_appointment', //teacher
+    'app/get_sections', //teacher
+    'app/filter_recordings', //teacher
+    'app/get_recordings', //teacher
+    'app/get_recordings_by_meeting_id', //teacher
+    'app/calendar.*', //teacher
+    'app/get_meeting_status', //teacher
+    'app/get_classes_by_school', //teacher
+    'app/create_event', //teacher
+    'app/update_event', //teacher
+    'app/start_meeting', //teacher
+    'app/get_classes_with_events', //teacher
+    'app/delete_event', //teacher
+    'app/get_users_by_school', //teacher
+    'app/get_school_data', //teacher
+    'app/get_sections', //student
+    'app/calendar.*', //student
+    'app/get_meeting_status', //student
+    'app/get_classes_by_school', //student
+    'app/get_classes_with_events', //student
+    'app/filter_recordings', //student
+    'app/get_school_data', //student
+    'app/recording/.*', //student
+    'app/attendance/filter', //student
+    'app/courses/manage_multiple_choices_options', //addons
+    'app/courses/generate_outline_schemas', //addons
+    'app/courses/apply_outline_schema', //addons
+    'app/courses/generate_quiz_from_lessons', //addons
+    'app/courses/generate_lesson_from_ai', //addons
+    'app/courses/exam_questions/.*', //addons
+    'app/courses/manage_exam_multiple_choices_options', //addons
+    'app/courses/ajax_sort_question', //addons
+    'app/courses/generate_questions_from_pdf', //addons
+    'app/courses/generate_quiz_from_pdf', //addons
+    'app/courses/get_lessons_for_quiz', //addons
+    'app/courses/update_lesson_from_ai', //addons
+    'app/courses/generate_quiz_questions', //addons
+    'app/courses/extract_pdf_structure', //addons
+    'app/profile/update_password', //admin-teacher-student
+    'app/announcements/.*', //admin-teacher
+    'bigbluebutton/create_breakout_room',
+    'bigbluebutton/create_room',
+    'BigBlueButton/get_meetings',
+    'BigBlueButton/is_meeting_running',
+    'BigBlueButton/start_meeting',
+    'BigBlueButton/check_active_meetings',
+    'BigBlueButton/get_active_meetings',
+    'BigBlueButton/join_meeting',
+    'bigbluebutton/check_meeting_status',
+    'bigbluebutton/webhook',
+    'bigbluebutton/meeting_states',
+    'BigBlueButton/',
+    'bigbluebutton/create',
+    'home/switch_community_role_front',
+    'home/get_communities_by_role',
+    'home/switch_community_role',
+    'home/check_community_name_exists',
+    'join/member/.*', //admission
+    'join/community/.*', //admission
+    'admission/.*', //admission
+    'register/.*', //member registration
+    'login/set_student_just_registered',
+    'login/validate_login_frontend',
+    'class_room/create',
+    'Liveclasse/create',
+    'profile/update_profile',
+    'support/send',
+    'api/fx/.*',
+    'api/login',
+    'cron/fx_.*',
+    'StripeWebhook',
+    'StripeWebhook/index'
 );
 
 // Detect language prefix from URL (handles subdirectory installations)

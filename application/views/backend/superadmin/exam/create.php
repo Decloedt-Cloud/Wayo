@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 <form method="POST" class="d-block" action="<?php echo route('exam/create'); ?>" id="examCreateForm">
 
     <div class="form-row">

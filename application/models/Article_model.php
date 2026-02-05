@@ -103,7 +103,7 @@ class Article_model extends CI_Model {
                 <h3>'.get_phrase('Conclusion').'</h3>
 
                 <p>'.get_phrase('ClawdBot reflects how AI is accelerating content creation and making it accessible to a wider audience. However, the future lies not only in producing content faster, but in transforming that content into structured learning experiences and engaged communities. By combining AI-assisted creation with course building and community management, platforms like Wayo illustrate how creators can move from content generation to long-term value creation.').'</p>',
-                'image' => base_url('uploads/images/trends/clawdBot.webp'),
+                'image' => base_url('uploads/images/trends/optimized/clawdBot.webp'),
                 'category' => 'Technology',
                 'category_slug' => get_phrase('technology'),
                 'author' => get_phrase('Wayo Team'),

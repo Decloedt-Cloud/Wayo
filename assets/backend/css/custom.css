@@ -41,7 +41,6 @@ body[dir="rtl"] .between-button {
 }
 
 /* Custom file upload */
-@import "compass/css3";
 
 .custom-file-upload-hidden {
   display: none;
@@ -53,16 +52,16 @@ body[dir="rtl"] .between-button {
   display: block;
   width: auto;
   font-size: 16px;
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
+}
+.custom-file-upload label {
+  display: block;
+  margin-bottom: 5px;
 }
 
 .file-upload-wrapper {
   position: relative;
   margin-bottom: 5px;
-  //border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
 }
 .file-upload-input {
   width: 260px;
@@ -71,12 +70,13 @@ body[dir="rtl"] .between-button {
   padding: 11px 17px;
   border: none;
   background-color: #EEEEEE;
-  @include transition(all 0.2s ease-in);
+  transition: all 0.2s ease-in;
   float: left; /* IE 9 Fix */
-  &:hover, &:focus {
-    background-color: #BDBDBD;
-    outline: none;
-  }
+}
+.file-upload-input:hover,
+.file-upload-input:focus {
+  background-color: #BDBDBD;
+  outline: none;
 }
 .file-upload-button {
   cursor: pointer;
@@ -90,19 +90,13 @@ body[dir="rtl"] .between-button {
   margin-left: -1px;
   background-color: #E0E0E0;
   float: left; /* IE 9 Fix */
-  @include transition(all 0.2s ease-in);
-  &:hover {
-    background-color: #BDBDBD;
-  }
+  transition: all 0.2s ease-in;
+}
+.file-upload-button:hover {
+  background-color: #BDBDBD;
 }
 
 /* JS-Image Previewer CSS STARTS */
-@import url(https://fonts.googleapis.com/icon?family=Material+Icons);
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
-// variables
-$base-color: cadetblue;
-$base-font: 'Raleway', sans-serif;
 
 .wrapper-image-preview{
   display: flex;
@@ -128,57 +122,58 @@ $base-font: 'Raleway', sans-serif;
   cursor: pointer;
   position: relative;
   height: 50px;
-  background-color: $base-color;
+  background-color: cadetblue;
   cursor: pointer;
   overflow: hidden;
   text-align: center;
   transition: background-color ease-in-out 150ms;
-  &:hover {
-    background-color: lighten($base-color, 10%);
-  }
-  & input {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-  }
-  & label {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    font-weight: 400;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-    overflow: hidden;
-    &::after {
-      content: 'add';
-      font-family: 'Material Icons';
-      position: absolute;
-      font-size: 2.5rem;
-      color: rgba(230, 230, 230, 1);
-      top: calc(50% - 2.5rem);
-      left: calc(50% - 1.25rem);
-      z-index: 0;
-    }
-    & span {
-      display: inline-block;
-      width: 50%;
-      height: 100%;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      vertical-align: middle;
-      text-align: center;
-      &:hover i.material-icons {
-        color: lightgray;
-      }
-    }
-  }
 }
+.upload-options:hover {
+  background-color: #7ac5c5;
+}
+.upload-options input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.upload-options label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+}
+.upload-options label::after {
+  content: 'add';
+  font-family: 'Material Icons';
+  position: absolute;
+  font-size: 2.5rem;
+  color: rgba(230, 230, 230, 1);
+  top: calc(50% - 2.5rem);
+  left: calc(50% - 1.25rem);
+  z-index: 0;
+}
+.upload-options label span {
+  display: inline-block;
+  width: 50%;
+  height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: middle;
+  text-align: center;
+}
+.upload-options label span:hover i.material-icons {
+  color: lightgray;
+}
+
 .js--image-preview {
   height: 200px;
   width: 100%;
@@ -189,22 +184,22 @@ $base-font: 'Raleway', sans-serif;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  &::after {
-    content: "photo_size_select_actual";
-    font-family: 'Material Icons';
-    position: relative;
-    font-size: 4.5em;
-    color: rgba(230, 230, 230, 1);
-    top: calc(50% - 3rem);
-    left: calc(50% - 2.25rem);
-    z-index: 0;
-  }
-  &.js--no-default::after {
-    display: none;
-  }
-  &:nth-child(2) {
-    background-image: url('http://bastianandre.at/giphy.gif');
-  }
+}
+.js--image-preview::after {
+  content: "photo_size_select_actual";
+  font-family: 'Material Icons';
+  position: relative;
+  font-size: 4.5em;
+  color: rgba(230, 230, 230, 1);
+  top: calc(50% - 3rem);
+  left: calc(50% - 2.25rem);
+  z-index: 0;
+}
+.js--image-preview.js--no-default::after {
+  display: none;
+}
+.js--image-preview:nth-child(2) {
+  background-image: url('http://bastianandre.at/giphy.gif');
 }
 
 i.material-icons {
@@ -218,9 +213,9 @@ i.material-icons {
 .drop {
   display: block;
   position: absolute;
-  background: transparentize($base-color, .8);
+  background: rgba(95, 158, 160, 0.2);
   border-radius: 100%;
-  transform:scale(0);
+  transform: scale(0);
 }
 
 .animate {
@@ -507,23 +502,21 @@ label.error{
     position: relative !important;
 }
 
-    body[dir="rtl"] .paginate_button.page-item.next i.mdi-chevron-right,
-    body[dir="rtl"] .paginate_button.page-item.previous i.mdi-chevron-left {
-    display: inline-block;
-    transform: rotate(180deg);
-    vertical-align: middle;
-    }
+body[dir="rtl"] .paginate_button.page-item.next i.mdi-chevron-right,
+body[dir="rtl"] .paginate_button.page-item.previous i.mdi-chevron-left {
+  display: inline-block;
+  transform: rotate(180deg);
+  vertical-align: middle;
+}
 
-    body[dir="rtl"] i.mdi-arrow-right {
-    display: inline-block;
-    transform: rotate(180deg);
-    vertical-align: middle;
-    }
+body[dir="rtl"] i.mdi-arrow-right {
+  display: inline-block;
+  transform: rotate(180deg);
+  vertical-align: middle;
+}
 
-      body[dir="rtl"] i.mdi-export {
-        display: inline-block;
-        transform: rotate(180deg);
-        vertical-align: middle;
-    }
-
- 
+body[dir="rtl"] i.mdi-export {
+  display: inline-block;
+  transform: rotate(180deg);
+  vertical-align: middle;
+}

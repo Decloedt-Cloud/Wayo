@@ -1,5 +1,5 @@
 <?php $school_id = school_id(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.min.css">
 <form method="POST" class="col-md-12 ajaxForm" action="<?php echo route('student/create_excel'); ?>" id = "student_admission_form" enctype="multipart/form-data">
     <!-- Champ caché pour le jeton CSRF -->
     <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />

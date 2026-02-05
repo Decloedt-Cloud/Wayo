@@ -1259,21 +1259,31 @@ class Crud_model extends CI_Model
 		// 1. Resolve IDs (Student ID and User ID)
 		// $user_id param here is typically the 'code' from students table
 		$student_id_to_check = [];
+		$class_ids_enrolled = [];
 		
-		// Try finding student by code
-		$student = $this->db->get_where('students', ['code' => $user_id])->row_array();
+		// Try finding ALL student records for this user (across all schools)
+		$students = $this->db->get_where('students', ['user_id' => $user_id])->result_array();
 		
-		if ($student) {
-			$student_id_to_check[] = $student['id'];        // Correct Student ID (e.g. 280)
-			$student_id_to_check[] = $student['user_id'];   // User ID (e.g. 666) - in case invoice was saved with this
+		if (!empty($students)) {
+			foreach ($students as $student) {
+				$student_id_to_check[] = $student['id'];        // Student table ID (e.g. 178)
+				$student_id_to_check[] = $student['user_id'];   // User ID (e.g. 379) - in case invoice was saved with this
+				
+				// Get all classes this student is enrolled in
+				$enrols = $this->db->get_where('enrols', ['student_id' => $student['id']])->result_array();
+				foreach ($enrols as $enrol) {
+					$class_ids_enrolled[] = $enrol['class_id'];
+				}
+			}
 		} else {
 			// Fallback: maybe the param passed IS directly an ID (rare but possible in some calls)
 			$student_id_to_check[] = $user_id;
 		}
 		
 		$student_id_to_check = array_unique(array_filter($student_id_to_check));
+		$class_ids_enrolled = array_unique(array_filter($class_ids_enrolled));
 		
-		if (empty($student_id_to_check)) {
+		if (empty($student_id_to_check) && empty($class_ids_enrolled)) {
 			return $this->db->get_where('invoices', ['id' => 0]); // Return empty result
 		}
 
@@ -1281,13 +1291,19 @@ class Crud_model extends CI_Model
 		$this->db->select('invoices.*');
 		$this->db->from('invoices');
 		
-		// Use group logic for OR condition
+		// Use group logic for OR condition - match by student_id OR by class_id (for enrolled classes)
 		$this->db->group_start();
-		$this->db->where_in('invoices.student_id', $student_id_to_check);
+		if (!empty($student_id_to_check)) {
+			$this->db->where_in('invoices.student_id', $student_id_to_check);
+		}
+		// Also include invoices for classes the student is enrolled in (handles mismatched student_id)
+		if (!empty($class_ids_enrolled)) {
+			$this->db->or_where_in('invoices.class_id', $class_ids_enrolled);
+		}
 		$this->db->group_end();
 		
 		// Hide unpaid invoices for student view
-		$this->db->where('LOWER(invoices.status) !=', 'unpaid');
+		// $this->db->where('LOWER(invoices.status) !=', 'unpaid');
 		
 		/*
 		// If user has an active school in session, filter by that school
