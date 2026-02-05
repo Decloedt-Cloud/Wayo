@@ -1,5 +1,5 @@
 <?php include 'styles.php'; ?>
-<link rel="stylesheet" href="/School-Management-De/assets/backend/css/font-awesome.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/font-awesome.min.css">
 <!-- SweetAlert -->
 <script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
     
