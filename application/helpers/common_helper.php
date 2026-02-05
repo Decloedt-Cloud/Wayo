@@ -561,10 +561,14 @@ if (!function_exists('active_session')) {
         $CI->db->where('sessions.status', 1);
         $session_details = $CI->db->get()->row_array();
         
+        if (empty($session_details)) {
+            return 0;
+        }
+
         if ($param1 == '') {
             return $session_details['id'];
         } else {
-            return $session_details[$param1];
+            return isset($session_details[$param1]) ? $session_details[$param1] : 0;
         }
     }
 }
