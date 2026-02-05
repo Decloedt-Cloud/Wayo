@@ -660,8 +660,7 @@
                 <input type="date"
                        class="exp-form-input"
                        id="start_date"
-                       name="start_date"
-                       min="<?php echo date('Y-m-d'); ?>">
+                       name="start_date">
                 <i class="mdi mdi-calendar-month exp-input-icon"></i>
             </div>
         </div>

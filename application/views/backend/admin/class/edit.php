@@ -749,7 +749,6 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                        class="exp-form-input"
                        id="start_date"
                        name="start_date"
-                       min="<?php echo date('Y-m-d'); ?>"
                        value="<?php echo (!empty($class['date_debut'])) ? date('Y-m-d', strtotime($class['date_debut'])) : ''; ?>">
                 <i class="mdi mdi-calendar-month exp-input-icon"></i>
             </div>
