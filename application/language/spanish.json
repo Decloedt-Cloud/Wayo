@@ -3999,5 +3999,10 @@
     "select_community": "Seleccionar comunidad",
     "member_since": "Miembro desde",
     "active_membership": "Membresía activa",
-    "join_free": "Unirse gratis"
+    "join_free": "Unirse gratis",
+    "reset_password": "Restablecer contraseña",
+    "enter_your_email_to_receive_reset_link": "Ingresa tu correo electrónico para recibir el enlace de restablecimiento",
+    "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Inicia sesión para acceder a tu panel y gestionar tu escuela de manera eficiente",
+    "login_failed": "Inicio de sesión fallido",
+    "failed_to_send_reset_link": "No se pudo enviar el enlace de restablecimiento"
 }

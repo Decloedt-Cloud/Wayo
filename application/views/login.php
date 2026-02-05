@@ -240,25 +240,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 32px;
         }
         
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .remember-me input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #667eea;
-        }
-        
-        .remember-me label {
-            font-size: 14px;
-            color: #4a5568;
-            cursor: pointer;
+        @media (max-width: 480px) {
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .signup-links {
+                flex-wrap: wrap;
+            }
         }
         
         .forgot-password {
@@ -272,6 +268,17 @@
         .forgot-password:hover {
             color: #5a67d8;
             text-decoration: underline;
+        }
+        
+        .signup-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .link-separator {
+            color: #cbd5e0;
+            font-size: 12px;
         }
         
         .submit-btn {
@@ -488,13 +495,13 @@
                         <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 
                         <div class="form-group floating-label">
-                            <input class="form-input" type="email" name="email" id="emailaddress" required placeholder=" ">
+                            <input class="form-input" type="email" name="email" id="emailaddress" required placeholder=" " autocomplete="email">
                             <label for="emailaddress" class="form-label"><?php echo get_phrase('email'); ?></label>
                         </div>
                         
                         <div class="form-group floating-label">
                             <div style="position: relative;">
-                                <input class="form-input" type="password" name="password" required id="password" placeholder=" " style="padding-right: 60px;">
+                                <input class="form-input" type="password" name="password" required id="password" placeholder=" " style="padding-right: 60px;" autocomplete="current-password">
                                 <label for="password" class="form-label"><?php echo get_phrase('password'); ?></label>
                                 <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
                                     <i class="fas fa-eye"></i>
@@ -504,13 +511,14 @@
                         </div>
                         
                         <div class="form-options">
-                            <div class="remember-me">
-                                <input type="checkbox" id="remember" name="remember">
-                                <label for="remember"><?php echo get_phrase('remember_me'); ?></label>
-                            </div>
                             <a href="javascript: void(0);" class="forgot-password" onclick="forgotPass();">
                                 <?php echo get_phrase('forgot_your_password'); ?>?
                             </a>
+                            <div class="signup-links">
+                                <a href="<?php echo site_url('join/member'); ?>" class="forgot-password"><?php echo get_phrase('sign_up_as_a_member'); ?></a>
+                                <span class="link-separator">|</span>
+                                <a href="<?php echo site_url('join/community'); ?>" class="forgot-password"><?php echo get_phrase('sign_up_as_a_mentor'); ?></a>
+                            </div>
                         </div>
                         
                         <button class="submit-btn" type="submit">
@@ -563,11 +571,7 @@
         </div>
     </div>
 
-<!--Notify for ajax-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
-<!-- App js (loaded after our custom scripts to prevent conflicts) -->
-<script src="<?php echo base_url(); ?>assets/backend/js/app.min.js" defer></script>
 
 <!-- Configure toastr for modern look -->
 <script>
@@ -771,20 +775,20 @@ $('.form-input').on('keypress', function(e) {
 </script>
 
 <?php if ($this->session->flashdata('info_message') != ""):?>
-    <script type="text/javascript">
-    $.NotificationApp.send(<?php echo js_phrase('success'); ?>, '<?php echo $this->session->flashdata("info_message");?>' ,"top-right","rgba(0,0,0,0.2)","info");
+<script type="text/javascript">
+    toastr.info('<?php echo $this->session->flashdata("info_message");?>', '<?php echo get_phrase("info"); ?>');
 </script>
 <?php endif;?>
 
 <?php if ($this->session->flashdata('error_message') != ""):?>
-    <script type="text/javascript">
-    $.NotificationApp.send(<?php echo js_phrase('oh_snap'); ?>, '<?php echo $this->session->flashdata("error_message");?>' ,"top-right","rgba(0,0,0,0.2)","error");
+<script type="text/javascript">
+    toastr.error('<?php echo $this->session->flashdata("error_message");?>', '<?php echo get_phrase("oh_snap"); ?>');
 </script>
 <?php endif;?>
 
 <?php if ($this->session->flashdata('flash_message') != ""):?>
-    <script type="text/javascript">
-    $.NotificationApp.send(<?php echo js_phrase('congratulations'); ?>, '<?php echo $this->session->flashdata("flash_message");?>' ,"top-right","rgba(0,0,0,0.2)","success");
+<script type="text/javascript">
+    toastr.success('<?php echo $this->session->flashdata("flash_message");?>', '<?php echo get_phrase("success"); ?>');
 </script>
 <?php endif;?>
 </body>
