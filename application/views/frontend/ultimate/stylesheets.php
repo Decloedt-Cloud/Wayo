@@ -47,8 +47,6 @@
 
 
 
-
-
 <!-- Custom CSS-->
 
 
@@ -69,40 +67,30 @@ if ($page_name == "home") {
 
 } elseif ($page_name == "contact") {
 
-  // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.css">';
 
 }elseif ($page_name == "online_admission"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.css">';
-
-
-  
 
 }
 elseif ($page_name == "online_admission_student"){
 
-  // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
   echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.css">';
   
 }elseif ($page_name == "communities"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/courses-page.css">';
      echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/communities.css">';
 }elseif ($page_name == "community_details"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/community-details.css">';
 }
 elseif ($page_name == "tutorial"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.css">';
 }
 elseif ($page_name == "faq"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.css">';
 }
 elseif ($page_name == "terms_conditions"){
