@@ -41,10 +41,14 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
 .set-textarea { min-height: 100px; resize: vertical; }
 
 .set-form-hint { font-size: 0.75rem; color: var(--set-gray); margin-top: 0.375rem; }
-.set-form-error { font-size: 0.75rem; color: var(--set-danger); margin-top: 0.375rem; display: none; }
+.set-form-error { font-size: 0.8rem; color: var(--set-danger); margin-top: 0.5rem; display: none; padding: 0.5rem 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; border-left: 3px solid var(--set-danger); }
 
-.set-upload-card { border: 2px dashed var(--set-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+.set-upload-card { border: 2px dashed var(--set-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.2s; cursor: pointer; position: relative; }
 .set-upload-card:hover { border-color: var(--set-primary); background: rgba(var(--set-primary-rgb), 0.02); }
+.set-upload-card.is-dragover { border-color: var(--set-primary); background: rgba(var(--set-primary-rgb), 0.08); transform: scale(1.01); }
+.set-upload-card .drag-text { font-size: 0.8rem; color: var(--set-gray); margin-top: 0.5rem; }
+.set-upload-card .drag-text i { margin-right: 0.25rem; }
+.set-upload-card.is-logo { max-width: 200px; margin: 0 auto; padding: 1rem; }
 .set-upload-preview { width: 120px; height: 120px; border-radius: 12px; overflow: hidden; margin: 0 auto 1rem; border: 2px solid var(--set-border); background: var(--set-light); }
 .set-upload-preview img { width: 100%; height: 100%; object-fit: cover; }
 .set-upload-preview.cover { width: 100%; max-width: 300px; height: 100px; border-radius: 8px; }
@@ -325,7 +329,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <i class="mdi mdi-image"></i>
                         <span><?php echo get_phrase('Community_profile_logo'); ?></span>
                     </label>
-                    <div class="set-upload-card">
+                    <div class="set-upload-card is-logo" data-upload="school_image">
                         <div class="set-upload-preview" id="school-image-preview">
                             <img src="<?php echo $this->user_model->get_school_image($school_data['id']) . '?v=' . time(); ?>" class="preview-image" alt="Logo">
                         </div>
@@ -333,8 +337,9 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                             <i class="mdi mdi-cloud-upload"></i>
                             <?php echo get_phrase('upload_an_image'); ?>
                         </label>
+                        <div class="drag-text"><i class="mdi mdi-cursor-move"></i><?php echo get_phrase('or_drag_and_drop'); ?></div>
                         <input id="school_image" type="file" class="d-none image-upload" name="school_image" accept="image/*" data-preview="school-image-preview">
-                        <div class="set-form-hint">512×512 px recommandé, max 2 Mo</div>
+                        <div class="set-form-hint"><?php echo get_phrase('recommended_resolution'); ?>: 512×512 px • <?php echo get_phrase("animated_gifs_will_be_converted_to_static"); ?></div>
                         <div id="image-error" class="set-form-error"></div>
                     </div>
                 </div>
@@ -344,7 +349,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                         <i class="mdi mdi-panorama"></i>
                         <span><?php echo get_phrase('Community_cover_image'); ?></span>
                     </label>
-                    <div class="set-upload-card">
+                    <div class="set-upload-card" data-upload="school_cover">
                         <div class="set-upload-preview cover" id="school-cover-preview">
                             <img src="<?php echo $this->user_model->get_school_cover($school_data['id']) . '?v=' . time(); ?>" class="preview-image" alt="Cover">
                         </div>
@@ -352,8 +357,9 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                             <i class="mdi mdi-cloud-upload"></i>
                             <?php echo get_phrase('upload_an_image'); ?>
                         </label>
-                        <input id="school_cover" type="file" class="d-none image-upload" name="school_cover" accept="image/png, image/jpeg" data-preview="school-cover-preview">
-                        <div class="set-form-hint">1920×600 px recommandé, max 2 Mo</div>
+                        <div class="drag-text"><i class="mdi mdi-cursor-move"></i><?php echo get_phrase('or_drag_and_drop'); ?></div>
+                        <input id="school_cover" type="file" class="d-none image-upload" name="school_cover" accept="image/*" data-preview="school-cover-preview">
+                        <div class="set-form-hint"><?php echo get_phrase('recommended_resolution'); ?>: 1920×600 px • <?php echo get_phrase("animated_gifs_will_be_converted_to_static"); ?></div>
                         <div id="cover-error" class="set-form-error"></div>
                     </div>
                 </div>
@@ -453,9 +459,59 @@ $(document).ready(function() {
         });
     });
 
+    // Clear image errors when selecting a new file
+    $('#school_image').on('change', function() {
+        $('#image-error').text('').hide();
+    });
+    $('#school_cover').on('change', function() {
+        $('#cover-error').text('').hide();
+    });
+
+    // Drag and Drop functionality
+    $('.set-upload-card').each(function() {
+        const card = $(this);
+        const inputId = card.data('upload');
+        const input = $(`#${inputId}`);
+        
+        // Click on card triggers file input
+        card.on('click', function(e) {
+            if (!$(e.target).is('label, label *, input')) {
+                input.trigger('click');
+            }
+        });
+
+        // Drag events
+        card.on('dragenter dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            card.addClass('is-dragover');
+        });
+
+        card.on('dragleave drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            card.removeClass('is-dragover');
+        });
+
+        card.on('drop', function(e) {
+            const files = e.originalEvent.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                // Set file to input
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(files[0]);
+                input[0].files = dataTransfer.files;
+                input.trigger('change');
+            }
+        });
+    });
+
     // Form submission
     $('#schoolForm').submit(function(e) {
         e.preventDefault();
+        
+        // Clear previous image errors
+        $('#image-error, #cover-error').text('').hide();
+        
         const $btn = $('#update-logos-btn');
         $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase('updating'); ?>...');
 
@@ -470,11 +526,39 @@ $(document).ready(function() {
                 if (response.status) {
                     $btn.css({'background': 'linear-gradient(135deg, #10b981, #34d399)'})
                         .html('<i class="mdi mdi-check-circle"></i> <?php echo get_phrase('updated'); ?>!');
-                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    if (response.csrf) {
+                        $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    }
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     $btn.prop('disabled', false).html('<i class="mdi mdi-content-save"></i> <?php echo get_phrase('update_settings'); ?>');
-                    toastr.error('<?php echo get_phrase('action_not_allowed'); ?>');
+                    
+                    // Handle specific image errors
+                    if (response.error_type === 'logo') {
+                        $('#image-error').text(response.error_message).show();
+                        // Scroll to the error
+                        $('html, body').animate({
+                            scrollTop: $('#image-error').offset().top - 100
+                        }, 300);
+                        // Clear the file input
+                        $('#school_image').val('');
+                    } else if (response.error_type === 'cover') {
+                        $('#cover-error').text(response.error_message).show();
+                        // Scroll to the error
+                        $('html, body').animate({
+                            scrollTop: $('#cover-error').offset().top - 100
+                        }, 300);
+                        // Clear the file input
+                        $('#school_cover').val('');
+                    } else {
+                        // Generic error
+                        toastr.error(response.notification || '<?php echo get_phrase('action_not_allowed'); ?>');
+                    }
+                    
+                    // Update CSRF token if provided
+                    if (response.csrf) {
+                        $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    }
                 }
             },
             error: function() {

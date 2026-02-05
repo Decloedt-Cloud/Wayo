@@ -3955,5 +3955,11 @@
     "join_free": "انضم مجانًا",
     "people": "الناس",
     "spaces": "المساحات",
-    "subtotal": "المجموع الفرعي"
+    "subtotal": "المجموع الفرعي",
+    "image_processing_failed_please_try_another_image": "فشل معالجة الصورة. يرجى المحاولة بصورة أخرى.",
+    "cover_image_processing_failed_please_try_another_image": "فشل معالجة صورة الغلاف. يرجى المحاولة بصورة أخرى.",
+    "recommended_resolution": "الدقة الموصى بها",
+    "image_corrupted_or_invalid_format": "الصورة تالفة أو صيغة غير صالحة",
+    "animated_gifs_will_be_converted_to_static": "سيتم تحويل صور GIF المتحركة إلى صورة ثابتة",
+    "or_drag_and_drop": "أو اسحب وأفلت"
 }

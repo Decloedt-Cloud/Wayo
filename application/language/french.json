@@ -4089,5 +4089,11 @@
     "configure_paypal": "Configure paypal",
     "class_subscription": "Class subscription",
     "vat_included": "Vat included",
-    "vat_information": "Vat information"
+    "vat_information": "Vat information",
+    "image_processing_failed_please_try_another_image": "Le traitement de l'image a échoué. Veuillez essayer avec une autre image.",
+    "cover_image_processing_failed_please_try_another_image": "Le traitement de l'image de couverture a échoué. Veuillez essayer avec une autre image.",
+    "recommended_resolution": "Résolution recommandée",
+    "image_corrupted_or_invalid_format": "Image corrompue ou format invalide",
+    "animated_gifs_will_be_converted_to_static": "Les GIF animés seront convertis en image statique",
+    "or_drag_and_drop": "ou glisser-déposer"
 }

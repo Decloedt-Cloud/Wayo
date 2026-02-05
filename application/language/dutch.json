@@ -4085,5 +4085,11 @@
     "select_community": "Community selecteren",
     "member_since": "Lid sinds",
     "active_membership": "Actief lidmaatschap",
-    "join_free": "Gratis deelnemen"
+    "join_free": "Gratis deelnemen",
+    "image_processing_failed_please_try_another_image": "Beeldverwerking mislukt. Probeer het met een andere afbeelding.",
+    "cover_image_processing_failed_please_try_another_image": "Verwerking van de omslagafbeelding is mislukt. Probeer het met een andere afbeelding.",
+    "recommended_resolution": "Aanbevolen resolutie",
+    "image_corrupted_or_invalid_format": "Afbeelding beschadigd of ongeldig formaat",
+    "animated_gifs_will_be_converted_to_static": "Geanimeerde GIF's worden omgezet naar statische afbeelding",
+    "or_drag_and_drop": "of slepen en neerzetten"
 }
