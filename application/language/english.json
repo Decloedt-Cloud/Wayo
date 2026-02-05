@@ -4419,5 +4419,6 @@
     "select_community": "Select community",
     "member_since": "Member since",
     "active_membership": "Active membership",
-    "join_free": "Join free"
+    "join_free": "Join free",
+    "dont_have_an_account": "Dont have an account"
 }

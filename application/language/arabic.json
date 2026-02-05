@@ -3955,5 +3955,10 @@
     "join_free": "انضم مجانًا",
     "people": "الناس",
     "spaces": "المساحات",
-    "subtotal": "المجموع الفرعي"
+    "subtotal": "المجموع الفرعي",
+    "reset_password": "إعادة تعيين كلمة المرور",
+    "enter_your_email_to_receive_reset_link": "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين",
+    "login_to_access_your_dashboard_and_manage_your_school_efficiently": "قم بتسجيل الدخول للوصول إلى لوحة التحكم وإدارة مدرستك بكفاءة",
+    "login_failed": "فشل تسجيل الدخول",
+    "failed_to_send_reset_link": "فشل إرسال رابط إعادة التعيين"
 }

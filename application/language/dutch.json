@@ -4085,5 +4085,10 @@
     "select_community": "Community selecteren",
     "member_since": "Lid sinds",
     "active_membership": "Actief lidmaatschap",
-    "join_free": "Gratis deelnemen"
+    "join_free": "Gratis deelnemen",
+    "reset_password": "Wachtwoord resetten",
+    "enter_your_email_to_receive_reset_link": "Voer je e-mailadres in om een resetlink te ontvangen",
+    "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Log in om toegang te krijgen tot je dashboard en je school efficiënt te beheren",
+    "login_failed": "Inloggen mislukt",
+    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt"
 }
