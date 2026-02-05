@@ -47,8 +47,6 @@
 
 
 
-
-
 <!-- Custom CSS-->
 
 
@@ -69,40 +67,31 @@ if ($page_name == "home") {
 
 } elseif ($page_name == "contact") {
 
-  // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact-page.css">';
-    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.min.css">';
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.min.css">';
 
-}elseif ($page_name == "online_admission"){
+} elseif ($page_name == "online_admission"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
-
-
   
-
 }
 elseif ($page_name == "online_admission_student"){
-
-  // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission-page.css">';
+ 
   echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
   
 }elseif ($page_name == "communities"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/courses-page.css">';
      echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/communities.min.css">';
+  
 }elseif ($page_name == "community_details"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/community-details.min.css">';
 }
 elseif ($page_name == "tutorial"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.min.css">';
 }
 elseif ($page_name == "faq"){
 
-    // echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/course-details-page.css">';
     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.min.css">';
 }
 elseif ($page_name == "terms_conditions"){
