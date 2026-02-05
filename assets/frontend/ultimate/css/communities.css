@@ -75,9 +75,16 @@ body {
   display: grid;
   place-items: center;
   color: #fff;
-  background-image: url('https://i.postimg.cc/Qtk6hbsc/qa.png');
+  background-image: url('../../../../uploads/images/decloedt/img/optimized/bg-communities.webp');
   background-size: cover;
   background-position: center;
+}
+
+/* AVIF pour navigateurs compatibles */
+@supports (background-image: url("test.avif")) {
+  .hero {
+    background-image: url('../../../../uploads/images/decloedt/img/optimized/bg-communities.avif');
+  }
 }
 
 .hero::before {

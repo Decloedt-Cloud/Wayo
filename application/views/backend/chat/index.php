@@ -1,7 +1,7 @@
 <?php include 'styles.php'; ?>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/font-awesome.min.css">
 <!-- SweetAlert -->
-<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.min.js"></script>
     
 <div class="row ">
     <div class="col-xl-12">
@@ -211,7 +211,7 @@
 
 <!-- Bibliothèques Real-time -->
 <script src="<?php echo base_url('assets/backend/js/pusher.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/backend/js/echo.iife.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/echo.iife.min.js'); ?>"></script>
 
 <script>
     var CURRENT_USER_ID = <?php echo $current_user_id; ?>;

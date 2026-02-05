@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/manageMultipleQuiz.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/manageMultipleQuiz.min.css">
 
 <?php for($i = 1; $i <= $number_of_options; $i++): ?>
     <div class="form-group options">

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.min.css">
 <?php include APPPATH . 'views/backend/shared/trial_expired_modal.php'; ?>
 
 <!-- Google Fonts -->

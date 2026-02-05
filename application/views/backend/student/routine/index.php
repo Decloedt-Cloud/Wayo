@@ -1,5 +1,5 @@
 <?php $student_data = $this->user_model->get_logged_in_student_details(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
     <!--title-->
     <div class="col-xl-12">
         <div class="header-card">

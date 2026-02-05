@@ -33,10 +33,9 @@
 
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/jquery.validate.min.js"></script>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/custom.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/init.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/init.min.js"></script>
 
 
 <script type="text/javascript">

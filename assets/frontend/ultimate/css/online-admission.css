@@ -224,23 +224,70 @@ img {
 }
 
 .btn-primary {
-  background: #fc7b30 !important;
-  color: #fff;
-  border: 1px solid #fc7b30 !important;
+  background: linear-gradient(135deg, #fc7b30, #ff9a56) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(252, 123, 48, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 
 .btn-primary:hover {
-  background: #4a3ce0;
+  background: linear-gradient(135deg, #e06912, #fc7b30) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(252, 123, 48, 0.4);
+  color: #fff !important;
 }
 
 .btn-secondary {
   background: transparent !important;
   border: 2px solid #fc7b30 !important;
   color: #fc7b30 !important;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(135deg, #fc7b30, #ff9a56);
+  transition: width 0.3s ease;
+  z-index: -1;
+}
+
+.btn-secondary:hover::before {
+  width: 100%;
 }
 
 .btn-secondary:hover {
-  background: #c5c2ff;
+  background: transparent !important;
+  color: #fff !important;
+  border-color: #fc7b30 !important;
 }
 
 .btn-success {
