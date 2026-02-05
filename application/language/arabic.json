@@ -3915,5 +3915,19 @@
     "card_details": "تفاصيل البطاقة",
     "secured_by_stripe": "مؤمَّن بواسطة Stripe",
     "select_payment_method": "اختر طريقة الدفع",
-    "paypal_checkout": "الدفع عبر بايبال"
+    "paypal_checkout": "الدفع عبر بايبال",
+    "school_tax_settings": "إعدادات الضرائب الخاصة بالمدرسة",
+    "vat_calculated_automatically_based_on_school_tax_settings": "يتم احتساب ضريبة القيمة المضافة تلقائيًا بناءً على إعدادات ضرائب المدرسة",
+    "school_vat_settings": "إعدادات ضريبة القيمة المضافة للمدرسة",
+    "join_now": "انضم الآن",
+    "proceed_to_payment": "المتابعة إلى الدفع",
+    "access_class": "الدخول إلى الحصة",
+    "price_details": "تفاصيل السعر",
+    "select_community": "اختر المجتمع",
+    "member_since": "عضو منذ",
+    "active_membership": "عضوية نشطة",
+    "join_free": "انضم مجانًا",
+    "people": "People",
+    "spaces": "Spaces",
+    "subtotal": "Subtotal"
 }

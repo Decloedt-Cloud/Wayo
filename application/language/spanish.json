@@ -3962,5 +3962,16 @@
     "card_details": "Detalles de la tarjeta",
     "secured_by_stripe": "Protegido por Stripe",
     "select_payment_method": "Selecciona un método de pago",
-    "paypal_checkout": "Pagar con PayPal"
+    "paypal_checkout": "Pago con PayPal",
+    "school_tax_settings": "Configuración fiscal de la escuela",
+    "vat_calculated_automatically_based_on_school_tax_settings": "El IVA se calcula automáticamente según la configuración fiscal de la escuela",
+    "school_vat_settings": "Configuración del IVA de la escuela",
+    "join_now": "Unirse ahora",
+    "proceed_to_payment": "Proceder al pago",
+    "access_class": "Acceder a la clase",
+    "price_details": "Detalles del precio",
+    "select_community": "Seleccionar comunidad",
+    "member_since": "Miembro desde",
+    "active_membership": "Membresía activa",
+    "join_free": "Unirse gratis"
 }
