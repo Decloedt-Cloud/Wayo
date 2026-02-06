@@ -582,6 +582,7 @@ $config['csrf_exclude_uris'] = array(
     'home/switch_community_role',
     'home/check_community_name_exists',
     'join/community/online_admission/.*', //admission
+    'admission/check_duplication_ajax', //admission
     'join/community/check_duplication_ajax', //admission
     'login/set_student_just_registered',
     'login/validate_login_frontend',

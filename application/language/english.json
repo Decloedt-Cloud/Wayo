@@ -4484,5 +4484,9 @@
     "image_corrupted_or_invalid_format": "Image corrupted or invalid format",
     "animated_gifs_will_be_converted_to_static": "Animated GIFs will be converted to static image",
     "or_drag_and_drop": "or drag and drop",
-    "dont_have_an_account": "Dont have an account"
+    "dont_have_an_account": "Dont have an account",
+    "allow_managing_marks": "Allow managing marks",
+    "allow_taking_attendance": "Allow taking attendance",
+    "allow_all_permissions": "Allow all permissions",
+    "full_access": "Full access"
 }

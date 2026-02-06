@@ -413,7 +413,7 @@
                     $('#'+checkbox_id).val(value);
                 }
                 
-                toastr.success('<?php echo get_phrase('permission_updated_successfully.'); ?>');
+                // toastr.success('<?php echo get_phrase('permission_updated_successfully.'); ?>');
             },
             error: function() {
                 toastr.error('<?php echo get_phrase('error_updating_permission'); ?>');
