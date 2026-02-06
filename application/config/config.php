@@ -466,6 +466,9 @@ $config['csrf_cookie_name'] = 'csrf_cookie_name';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array(
+    'api/communities/.*', // Wall API
+    'api/classes/.*', // Wall API
+    'api/posts/.*', // Wall API
     'app/add_appointment', //superadmin
     'app/update_appointment', //superadmin
     'app/delete_appointment', //superadmin
@@ -516,7 +519,6 @@ $config['csrf_exclude_uris'] = array(
     'app/get_school_data', //admin
     'app/check_teacher_email', //admin
     'app/teacher/create', //admin
-    'app/manage_class/.*', //admin
     'app/delete_room', //teacher
     'app/add_appointment', //teacher
     'app/update_appointment', //teacher
@@ -573,14 +575,14 @@ $config['csrf_exclude_uris'] = array(
     'bigbluebutton/meeting_states',
     'BigBlueButton/',
     'bigbluebutton/create',
+    'home/set_guest_language',
+    'home/online_admission_school',
     'home/switch_community_role_front',
     'home/get_communities_by_role',
     'home/switch_community_role',
     'home/check_community_name_exists',
-    'join/member/.*', //admission
-    'join/community/.*', //admission
-    'admission/.*', //admission
-    'register/.*', //member registration
+    'join/community/online_admission/.*', //admission
+    'join/community/check_duplication_ajax', //admission
     'login/set_student_just_registered',
     'login/validate_login_frontend',
     'class_room/create',
@@ -591,7 +593,9 @@ $config['csrf_exclude_uris'] = array(
     'api/login',
     'cron/fx_.*',
     'StripeWebhook',
-    'StripeWebhook/index'
+    'StripeWebhook/index',
+    'wall/create_post_action.*', //wall
+    'api/debug_sync.*' //debug
 );
  
 /*

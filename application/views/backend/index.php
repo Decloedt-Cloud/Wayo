@@ -85,7 +85,7 @@ $school_id = school_id();
                         $page_name = $page_name . '.php';
                     }
 
-                    if ($folder_name == 'academy' || $folder_name == 'chat') {
+                    if ($folder_name == 'academy' || $folder_name == 'chat' || $folder_name == 'wall') {
                         include $folder_name . '/' . $page_name;
                     } else {
                         include $user_type . '/' . $folder_name . '/' . $page_name;

@@ -15,6 +15,206 @@ class Frontend_model extends CI_Model
     $this->load->model('Crud_model', 'crud_model');
   }
 
+  /**
+   * Compresse et redimensionne une image uploadée
+   * Préserve la qualité tout en optimisant la taille du fichier
+   * 
+   * @param string $source_path Chemin du fichier temporaire uploadé
+   * @param string $destination_path Chemin de destination (sans extension)
+   * @param int $max_width Largeur maximale recommandée
+   * @param int $max_height Hauteur maximale recommandée
+   * @param int $quality Qualité de compression (1-100), défaut 90
+   * @return bool|string Retourne le chemin final ou false en cas d'erreur
+   */
+  private function compress_and_save_image($source_path, $destination_path, $max_width = 512, $max_height = 512, $quality = 90)
+  {
+      if (!file_exists($source_path)) {
+          log_message('error', 'Image compression: Source file not found - ' . $source_path);
+          return false;
+      }
+
+      if (!extension_loaded('gd')) {
+          log_message('error', 'Image compression: GD extension not available');
+          return false;
+      }
+
+      $image_info = @getimagesize($source_path);
+      if ($image_info === false) {
+          log_message('error', 'Image compression: Unable to get image info - ' . $source_path);
+          return false;
+      }
+
+      $original_width = $image_info[0];
+      $original_height = $image_info[1];
+      $mime_type = $image_info['mime'];
+
+      if ($original_width < 1 || $original_height < 1) {
+          log_message('error', 'Image compression: Invalid image dimensions');
+          return false;
+      }
+
+      $source_image = $this->create_image_from_file($source_path, $mime_type);
+      
+      if ($source_image === false) {
+          log_message('error', 'Image compression: Failed to create image resource');
+          return false;
+      }
+
+      list($new_width, $new_height) = $this->calculate_dimensions($original_width, $original_height, $max_width, $max_height);
+
+      $destination_image = $this->create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type);
+
+      if ($destination_image === false) {
+          imagedestroy($source_image);
+          return false;
+      }
+
+      $final_path = $destination_path . '.jpg';
+      $save_result = $this->save_optimized_jpeg($destination_image, $final_path, $quality);
+
+      imagedestroy($source_image);
+      imagedestroy($destination_image);
+
+      if (!$save_result) {
+          if (file_exists($final_path)) {
+              @unlink($final_path);
+          }
+          log_message('error', 'Image compression: Failed to save image - ' . $final_path);
+          return false;
+      }
+
+      $this->log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height);
+      return $final_path;
+  }
+
+  private function create_image_from_file($source_path, $mime_type)
+  {
+      $source_image = false;
+
+      switch ($mime_type) {
+          case 'image/jpeg':
+          case 'image/jpg':
+              $source_image = @imagecreatefromjpeg($source_path);
+              break;
+          case 'image/png':
+              $source_image = @imagecreatefrompng($source_path);
+              break;
+          case 'image/gif':
+              $source_image = @imagecreatefromgif($source_path);
+              break;
+          case 'image/webp':
+              if (function_exists('imagecreatefromwebp')) {
+                  $source_image = @imagecreatefromwebp($source_path);
+              }
+              break;
+      }
+
+      if ($source_image === false) {
+          $image_data = @file_get_contents($source_path);
+          if ($image_data !== false) {
+              $source_image = @imagecreatefromstring($image_data);
+          }
+      }
+
+      return $source_image;
+  }
+
+  private function calculate_dimensions($original_width, $original_height, $max_width, $max_height)
+  {
+      $new_width = $original_width;
+      $new_height = $original_height;
+
+      if ($original_width > $max_width || $original_height > $max_height) {
+          $ratio_width = $max_width / $original_width;
+          $ratio_height = $max_height / $original_height;
+          $ratio = min($ratio_width, $ratio_height);
+          
+          $new_width = max(1, (int) round($original_width * $ratio));
+          $new_height = max(1, (int) round($original_height * $ratio));
+      }
+
+      return [$new_width, $new_height];
+  }
+
+  private function create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type)
+  {
+      $destination_image = @imagecreatetruecolor($new_width, $new_height);
+
+      if ($destination_image === false) {
+          log_message('error', 'Image compression: Failed to create destination image');
+          return false;
+      }
+
+      $white = imagecolorallocate($destination_image, 255, 255, 255);
+      imagefilledrectangle($destination_image, 0, 0, $new_width, $new_height, $white);
+      imageinterlace($destination_image, true);
+
+      $resample_result = imagecopyresampled(
+          $destination_image,
+          $source_image,
+          0, 0, 0, 0,
+          $new_width, $new_height,
+          $original_width, $original_height
+      );
+
+      if (!$resample_result) {
+          imagedestroy($destination_image);
+          log_message('error', 'Image compression: Resampling failed');
+          return false;
+      }
+
+      return $destination_image;
+  }
+
+  private function save_optimized_jpeg($image, $path, $quality)
+  {
+      $result = @imagejpeg($image, $path, $quality);
+      
+      if ($result && file_exists($path)) {
+          $file_size = filesize($path);
+          $max_size = 500 * 1024;
+          $min_quality = 70;
+          
+          while ($file_size > $max_size && $quality > $min_quality) {
+              $quality -= 5;
+              $result = @imagejpeg($image, $path, $quality);
+              if ($result && file_exists($path)) {
+                  $file_size = filesize($path);
+              } else {
+                  break;
+              }
+          }
+      }
+
+      return $result && file_exists($path);
+  }
+
+  private function log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height)
+  {
+      $original_size = @filesize($source_path) ?: 0;
+      $new_size = @filesize($final_path) ?: 0;
+      $reduction = $original_size > 0 ? round((1 - ($new_size / $original_size)) * 100, 1) : 0;
+      
+      log_message('info', sprintf(
+          'Image compressed: %dx%d -> %dx%d, %s -> %s (%.1f%% reduction)',
+          $original_width, $original_height,
+          $new_width, $new_height,
+          $this->format_bytes($original_size),
+          $this->format_bytes($new_size),
+          max(0, $reduction)
+      ));
+  }
+
+  private function format_bytes($bytes)
+  {
+      $units = ['B', 'KB', 'MB', 'GB'];
+      $bytes = max($bytes, 0);
+      $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+      $pow = min($pow, count($units) - 1);
+      $bytes /= pow(1024, $pow);
+      return round($bytes, 2) . ' ' . $units[$pow];
+  }
+
   // get noticeboard
   function get_frontend_noticeboard()
   {
@@ -884,33 +1084,63 @@ class Frontend_model extends CI_Model
     
 
     
-    // Handle school image upload (logo)
+    // Handle school image upload (logo) - avec compression
     if (isset($_FILES['school_image']) && $_FILES['school_image']['error'] == UPLOAD_ERR_OK) {
-      $upload_path = 'Uploads/schools/' . $school_id . '.jpg';
-      if (!move_uploaded_file($_FILES['school_image']['tmp_name'], $upload_path)) {
-        return json_encode([
-          'status' => false,
-          'message' => get_phrase('image_upload_failed'),
-          'csrf' => [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-          ]
-        ]);
+      $logo_dir = 'uploads/schools/';
+      if (!is_dir($logo_dir)) {
+          mkdir($logo_dir, 0777, true);
+      }
+      
+      // Compresser et sauvegarder le logo (512x512 recommandé, qualité 90%)
+      $logo_result = $this->compress_and_save_image(
+          $_FILES['school_image']['tmp_name'],
+          $logo_dir . $school_id,
+          512,   // max width
+          512,   // max height
+          90     // qualité JPEG
+      );
+      
+      if ($logo_result === false) {
+          log_message('error', 'Failed to compress school logo for school_id: ' . $school_id);
+          return json_encode([
+              'status' => false,
+              'error_type' => 'logo',
+              'message' => get_phrase('image_processing_failed_please_try_another_image'),
+              'csrf' => [
+                  'csrfName' => $this->security->get_csrf_token_name(),
+                  'csrfHash' => $this->security->get_csrf_hash()
+              ]
+          ]);
       }
     }
 
-    // Handle school cover upload
+    // Handle school cover upload - avec compression
     if (isset($_FILES['communityCover']) && $_FILES['communityCover']['error'] == UPLOAD_ERR_OK) {
-      $upload_path = 'Uploads/communityCover/' . $school_id . '.jpg';
-      if (!move_uploaded_file($_FILES['communityCover']['tmp_name'], $upload_path)) {
-        return json_encode([
-          'status' => false,
-          'message' => get_phrase('image_upload_failed'),
-          'csrf' => [
-            'csrfName' => $this->security->get_csrf_token_name(),
-            'csrfHash' => $this->security->get_csrf_hash()
-          ]
-        ]);
+      $cover_dir = 'uploads/communityCover/';
+      if (!is_dir($cover_dir)) {
+          mkdir($cover_dir, 0777, true);
+      }
+      
+      // Compresser et sauvegarder la cover (1920x600 recommandé, qualité 90%)
+      $cover_result = $this->compress_and_save_image(
+          $_FILES['communityCover']['tmp_name'],
+          $cover_dir . $school_id,
+          1920,  // max width
+          600,   // max height
+          90     // qualité JPEG
+      );
+      
+      if ($cover_result === false) {
+          log_message('error', 'Failed to compress school cover for school_id: ' . $school_id);
+          return json_encode([
+              'status' => false,
+              'error_type' => 'cover',
+              'message' => get_phrase('cover_image_processing_failed_please_try_another_image'),
+              'csrf' => [
+                  'csrfName' => $this->security->get_csrf_token_name(),
+                  'csrfHash' => $this->security->get_csrf_hash()
+              ]
+          ]);
       }
     }
 

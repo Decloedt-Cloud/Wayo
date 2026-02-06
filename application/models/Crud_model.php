@@ -76,37 +76,23 @@ class Crud_model extends CI_Model
 		$data['date_fin'] = html_escape($this->input->post('end_date'));
 		$data['statut'] = html_escape($this->input->post('status'));
 
-		// Validate the uploaded file
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-			$allowed_extensions = ['jpeg', 'gif', 'jpg', 'png'];
-			$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-
-			if (!in_array($file_ext, $allowed_extensions)) {
-				log_message('error', 'Invalid file extension: ' . $file_ext);
-				return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
+			$dir = 'uploads/class/';
+			if (!is_dir($dir)) {
+				@mkdir($dir, 0777, true);
 			}
-
-			$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-			$upload_path = 'uploads/class/' . $file_name;
-
-			// Check if a file with the same name already exists
-			if (file_exists($upload_path)) {
-				log_message('error', 'Photo already exists: ' . $upload_path);
-				return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
+			$file_base = md5(rand(10000000, 20000000));
+			$destination = $dir . $file_base;
+			$result = $this->compress_and_save_image($_FILES['photo']['tmp_name'], $destination, 800, 800, 90);
+			if ($result === false) {
+				return json_encode(['status' => false, 'notification' => get_phrase('image_processing_failed_please_try_another_image')]);
 			}
-
-			if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-				log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
-				return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
-			}
-
-			$data['photo'] = $file_name;
+			$data['photo'] = $file_base . '.jpg';
 		}
 
 
 		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
 		$data['school_id'] = $this->school_id;
-		$this->db->insert('classes', $data);
 
 
 		// Créer une class_room avec le même nom que la classe
@@ -133,37 +119,23 @@ class Crud_model extends CI_Model
 		$data['date_fin'] = html_escape($this->input->post('end_date'));
 		$data['statut'] = html_escape($this->input->post('status'));
 
-		// Validate the uploaded file
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-			$allowed_extensions = ['jpeg', 'gif', 'jpg', 'png'];
-			$file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-
-			if (!in_array($file_ext, $allowed_extensions)) {
-				log_message('error', 'Invalid file extension: ' . $file_ext);
-				return json_encode(['status' => false, 'notification' => 'Invalid photo type. Only jpeg , gif, JPG, and PNG are allowed.']);
+			$dir = 'uploads/class/';
+			if (!is_dir($dir)) {
+				@mkdir($dir, 0777, true);
 			}
-
-			$file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-			$upload_path = 'uploads/class/' . $file_name;
-
-			// Check if a file with the same name already exists
-			if (file_exists($upload_path)) {
-				log_message('error', 'Photo already exists: ' . $upload_path);
-				return json_encode(['status' => false, 'notification' => 'A photo with the same name already exists.']);
+			$file_base = md5(rand(10000000, 20000000));
+			$destination = $dir . $file_base;
+			$result = $this->compress_and_save_image($_FILES['photo']['tmp_name'], $destination, 800, 800, 90);
+			if ($result === false) {
+				return json_encode(['status' => false, 'notification' => get_phrase('image_processing_failed_please_try_another_image')]);
 			}
-
-			if (!move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-				log_message('error', 'Failed to move uploaded photo to ' . $upload_path);
-				return json_encode(['status' => false, 'notification' => 'Failed to upload the file.']);
-			}
-
-			$data['photo'] = $file_name;
+			$data['photo'] = $file_base . '.jpg';
 		}
 
 
 		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
 		$this->db->where('id', $param1);
-		$this->db->update('classes', $data);
 
 		// Mettre à jour la class_room associée
 		// $this->db->where('class_id', $param1);
@@ -212,6 +184,176 @@ class Crud_model extends CI_Model
 		return $class_details;
 	}
 	//END CLASS section
+
+	private function compress_and_save_image($source_path, $destination_path, $max_width = 512, $max_height = 512, $quality = 90)
+	{
+		if (!file_exists($source_path)) {
+			return false;
+		}
+		if (!extension_loaded('gd')) {
+			return false;
+		}
+		$image_info = @getimagesize($source_path);
+		if ($image_info === false) {
+			return false;
+		}
+		$original_width = $image_info[0];
+		$original_height = $image_info[1];
+		$mime_type = $image_info['mime'];
+		if ($original_width < 1 || $original_height < 1) {
+			return false;
+		}
+		$source_image = $this->create_image_from_file($source_path, $mime_type);
+		if ($source_image === false) {
+			return false;
+		}
+		list($new_width, $new_height) = $this->calculate_dimensions($original_width, $original_height, $max_width, $max_height);
+		$destination_image = $this->create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type);
+		if ($destination_image === false) {
+			imagedestroy($source_image);
+			return false;
+		}
+		$final_path = $destination_path . '.jpg';
+		$save_result = $this->save_optimized_jpeg($destination_image, $final_path, $quality);
+		imagedestroy($source_image);
+		imagedestroy($destination_image);
+		if (!$save_result) {
+			if (file_exists($final_path)) {
+				@unlink($final_path);
+			}
+			return false;
+		}
+		$this->log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height);
+		return $final_path;
+	}
+
+	private function create_image_from_file($source_path, $mime_type)
+	{
+		$source_image = false;
+		switch ($mime_type) {
+			case 'image/jpeg':
+			case 'image/jpg':
+				$source_image = @imagecreatefromjpeg($source_path);
+				break;
+			case 'image/png':
+				$source_image = @imagecreatefrompng($source_path);
+				break;
+			case 'image/gif':
+				$source_image = @imagecreatefromgif($source_path);
+				break;
+			case 'image/webp':
+				if (function_exists('imagecreatefromwebp')) {
+					$source_image = @imagecreatefromwebp($source_path);
+				}
+				break;
+			case 'image/bmp':
+			case 'image/x-ms-bmp':
+				if (function_exists('imagecreatefrombmp')) {
+					$source_image = @imagecreatefrombmp($source_path);
+				}
+				break;
+		}
+		if ($source_image === false) {
+			$image_data = @file_get_contents($source_path);
+			if ($image_data !== false) {
+				$source_image = @imagecreatefromstring($image_data);
+			}
+		}
+		if ($source_image === false) {
+			$functions = ['imagecreatefromjpeg', 'imagecreatefrompng', 'imagecreatefromgif'];
+			if (function_exists('imagecreatefromwebp')) $functions[] = 'imagecreatefromwebp';
+			if (function_exists('imagecreatefrombmp')) $functions[] = 'imagecreatefrombmp';
+			foreach ($functions as $func) {
+				$source_image = @$func($source_path);
+				if ($source_image !== false) {
+					break;
+				}
+			}
+		}
+		return $source_image;
+	}
+
+	private function calculate_dimensions($original_width, $original_height, $max_width, $max_height)
+	{
+		$new_width = $original_width;
+		$new_height = $original_height;
+		if ($original_width > $max_width || $original_height > $max_height) {
+			$ratio_width = $max_width / $original_width;
+			$ratio_height = $max_height / $original_height;
+			$ratio = min($ratio_width, $ratio_height);
+			$new_width = max(1, (int) round($original_width * $ratio));
+			$new_height = max(1, (int) round($original_height * $ratio));
+		}
+		return [$new_width, $new_height];
+	}
+
+	private function create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type)
+	{
+		$destination_image = @imagecreatetruecolor($new_width, $new_height);
+		if ($destination_image === false) {
+			return false;
+		}
+		$white = imagecolorallocate($destination_image, 255, 255, 255);
+		imagefilledrectangle($destination_image, 0, 0, $new_width, $new_height, $white);
+		imageinterlace($destination_image, true);
+		$resample_result = imagecopyresampled(
+			$destination_image,
+			$source_image,
+			0, 0, 0, 0,
+			$new_width, $new_height,
+			$original_width, $original_height
+		);
+		if (!$resample_result) {
+			imagedestroy($destination_image);
+			return false;
+		}
+		return $destination_image;
+	}
+
+	private function save_optimized_jpeg($image, $path, $quality)
+	{
+		$result = @imagejpeg($image, $path, $quality);
+		if ($result && file_exists($path)) {
+			$file_size = filesize($path);
+			$max_size = 500 * 1024;
+			$min_quality = 70;
+			while ($file_size > $max_size && $quality > $min_quality) {
+				$quality -= 5;
+				$result = @imagejpeg($image, $path, $quality);
+				if ($result && file_exists($path)) {
+					$file_size = filesize($path);
+				} else {
+					break;
+				}
+			}
+		}
+		return $result && file_exists($path);
+	}
+
+	private function log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height)
+	{
+		$original_size = @filesize($source_path) ?: 0;
+		$new_size = @filesize($final_path) ?: 0;
+		$reduction = $original_size > 0 ? round((1 - ($new_size / $original_size)) * 100, 1) : 0;
+		log_message('info', sprintf(
+			'Image compressed: %dx%d -> %dx%d, %s -> %s (%.1f%% reduction)',
+			$original_width, $original_height,
+			$new_width, $new_height,
+			$this->format_bytes($original_size),
+			$this->format_bytes($new_size),
+			max(0, $reduction)
+		));
+	}
+
+	private function format_bytes($bytes)
+	{
+		$units = ['B', 'KB', 'MB', 'GB'];
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+		$bytes /= pow(1024, $pow);
+		return round($bytes, 2) . ' ' . $units[$pow];
+	}
 
 
 	//START CLASS_ROOM section
@@ -648,6 +790,39 @@ class Crud_model extends CI_Model
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('announcement', $data);
+        $announcement_id = $this->db->insert_id();
+
+        // Sync with Community Wall
+        try {
+            $CI =& get_instance();
+            $CI->load->model('Wall_model');
+            
+            // Get user ID safely
+            $user_id = $CI->session->userdata('user_id');
+            if (!$user_id) {
+                // Fallback for some contexts
+                $user_id = $this->session->userdata('user_id');
+            }
+
+            // Get or create community wall for this school
+            $wall = $CI->Wall_model->get_or_create_wall('community', $this->school_id);
+            
+            if ($wall && $user_id) {
+                $post_data = array(
+                    'wall_id' => $wall['id'],
+                    'author_user_id' => $user_id,
+                    'body' => $data['title'] . "\n\n" . get_phrase('starting_date') . ': ' . $data['starting_date'] . "\n" . get_phrase('ending_date') . ': ' . $data['ending_date'],
+                    'type' => 'announcement',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'status' => 'published'
+                );
+                $this->db->insert('posts', $post_data);
+            } else {
+                 log_message('error', 'Sync failed: Wall or User ID missing. Wall: ' . ($wall ? 'Found' : 'Missing') . ', User: ' . $user_id);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Error syncing announcement to wall: ' . $e->getMessage());
+        }
 
 		return array(
 			'status' => true,
@@ -741,6 +916,40 @@ class Crud_model extends CI_Model
 			$data['image']  = 'placeholder.png';
 		}
 		$this->db->insert('noticeboard', $data);
+
+        // SYNC WITH COMMUNITY WALL
+        // When a notice is created, we also create an announcement post on the community wall
+        try {
+            $this->load->model('Wall_model');
+            // Get community wall (school_id is the community_id)
+            $wall = $this->Wall_model->get_or_create_wall('community', $data['school_id']);
+            
+            if ($wall) {
+                $user_id = $this->session->userdata('user_id'); // Admin/Superadmin who created the notice
+                
+                // Construct post body
+                $post_body = "<h3>" . $data['notice_title'] . "</h3>";
+                $post_body .= "<p>" . nl2br($data['notice']) . "</p>";
+                
+                if (isset($data['image']) && $data['image'] != 'placeholder.png') {
+                    $image_url = base_url('uploads/images/notice_images/' . $data['image']);
+                    $post_body .= '<br><img src="' . $image_url . '" class="img-fluid" alt="' . $data['notice_title'] . '">';
+                }
+
+                $post_data = [
+                    'wall_id' => $wall['id'],
+                    'author_user_id' => $user_id,
+                    'type' => 'announcement',
+                    'body' => $post_body,
+                    'status' => 'published',
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                
+                $this->Wall_model->create_post($post_data);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Failed to sync notice to wall: ' . $e->getMessage());
+        }
 
 		return array(
 			'status' => true,

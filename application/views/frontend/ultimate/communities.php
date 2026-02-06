@@ -1041,7 +1041,7 @@
       <div class="hero-stats">
         <div class="hero-stat">
           <i class="fa-solid fa-users"></i>
-          <span><?php echo $this->db->count_all('schools'); ?>+ <?php echo get_phrase("communities"); ?></span>
+          <span><?php echo $this->db->where('status', 1)->where('Etat', 1)->count_all_results('schools'); ?>+ <?php echo get_phrase("communities"); ?></span>
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-graduation-cap"></i>

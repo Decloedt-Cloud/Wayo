@@ -154,7 +154,7 @@ class Admin extends CI_Controller
 		$supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
 		
 		// Backend routes that should NOT have language prefix
-		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron');
+		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron', 'wall', 'class_wall');
 		
 		// Parse the URL
 		$parsed = parse_url($url);
@@ -4338,18 +4338,30 @@ class Admin extends CI_Controller
 	public function school_settings($param1 = "", $param2 = "")
 	{
 		if ($param1 == 'update') {
-			$response = $this->settings_model->update_current_school_settings();
-			// echo $response;
+			$response = json_decode($this->settings_model->update_current_school_settings(), true);
 			
 			// Préparer la réponse avec un nouveau jeton CSRF
 			$csrf = array(
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash(),
-				);
+				'name' => $this->security->get_csrf_token_name(),
+				'hash' => $this->security->get_csrf_hash(),
+			);
 			
-			// Renvoyer la réponse avec un nouveau jeton CSRF
-			echo json_encode(array('status' => $response, 'csrf' => $csrf));
-		
+			// Construire la réponse finale avec CSRF
+			$output = array(
+				'status' => $response['status'] ?? false,
+				'csrf' => $csrf
+			);
+			
+			// Ajouter les informations d'erreur si présentes
+			if (isset($response['error_type'])) {
+				$output['error_type'] = $response['error_type'];
+				$output['error_message'] = $response['error_message'];
+			}
+			if (isset($response['notification'])) {
+				$output['notification'] = $response['notification'];
+			}
+			
+			echo json_encode($output);
 		}
 
 		if ($param1 == 'delete_tax_document') {
