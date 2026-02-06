@@ -222,6 +222,14 @@ $route['register/community'] = 'admission/register_community';
 $route['app/join_school'] = 'student/join_school';
 $route['app/join_school/(.+)'] = 'student/join_school/$1';
 
+// Wall Routes
+$route['(.+)/community_wall'] = 'wall/community';
+$route['(.+)/class_wall'] = 'wall/class';
+$route['(.+)/class_wall/(:num)'] = 'wall/class/$2';
+$route['community_wall'] = 'wall/community';
+$route['class_wall'] = 'wall/class';
+$route['class_wall/(:num)'] = 'wall/class/$1';
+
 
 
 $route['academy/student/filter'] = 'student/academy/filter';
@@ -503,6 +511,20 @@ $route['api/UpdateSystemSettings/(:num)'] = 'api/Admin/update_system_settings/$1
 
 
 $route['api/GetSystemLogo/(:num)'] = "api/Admin/system_logo/$1";
+
+// Wall API Routes
+$route['api/communities/(:num)/wall']['GET'] = 'api/Wall/community/$1';
+$route['api/communities/(:num)/wall']['POST'] = 'api/Wall/community_posts/$1';
+$route['api/communities/(:num)/announcements']['POST'] = 'api/Wall/announcements/$1';
+
+$route['api/classes/(:num)/wall']['GET'] = 'api/Wall/class/$1';
+$route['api/classes/(:num)/wall']['POST'] = 'api/Wall/class_posts/$1';
+
+$route['api/posts/(:num)/report']['POST'] = 'api/Wall/report/$1';
+$route['api/posts/(:num)/hide']['POST'] = 'api/Wall/hide/$1';
+$route['api/posts/(:num)/unhide']['POST'] = 'api/Wall/unhide/$1';
+$route['api/posts/(:num)']['DELETE'] = 'api/Wall/posts/$1';
+
 $route['api/UpdateSystemLogo/(:num)'] = "api/Admin/update_system_logo/$1";
 
 
@@ -685,6 +707,12 @@ $route['api/GetSyllabus/(:any)/(:num)'] = 'api/Admin/syllabus_by_class_section/$
 $route['api/CreateSyllabus'] = 'api/Admin/create_syllabus';
 $route['api/DeleteSyllabus'] = 'api/Admin/delete_syllabus';
 
+// API Wall Routes (Fix for frontend mismatch)
+$route['api/classes/(:num)/wall'] = 'api/wall/class/$1';
+$route['api/classes/(:num)/wall/posts'] = 'api/wall/class_posts/$1';
+$route['api/communities/(:num)/wall'] = 'api/wall/community/$1';
+$route['api/communities/(:num)/wall/posts'] = 'api/wall/community_posts/$1';
+$route['api/communities/(:num)/announcements'] = 'api/wall/announcements/$1';
 
 
 
@@ -842,6 +870,34 @@ $route['cron/fx_clear_cache'] = 'Cron/fx_clear_cache';
 $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
+// =====================================================
+// WAYO WALLS V1 ROUTES
+// =====================================================
+// Community Wall Routes
+$route['api/communities/(:num)/wall'] = 'api/Wall/community/$1';
+$route['api/communities/(:num)/wall/posts'] = 'api/Wall/community_posts/$1';
+$route['api/communities/(:num)/announcements'] = 'api/Wall/announcements/$1';
+
+// Class Wall Routes
+$route['api/classes/(:num)/wall'] = 'api/Wall/class/$1';
+$route['api/classes/(:num)/wall/posts'] = 'api/Wall/class_posts/$1';
+
+// Post Moderation Routes
+$route['api/posts/(:num)/report']['POST'] = 'api/Wall/report/$1';
+$route['api/posts/(:num)/hide']['POST'] = 'api/Wall/hide/$1';
+$route['api/posts/(:num)/unhide']['POST'] = 'api/Wall/unhide/$1';
+$route['api/posts/(:num)']['DELETE'] = 'api/Wall/posts/$1';
+
+// Moderation Dashboard Routes
+$route['api/moderation/posts'] = 'api/Wall/moderation_posts';
+$route['api/moderation/reports'] = 'api/Wall/reports';
+$route['api/reports/(:num)/status'] = 'api/Wall/report_status/$1';
+
+// Wall Page Routes
+$route['wall/community/(:num)'] = 'wall/community/$1';
+$route['wall/class/(:num)'] = 'wall/class/$1';
+$route['wall/moderation'] = 'wall/moderation';
+
 $route['payment/community/(:num)'] = 'student/payment/community/$1';
 $route['app/online_admission'] = 'student/online_admission';
 $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
@@ -855,6 +911,8 @@ $route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 $route['app/join_school'] = 'student/join_school';
 $route['app/join_school/(:any)'] = 'student/join_school/$1';
 $route['app/courses/(:num)'] = 'student/courses/$1';
+$route['app/class_wall'] = 'wall/class';
+$route['app/class_wall/(:num)'] = 'wall/class/$1';
 /*
 | -------------------------------------------------------------------------
 | CUSTOM ROUTE FOR APP URL MASKING

@@ -790,6 +790,39 @@ class Crud_model extends CI_Model
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('announcement', $data);
+        $announcement_id = $this->db->insert_id();
+
+        // Sync with Community Wall
+        try {
+            $CI =& get_instance();
+            $CI->load->model('Wall_model');
+            
+            // Get user ID safely
+            $user_id = $CI->session->userdata('user_id');
+            if (!$user_id) {
+                // Fallback for some contexts
+                $user_id = $this->session->userdata('user_id');
+            }
+
+            // Get or create community wall for this school
+            $wall = $CI->Wall_model->get_or_create_wall('community', $this->school_id);
+            
+            if ($wall && $user_id) {
+                $post_data = array(
+                    'wall_id' => $wall['id'],
+                    'author_user_id' => $user_id,
+                    'body' => $data['title'] . "\n\n" . get_phrase('starting_date') . ': ' . $data['starting_date'] . "\n" . get_phrase('ending_date') . ': ' . $data['ending_date'],
+                    'type' => 'announcement',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'status' => 'published'
+                );
+                $this->db->insert('posts', $post_data);
+            } else {
+                 log_message('error', 'Sync failed: Wall or User ID missing. Wall: ' . ($wall ? 'Found' : 'Missing') . ', User: ' . $user_id);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Error syncing announcement to wall: ' . $e->getMessage());
+        }
 
 		return array(
 			'status' => true,
@@ -883,6 +916,40 @@ class Crud_model extends CI_Model
 			$data['image']  = 'placeholder.png';
 		}
 		$this->db->insert('noticeboard', $data);
+
+        // SYNC WITH COMMUNITY WALL
+        // When a notice is created, we also create an announcement post on the community wall
+        try {
+            $this->load->model('Wall_model');
+            // Get community wall (school_id is the community_id)
+            $wall = $this->Wall_model->get_or_create_wall('community', $data['school_id']);
+            
+            if ($wall) {
+                $user_id = $this->session->userdata('user_id'); // Admin/Superadmin who created the notice
+                
+                // Construct post body
+                $post_body = "<h3>" . $data['notice_title'] . "</h3>";
+                $post_body .= "<p>" . nl2br($data['notice']) . "</p>";
+                
+                if (isset($data['image']) && $data['image'] != 'placeholder.png') {
+                    $image_url = base_url('uploads/images/notice_images/' . $data['image']);
+                    $post_body .= '<br><img src="' . $image_url . '" class="img-fluid" alt="' . $data['notice_title'] . '">';
+                }
+
+                $post_data = [
+                    'wall_id' => $wall['id'],
+                    'author_user_id' => $user_id,
+                    'type' => 'announcement',
+                    'body' => $post_body,
+                    'status' => 'published',
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                
+                $this->Wall_model->create_post($post_data);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Failed to sync notice to wall: ' . $e->getMessage());
+        }
 
 		return array(
 			'status' => true,
