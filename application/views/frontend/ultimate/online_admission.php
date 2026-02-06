@@ -1029,6 +1029,56 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* ================= UPLOADER DIFFERENTIATION ================= */
+    /* Logo uploader - petit et carré */
+    .uploader[data-kind="logo"] {
+        max-width: 180px;
+        height: 180px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .uploader[data-kind="logo"] .uploader-content {
+        gap: 6px;
+    }
+
+    .uploader[data-kind="logo"] .uploader-content i {
+        font-size: 1.4rem;
+    }
+
+    .uploader[data-kind="logo"] .uploader-content p {
+        font-size: 0.8rem;
+    }
+
+    .uploader[data-kind="logo"] .preview {
+        inset: 8px;
+    }
+
+    .uploader[data-kind="logo"] .preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* Cover uploader - grand et rectangulaire */
+    .uploader[data-kind="cover"] {
+        min-height: 160px;
+        padding: 1.5rem;
+    }
+
+    .uploader[data-kind="cover"] .preview img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
 </style>
 
 <main class="bg-light">
@@ -1279,7 +1329,7 @@
                                 <span class="field-label">
                                     <?php echo get_phrase("Logo (1:1)") ?>
                                     <span class="info"
-                                          data-tooltip="<?php echo get_phrase("Optimal_size:_512×512_px_(1:1)_•_PNG/JPG_•_transparent_background_recommended_•_&lt;_1_Mo") ?>">
+                                          data-tooltip="<?php echo get_phrase("recommended_resolution"); ?>: 512×512 px • PNG/JPG/GIF/WebP • <?php echo get_phrase("animated_gifs_will_be_converted_to_static"); ?>">
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
@@ -1297,7 +1347,7 @@
                                 <span class="field-label">
                                     <?php echo get_phrase("Cover_(16:9)") ?>
                                     <span class="info"
-                                          data-tooltip="<?php echo get_phrase("Optimal_size:_1600×900_px_•_PNG/JPG_•_transparent_background_not_recommended_•_&lt;_2_Mo.") ?>">
+                                          data-tooltip="<?php echo get_phrase("recommended_resolution"); ?>: 1920×600 px • PNG/JPG/GIF/WebP • <?php echo get_phrase("animated_gifs_will_be_converted_to_static"); ?>">
                                         <i class="fa-solid fa-circle-info"></i>
                                     </span>
                                 </span>
@@ -1571,67 +1621,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // lastEmail and lastSchool removed to force re-check
 
     // ========================
-    // Config images
+    // Config images (recommandations uniquement, pas de restrictions)
+    // La compression est gérée côté serveur
     // ========================
-    const CONFIG = {
-        logo: {
-            maxMB: 1,
-            ratio: 1,
-            maxWidth: 512,
-            maxHeight: 512,
-            tolerance: 0.03
-        },
-        cover: {
-            maxMB: 2,
-            ratio: 16 / 9,
-            maxWidth: 1600,
-            maxHeight: 900,
-            tolerance: 0.12
-        }
-    };
-
     async function validateImage(file, type) {
         if (!file) return { valid: true };
 
-        const c = CONFIG[type];
-
-        if (file.size > c.maxMB * 1024 * 1024) {
-            return {
-                valid: false,
-                msg: type === 'logo'
-                    ? 'Logo trop lourd, max 1 Mo'
-                    : 'Cover trop lourde, max 2 Mo'
-            };
-        }
-
+        // Vérifier uniquement que c'est une image valide
         return new Promise(resolve => {
             const img = new Image();
             img.onload = () => {
-                const width  = img.width;
-                const height = img.height;
-                const ratio  = width / height;
-
-                if (type === 'logo') {
-                    if (Math.abs(ratio - c.ratio) > c.tolerance) {
-                        return resolve({ valid: false, msg: 'Le logo doit être carré (1:1)' });
-                    }
-                    if (width > c.maxWidth || height > c.maxHeight) {
-                        return resolve({ valid: false, msg: 'Le logo ne doit pas dépasser 512×512 px' });
-                    }
-                }
-
-                if (type === 'cover') {
-                    if (width > c.maxWidth || height > c.maxHeight) {
-                        return resolve({ valid: false, msg: 'La cover ne doit pas dépasser 1600×900 px' });
-                    }
-                    if (Math.abs(ratio - c.ratio) > c.tolerance) {
-                        return resolve({ valid: false, msg: 'La cover doit être environ 16:9' });
-                    }
-                }
-
+                URL.revokeObjectURL(img.src);
                 resolve({ valid: true });
             };
-            img.onerror = () => resolve({ valid: false, msg: 'Image corrompue' });
+            img.onerror = () => {
+                URL.revokeObjectURL(img.src);
+                resolve({ valid: false, msg: '<?php echo get_phrase("image_corrupted_or_invalid_format"); ?>' });
+            };
             img.src = URL.createObjectURL(file);
         });
     }
@@ -2212,7 +2218,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const overlay = document.getElementById('successOverlay');
                 if (overlay) overlay.classList.add('is-visible');
             } else {
-                toastr?.error(data.message || 'Error');
+                // Handle specific image errors
+                if (data.error_type === 'logo') {
+                    showImageError(logoPreview, data.message);
+                    goTo(1); // Go back to step 2 (community)
+                } else if (data.error_type === 'cover') {
+                    showImageError(coverPreview, data.message);
+                    goTo(1); // Go back to step 2 (community)
+                } else {
+                    toastr?.error(data.message || 'Error');
+                }
             }
         })
         .catch((err) => {
