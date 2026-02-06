@@ -113,25 +113,50 @@ class Lms_model extends CI_Model
     } */
    public function filter_course_for_teacher($class_id = "all", $user_id = "all", $status = "all", $school_id = "all")
     {
-        $teacher_id = $this->session->userdata('user_id');
+        $teacher_user_id = $this->session->userdata('user_id');
+        $current_school_id = school_id();
+
+        // 1. Get teacher ID for the current school to check permissions
+        $teacher = $this->db->get_where('teachers', array('user_id' => $teacher_user_id, 'school_id' => $current_school_id))->row_array();
+        $real_teacher_id = isset($teacher['id']) ? $teacher['id'] : 0;
+
+        // 2. Get allowed class IDs from permissions (marks = 1, interpreted as manage)
+        $allowed_class_ids = [];
+        if ($real_teacher_id) {
+            $this->db->select('class_id');
+            $this->db->from('teacher_permissions');
+            $this->db->where('teacher_id', $real_teacher_id);
+            $this->db->where('marks', 1);
+            $perms = $this->db->get()->result_array();
+            $allowed_class_ids = array_column($perms, 'class_id');
+        }
+
+        // STRICT CHECK: If no class permissions, return empty immediately.
+        // The user requirement is strict: courses are visible ONLY if linked to an allowed class.
+        if (empty($allowed_class_ids)) {
+            return [];
+        }
 
         $this->db->select('
             course.*,
             GROUP_CONCAT(DISTINCT t.name SEPARATOR ", ") AS teacher_names
         ');
         $this->db->from('course');
-        $this->db->where('course.school_id', school_id());
+        $this->db->where('course.school_id', $current_school_id);
 
-        // Teacher can only see HIS/HER own courses (via course_teachers table)
-        $this->db->join('course_teachers ct', 'ct.course_id = course.id', 'inner');
-        $this->db->where('ct.user_id', $teacher_id);
-
-        // Join users table to get teacher names (for display)
+        // Join course_classes to filter by allowed classes
+        // Use INNER JOIN to ensure we only get courses that ARE in these classes
+        $this->db->join('course_classes cc', 'cc.course_id = course.id', 'inner');
+        
+        // Join course_teachers and users for display info
+        $this->db->join('course_teachers ct', 'ct.course_id = course.id', 'left');
         $this->db->join('users t', 't.id = ct.user_id', 'left');
 
-        // Filter by class using course_classes junction table
+        // Apply Permission Filter: Course MUST be in one of the allowed classes
+        $this->db->where_in('cc.class_id', $allowed_class_ids);
+
+        // Filter by class if selected in dropdown
         if ($class_id != "all" && !empty($class_id)) {
-            $this->db->join('course_classes cc', 'cc.course_id = course.id', 'inner');
             $this->db->where('cc.class_id', $class_id);
         }
 

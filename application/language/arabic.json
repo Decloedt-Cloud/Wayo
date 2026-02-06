@@ -4012,6 +4012,7 @@
     "people": "الناس",
     "spaces": "المساحات",
     "subtotal": "المجموع الفرعي",
+  "no_classes_authorized_for_menu_management": "لا توجد فصول مصرح لها بإدارة القوائم",
     "image_processing_failed_please_try_another_image": "فشل معالجة الصورة. يرجى المحاولة بصورة أخرى.",
     "cover_image_processing_failed_please_try_another_image": "فشل معالجة صورة الغلاف. يرجى المحاولة بصورة أخرى.",
     "recommended_resolution": "الدقة الموصى بها",

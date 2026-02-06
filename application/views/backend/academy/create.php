@@ -251,13 +251,17 @@
                                         $permitted_class_ids = [];
                                         if($this->session->userdata('teacher_login') == 1) {
                                             $user_id = $this->session->userdata('user_id');
-                                            $teacher_data = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+                                            $current_school_id = school_id();
+                                            // Fix: Get teacher ID specific to current school
+                                            $teacher_data = $this->db->get_where('teachers', ['user_id' => $user_id, 'school_id' => $current_school_id])->row_array();
                                             $teacher_id_perm = $teacher_data['id'] ?? null;
+                                            
                                             if ($teacher_id_perm) {
                                                 $this->db->select('class_id');
                                                 $this->db->from('teacher_permissions');
                                                 $this->db->where('teacher_id', $teacher_id_perm);
-                                                $this->db->where('attendance', 1);
+                                                // Teacher needs 'marks' permission to manage courses (consistent with list view)
+                                                $this->db->where('marks', 1);
                                                 $permitted_classes_result = $this->db->get()->result_array();
                                                 $permitted_class_ids = array_column($permitted_classes_result, 'class_id');
                                             }

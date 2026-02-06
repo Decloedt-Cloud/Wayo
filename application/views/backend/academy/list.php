@@ -1,564 +1,600 @@
 <?php
+// Modification: Filtering courses/classes for teachers based on 'marks' permission (interpreted as 'mange').
+// Date: 2026-02-06
+
+// Filter courses for teacher based on permissions
+$teacher_allowed_class_ids = [];
+$is_teacher = $this->session->userdata('teacher_login') == 1;
+
+if ($is_teacher) {
+    $user_id = $this->session->userdata('user_id');
+    // Modification: Get teacher ID specifically for the current school to avoid conflicts with multiple school profiles
+    $school_id = school_id();
+    $teacher_data = $this->db->get_where('teachers', array('user_id' => $user_id, 'school_id' => $school_id))->row_array();
+    $real_teacher_id = isset($teacher_data['id']) ? $teacher_data['id'] : 0;
+
+    // Get allowed classes (permission 'marks' = 1)
+    $this->db->select('class_id');
+    $this->db->from('teacher_permissions');
+    $this->db->where('teacher_id', $real_teacher_id);
+    $this->db->where('marks', 1); // Permission "mange" (manage)
+    $perms = $this->db->get()->result_array();
+    $teacher_allowed_class_ids = array_column($perms, 'class_id');
+
+    // Note: Course filtering is now handled in Lms_model::filter_course_for_teacher()
+    // We only keep teacher_allowed_class_ids for UI display logic (hiding classes in the list)
+
+    // Recalculate stats for teacher
+    $active_courses_count = 0;
+    $inactive_courses_count = 0;
+    foreach ($courses as $c) {
+        if ($c['status'] == 'active') $active_courses_count++;
+        else $inactive_courses_count++;
+    }
+} else {
+    // Original stats for admin
+    $active_courses_count = isset($status_wise_courses['active']) ? $status_wise_courses['active']->num_rows() : 0;
+    $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise_courses['inactive']->num_rows() : 0;
+}
+
 // Get data checks
 $check_data = $this->db->get('sessions');
-$active_courses_count = isset($status_wise_courses['active']) ? $status_wise_courses['active']->num_rows() : 0;
-$inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise_courses['inactive']->num_rows() : 0;
 ?>
 
 <style>
-/* Stats Grid */
-.aca-dashboard {
-    margin-bottom: 2rem;
-    padding: 0 0.5rem;
-}
-
-.aca-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-.aca-stat-card {
-    position: relative;
-    background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    border: 1px solid var(--aca-border);
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.aca-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.aca-stat-icon-wrap {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-    flex-shrink: 0;
-}
-
-.aca-stat-active .aca-stat-icon-wrap { background: linear-gradient(135deg, #10b981, #34d399); color: white; }
-.aca-stat-inactive .aca-stat-icon-wrap { background: linear-gradient(135deg, #64748b, #94a3b8); color: white; }
-
-.aca-stat-data { flex: 1; }
-
-.aca-stat-value {
-    display: block;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--aca-dark);
-    line-height: 1;
-    margin-bottom: 0.25rem;
-}
-
-.aca-stat-label {
-    font-size: 0.875rem;
-    color: var(--aca-gray);
-    font-weight: 500;
-}
-
-/* Filter Section */
-.aca-filter-section {
-    padding: 1.5rem;
-    background: white;
-    border-radius: 16px;
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--aca-border);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-}
-
-.aca-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-    align-items: end;
-}
-
-.aca-filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.aca-filter-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--aca-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.aca-filter-label i {
-    color: var(--aca-primary);
-    font-size: 1rem;
-}
-
-.aca-filter-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--aca-border);
-    border-radius: 10px;
-    font-size: 0.9375rem;
-    background: var(--aca-light);
-    color: var(--aca-dark);
-    transition: all 0.2s;
-    cursor: pointer;
-}
-
-.aca-filter-input:focus {
-    outline: none;
-    border-color: var(--aca-primary);
-    background: white;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.aca-filter-input:hover {
-    border-color: #cbd5e1;
-}
-
-.aca-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    height: fit-content;
-    width: 100%;
-}
-
-.aca-filter-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-/* List Container (Div Layout) */
-.aca-list-container {
-    background: var(--aca-white);
-    border-radius: 20px;
-    border: 1px solid var(--aca-border);
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.aca-list-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 100px 100px;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--aca-dark) 0%, #334155 100%);
-    color: white;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    align-items: center;
-}
-
-.aca-list-body {
-    min-height: 300px;
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.aca-list-item {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 100px 100px;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--aca-border);
-    position: relative;
-    align-items: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.aca-list-item:hover {
-    background: linear-gradient(135deg, rgba(var(--aca-primary-rgb), 0.03), rgba(var(--aca-primary-rgb), 0.06));
-}
-
-.aca-list-item:last-child {
-    border-bottom: none;
-}
-
-.aca-item-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: transparent;
-    transition: all 0.2s;
-}
-
-.aca-list-item:hover .aca-item-indicator {
-    background: linear-gradient(180deg, var(--aca-primary), #8b5cf6);
-}
-
-/* Column Styles */
-.aca-col-title {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.aca-course-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(var(--aca-primary-rgb), 0.3);
-}
-
-.aca-course-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.aca-course-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--aca-dark);
-    margin-bottom: 0.25rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration: none;
-}
-
-.aca-course-title:hover {
-    color: var(--aca-primary);
-}
-
-.aca-course-meta {
-    font-size: 0.75rem;
-    color: var(--aca-gray);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.aca-col-class {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.aca-col-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.8125rem;
-    color: var(--aca-gray);
-}
-
-.aca-col-stats i {
-    color: var(--aca-primary);
-    margin-right: 0.35rem;
-}
-
-.aca-col-status {
-    text-align: center;
-}
-
-.aca-col-actions {
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 1rem;
-}
-
-/* Badges */
-.aca-badge {
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.aca-badge-dark {
-    background: rgba(30, 41, 59, 0.1);
-    color: #1e293b;
-}
-
-.aca-badge-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-}
-
-.aca-badge-secondary {
-    background: rgba(100, 116, 139, 0.1);
-    color: #64748b;
-}
-
-/* Pagination Bar */
-.aca-pagination-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, var(--aca-light), #f1f5f9);
-    border-top: 1px solid var(--aca-border);
-    gap: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.aca-pagination-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.aca-info-text {
-    font-size: 0.875rem;
-    color: var(--aca-gray);
-}
-
-.aca-info-text strong {
-    color: var(--aca-dark);
-    font-weight: 600;
-}
-
-.aca-progress-bar {
-    width: 120px;
-    height: 4px;
-    background: var(--aca-border);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.aca-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--aca-primary), #8b5cf6);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-}
-
-.aca-pagination-nav {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.aca-nav-btn {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--aca-border);
-    background: var(--aca-white);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--aca-gray);
-    font-size: 1.25rem;
-    transition: all 0.2s;
-}
-
-.aca-nav-btn:hover:not(:disabled) {
-    border-color: var(--aca-primary);
-    color: var(--aca-primary);
-    transform: translateY(-1px);
-}
-
-.aca-nav-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.aca-page-indicators {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    margin: 0 0.5rem;
-}
-
-.aca-page-btn {
-    min-width: 40px;
-    height: 40px;
-    border: 2px solid var(--aca-border);
-    background: var(--aca-white);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--aca-gray);
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    padding: 0 0.5rem;
-}
-
-.aca-page-btn:hover {
-    border-color: var(--aca-primary);
-    color: var(--aca-primary);
-}
-
-.aca-page-btn.active {
-    background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
-    border-color: var(--aca-primary);
-    color: white;
-}
-
-.aca-page-ellipsis {
-    padding: 0 0.5rem;
-    color: var(--aca-gray);
-}
-
-.aca-pagination-jump {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--aca-gray);
-}
-
-.aca-page-field {
-    width: 60px;
-    padding: 0.5rem;
-    border: 2px solid var(--aca-border);
-    border-radius: 8px;
-    text-align: center;
-    font-size: 0.875rem;
-    background: var(--aca-white);
-    transition: all 0.2s;
-}
-
-.aca-page-field:focus {
-    outline: none;
-    border-color: var(--aca-primary);
-}
-
-.aca-go-btn {
-    padding: 0.5rem 1rem;
-    background: var(--aca-primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-}
-
-.aca-go-btn:hover {
-    background: #4f46e5;
-}
-
-/* Responsive Styles */
-@media (max-width: 992px) {
-    .aca-list-header, 
-    .aca-list-item {
-        grid-template-columns: 2fr 1fr 80px 80px;
-    }
-    
-    .aca-list-header div:nth-child(2),
-    .aca-list-item .aca-col-class {
-        display: none; /* Hide Class column on tablet */
-    }
-}
-
-@media (max-width: 768px) {
-    .aca-stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .aca-filter-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* List becomes card view on mobile */
-    .aca-list-header {
-        display: none;
-    }
-
-    .aca-list-item {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: 1.5rem;
-    }
-
-    .aca-col-title {
-        width: 100%;
-    }
-
-    .aca-col-stats {
-        flex-direction: row;
-        gap: 1.5rem;
-        width: 100%;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px dashed var(--aca-border);
-    }
-
-    .aca-col-status {
-        width: 100%;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .aca-col-actions {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.5rem;
-        padding: 0;
-    }
-
-    .aca-pagination-bar {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1rem;
-    }
-    
-    .aca-pagination-nav {
-        order: -1; /* Buttons on top */
-    }
-
-    /* Fix dropdown positioning on mobile */
-    .aca-col-actions .dropdown-menu {
-        position: absolute !important;
-        top: 100% !important;
-        right: 0 !important;
-        left: auto !important;
-        transform: none !important;
-        margin-top: 0.5rem !important;
-        min-width: 160px;
-    }
-}
+        /* Stats Grid */
+        .aca-dashboard {
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+
+        .aca-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .aca-stat-card {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            border: 1px solid var(--aca-border);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .aca-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .aca-stat-icon-wrap {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+        }
+
+        .aca-stat-active .aca-stat-icon-wrap { background: linear-gradient(135deg, #10b981, #34d399); color: white; }
+        .aca-stat-inactive .aca-stat-icon-wrap { background: linear-gradient(135deg, #64748b, #94a3b8); color: white; }
+
+        .aca-stat-data { flex: 1; }
+
+        .aca-stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--aca-dark);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .aca-stat-label {
+            font-size: 0.875rem;
+            color: var(--aca-gray);
+            font-weight: 500;
+        }
+
+        /* Filter Section */
+        .aca-filter-section {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--aca-border);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .aca-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            align-items: end;
+        }
+
+        .aca-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .aca-filter-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--aca-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .aca-filter-label i {
+            color: var(--aca-primary);
+            font-size: 1rem;
+        }
+
+        .aca-filter-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--aca-border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            background: var(--aca-light);
+            color: var(--aca-dark);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .aca-filter-input:focus {
+            outline: none;
+            border-color: var(--aca-primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .aca-filter-input:hover {
+            border-color: #cbd5e1;
+        }
+
+        .aca-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: fit-content;
+            width: 100%;
+        }
+
+        .aca-filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* List Container (Div Layout) */
+        .aca-list-container {
+            background: var(--aca-white);
+            border-radius: 20px;
+            border: 1px solid var(--aca-border);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .aca-list-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 100px 100px;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--aca-dark) 0%, #334155 100%);
+            color: white;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            align-items: center;
+        }
+
+        .aca-list-body {
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .aca-list-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 100px 100px;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--aca-border);
+            position: relative;
+            align-items: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .aca-list-item:hover {
+            background: linear-gradient(135deg, rgba(var(--aca-primary-rgb), 0.03), rgba(var(--aca-primary-rgb), 0.06));
+        }
+
+        .aca-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .aca-item-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .aca-list-item:hover .aca-item-indicator {
+            background: linear-gradient(180deg, var(--aca-primary), #8b5cf6);
+        }
+
+        /* Column Styles */
+        .aca-col-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .aca-course-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(var(--aca-primary-rgb), 0.3);
+        }
+
+        .aca-course-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .aca-course-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--aca-dark);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-decoration: none;
+        }
+
+        .aca-course-title:hover {
+            color: var(--aca-primary);
+        }
+
+        .aca-course-meta {
+            font-size: 0.75rem;
+            color: var(--aca-gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .aca-col-class {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .aca-col-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.8125rem;
+            color: var(--aca-gray);
+        }
+
+        .aca-col-stats i {
+            color: var(--aca-primary);
+            margin-right: 0.35rem;
+        }
+
+        .aca-col-status {
+            text-align: center;
+        }
+
+        .aca-col-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 1rem;
+        }
+
+        /* Badges */
+        .aca-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .aca-badge-dark {
+            background: rgba(30, 41, 59, 0.1);
+            color: #1e293b;
+        }
+
+        .aca-badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .aca-badge-secondary {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748b;
+        }
+
+        /* Pagination Bar */
+        .aca-pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, var(--aca-light), #f1f5f9);
+            border-top: 1px solid var(--aca-border);
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .aca-pagination-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .aca-info-text {
+            font-size: 0.875rem;
+            color: var(--aca-gray);
+        }
+
+        .aca-info-text strong {
+            color: var(--aca-dark);
+            font-weight: 600;
+        }
+
+        .aca-progress-bar {
+            width: 120px;
+            height: 4px;
+            background: var(--aca-border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .aca-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--aca-primary), #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .aca-pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .aca-nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--aca-border);
+            background: var(--aca-white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--aca-gray);
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .aca-nav-btn:hover:not(:disabled) {
+            border-color: var(--aca-primary);
+            color: var(--aca-primary);
+            transform: translateY(-1px);
+        }
+
+        .aca-nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .aca-page-indicators {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 0 0.5rem;
+        }
+
+        .aca-page-btn {
+            min-width: 40px;
+            height: 40px;
+            border: 2px solid var(--aca-border);
+            background: var(--aca-white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--aca-gray);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            padding: 0 0.5rem;
+        }
+
+        .aca-page-btn:hover {
+            border-color: var(--aca-primary);
+            color: var(--aca-primary);
+        }
+
+        .aca-page-btn.active {
+            background: linear-gradient(135deg, var(--aca-primary), #8b5cf6);
+            border-color: var(--aca-primary);
+            color: white;
+        }
+
+        .aca-page-ellipsis {
+            padding: 0 0.5rem;
+            color: var(--aca-gray);
+        }
+
+        .aca-pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--aca-gray);
+        }
+
+        .aca-page-field {
+            width: 60px;
+            padding: 0.5rem;
+            border: 2px solid var(--aca-border);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.875rem;
+            background: var(--aca-white);
+            transition: all 0.2s;
+        }
+
+        .aca-page-field:focus {
+            outline: none;
+            border-color: var(--aca-primary);
+        }
+
+        .aca-go-btn {
+            padding: 0.5rem 1rem;
+            background: var(--aca-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .aca-go-btn:hover {
+            background: #4f46e5;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .aca-list-header, 
+            .aca-list-item {
+                grid-template-columns: 2fr 1fr 80px 80px;
+            }
+            
+            .aca-list-header div:nth-child(2),
+            .aca-list-item .aca-col-class {
+                display: none; /* Hide Class column on tablet */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .aca-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aca-filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* List becomes card view on mobile */
+            .aca-list-header {
+                display: none;
+            }
+
+            .aca-list-item {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .aca-col-title {
+                width: 100%;
+            }
+
+            .aca-col-stats {
+                flex-direction: row;
+                gap: 1.5rem;
+                width: 100%;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px dashed var(--aca-border);
+            }
+
+            .aca-col-status {
+                width: 100%;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .aca-col-actions {
+                position: absolute;
+                top: 1.25rem;
+                right: 1.5rem;
+                padding: 0;
+            }
+
+            .aca-pagination-bar {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .aca-pagination-nav {
+                order: -1; /* Buttons on top */
+            }
+
+            /* Fix dropdown positioning on mobile */
+            .aca-col-actions .dropdown-menu {
+                position: absolute !important;
+                top: 100% !important;
+                right: 0 !important;
+                left: auto !important;
+                transform: none !important;
+                margin-top: 0.5rem !important;
+                min-width: 160px;
+            }
+        }
 </style>
 
 <!-- Dashboard Stats -->
@@ -602,19 +638,24 @@ $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise
                     <option value="all" <?php if ($selected_class_id == 'all') echo 'selected'; ?>><?php echo get_phrase('all'); ?></option>
                     <?php
                         if ($this->session->userdata('teacher_login') == 1) { 
-                            $teacher_id = $this->session->userdata('user_id');
-                            $this->db->distinct();
-                            $this->db->select('classes.id, classes.name');
-                            $this->db->from('classes');
-                            $this->db->join('course_classes', 'course_classes.class_id = classes.id', 'inner');
-                            $this->db->join('course_teachers', 'course_teachers.course_id = course_classes.course_id', 'inner');
-                            $this->db->where('course_teachers.user_id', $teacher_id);
-                            $this->db->where('classes.school_id', school_id());
-                            $this->db->order_by('classes.name', 'ASC');
-                            $teacher_classes = $this->db->get()->result_array();
+                            // Using previously fetched teacher_allowed_class_ids and real_teacher_id
+                            if (!empty($teacher_allowed_class_ids)) {
+                                $this->db->distinct();
+                                $this->db->select('classes.id, classes.name');
+                                $this->db->from('classes');
+                                // Join permissions directly to ensure consistency
+                                $this->db->join('teacher_permissions', 'teacher_permissions.class_id = classes.id', 'inner');
+                                $this->db->where('teacher_permissions.teacher_id', $real_teacher_id);
+                                $this->db->where('teacher_permissions.marks', 1); // Permission check
+                                $this->db->where('classes.school_id', school_id());
+                                $this->db->order_by('classes.name', 'ASC');
+                                $teacher_classes = $this->db->get()->result_array();
+                            } else {
+                                $teacher_classes = [];
+                            }
 
                             if (empty($teacher_classes)): ?>
-                                <option value="" disabled><?= get_phrase('no_classes_assigned_yet'); ?></option>
+                                <option value="" disabled><?= get_phrase('no_classes_authorized_for_menu_management'); ?></option>
                             <?php else: ?>
                                 <?php foreach ($teacher_classes as $class): ?>
                                     <option value="<?= $class['id']; ?>" <?= ($selected_class_id == $class['id']) ? 'selected' : ''; ?>>
@@ -673,7 +714,13 @@ $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise
 
 <!-- Course List Container -->
 <div class="mt-4">
-    <?php if (count($courses) > 0): ?>
+    <?php
+    if ($this->session->userdata('teacher_login') == 1 && empty($courses) && empty($teacher_allowed_class_ids)): ?>
+        <div class="exp-empty-state">
+            <img class="exp-empty-img" src="<?php echo base_url('assets/backend/images/empty_box.png'); ?>" />
+            <div class="exp-empty-text"><?php echo get_phrase('no_classes_authorized_for_menu_management'); ?></div>
+        </div>
+    <?php elseif (count($courses) > 0): ?>
         <div class="aca-list-container">
             <!-- Header -->
             <div class="aca-list-header">
@@ -698,7 +745,11 @@ $inactive_courses_count = isset($status_wise_courses['inactive']) ? $status_wise
                     $classes = $this->lms_model->get_classes_by_course($course['id']);
                     $class_names = [];
                     if (!empty($classes)) {
-                        foreach ($classes as $c) $class_names[] = $c['name'];
+                        foreach ($classes as $c) {
+                            // Filter for teacher
+                            if ($is_teacher && !in_array($c['id'], $teacher_allowed_class_ids)) continue;
+                            $class_names[] = $c['name'];
+                        }
                     }
                     
                     $sections = $this->lms_model->get_section('course', $course['id']);

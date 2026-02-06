@@ -4477,6 +4477,7 @@
     "member_since": "Member since",
     "active_membership": "Active membership",
     "join_free": "Join free",
+    "no_classes_authorized_for_menu_management": "No classes authorized for menu management",
     "image_processing_failed_please_try_another_image": "Image processing failed. Please try with another image.",
     "cover_image_processing_failed_please_try_another_image": "Cover image processing failed. Please try with another image.",
     "recommended_resolution": "Recommended resolution",
