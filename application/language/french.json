@@ -4089,5 +4089,13 @@
     "configure_paypal": "Configure paypal",
     "class_subscription": "Class subscription",
     "vat_included": "Vat included",
-    "vat_information": "Vat information"
+    "vat_information": "Vat information",
+    "legal_entity": "Legal entity",
+    "vat_calculated_automatically_based_on_community_tax_residence": "Vat calculated automatically based on community tax residence",
+    "payment_methods_for": "Payment methods for",
+    "community_subscription": "Community subscription",
+    "payment_successful_subscription_activated": "Payment successful subscription activated",
+    "syllabus_list": "Syllabus list",
+    "total_syllabus": "Total syllabus",
+    "no_classes_authorized_for_menu_management": "No classes authorized for menu management"
 }

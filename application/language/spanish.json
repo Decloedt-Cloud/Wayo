@@ -3999,5 +3999,8 @@
     "select_community": "Seleccionar comunidad",
     "member_since": "Miembro desde",
     "active_membership": "Membresía activa",
-    "join_free": "Unirse gratis"
+    "join_free": "Unirse gratis",
+    "people": "Personas",
+    "subtotal": "Subtotal",
+    "no_classes_authorized_for_menu_management": "No hay clases autorizadas para la gestión de menús"
 }

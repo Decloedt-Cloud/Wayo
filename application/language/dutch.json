@@ -4085,5 +4085,10 @@
     "select_community": "Community selecteren",
     "member_since": "Lid sinds",
     "active_membership": "Actief lidmaatschap",
-    "join_free": "Gratis deelnemen"
+    "join_free": "Gratis deelnemen",
+    "people": "People",
+    "spaces": "Spaces",
+    "subtotal": "Subtotaal",
+    "no_classes_authorized_for_menu_management": "Er zijn geen klassen toegestaan voor het beheren van de menu's"
+    
 }

@@ -444,28 +444,44 @@ if ($_FILES['image_file']['name'] != "") {
 			$marks = $row->marks;
 			$assignment = $row->assignment;
 
-			$data[$column_name] = $value;
+			if ($column_name == 'all') {
+				$data['marks'] = $value;
+				$data['attendance'] = $value;
+				$marks = (int) $value;
+				// $assignment = (int) $value; // Assignment is commented out in views
+			} else {
+				$data[$column_name] = $value;
+				
+				// Mets à jour la variable correspondant à la colonne modifiée
+				if ($column_name === 'marks') {
+					$marks = (int) $value;
+				}
+				if ($column_name === 'assignment') {
+					$assignment = (int) $value;
+				}
+			}
+
 			$this->db->where('class_id', $class_id);
 			$this->db->where('teacher_id', $teacher_id);
 			$this->db->update('teacher_permissions', $data);
 
-			// Mets à jour la variable correspondant à la colonne modifiée
-			if ($column_name === 'marks') {
-
-				$marks = (int) $value;
-			}
-			if ($column_name === 'assignment') {
-				$assignment = (int) $value;
-			}
 			log_message('debug', "Après update => marks: {$marks}, assignment: {$assignment}, column_name: {$column_name}, value: {$value}");
 
 		} else {
 			$data['class_id'] = $class_id;
 			$data['teacher_id'] = $teacher_id;
-			$data['marks'] = ($column_name === 'marks') ? 1 : 0;
-			$data['assignment'] = ($column_name === 'assignment') ? 1 : 0;
-
-			$data[$column_name] = 1;
+			
+			if ($column_name == 'all') {
+				$data['marks'] = $value;
+				$data['attendance'] = $value;
+				$data['assignment'] = 0; // Default
+			} else {
+				$data['marks'] = ($column_name === 'marks') ? 1 : 0;
+				$data['attendance'] = ($column_name === 'attendance') ? 1 : 0;
+				$data['assignment'] = ($column_name === 'assignment') ? 1 : 0;
+				$data[$column_name] = 1; // Override specifically if logic above was restrictive
+			}
+			
 			$this->db->insert('teacher_permissions', $data);
 			log_message('debug', 'Permission insérée : ' . json_encode($data));
 

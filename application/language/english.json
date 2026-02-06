@@ -4419,5 +4419,6 @@
     "select_community": "Select community",
     "member_since": "Member since",
     "active_membership": "Active membership",
-    "join_free": "Join free"
+    "join_free": "Join free",
+    "no_classes_authorized_for_menu_management": "No classes authorized for menu management"
 }

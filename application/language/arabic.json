@@ -3955,5 +3955,6 @@
     "join_free": "انضم مجانًا",
     "people": "الناس",
     "spaces": "المساحات",
-    "subtotal": "المجموع الفرعي"
+    "subtotal": "المجموع الفرعي",
+  "no_classes_authorized_for_menu_management": "لا توجد فصول مصرح لها بإدارة القوائم"
 }
