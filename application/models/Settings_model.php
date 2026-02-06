@@ -427,13 +427,14 @@ class Settings_model extends CI_Model
     $tax_residence = htmlspecialchars_decode($this->input->post('tax_residence'));
   
     // Validation Tax Residence
-    if (!in_array($tax_residence, ['MA', 'UAE'])) {
+    if (!in_array($tax_residence, ['MA', 'UAE','AE'])) {
         log_message('error', 'Invalid Tax Residence value: ' . $tax_residence);
         return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
     }
     
     // Set country code based on tax residence (or use tax residence directly if it IS the code)
     $country_code = $tax_residence;
+    $data['country'] = $country_code;
 
     $this->db->where('id', $schoolId);
     $this->db->update('schools', $data);
@@ -498,10 +499,6 @@ class Settings_model extends CI_Model
 
 
     
-    // Mettre à jour country dans schools (source unique de vérité)
-    $this->db->where('id', $schoolId);
-    $this->db->update('schools', ['country' => $country_code]);
-
     // Gestion de la suppression du document
     if ($this->input->post('delete_tax_document') == '1') {
         // Récupérer le nom du fichier actuel

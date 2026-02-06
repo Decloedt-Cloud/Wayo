@@ -263,7 +263,7 @@ $settings_school = $this->settings_model->get_current_settings_school_data();
                 <select name="tax_residence" id="tax_residence" class="set-input" required onchange="handleTaxResidenceChange(this.value)">
                     <option value=""><?php echo get_phrase("Sélectionnez_un_pays") ?></option>
                     <option value="MA" <?php if ($tax_residence == 'MA'): ?> selected <?php endif; ?>><?php echo get_phrase("Morocco") ?></option>
-                    <option value="UAE" <?php if ($tax_residence == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
+                    <option value="AE" <?php if ($tax_residence == 'UAE'): ?> selected <?php endif; ?>><?php echo get_phrase("United_Arab_Emirates") ?></option>
                 </select>
             </div>
 
