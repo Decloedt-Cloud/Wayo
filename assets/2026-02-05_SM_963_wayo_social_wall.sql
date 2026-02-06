@@ -108,3 +108,9 @@ CREATE TABLE IF NOT EXISTS `moderation_actions` (
 -- ====================================================================
 -- End of Migration
 -- ====================================================================
+
+INSERT INTO `menus`
+(`displayed_name`, `route_name`, `parent`, `icon`, `status`, `superadmin_access`, `admin_access`, `teacher_access`, `student_access`, `accountant_access`, `librarian_access`, `sort_order`, `is_addon`, `unique_identifier`, `category_order`, `category`)
+VALUES
+('Community Wall', 'community_wall', 0, 'fas fa-users fa-fw', 1, 1, 1, 1, 1, 0, 0, 25, 0, 'community_wall', 1, 'communication'),
+('Class Wall', 'class_wall', 0, 'fas fa-chalkboard-teacher fa-fw', 1, 1, 1, 1, 1, 0, 0, 26, 0, 'class_wall', 2, 'communication');
