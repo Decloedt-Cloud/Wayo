@@ -575,6 +575,7 @@
             </label>
             <input id="student_image" type="file" class="exp-image-upload" name="photo" accept="image/*" data-preview="student-image-preview">
         </div>
+        <div class="exp-form-hint"><?php echo get_phrase('recommended_resolution'); ?>: 800×800 px • <?php echo get_phrase('animated_gifs_will_be_converted_to_static'); ?></div>
     </div>
 
     <form method="POST" class="d-block ajaxForm" action="<?php echo route('manage_class/create'); ?>">
