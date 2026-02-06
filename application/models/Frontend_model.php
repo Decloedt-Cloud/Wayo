@@ -903,7 +903,7 @@ class Frontend_model extends CI_Model
     $ratio = $width / $height;
     $target = $type === 'logo' ? 1 : 16 / 9;
     if (abs($ratio - $target) / $target > 0.1) {
-      $expected = $type === 'logo' ? '1:1' : '16:9';
+      $expected = $type === 'logo' ? '1:1' : '16:5';
       return get_phrase('invalid_image_ratio') . " {$expected} (actuel: {$width}×{$height})";
     }
 

@@ -1,4 +1,4 @@
-<div class="user-dropdown hidden-section display-none bottom_nav">
+<div class="user-dropdown hidden-section display-none bottom_nav" style="<?php echo (get_user_language() === 'arabic') ? 'left:0; right:auto;' : ''; ?>">
     <div class="px-3 py-3 border-bottom mb-1" style="background-color: #f8f9fa;">
         <span class="text-capitalize fw-bold d-block" style="color: var(--text); font-size: 15px;"><?php echo $this->session->user_name; ?></span>
     </div>

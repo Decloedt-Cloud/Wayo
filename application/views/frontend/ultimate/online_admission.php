@@ -1345,7 +1345,7 @@
 
                                 <!-- Cover -->
                                 <span class="field-label">
-                                    <?php echo get_phrase("Cover_(16:9)") ?>
+                                    <?php echo get_phrase("cover_(16:5)") ?>
                                     <span class="info"
                                           data-tooltip="<?php echo get_phrase("recommended_resolution"); ?>: 1920×600 px • PNG/JPG/GIF/WebP • <?php echo get_phrase("animated_gifs_will_be_converted_to_static"); ?>">
                                         <i class="fa-solid fa-circle-info"></i>
