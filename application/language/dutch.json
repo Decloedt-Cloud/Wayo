@@ -4091,5 +4091,10 @@
     "recommended_resolution": "Aanbevolen resolutie",
     "image_corrupted_or_invalid_format": "Afbeelding beschadigd of ongeldig formaat",
     "animated_gifs_will_be_converted_to_static": "Geanimeerde GIF's worden omgezet naar statische afbeelding",
-    "or_drag_and_drop": "of slepen en neerzetten"
+    "or_drag_and_drop": "of slepen en neerzetten",
+    "reset_password": "Wachtwoord resetten",
+    "enter_your_email_to_receive_reset_link": "Voer je e-mailadres in om een resetlink te ontvangen",
+    "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Log in om toegang te krijgen tot je dashboard en je school efficiënt te beheren",
+    "login_failed": "Inloggen mislukt",
+    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt"
 }
