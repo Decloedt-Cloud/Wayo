@@ -99,12 +99,6 @@ class WallAuthorization
             if ($this->current_school_id == $class_school_id) {
                 return true;
             }
-
-        // Mentors/Teachers can read if they have access permission
-        if ($this->current_role === 'mentor' || $this->current_role === 'teacher') {
-            return $this->can_mentor_access_class($class_id);
-        }
-
         return false;
         }}
 
@@ -130,14 +124,6 @@ class WallAuthorization
         // Admin of community can always post to class walls in their community
         if ($this->current_role === 'admin' && $this->current_school_id == $class_school_id) {
             return true;
-        }
-
-        // Mentors/Teachers can post if they have both access AND posting permission
-        if ($this->current_role === 'mentor' || $this->current_role === 'teacher') {
-            $can_access = $this->can_mentor_access_class($class_id);
-            $can_post = $this->can_mentor_post_on_class_wall($class_id);
-            
-            return $can_access && $can_post;
         }
 
         return false;
@@ -230,46 +216,7 @@ class WallAuthorization
         return ['can_report' => false, 'reason' => 'cannot_read_post'];
     }
 
-    /**
-     * Check if mentor can access class
-     * 
-     * @param int $class_id
-     * @return bool
-     */
-    protected function can_mentor_access_class($class_id)
-    {
-        $this->ci->db->select('tp.mentor_can_access_class');
-        $this->ci->db->from('teacher_permissions tp');
-        $this->ci->db->join('teachers t', 't.id = tp.teacher_id', 'left');
-        $this->ci->db->where('t.user_id', $this->current_user);
-        $this->ci->db->where('tp.class_id', $class_id);
-        $this->ci->db->limit(1);
-        
-        $permission = $this->ci->db->get()->row_array();
-        
-        return $permission && $permission['mentor_can_access_class'] == 1;
-    }
-
-    /**
-     * Check if mentor can post on class wall
-     * 
-     * @param int $class_id
-     * @return bool
-     */
-    protected function can_mentor_post_on_class_wall($class_id)
-    {
-        $this->ci->db->select('tp.mentor_can_post_on_class_wall');
-        $this->ci->db->from('teacher_permissions tp');
-        $this->ci->db->join('teachers t', 't.id = tp.teacher_id', 'left');
-        $this->ci->db->where('t.user_id', $this->current_user);
-        $this->ci->db->where('tp.class_id', $class_id);
-        $this->ci->db->limit(1);
-        
-        $permission = $this->ci->db->get()->row_array();
-        
-        return $permission && $permission['mentor_can_post_on_class_wall'] == 1;
-    }
-
+  
     /**
      * Check if user is a community user
      * 
