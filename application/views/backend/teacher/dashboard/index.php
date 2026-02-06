@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.min.css">
 <?php include APPPATH . 'views/backend/shared/trial_expired_modal.php'; ?>
 
 <!-- Google Fonts -->
@@ -120,7 +120,7 @@
 /* Stats Grid */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
   margin-bottom: 1.5rem;
 }
@@ -558,21 +558,7 @@
             </a>
         </div>
 
-        <!-- Staff -->
-        <div class="stat-card staff fade-up delay-3">
-            <div class="stat-icon">
-                <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="stat-label"><?php echo get_phrase('staff'); ?></div>
-            <div class="stat-value">
-                <?php
-                    $accountants = $this->user_model->get_accountants()->num_rows();
-                    $librarians = $this->user_model->get_librarians()->num_rows();
-                    echo $accountants + $librarians;
-                ?>
-            </div>
-            <div class="stat-desc"><?php echo get_phrase('total_number_of_staff'); ?></div>
-        </div>
+
     </div>
 
     <!-- Content Row -->

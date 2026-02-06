@@ -510,7 +510,7 @@ $stats['payment_rate'] = $stats['total'] > 0 ? round(($stats['paid'] / $stats['t
                 <span class="count"><?php echo $stats['paid']; ?></span>
             </span>
             <span class="ai-chip" data-filter="unpaid" onclick="filterStatus('unpaid', this)">
-                <i class="mdi mdi-clock"></i> <?php echo get_phrase('pending'); ?>
+                <i class="fa-solid fa-clock"></i> <?php echo get_phrase('pending'); ?>
                 <span class="count"><?php echo $stats['unpaid']; ?></span>
             </span>
             <?php if ($stats['fx_payments'] > 0): ?>

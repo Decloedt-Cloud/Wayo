@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <?php
 $users = $this->db->get_where('users', array('id' => $param1))->result_array();
@@ -71,10 +71,8 @@ foreach($users as $user): ?>
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); });
   });
   $(".ajaxForm").validate({}); // Jquery form validation initialization
-  $(".ajaxForm").submit(function(e) {
-    var form = $(this);
-    ajaxSubmit(e, form, showAllAdmins);
-    function getCsrfToken() {
+  
+  function getCsrfToken() {
          // Récupérer le nom du token CSRF depuis le champ input caché
           var csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
          // Récupérer la valeur (hash) du token CSRF depuis le champ input caché
@@ -93,7 +91,7 @@ foreach($users as $user): ?>
         var updating_text = "<?php echo get_phrase('updating'); ?>...";
         
         // Désactive et met à jour uniquement ce bouton
-        submitButton.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i>'+updating_text);
+        submitButton.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> '+updating_text);
          // Récupérer le token CSRF avant l'envoi
          var csrf = getCsrfToken(); // Appel de la fonction pour obtenir le token
          const formData = new FormData(this);// Crée une nouvelle instance de FormData en passant l'élément du formulaire courant
@@ -124,6 +122,6 @@ foreach($users as $user): ?>
         }
       });
     });
-  });
+  // }); removed extra closing
 </script>
 

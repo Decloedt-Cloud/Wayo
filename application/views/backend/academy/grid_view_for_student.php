@@ -149,6 +149,9 @@ $selected_user_id = $selected_user_id ?? 'all';
 
     .course-card .course-content {
         padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
     }
 
     .course-card .course-title {
@@ -166,7 +169,14 @@ $selected_user_id = $selected_user_id ?? 'all';
     }
 
     .course-card .course-actions {
-        margin-top: 1rem;
+        margin-top: auto;
+        padding-top: 1rem;
+    }
+    
+    /* Ensure course-card uses full height */
+    .course-card {
+        display: flex;
+        flex-direction: column;
     }
 
     .btn-course {
@@ -197,6 +207,321 @@ $selected_user_id = $selected_user_id ?? 'all';
         border-color: var(--primary);
         color: var(--primary);
     }
+    
+    .btn-course.success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+    }
+    
+    .btn-course.success:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    
+    .btn-course.disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+        border: none;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    /* ========== COURSE BADGES ========== */
+    .course-badges {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        z-index: 10;
+    }
+    
+    .course-badges span {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        backdrop-filter: blur(8px);
+    }
+    
+    .badge-enrolled {
+        background: rgba(16, 185, 129, 0.9);
+        color: white;
+    }
+    
+    .badge-free {
+        background: rgba(99, 102, 241, 0.9);
+        color: white;
+    }
+    
+    .badge-vat {
+        background: rgba(245, 158, 11, 0.9);
+        color: white;
+    }
+    
+    .badge-full {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+    }
+    
+    /* Enrollment Counter */
+    .enrollment-counter {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        backdrop-filter: blur(4px);
+    }
+    
+    /* ========== PRICE SECTION ========== */
+    .price-section {
+        margin: 1rem 0;
+        padding: 0.875rem;
+        background: var(--bg-main);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+    
+    /* Price Breakdown Mini (VAT) */
+    .price-breakdown-mini {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8125rem;
+    }
+    
+    .price-label {
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    
+    .price-value {
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+    
+    .price-row.vat-row {
+        padding: 4px 0;
+        border-bottom: 1px dashed var(--border-color);
+    }
+    
+    .price-row.vat-row .price-label {
+        color: #f59e0b;
+        font-size: 0.75rem;
+    }
+    
+    .price-row.vat-row .price-value {
+        color: #f59e0b;
+        font-size: 0.8125rem;
+    }
+    
+    .price-row.total-row {
+        padding-top: 6px;
+    }
+    
+    .price-row.total-row .price-label {
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+    
+    .price-total {
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        color: var(--primary) !important;
+    }
+    
+    /* Simple Price (No VAT) */
+    .price-simple {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        justify-content: center;
+    }
+    
+    .price-amount {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .price-currency {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+    
+    /* Free Price */
+    .price-free {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #10b981;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    
+    .price-free i {
+        font-size: 1.25rem;
+    }
+
+    /* ========== STATUS CARDS (Consistent Height) ========== */
+    
+    /* Enrolled Status Card */
+    .enrolled-status-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 70px;
+    }
+    
+    .enrolled-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .enrolled-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .enrolled-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .enrolled-value {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: #059669;
+    }
+    
+    /* Free Status Card */
+    .free-status-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 70px;
+    }
+    
+    .free-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .free-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .free-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .free-value {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    /* Simple Price Card */
+    .simple-price-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 70px;
+    }
+    
+    .price-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.125rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    
+    .price-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .price-info .price-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .price-value-large {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    /* Ensure VAT breakdown has same min-height */
+    .price-breakdown-mini {
+        min-height: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+    }
 
     /* Animation */
     .fade-up {
@@ -211,6 +536,358 @@ $selected_user_id = $selected_user_id ?? 'all';
     
     .delay-1 { animation-delay: 0.1s; }
     .delay-2 { animation-delay: 0.2s; }
+
+    /* ========== RESPONSIVE STYLES ========== */
+    
+    /* Tablet (768px - 1024px) */
+    @media (max-width: 1024px) {
+        .modern-dashboard {
+            padding: 1rem;
+        }
+        
+        .dash-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .dash-header h1 .icon-box {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .course-card .course-img-wrapper {
+            height: 180px;
+        }
+        
+        .course-card .course-content {
+            padding: 1.25rem;
+        }
+        
+        .course-card .course-title {
+            font-size: 1rem;
+        }
+        
+        .price-section {
+            padding: 0.75rem;
+        }
+        
+        /* Status cards responsive */
+        .enrolled-icon,
+        .free-icon,
+        .price-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .enrolled-status-card,
+        .free-status-card,
+        .simple-price-card {
+            gap: 10px;
+            min-height: 60px;
+        }
+        
+        .price-breakdown-mini {
+            min-height: 60px;
+        }
+        
+        .enrolled-value,
+        .free-value {
+            font-size: 0.875rem;
+        }
+        
+        .price-value-large {
+            font-size: 1.125rem;
+        }
+    }
+    
+    /* Mobile Large (576px - 768px) */
+    @media (max-width: 768px) {
+        .modern-dashboard {
+            padding: 0.75rem;
+            margin: -10px -10px 0 -10px;
+        }
+        
+        .dash-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dash-header h1 {
+            font-size: 1.375rem;
+        }
+        
+        .date-badge {
+            font-size: 0.8rem;
+        }
+        
+        .modern-filter-form {
+            gap: 0.75rem;
+        }
+        
+        .modern-select {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .modern-btn {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Course cards - 2 columns on tablet */
+        .course-card .course-img-wrapper {
+            height: 160px;
+        }
+        
+        .course-card .course-content {
+            padding: 1rem;
+        }
+        
+        .course-card .course-title {
+            font-size: 0.9375rem;
+            margin-bottom: 0.75rem;
+            height: 2.8em;
+        }
+        
+        /* Badges smaller */
+        .course-badges span {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+        }
+        
+        .enrollment-counter {
+            padding: 3px 8px;
+            font-size: 0.7rem;
+        }
+        
+        /* Price section responsive */
+        .price-section {
+            margin: 0.75rem 0;
+            padding: 0.625rem;
+        }
+        
+        .price-row {
+            font-size: 0.75rem;
+        }
+        
+        .price-row.vat-row .price-label,
+        .price-row.vat-row .price-value {
+            font-size: 0.7rem;
+        }
+        
+        .price-total {
+            font-size: 0.9rem !important;
+        }
+        
+        /* Status cards smaller */
+        .enrolled-icon,
+        .free-icon,
+        .price-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+        
+        .enrolled-status-card,
+        .free-status-card,
+        .simple-price-card {
+            gap: 8px;
+            min-height: 50px;
+        }
+        
+        .price-breakdown-mini {
+            min-height: 50px;
+            gap: 4px;
+        }
+        
+        .enrolled-label,
+        .free-label,
+        .price-info .price-label {
+            font-size: 0.65rem;
+        }
+        
+        .enrolled-value {
+            font-size: 0.8rem;
+        }
+        
+        .free-value {
+            font-size: 0.9rem;
+        }
+        
+        .price-value-large {
+            font-size: 1rem;
+        }
+        
+        /* Button smaller */
+        .btn-course {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .course-actions {
+            padding-top: 0.75rem;
+        }
+    }
+    
+    /* Mobile Small (< 576px) */
+    @media (max-width: 576px) {
+        .modern-dashboard {
+            padding: 0.5rem;
+            margin: -5px -5px 0 -5px;
+        }
+        
+        .dash-header h1 {
+            font-size: 1.25rem;
+        }
+        
+        .dash-header h1 .icon-box {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+        
+        .modern-card {
+            border-radius: 16px;
+        }
+        
+        .modern-card-body {
+            padding: 1rem;
+        }
+        
+        /* Single column on mobile */
+        .course-card .course-img-wrapper {
+            height: 180px;
+        }
+        
+        .course-card .course-content {
+            padding: 1rem;
+        }
+        
+        .course-card .course-title {
+            font-size: 1rem;
+            height: auto;
+            -webkit-line-clamp: 2;
+            margin-bottom: 0.75rem;
+        }
+        
+        /* Full width price section */
+        .price-section {
+            margin: 0.75rem 0;
+            padding: 0.75rem;
+            border-radius: 10px;
+        }
+        
+        /* Status cards - horizontal layout */
+        .enrolled-status-card,
+        .free-status-card,
+        .simple-price-card {
+            min-height: 55px;
+            gap: 10px;
+        }
+        
+        .price-breakdown-mini {
+            min-height: 55px;
+        }
+        
+        .enrolled-icon,
+        .free-icon,
+        .price-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .enrolled-label,
+        .free-label,
+        .price-info .price-label {
+            font-size: 0.7rem;
+        }
+        
+        .enrolled-value {
+            font-size: 0.875rem;
+        }
+        
+        .free-value {
+            font-size: 1rem;
+        }
+        
+        .price-value-large {
+            font-size: 1.125rem;
+        }
+        
+        .price-row {
+            font-size: 0.8rem;
+        }
+        
+        .price-total {
+            font-size: 0.95rem !important;
+        }
+        
+        /* Button full width */
+        .btn-course {
+            padding: 0.625rem;
+            font-size: 0.875rem;
+            border-radius: 10px;
+        }
+        
+        /* Badges */
+        .course-badges {
+            top: 10px;
+            left: 10px;
+            gap: 5px;
+        }
+        
+        .course-badges span {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            border-radius: 6px;
+        }
+        
+        .enrollment-counter {
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Extra small devices (< 400px) */
+    @media (max-width: 400px) {
+        .dash-header h1 {
+            font-size: 1.125rem;
+        }
+        
+        .course-card .course-title {
+            font-size: 0.9375rem;
+        }
+        
+        /* Stack status card vertically on very small screens */
+        .enrolled-status-card,
+        .free-status-card,
+        .simple-price-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 0.5rem 0;
+            min-height: auto;
+        }
+        
+        .enrolled-info,
+        .free-info,
+        .price-info {
+            align-items: center;
+        }
+        
+        .enrolled-icon,
+        .free-icon,
+        .price-icon {
+            margin-bottom: 4px;
+        }
+    }
 </style>
 
 <div class="modern-dashboard">
@@ -223,7 +900,7 @@ $selected_user_id = $selected_user_id ?? 'all';
         </h1>
         <div class="date-badge">
             <i class="far fa-calendar-alt"></i>
-            <?php echo date('l, j F Y'); ?>
+           <?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?>
         </div>
     </div>
 
@@ -233,6 +910,9 @@ $selected_user_id = $selected_user_id ?? 'all';
             <div class="modern-card">
                 <div class="modern-card-body">
                     <form class="row align-items-end modern-filter-form" action="javascript:void(0)">
+                        <!-- Champ caché pour le jeton CSRF -->
+                        <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" id="csrf_token_filter" />
+                        
                         <!-- Sélection classe -->
                         <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
                             <label><?= get_phrase('classes'); ?></label>
@@ -288,7 +968,7 @@ $selected_user_id = $selected_user_id ?? 'all';
 
                         <!-- Bouton -->
                         <div class="col-md-3 col-lg-2">
-                            <button type="submit" class="modern-btn w-100" onclick="filterCourse()">
+                            <button type="submit" class="modern-btn w-100" onclick="filterStudentClasses()">
                                 <i class="fas fa-filter mr-2"></i> <?= get_phrase('filter'); ?>
                             </button>
                         </div>
@@ -318,6 +998,8 @@ $selected_user_id = $selected_user_id ?? 'all';
             ->group_start()
             ->where('classes.date_fin >=', date('Y-m-d'))
             ->or_where('classes.date_fin', null)
+            ->or_where('classes.date_fin', '')
+            ->or_where('classes.date_fin', '0000-00-00')
             ->group_end();
 
         if ($selected_school_id != 'all')
@@ -335,6 +1017,7 @@ $selected_user_id = $selected_user_id ?? 'all';
         // 1. Collect IDs
         $class_ids = array_column($classes, 'id');
         $school_ids = array_unique(array_column($classes, 'school_id'));
+        // IMPORTANT: Utiliser real_student_id (ID table students) pour les enrols, pas student_user_id
         $student_profile_ids = array_unique(array_column($classes, 'real_student_id'));
 
         // 2. Batch Fetch Enrollment Counts (Global for class)
@@ -349,14 +1032,30 @@ $selected_user_id = $selected_user_id ?? 'all';
             }
         }
 
-        // 3. Batch Fetch Currencies
+        // 3. Batch Fetch Currencies AND VAT Settings
         $currency_map = [];
+        $vat_settings_map = [];
         if (!empty($school_ids)) {
-            $this->db->select('school_id, system_currency');
+            $this->db->select('school_id, system_currency, vat_enabled, vat_rate');
             $this->db->where_in('school_id', $school_ids);
-            $query_currency = $this->db->get('settings_school')->result_array();
-            foreach ($query_currency as $row) {
+            $query_settings = $this->db->get('settings_school')->result_array();
+            foreach ($query_settings as $row) {
                 $currency_map[$row['school_id']] = $row['system_currency'];
+                $vat_settings_map[$row['school_id']] = [
+                    'enabled' => isset($row['vat_enabled']) ? (int)$row['vat_enabled'] : 0,
+                    'rate' => isset($row['vat_rate']) ? (float)$row['vat_rate'] : 20
+                ];
+            }
+        }
+        
+        // 3b. Batch Fetch Tax Residence from schools table
+        $tax_residence_map = [];
+        if (!empty($school_ids)) {
+            $this->db->select('id, country');
+            $this->db->where_in('id', $school_ids);
+            $query_schools = $this->db->get('schools')->result_array();
+            foreach ($query_schools as $row) {
+                $tax_residence_map[$row['id']] = strtoupper($row['country'] ?? '');
             }
         }
 
@@ -377,43 +1076,166 @@ $selected_user_id = $selected_user_id ?? 'all';
         <div class="row fade-up delay-2">
             <?php foreach ($classes as $class):
                 $school_id = $class['school_id'];
-                $student_profile_id = $class['real_student_id']; // Use correct student ID
+                // IMPORTANT: Utiliser real_student_id (ID dans table students) et non student_user_id (ID dans table users)
+                $student_profile_id = $class['real_student_id']; // ID from students table for invoices/enrollments
+                $student_user_id = $class['student_user_id']; // user_id for other purposes
 
                 // Use pre-fetched data
                 $enrols_count = $enrollment_counts[$class['id']] ?? 0;
-                $currencies = $currency_map[$school_id] ?? ' ';
+                $currencies = $currency_map[$school_id] ?? 'MAD';
 
                 $max_members = (int)($class['nombre_max_membre'] ?? 0);
                 $is_full = $max_members > 0 && $enrols_count >= $max_members;
 
-                // Check pre-fetched map
+                // Check pre-fetched map - utiliser real_student_id (ID table students) car c'est ce qui est dans enrols.student_id
                 $is_enrolled = isset($my_enrollments[$class['id'] . '_' . $student_profile_id]);
+                
+                // ========== VAT CALCULATION FOR CLASS ==========
+                $class_price = (float)($class['price'] ?? 0);
+                $vat_settings = $vat_settings_map[$school_id] ?? ['enabled' => 0, 'rate' => 20];
+                $tax_residence = $tax_residence_map[$school_id] ?? '';
+                
+                $class_vat_applicable = false;
+                $class_vat_rate = 0;
+                $class_sub_total = $class_price;
+                $class_vat_amount = 0;
+                $class_grand_total = $class_price;
+                
+                // Apply VAT if school has it enabled and has tax residence
+                if ($vat_settings['enabled'] && !empty($tax_residence)) {
+                    $class_vat_applicable = true;
+                    
+                    // Determine VAT rate based on tax residence
+                    if ($tax_residence === 'MA') {
+                        $class_vat_rate = 20;
+                    } elseif (in_array($tax_residence, ['AE', 'UAE'])) {
+                        $class_vat_rate = 5;
+                    } else {
+                        $class_vat_rate = $vat_settings['rate'] ?: 20;
+                    }
+                    
+                    // Price is TTC (includes VAT) - reverse calculate
+                    $class_sub_total = round($class_price / (1 + ($class_vat_rate / 100)), 2);
+                    $class_vat_amount = round($class_price - $class_sub_total, 2);
+                    $class_grand_total = $class_price;
+                }
+                
+                // Determine if free class
+                $is_free = $class_price <= 0;
                 ?>
 
                 <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
                     <div class="modern-card course-card">
+                        <!-- Image with badges -->
                         <div class="course-img-wrapper">
                             <img src="<?= base_url('uploads/class/' . ($class['photo'] ?: 'placeholder.png')); ?>" 
                                  class="course-img" 
                                  alt="<?= $class['name']; ?>"
                                  onerror="this.src='<?= base_url('uploads/class/placeholder.png'); ?>'">
+                            
+                            <!-- Status Badges -->
+                            <div class="course-badges">
+                                <?php if ($is_enrolled): ?>
+                                    <span class="badge-enrolled"><i class="fas fa-check-circle"></i> <?= get_phrase('enrolled'); ?></span>
+                                <?php elseif ($is_free): ?>
+                                    <span class="badge-free"><i class="fas fa-gift"></i> <?= get_phrase('free'); ?></span>
+                                <?php elseif ($class_vat_applicable): ?>
+                                    <span class="badge-vat"><?= ($tax_residence === 'MA') ? 'TVA' : 'VAT'; ?> <?= $class_vat_rate; ?>%</span>
+                                <?php endif; ?>
+                                
+                                <?php if ($is_full && !$is_enrolled): ?>
+                                    <span class="badge-full"><i class="fas fa-users"></i> <?= get_phrase('full'); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <!-- Enrollment Count -->
+                            <?php if ($max_members > 0): ?>
+                            <div class="enrollment-counter">
+                                <i class="fas fa-users"></i>
+                                <span><?= $enrols_count; ?>/<?= $max_members; ?></span>
+                            </div>
+                            <?php endif; ?>
                         </div>
+                        
                         <div class="course-content">
-                            <h4 class="course-title"><?= $class['name']; ?></h4>
+                            <h4 class="course-title"><?= htmlspecialchars($class['name']); ?></h4>
+                            
+                            <!-- Price Section - Always visible for consistent card height -->
+                            <div class="price-section">
+                                <?php if ($is_enrolled): ?>
+                                    <!-- Enrolled Status Card -->
+                                    <div class="enrolled-status-card">
+                                        <div class="enrolled-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="enrolled-info">
+                                            <span class="enrolled-label"><?= get_phrase('member_since'); ?></span>
+                                            <span class="enrolled-value"><?= get_phrase('active_membership'); ?></span>
+                                        </div>
+                                    </div>
+                                <?php elseif ($is_free): ?>
+                                    <!-- Free Access Card -->
+                                    <div class="free-status-card">
+                                        <div class="free-icon">
+                                            <i class="fas fa-gift"></i>
+                                        </div>
+                                        <div class="free-info">
+                                            <span class="free-label"><?= get_phrase('price'); ?></span>
+                                            <span class="free-value"><?= get_phrase('free_access'); ?></span>
+                                        </div>
+                                    </div>
+                                <?php elseif ($class_vat_applicable): ?>
+                                    <!-- VAT Breakdown -->
+                                    <div class="price-breakdown-mini">
+                                        <div class="price-row">
+                                            <span class="price-label"><?= get_phrase('subtotal'); ?> HT</span>
+                                            <span class="price-value"><?= number_format($class_sub_total, 2); ?> <?= $currencies; ?></span>
+                                        </div>
+                                        <div class="price-row vat-row">
+                                            <span class="price-label"><?= ($tax_residence === 'MA') ? 'TVA' : 'VAT'; ?> <?= $class_vat_rate; ?>%</span>
+                                            <span class="price-value"><?= number_format($class_vat_amount, 2); ?> <?= $currencies; ?></span>
+                                        </div>
+                                        <div class="price-row total-row">
+                                            <span class="price-label"><?= get_phrase('total'); ?> TTC</span>
+                                            <span class="price-value price-total"><?= number_format($class_grand_total, 2); ?> <?= $currencies; ?></span>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Simple Price Card -->
+                                    <div class="simple-price-card">
+                                        <div class="price-icon">
+                                            <i class="fas fa-tag"></i>
+                                        </div>
+                                        <div class="price-info">
+                                            <span class="price-label"><?= get_phrase('price'); ?></span>
+                                            <span class="price-value-large"><?= number_format($class_price, 2); ?> <?= $currencies; ?></span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <!-- Action Buttons -->
                             <div class="course-actions">
                                 <?php if ($is_enrolled): ?>
                                     <a href="<?= site_url('student/courses/' . $class['id']); ?>"
-                                       class="btn-course primary">
-                                        <i class="fas fa-eye"></i> <?= get_phrase('view'); ?>
+                                       class="btn-course success">
+                                        <i class="fas fa-play-circle"></i> <?= get_phrase('access_class'); ?>
                                     </a>
                                 <?php elseif ($is_full): ?>
-                                    <a href="javascript:void(0);" class="btn-course outline" style="cursor: not-allowed; opacity: 0.6;">
-                                        <i class="fas fa-lock"></i> <?= get_phrase('class_is_full_no_more_space'); ?>
+                                    <button class="btn-course disabled" disabled>
+                                        <i class="fas fa-ban"></i> <?= get_phrase('class_full'); ?>
+                                    </button>
+                                <?php elseif ($is_free): ?>
+                                    <a href="javascript:;" 
+                                       onclick="rightModal('<?= site_url('modal/popup/academy/add/' . $student_profile_id . '/' . $class['id'] . '/' . $school_id . '/0/' . $currencies . '/0/0/0') ?>','<?= get_phrase('join'); ?>');"
+                                       class="btn-course success">
+                                        <i class="fas fa-plus-circle"></i> <?= get_phrase('join_free'); ?>
                                     </a>
                                 <?php else: ?>
-                                    <a href="javascript:;" onclick="rightModal('<?= site_url('modal/popup/academy/add/' . $student_profile_id . '/' . $class['id'] . '/' . $school_id . '/' . $class['price'] . '/' . $currencies) ?>','<?= get_phrase('join'); ?>');"
+                                    <a href="javascript:;" 
+                                       onclick="rightModal('<?= site_url('modal/popup/academy/add/' . $student_profile_id . '/' . $class['id'] . '/' . $school_id . '/' . $class_grand_total . '/' . $currencies . '/' . ($class_vat_applicable ? '1' : '0') . '/' . $class_vat_rate . '/' . $class_sub_total) ?>','<?= get_phrase('join'); ?>');"
                                        class="btn-course primary">
-                                        <i class="fas fa-plus-circle"></i> <?= get_phrase('Join ') . ' ' . $class['price'] . ' ' . $currencies; ?>
+                                        <i class="fas fa-credit-card"></i> <?= get_phrase('join_now'); ?>
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -433,7 +1255,40 @@ $selected_user_id = $selected_user_id ?? 'all';
 </div>
 
 <script>
+function filterStudentClasses() {
+    var class_id = $('#class_id_course').val();
+    var user_id = $('#user_id').val();
+    
+    // Récupérer le nom et la valeur du jeton CSRF
+    var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = $('#csrf_token_filter').val(); // Récupérer la valeur actuelle
+    
+    // Si l'input n'existe pas (cas de premier chargement ou remplacement), on essaie de le trouver autrement ou on utilise la valeur PHP initiale (risque de péremption)
+    // Mais ici on l'a ajouté au DOM.
+    // Attention : si la vue est rechargée, le JS aussi (car dans le même fichier), donc on réutilise PHP pour initialiser, mais
+    // si on veut supporter la régénération, il faut que le retour AJAX contienne le nouveau token.
+
+    var data = {
+        class_id : class_id, 
+        user_id : user_id
+    };
+    data[csrfName] = csrfHash;
+
+    $.ajax({
+        type : 'POST',
+        url : '<?php echo site_url('academy/student/filter'); ?>',
+        data : data,
+        success : function(response) {
+            $('.academy_content').html(response);
+            // Pas de mise à jour de CSRF ici car on remplace tout le contenu y compris l'input caché et ce script.
+            // Le nouveau contenu HTML généré par le serveur aura un nouveau token CSRF généré par PHP (via $this->security->get_csrf_hash()).
+        }
+    });
+}
+
+
 function schoolWiseClasse(school_id) {
+alert(school_id);
     $.get("<?= route('academy/list/'); ?>" + school_id, function (response) {
         $('#class_id_course').html(response);
     });

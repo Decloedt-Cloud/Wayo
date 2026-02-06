@@ -8,7 +8,10 @@
 <style>
   /* ----------------- Hero ----------------- */
 
-    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('../uploads/images/decloedt/img/cover-wayo.png'); background-size:cover; background-position:center; }
+    .hero{ position:relative; min-height:35vh; display:grid; place-items:center; color:#fff; background-image:url('<?php echo base_url('uploads/images/decloedt/img/optimized/cover-wayo.webp'); ?>'); background-size:cover; background-position:center; }
+    @supports (background-image: url("test.avif")) {
+        .hero { background-image:url('<?php echo base_url('uploads/images/decloedt/img/optimized/cover-wayo.avif'); ?>'); }
+    }
     .hero::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.60));}
     .hero .hero-content{ position:relative; text-align:center; }
     .hero .lead{ max-width:760px; margin-inline:auto; color:#e9e9ef }
@@ -18,24 +21,77 @@
       padding: 0.75rem 1.5rem;
       font-weight: 700;
       font-size: 0.95rem;
-      border-radius: 12px;
-      transition: all 0.2s ease;
+      border-radius: 14px;
+      transition: all 0.3s ease;
       letter-spacing: 0.01em;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
 
     .btn-primary-custom {
-      background: #f47a1f;
-      border: 1px solid #f47a1f;
+      background: linear-gradient(135deg, #f47a1f, #ff9a56);
+      border: none;
       color: white;
-      box-shadow: 0 4px 6px rgba(244, 122, 31, 0.2);
+      box-shadow: 0 4px 15px rgba(244, 122, 31, 0.3);
     }
+    
+    /* Shiny effect for primary button */
+    .btn-primary-custom::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.4s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .btn-primary-custom:hover::before {
+      left: 100%;
+    }
+    
     .btn-primary-custom:hover {
-      background: #e06912;
-      border-color: #e06912;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 12px rgba(244, 122, 31, 0.3);
+      background: linear-gradient(135deg, #e06912, #f47a1f);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(244, 122, 31, 0.4);
       color:#fff;
+    }
+    
+    .btn-outline-primary-custom {
+      background: transparent;
+      color: #f47a1f;
+      border: 2px solid #f47a1f;
+    }
+    
+    /* Shiny effect for outline button */
+    .btn-outline-primary-custom::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #f47a1f, #ff9a56);
+      transition: width 0.3s ease;
+      z-index: -1;
+    }
+    .btn-outline-primary-custom:hover::before {
+      width: 100%;
+    }
+    
+    .btn-outline-primary-custom:hover {
+      background: transparent;
+      color: #fff;
+      border-color: #f47a1f;
+    }
+    
+    .btn-outline-primary-custom:disabled,
+    .btn-primary-custom:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     /* ================= SUCCESS POPUP ================= */
@@ -172,6 +228,55 @@
       .success-card h2 {
         font-size: 1.75rem;
       }
+    }
+
+    /* ================= LOADING OVERLAY ================= */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(4px);
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .loading-overlay.is-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #f47a1f;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .loading-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+    }
+
+    .loading-subtext {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: -0.5rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     /* ================= SUMMARY REDESIGN ================= */
@@ -446,6 +551,13 @@
     </form>
   </section>
 </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+        <div class="loading-spinner"></div>
+        <div class="loading-text"><?php echo get_phrase("Processing_your_request"); ?>...</div>
+        <div class="loading-subtext"><?php echo get_phrase("Please_wait"); ?></div>
+    </div>
 
     <!--success overlay-->
     <div id="successOverlay" class="success-overlay" aria-hidden="true">
@@ -788,12 +900,20 @@ document.addEventListener('DOMContentLoaded', function () {
       event.preventDefault();
       event.stopImmediatePropagation();
 
-      console.log("🟢 Interception du formulaire via JS");
+      // Form intercepted by JS
 
       if (!studentForm.checkValidity()) {
         studentForm.reportValidity();
         return false;
       }
+
+      // Show loading overlay
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) {
+          loadingOverlay.classList.add('is-visible');
+          document.body.style.overflow = 'hidden'; // Prevent scrolling
+      }
+      submitBtn.disabled = true;
 
       // Récupération du CSRF token
       const csrfInput = studentForm.querySelector('input[name="<?= $this->security->get_csrf_token_name(); ?>"]');
@@ -803,14 +923,15 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(studentForm);
       formData.append(csrfName, csrfHash);
 
-      fetch(studentForm.action, {
+      // Use direct endpoint to bypass URL rewriting
+      const submitUrl = '<?= base_url("register/member"); ?>';
+
+      fetch(submitUrl, {
         method: 'POST',
         body: formData
       })
       .then(response => response.json())
       .then(data => {
-        console.log("🟢 Réponse reçue:", data);
-
         // Mise à jour du token CSRF
         if (data.csrf) {
           csrfInput.name = data.csrf.csrfName;
@@ -830,8 +951,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(error => {
-        console.error("❌ Erreur fetch:", error);
+        console.error("Erreur fetch:", error);
         toastr.error('Erreur réseau ou serveur.');
+      })
+      .finally(() => {
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('is-visible');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+        submitBtn.disabled = false;
       });
 
       return false; // ✅ Empêche toute redirection ou affichage JSON
@@ -853,10 +982,15 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Move success overlay to body to prevent z-index/clipping issues
+  // Move overlays to body to prevent z-index/clipping issues
   const successOverlay = document.getElementById('successOverlay');
   if (successOverlay) {
       document.body.appendChild(successOverlay);
+  }
+  
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  if (loadingOverlay) {
+      document.body.appendChild(loadingOverlay);
   }
 
   if (password && repeatPassword && errorMessage) {

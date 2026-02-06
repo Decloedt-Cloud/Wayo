@@ -69,10 +69,13 @@ class Invoice_model extends CI_Model {
 
             // 3. Get plan data (with caching)
             if (!$plan_data) {
-                $plan_data = $this->getCachedDefaultPlan();
+                // Get country from school data, default to MA if missing
+                $school_country = !empty($school['country']) ? $school['country'] : 'MA';
+                
+                $plan_data = $this->getCachedDefaultPlan($school_country);
                 if (!$plan_data) {
                     $this->db->trans_rollback();
-                    return ['success' => false, 'message' => 'No active subscription plan found'];
+                    return ['success' => false, 'message' => 'No active subscription plan found for country: ' . $school_country];
                 }
             }
             
@@ -120,10 +123,53 @@ class Invoice_model extends CI_Model {
     
     /**
      * Get default subscription plan
+     * 
+     * @param string $country
      */
-    private function getDefaultSubscriptionPlan()
+    private function getDefaultSubscriptionPlan($country = 'MA')
     {
-        return $this->db->get_where('subscription_plans', ['is_default' => 1, 'active' => 1])->row_array();
+        // Default to MA if country is empty or null
+        $country = empty($country) ? 'MA' : $country;
+        
+        // Normalize UAE -> AE
+        if (strtoupper($country) === 'UAE') {
+            $country = 'AE';
+        }
+        
+        // 1. Try to find a default plan for the specific country
+        $plan = $this->db->get_where('subscription_plans', [
+            'is_default' => 1, 
+            'active' => 1,
+            'country' => $country
+        ])->row_array();
+        
+        // 2. Fallback: if no default plan found for country, try ANY active plan for country (cheapest first)
+        if (!$plan) {
+            $this->db->order_by('amount', 'ASC');
+            $plan = $this->db->get_where('subscription_plans', [
+                'active' => 1,
+                'country' => $country
+            ])->row_array();
+        }
+        
+        // 3. Fallback: if still no plan found (and country is not MA), try MA/default
+        if (!$plan && $country !== 'MA') {
+            $plan = $this->db->get_where('subscription_plans', [
+                'is_default' => 1, 
+                'active' => 1,
+                'country' => 'MA'
+            ])->row_array();
+        }
+        
+        // 4. Ultimate fallback: any default active plan
+        if (!$plan) {
+            $plan = $this->db->get_where('subscription_plans', [
+                'is_default' => 1, 
+                'active' => 1
+            ])->row_array();
+        }
+        
+        return $plan;
     }
     
     /**
@@ -313,33 +359,33 @@ class Invoice_model extends CI_Model {
 
     /**
      * Get cached default subscription plan
+     * 
+     * @param string $country
      */
-    private function getCachedDefaultPlan()
+    private function getCachedDefaultPlan($country = 'MA')
     {
-        $cache_key = 'default_subscription_plan';
+        $country = empty($country) ? 'MA' : $country;
+        $cache_key = 'default_subscription_plan_' . $country;
 
         // Check memory cache first
-        if (!empty($this->plan_cache)) {
-            return $this->plan_cache;
+        if (!empty($this->plan_cache[$country])) {
+            return $this->plan_cache[$country];
         }
 
         // Check file cache
         $cached = $this->cache->get($cache_key);
         if ($cached !== false) {
-            $this->plan_cache = $cached;
+            $this->plan_cache[$country] = $cached;
             return $cached;
         }
 
-        // Load from database
-        $plan = $this->db->get_where('subscription_plans', [
-            'is_default' => 1,
-            'active' => 1
-        ])->row_array();
+        // Load from database using the new method
+        $plan = $this->getDefaultSubscriptionPlan($country);
 
         if ($plan) {
             // Cache for 10 minutes (plans change infrequently)
             $this->cache->save($cache_key, $plan, 600);
-            $this->plan_cache = $plan;
+            $this->plan_cache[$country] = $plan;
         }
 
         return $plan;

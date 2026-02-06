@@ -62,7 +62,7 @@ if ($__school_id && $__trial_expired) {
         if (isset($this->subscriptionService) && method_exists($this->subscriptionService, 'ensureRenewalInvoice')) {
             $invoice_result = $this->subscriptionService->ensureRenewalInvoice($__school_id);
             if ($invoice_result['success']) {
-                $__payment_url = site_url('admin/payment/subscription_admin/' . $invoice_result['invoice_id']);
+                $__payment_url = site_url('admin/payment/' . $invoice_result['invoice_id']);
             }
         }
     }
@@ -90,85 +90,266 @@ if ($__school_id && $__trial_expired) {
 
         // Déterminer l'URL de paiement si une facture impayée existe
         if (!empty($unpaid_invoice['id'])) {
-            if (isset($unpaid_invoice['payment_type']) && $unpaid_invoice['payment_type'] === 'subscription_admin') {
-                $__payment_url = site_url('admin/payment/subscription_admin/' . $unpaid_invoice['id']);
-            } else {
-                $__payment_url = site_url('payment/community/' . $unpaid_invoice['id']);
-            }
+            $__payment_url = site_url('admin/payment/' . $unpaid_invoice['id']);
         }
     }
 }
 ?>
 
 <?php if ($__trial_expired): ?>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  #trialExpiredModal .trial-community-wrapper {
-    margin-top: 1rem;
+  :root {
+    /* Modern Dashboard Standard Variables */
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-lighter: #e0e7ff;
+    --primary-dark: #4338ca;
+    --secondary: #10b981;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+
+    --font-primary: 'DM Sans', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --radius-card: 20px;
+    --radius-btn: 12px;
   }
-  #trialExpiredModal .trial-community-list {
-    border: 1px solid #e4e7ec;
+
+  #trialExpiredModal {
+    font-family: var(--font-primary);
+    backdrop-filter: blur(8px);
+    z-index: 10000; /* Ensure it's on top */
+  }
+
+  #trialExpiredModal .modal-content {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-xl);
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+
+  #trialExpiredModal .modal-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    position: relative;
+    color: white;
+  }
+
+  #trialExpiredModal .modal-header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  #trialExpiredModal .modal-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #trialExpiredModal .modal-body {
+    padding: 2rem;
+    color: var(--text-dark);
+  }
+
+  #trialExpiredModal .status-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    background: #fff1f2;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: #e11d48;
+    font-size: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  #trialExpiredModal .trial-message h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  #trialExpiredModal .trial-message p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  #trialExpiredModal .community-section {
+    background: var(--bg-main);
     border-radius: 16px;
-    padding: 8px;
-    max-height: 260px;
-    overflow-y: auto;
-    background: #fff;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid var(--border-color);
   }
+
+  #trialExpiredModal .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: block;
+    font-family: var(--font-heading);
+  }
+
+  #trialExpiredModal .trial-community-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+
+  /* Custom Scrollbar */
+  #trialExpiredModal .trial-community-list::-webkit-scrollbar {
+    width: 5px;
+  }
+  #trialExpiredModal .trial-community-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #trialExpiredModal .trial-community-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
   #trialExpiredModal .trial-community-item {
     width: 100%;
-    border: none;
-    background: transparent;
-    padding: 10px 14px;
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: white;
+    padding: 1rem;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-    font-weight: 500;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
   }
+
   #trialExpiredModal .trial-community-item:hover {
-    background: #f5f7fb;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
+
   #trialExpiredModal .trial-community-item.active {
-    background: #eef3ff;
-    box-shadow: inset 0 0 0 1px #4c6fff;
+    background: var(--primary-lighter);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
   }
-  #trialExpiredModal .trial-community-item .community-name {
-    color: #111;
+
+  #trialExpiredModal .community-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
-  #trialExpiredModal .role-badge {
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 999px;
+
+  #trialExpiredModal .community-avatar {
+    width: 42px;
+    height: 42px;
+    background: var(--primary-lighter);
+    color: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
+  }
+
+  #trialExpiredModal .community-name {
     font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1rem;
+    font-family: var(--font-heading);
   }
-  #trialExpiredModal .role-badge.role-student {
-    background: #e9f1ff;
-    color: #2563eb;
+
+  #trialExpiredModal .role-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
   }
-  #trialExpiredModal .role-badge.role-teacher,
-  #trialExpiredModal .role-badge.role-mentor {
-    background: #e6fbf3;
-    color: #0f8b60;
+
+  #trialExpiredModal .role-badge.role-student { background: #f0f9ff; color: #0284c7; }
+  #trialExpiredModal .role-badge.role-teacher { background: #f0fdf4; color: #16a34a; }
+  #trialExpiredModal .role-badge.role-admin { background: #eef2ff; color: #4f46e5; }
+  #trialExpiredModal .role-badge.role-superadmin { background: #fffbeb; color: #d97706; }
+
+  #trialExpiredModal .modal-footer {
+    padding: 1.5rem 2rem;
+    background: var(--bg-main);
+    border-top: 1px solid var(--border-color);
+    gap: 1rem;
   }
-  #trialExpiredModal .role-badge.role-admin {
-    background: #e6edff;
-    color: #3347ff;
+
+  .btn-modern {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-btn);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s;
+    border: none;
+    font-family: var(--font-primary);
   }
-  #trialExpiredModal .role-badge.role-superadmin {
-    background: #fff3dc;
-    color: #b45309;
+
+  .btn-modern-secondary {
+    background: white;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
   }
-  #trialExpiredModal .trial-community-empty {
-    text-align: center;
-    padding: 18px 10px;
-    font-size: 14px;
+  .btn-modern-secondary:hover {
+    background: #f1f5f9;
+    color: var(--text-dark);
+    border-color: #cbd5e1;
   }
-  #trialExpiredModal .trial-community-divider {
-    height: 1px;
-    background: #f0f2f6;
-    margin: 8px 0;
+
+  .btn-modern-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
   }
+  .btn-modern-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  }
+
   <?php if ($__is_member || $__is_mentor): ?>
   #trialExpiredModal #paymentPageBtn {
     display: none !important;
@@ -176,57 +357,68 @@ if ($__school_id && $__trial_expired) {
   <?php endif; ?>
 </style>
 
-<div id="trialExpiredModal" class="modal fade show" tabindex="-1" role="dialog" style="display:block; background: rgba(0,0,0,0.5);">
+<div id="trialExpiredModal" class="modal fade show" tabindex="-1" role="dialog" style="display:block; background: rgba(15, 23, 42, 0.6);">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><?php echo get_phrase('your_trial_has_ended'); ?></h5>
+        <h5 class="modal-title">
+          <i class="fas fa-clock"></i>
+          <?php echo get_phrase('subscription_expired'); ?>
+        </h5>
       </div>
-      <div class="modal-body text-center">
-        <p><?php // echo get_phrase('enjoy_a_14-day_free_trial.'); ?></p>
-        <p class="mb-0"><strong><?php echo get_phrase('to_continue_using_your_community_you_need_to_activate_your_subscription.'); ?></strong></p>
+      <div class="modal-body">
+        <div class="text-center trial-message">
+          <div class="status-icon-wrapper">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h4><?php echo get_phrase('access_restricted'); ?></h4>
+          <p><?php echo get_phrase('to_continue_using_your_community_you_need_to_activate_your_subscription.'); ?></p>
+        </div>
+
         <?php if ($__is_mentor): ?>
-        <div class="alert alert-warning mt-3 mb-0">
-          <i class="mdi mdi-information"></i>
-          <strong><?php echo get_phrase('note'); ?>:</strong> <?php echo get_phrase('as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.'); ?>
+        <div class="alert alert-warning d-flex align-items-center gap-2 mt-3" style="border-radius: 8px; border: 1px solid #fcd34d; background: #fffbeb; color: #92400e;">
+          <i class="fas fa-info-circle"></i>
+          <div style="font-size: 0.9rem;">
+            <?php echo get_phrase('as_a_mentor_please_contact_your_community_administrator_to_renew_the_subscription.'); ?>
+          </div>
         </div>
         <?php endif; ?>
-        <div class="trial-community-wrapper text-start">
-          <label class="form-label mb-2">
-            <?php echo get_phrase('community'); ?>
-          </label>
+
+        <div class="community-section">
+          <span class="section-label"><?php echo get_phrase('select_community_to_access'); ?></span>
           <div class="trial-community-list" id="trialCommunityList">
-            <div class="trial-community-empty text-muted">
-              <?php echo get_phrase('please_wait'); ?>...
+            <div class="text-center py-4 text-muted">
+              <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+              <div style="font-size: 0.85rem;"><?php echo get_phrase('loading_communities'); ?>...</div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-secondary" id="closeTrialModal">
+        <button type="button" class="btn btn-modern btn-modern-secondary" id="closeTrialModal">
+          <i class="fas fa-sign-out-alt"></i>
           <?php echo get_phrase('logout'); ?>
         </button>
         <?php if (!$__is_member && !$__is_mentor): ?>
-
-                                          <!-- <button class="btn btn-wayo btn-sm flex-fill btn-apply"><?php echo get_phrase("Sign up") ?></button> -->
          <button type="button"
-                 class="btn btn-primary"
+                 class="btn btn-modern btn-modern-primary"
                  id="paymentPageBtn"
                  data-payment-url="<?php echo $__payment_url; ?>">
-          <?php echo htmlspecialchars(get_phrase("go_to_payment_page")); ?>
+          <i class="fas fa-credit-card"></i>
+          <?php echo htmlspecialchars(get_phrase("renew_subscription_now")); ?>
          </button>
         <?php endif; ?>
       </div>
     </div>
   </div>
 </div>
+
 <script>
   (function() {
     var closeBtn = document.getElementById('closeTrialModal');
     if (closeBtn) {
       closeBtn.addEventListener('click', function () {
-        var currentRole = "<?php echo strtolower($__current_role); ?>";
-        var logoutUrl = currentRole === 'teacher' ? "<?php echo site_url('login/logout'); ?>" : "<?php echo site_url('login/logout'); ?>";
+        var logoutUrl = "<?php echo site_url('login/logout'); ?>";
         window.location.href = logoutUrl;
       });
     }
@@ -261,13 +453,12 @@ if ($__school_id && $__trial_expired) {
 
     function setTrialCommunityState(message) {
       if (!trialCommunityList) return;
-      trialCommunityList.innerHTML = '<div class="trial-community-empty text-muted">' + message + '</div>';
+      trialCommunityList.innerHTML = '<div class="text-center py-3 text-muted" style="font-size: 0.9rem;">' + message + '</div>';
     }
 
     function populateTrialCommunityList() {
       if (!trialCommunityList) return;
-      setTrialCommunityState("<?php echo get_phrase('please_wait'); ?>...");
-
+      
       fetch("<?php echo site_url('home/get_user_communities'); ?>", {
         method: 'GET',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -281,7 +472,6 @@ if ($__school_id && $__trial_expired) {
             throw new Error('parse_error');
           }
 
-          // Vérifier le rôle actif et masquer le bouton de paiement si c'est un membre ou mentor
           var activeRole = (data.active_role || '').toLowerCase();
           var isMemberRole = activeRole === 'student' || activeRole === 'member';
           var isMentorRole = activeRole === 'teacher' || activeRole === 'mentor';
@@ -294,7 +484,7 @@ if ($__school_id && $__trial_expired) {
           trialCommunityList.innerHTML = '';
 
           if (!communities.length) {
-            setTrialCommunityState("<?php echo get_phrase('no_data_found'); ?>");
+            setTrialCommunityState("<?php echo get_phrase('no_communities_found'); ?>");
           } else {
             communities.forEach(function(item) {
               var role = (item.role || '').toLowerCase();
@@ -306,15 +496,29 @@ if ($__school_id && $__trial_expired) {
               button.dataset.schoolId = item.school_id;
               button.dataset.role = role;
 
+              // Avatar (First letter of community name)
+              var initial = (item.community_name || 'C').charAt(0).toUpperCase();
+              var avatarDiv = document.createElement('div');
+              avatarDiv.className = 'community-avatar';
+              avatarDiv.textContent = initial;
+
+              // Info wrapper
+              var infoDiv = document.createElement('div');
+              infoDiv.className = 'community-info';
+              
               var nameSpan = document.createElement('span');
               nameSpan.className = 'community-name';
               nameSpan.textContent = item.community_name || '-';
 
+              infoDiv.appendChild(avatarDiv);
+              infoDiv.appendChild(nameSpan);
+
+              // Role Badge
               var badgeSpan = document.createElement('span');
               badgeSpan.className = 'role-badge role-' + role;
               badgeSpan.textContent = formatRoleLabel(role);
 
-              button.appendChild(nameSpan);
+              button.appendChild(infoDiv);
               button.appendChild(badgeSpan);
 
               button.addEventListener('click', function() {
@@ -342,27 +546,16 @@ if ($__school_id && $__trial_expired) {
       populateTrialCommunityList();
     }
 
-    // Redirection vers la page de paiement dédiée (communautés)
     var paymentBtn = document.getElementById('paymentPageBtn');
     if (paymentBtn) {
       paymentBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
         var target = this.getAttribute('data-payment-url');
-        var communityUrl = "<?php echo $__community_payment_url; ?>";
-        console.log('Payment URL:', target);
-        console.log('Community URL:', communityUrl);
         
-        if (target && target.length > 0 && target !== communityUrl && target.indexOf('admin/payment') !== -1) {
-          // Forcer la redirection vers la page de paiement admin
-          console.log('Redirecting to:', target);
-          window.location.href = target;
-        } else if (target && target.length > 0 && target !== communityUrl) {
-          // Autre type de facture
-          console.log('Redirecting to:', target);
+        if (target && target.length > 0) {
           window.location.href = target;
         } else {
-          console.error('Invalid payment URL:', target);
           alert("<?php echo get_phrase('payment_url_not_found') ?: 'URL de paiement non trouvée'; ?>");
         }
       });
@@ -412,4 +605,3 @@ if ($__school_id && $__trial_expired) {
   })();
 </script>
 <?php endif; ?>
-

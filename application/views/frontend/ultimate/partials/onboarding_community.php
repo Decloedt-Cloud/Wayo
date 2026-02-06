@@ -2,7 +2,7 @@
 <div id="onbOverlay" class="onb-overlay"></div>
 
 <!-- Modal -->
-<div id="onbModal" class="onb-modal" aria-hidden="true">
+<div id="onbModal" class="onb-modal" inert>
   <div class="onb-card">
 
     <!-- Close -->
@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="onb-header">
       <div class="d-flex align-items-center gap-2">
-        <img src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo" style="height:24px;">
+        <img alt="Wayo" style="height:24px;" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>">
         <div class="onb-brand"><?php echo get_phrase("Wayo"); ?></div>
       </div>
 
@@ -34,7 +34,7 @@
         <ul style="padding-left:1.2rem;margin-bottom:0;">
           <li class="mb-2">
             <?php echo get_phrase("You_can_close_this_guide_at_any_time_button"); ?>
-            <strong>✕</strong> <?php echo get_phrase("or_Esc"); ?>)
+            <strong>(✕)</strong> <?php echo get_phrase("or_button"); ?> <strong><?php echo get_phrase("(skip)"); ?></strong>
           </li>
           <li>
             <?php echo get_phrase("Proceed_with"); ?>
@@ -62,7 +62,7 @@
         <ul style="padding-left:1.2rem;margin-bottom:0;">
           <li class="mb-2"><strong><?php echo get_phrase("Name_&_Description"); ?>:</strong> <?php echo get_phrase("Name_your_community_and_describe_what_you_do"); ?></li>
           <li class="mb-2"><strong><?php echo get_phrase("Logo"); ?>:</strong> <?php echo get_phrase("Preferably_square_recommended_512x512"); ?></li>
-          <li class="mb-2"><strong><?php echo get_phrase("Cover"); ?>:</strong> <?php echo get_phrase("16_9_format_example_1600x900"); ?></li>
+          <li class="mb-2"><strong><?php echo get_phrase("Cover"); ?>:</strong> <?php echo get_phrase("16_9_format_example_1920x600"); ?></li>
           <li class="mb-2"><strong><?php echo get_phrase("Visibility"); ?>:</strong> <?php echo get_phrase("Public_or_private_access_requires_admin_approval"); ?></li>
         </ul>
       </div>
@@ -116,12 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function openOnboarding() {
     overlay.classList.add("active");
     modal.classList.add("active");
+    modal.removeAttribute("inert"); // Rendre le modal interactif
     showStep(0);
   }
 
   function closeOnboarding() {
     overlay.classList.remove("active");
     modal.classList.remove("active");
+    modal.setAttribute("inert", ""); // Désactiver l'interactivité
   }
 
   function showStep(index) {
@@ -138,7 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
         : "<?php echo get_phrase('Next'); ?>";
   }
 
-  nextBtn.addEventListener("click", () => {
+  nextBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (current < steps.length - 1) {
       showStep(current + 1);
     } else {
@@ -146,12 +149,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  prevBtn.addEventListener("click", () => {
+  prevBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (current > 0) showStep(current - 1);
   });
 
-  skipBtn.addEventListener("click", closeOnboarding);
-  closeBtn.addEventListener("click", closeOnboarding);
+  skipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeOnboarding();
+  });
+
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeOnboarding();
+  });
+
   overlay.addEventListener("click", closeOnboarding);
 
   document.addEventListener("keydown", (e) => {

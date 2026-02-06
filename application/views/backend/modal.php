@@ -2,6 +2,9 @@
 // Define showNotification globally if not already defined
 if (typeof showNotification !== 'function') {
     window.showNotification = function(type, message) {
+        if (typeof ENABLE_TOASTS !== 'undefined' && !ENABLE_TOASTS) {
+            return;
+        }
         if (typeof toastr !== 'undefined') {
             toastr.options = {
                 "closeButton": true,
@@ -52,12 +55,6 @@ function largeModal(url, header)
     }
   });
 }
-function confirmModal_alert(message)
-{
-  jQuery('#alert-modal-confimation').modal('show', {backdrop: 'true'});
-  jQuery('#alert-modal-confimation .modal-message').html(message);
-
-}
 
 function previewModal(url, header)
 {
@@ -96,82 +93,91 @@ function rightModal(url, header)
 
 
 function confirmModal(delete_url, callback) {
-    jQuery('#alert-modal').modal('show', {backdrop: 'static'});
+    Swal.fire({
+        title: '<?php echo get_phrase("are_you_sure"); ?>',
+        text: '<?php echo get_phrase("you_will_not_be_able_to_revert_this"); ?>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#6366f1',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<?php echo get_phrase("yes_delete_it"); ?>',
+        cancelButtonText: '<?php echo get_phrase("cancel"); ?>',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+            var csrfHash = $('input[name="' + csrfName + '"]').val();
 
-    // S'assurer que l'action du formulaire est correcte
-    jQuery('#delete_form').attr('action', delete_url);
-
-    // Gérer la soumission du formulaire
-    jQuery('#delete_form').off('submit').on('submit', function(e) {
-        e.preventDefault(); // Empêcher la soumission par défaut
-        var form = jQuery(this);
-        var url = form.attr('action'); // Utiliser l'URL définie dans l'action
-
-        jQuery.ajax({
-            url: url,
-            type: 'POST',
-            data: form.serialize(), // Pas besoin d'ajouter le jeton CSRF
-            dataType: 'json',
-            success: function(response) {
-                // Fermer le modal
-                jQuery('#alert-modal').modal('hide');
-
-                // Afficher une notification basée sur la réponse
-                if (response.status) {
-                    
-                    showNotification('success', response.notification || <?php echo js_phrase('deleted_successfully'); ?>);
-
-                    // Update CSRF token with the new one from response
-                    if (response.csrf) {
-                        $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
-                    }
-
-                    // Call callback or reload after short delay
-                    setTimeout(function() {
-                        if (callback && typeof callback === 'function') {
-                            callback(response);
-                        } else {
-                            location.reload();
+            $.ajax({
+                url: delete_url,
+                type: 'POST',
+                data: { [csrfName]: csrfHash },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        showNotification('success', response.notification || '<?php echo js_phrase('deleted_successfully'); ?>');
+                        if (response.csrf) {
+                            $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
                         }
-                    }, 500);
-
-                } else {
-                    showNotification('error', response.notification || <?php echo js_phrase('failed_to_delete'); ?>);
+                        setTimeout(function() {
+                            if (callback && typeof callback === 'function') {
+                                callback(response);
+                            } else {
+                                location.reload();
+                            }
+                        }, 500);
+                    } else {
+                        showNotification('error', response.notification || '<?php echo js_phrase('failed_to_delete'); ?>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showNotification('error', '<?php echo js_phrase('failed_to_delete'); ?>');
                 }
-                
-            },
-            error: function(xhr, status, error) {
-                console.error('Erreur AJAX : ', error);
-                console.error('Statut : ', status);
-                console.error('Réponse : ', xhr.responseText);
-                showNotification('error', <?php echo js_phrase('failed_to_delete_exam'); ?>);
-                // Fermer le modal même en cas d'erreur
-                jQuery('#alert-modal').modal('hide');
-            }
-        });
+            });
+        }
     });
-} 
-
-
-function confirmModalRedirect(delete_url)
-{
-  jQuery('#alert-modal-redirect').modal('show', {backdrop: 'static'});
-  // document.getElementById('alert-modal-redirect-url').setAttribute('href' , delete_url);
-  // Mettre à jour l'action du formulaire avec l'URL de suppression
-  document.getElementById('delete-form').setAttribute('action', delete_url);
-
-
 }
 
-function genericConfirmModal(callBackFunction)
-{
-  jQuery('#genric-confirmation-modal').modal('show', {backdrop: 'static'});
-  callBackFunctionForGenericConfirmationModal = callBackFunction;
+function confirmModalRedirect(delete_url) {
+    Swal.fire({
+        title: '<?php echo get_phrase("are_you_sure"); ?>',
+        text: '<?php echo get_phrase("you_will_not_be_able_to_revert_this"); ?>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#6366f1',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<?php echo get_phrase("yes_delete_it"); ?>',
+        cancelButtonText: '<?php echo get_phrase("cancel"); ?>',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var form = document.getElementById('delete_form');
+            form.action = delete_url;
+            form.submit();
+        }
+    });
+}
+
+function genericConfirmModal(callBackFunction) {
+    Swal.fire({
+        title: '<?php echo get_phrase("are_you_sure"); ?>',
+        text: '<?php echo get_phrase("you_will_not_be_able_to_revert_this"); ?>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#6366f1',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<?php echo get_phrase("continue"); ?>',
+        cancelButtonText: '<?php echo get_phrase("cancel"); ?>',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            callBackFunction();
+        }
+    });
 }
 
 function callTheCallBackFunction() {
-  $('#genric-confirmation-modal').modal('hide');
-  callBackFunctionForGenericConfirmationModal();
+  // Kept for compatibility
 }
 function blankFunction(){
 
@@ -275,88 +281,12 @@ function updateLargeModal(url, header) {
 <!-- /.modal -->
  
 
-<!-- Info Alert Modal -->
-<div id="alert-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body p-4">
-        <div class="text-center">
-          <i class="dripicons-information h1 text-info"></i>
-          <h4 class="mt-2"><?php echo get_phrase('heads_up') ?>!</h4>
-          <p class="mt-3"><?php echo get_phrase('are_you_sure'); ?>?</p>
-          <form method="POST" class="ajaxDeleteForm" action="" id = "delete_form">
-                <!-- Champ caché pour le jeton CSRF -->
-                <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+<!-- Hidden form for confirmModal (CSRF token) -->
+<form method="POST" class="ajaxDeleteForm" action="" id="delete_form" style="display: none;">
+    <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+</form>
 
-            <button type="button" class="btn btn-info my-2" data-bs-dismiss="modal"><?php echo get_phrase('cancel'); ?></button>
-            <button type="submit" class="btn btn-danger my-2" onclick=""><?php echo get_phrase('continue'); ?></button>
-          </form>
-        </div>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
-<!-- Info Alert Modal -->
-<div id="alert-modal-confimation" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style=" z-index: 1056;">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body p-4">
-        <div class="text-center">
-          <i class="dripicons-information h1 text-info"></i>
-          <h4 class="mt-2"><?php echo get_phrase('heads_up') ?>!</h4>
-          <div class="modal-message">
-
-          </div>
-         
-            <button type="button" class="btn btn-info my-2" data-bs-dismiss="modal"><?php echo get_phrase('ok'); ?></button>
-       
-          
-        </div>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<!-- Info Alert Modal -->
-<div id="alert-modal-redirect" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body p-4">
-        <div class="text-center">
-          <i class="dripicons-information h1 text-info"></i>
-          <h4 class="mt-2"><?php echo get_phrase('heads_up') ?>!</h4>
-          <p class="mt-3"><?php echo get_phrase('are_you_sure'); ?>?</p>
-          <!-- <form id="delete-form" method="POST" action=""> -->
-          <form method="POST" class="ajaxDeleteForm" action="" id = "delete-form">
-            <!-- Ajoutez ici le jeton CSRF -->
-            <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-
-          <button type="button" class="btn btn-info my-2" data-bs-dismiss="modal"><?php echo get_phrase('cancel'); ?></button>
-          <button type="submit" class="btn btn-danger my-2" onclick="reloadFunction()"><?php echo get_phrase('continue'); ?></button>
-          </form>
-        </div>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<!-- Info Alert Modal THIS MODAL WAS USED BECAUSE OF SOME GENERIC ALERTS-->
-<div id="genric-confirmation-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body p-4">
-        <div class="text-center">
-          <i class="dripicons-information h1 text-info"></i>
-          <h4 class="mt-2"><?php echo get_phrase('heads_up') ?>!</h4>
-          <p class="mt-3"><?php echo get_phrase('are_you_sure'); ?>?</p>
-          <button type="button" class="btn btn-info my-2" data-bs-dismiss="modal"><?php echo get_phrase('cancel'); ?></button>
-          <button type="submit" class="btn btn-danger my-2" onclick="callTheCallBackFunction()"><?php echo get_phrase('continue'); ?></button>
-        </div>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <div class="modal fade" id="preview-modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog modal-lg" role="document">

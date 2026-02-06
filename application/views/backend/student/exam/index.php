@@ -1,9 +1,9 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/exam.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/exam.min.css">
 
 <!-- SweetAlert2 -->
-<script type="text/javascript" src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 
 <!-- Mobile overlay -->
 <div class="exam-editor-overlay" id="editorOverlay" onclick="closeEditor()"></div>
@@ -61,7 +61,7 @@ function openNewExamEditor() {
         title: '<?php echo addslashes(get_phrase('access_denied')); ?>',
         text: '<?php echo addslashes(get_phrase('students_cannot_create_exams')); ?>',
         icon: 'warning',
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         confirmButtonText: '<?php echo addslashes(get_phrase('ok')); ?>'
     });
 }
@@ -73,7 +73,7 @@ function openExamEditor(examId) {
         title: '<?php echo addslashes(get_phrase('access_denied')); ?>',
         text: '<?php echo addslashes(get_phrase('students_cannot_update_exams')); ?>',
         icon: 'warning',
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         confirmButtonText: '<?php echo addslashes(get_phrase('ok')); ?>'
     });
 }
@@ -85,7 +85,7 @@ function openQuestionEditor(examId, examName) {
         title: '<?php echo addslashes(get_phrase('access_denied')); ?>',
         text: '<?php echo addslashes(get_phrase('students_cannot_manage_exam_questions')); ?>',
         icon: 'warning',
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         confirmButtonText: '<?php echo addslashes(get_phrase('ok')); ?>'
     });
 }
@@ -177,7 +177,7 @@ function confirmDelete(url, callback) {
         text: '<?php echo addslashes(get_phrase('you_will_not_be_able_to_revert_this')); ?>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<?php echo addslashes(get_phrase('yes_delete_it')); ?>',
         cancelButtonText: '<?php echo addslashes(get_phrase('cancel')); ?>',

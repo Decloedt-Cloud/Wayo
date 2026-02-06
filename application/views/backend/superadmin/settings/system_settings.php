@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/systemSettings.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/systemSettings.min.css">
 
 <div class="row">
   <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">

@@ -123,21 +123,54 @@ class SubscriptionService {
     /**
      * Get default subscription plan
      *
+     * @param string $country Country code (e.g. 'MA', 'AE')
      * @return array|null Plan data
      */
-    public function getDefaultPlan()
+    public function getDefaultPlan($country = 'MA')
     {
-        return $this->CI->db->get_where('subscription_plans', ['is_default' => 1, 'active' => 1])->row_array();
+        // Default to MA if country is empty or null
+        $country = empty($country) ? 'MA' : $country;
+        
+        // Try to find a default plan for the specific country
+        $plan = $this->CI->db->get_where('subscription_plans', [
+            'is_default' => 1, 
+            'active' => 1,
+            'country' => $country
+        ])->row_array();
+        
+        // Fallback: if no plan found for country (and country is not MA), try MA/default
+        if (!$plan && $country !== 'MA') {
+            $plan = $this->CI->db->get_where('subscription_plans', [
+                'is_default' => 1, 
+                'active' => 1,
+                'country' => 'MA'
+            ])->row_array();
+        }
+        
+        // Ultimate fallback: any default active plan
+        if (!$plan) {
+            $plan = $this->CI->db->get_where('subscription_plans', [
+                'is_default' => 1, 
+                'active' => 1
+            ])->row_array();
+        }
+        
+        return $plan;
     }
 
     /**
      * Get all active plans
      *
+     * @param string|null $country Country code to filter by
      * @return array Plans
      */
-    public function getActivePlans()
+    public function getActivePlans($country = null)
     {
-        return $this->CI->db->get_where('subscription_plans', ['active' => 1])->result_array();
+        $where = ['active' => 1];
+        if ($country) {
+            $where['country'] = $country;
+        }
+        return $this->CI->db->get_where('subscription_plans', $where)->result_array();
     }
 
     /**

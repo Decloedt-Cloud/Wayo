@@ -47,7 +47,8 @@ class App_Access {
             '/app/teacher' => '/app/mentor',
             '/app/exam'    => '/app/certifications',
             '/app/event_calendar' => '/app/announcements',
-            '/app/school_settings' => '/app/community_settings'
+            '/app/school_settings' => '/app/community_settings',
+            '/app/school' => '/app/community_list'
         );
 
         foreach ($special_maps as $target => $replacement) {
@@ -71,7 +72,8 @@ class App_Access {
             '/teacher' => '/app/mentor',
             '/exam'    => '/app/certifications',
             '/event_calendar' => '/app/announcements',
-            '/school_settings' => '/app/community_settings'
+            '/school_settings' => '/app/community_settings',
+            '/school' => '/app/community_list'
         );
 
         foreach ($manager_roles as $role) {
@@ -152,6 +154,11 @@ class App_Access {
             if (strpos($clean_uri, $target . '/') === 0 || 
                 $clean_uri === $target || 
                 strpos($clean_uri, $target . '?') === 0) {
+                
+                // Skip redirect for POST requests to preserve form data
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    return; // Let the request continue without redirect
+                }
                 
                 $new_uri = substr_replace($clean_uri, $replacement, 0, strlen($target));
                 $redirect_url = rtrim($base_url, '/') . $new_uri;

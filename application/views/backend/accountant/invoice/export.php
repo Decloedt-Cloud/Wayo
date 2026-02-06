@@ -22,7 +22,7 @@
   <title><?php echo $action.' '.get_phrase('student_fee_report'); ?></title>
   <link rel="shortcut icon" href="<?php echo $this->settings_model->get_favicon(); ?>">
   <style>
-    <?php include FCPATH.'assets/backend/css/export.css'; ?>
+    <?php include FCPATH.'assets/backend/css/export.min.css'; ?>
   </style>
 </head>
 <body>

@@ -140,8 +140,24 @@ if ($current_user_id) {
         background: #fff;
         font-weight: 800;
         color: var(--text);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-lang::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(252, 123, 48, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-lang:hover::before {
+        left: 100%;
+    }
     .btn-lang:hover {
         background: #f7f7f7;
     }
@@ -152,8 +168,24 @@ if ($current_user_id) {
         border-radius: 14px;
         font-weight: 900;
         transition: transform 0.18s, filter 0.18s, box-shadow 0.18s;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-custom::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-custom:hover::before {
+        left: 100%;
+    }
     .btn-custom:hover {
         transform: translateY(-1px);
     }
@@ -162,8 +194,24 @@ if ($current_user_id) {
         background: #fff;
         border: 1px solid var(--line);
         color: var(--text);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-ghost::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(252, 123, 48, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-ghost:hover::before {
+        left: 100%;
+    }
     .btn-ghost:hover {
         background: #f7f7f7;
         color: var(--orange) !important;
@@ -174,8 +222,24 @@ if ($current_user_id) {
         color: #fff;
         border: none;
         box-shadow: 0 14px 28px rgba(244, 122, 31, 0.22);
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-accent::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-accent:hover::before {
+        left: 100%;
+    }
     .btn-accent:hover {
         background: linear-gradient(135deg, var(--orange), var(--orange-2));
         color: #fff;
@@ -330,6 +394,31 @@ if ($current_user_id) {
         top: 100%;
         left: 0;
         margin-top: 8px;
+    }
+
+    #community-menu-mobile {
+        display: none !important;
+        position: fixed !important;
+        width: 234px !important;
+        background: white !important;
+        border: 1px solid #ddd !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        z-index: 9999 !important;
+        padding: 0 !important;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 8px;
+    }
+
+    #community-switcher-mobile.open #community-menu-mobile {
+        display: block !important;
+    }
+
+    /* Z-index plus élevé pour le menu de langue dans l'offcanvas mobile */
+    #navbarOffcanvas .language-selector .dropdown-menu {
+        z-index: 10060 !important;
     }
 
     .menu-list {
@@ -770,13 +859,46 @@ if ($current_user_id) {
         border: none;
         cursor: pointer;
         transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-saas::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-saas:hover::before {
+        left: 100%;
     }
 
     .btn-community {
         background-color: #F06423;
         color: white;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-community::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-community:hover::before {
+        left: 100%;
+    }
     .btn-community:hover {
         opacity: 0.9;
     }
@@ -785,8 +907,24 @@ if ($current_user_id) {
         background-color: #FFFFFF;
         color: #1F2937;
         border: 1px solid #E5E7EB;
+        position: relative;
+        overflow: hidden;
     }
-
+    .btn-community-2::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(31, 41, 55, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .btn-community-2:hover::before {
+        left: 100%;
+    }
     .btn-community-2:hover {
         background-color: #F3F4F6;
     }
@@ -913,8 +1051,8 @@ if ($current_user_id) {
         <nav class="navbar navbar-expand-lg">
             <div class="container container-customize">
                 <!-- Logo -->
-                <a class="navbar-brand" href="<?php echo base_url('home'); ?>" aria-label="Wayo Academy">
-                    <img class="logo-img" src="https://i.postimg.cc/W1GGVmqG/logo-icone-trans.png" alt="Wayo">
+                <a class="navbar-brand" href="<?php echo lang_route('home'); ?>" aria-label="Wayo Academy">
+                    <img class="logo-img" src="<?php echo $logo_light; ?>" alt="<?php echo $system_name; ?>">
                 </a>
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler ms-auto" id="nav-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
@@ -951,13 +1089,13 @@ if ($current_user_id) {
                 <div class="collapse navbar-collapse" id="navbarNav" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo site_url('home'); ?>"><?php echo get_phrase('Home'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo lang_route('home'); ?>"><?php echo get_phrase('Home'); ?></a>
                         </li>
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo site_url('home/communities'); ?>"><?php echo get_phrase('Our_Communities'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo lang_route('communities'); ?>"><?php echo get_phrase('Our_Communities'); ?></a>
                         </li>
                         <li class="nav-item" style="margin:0 4px">
-                            <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo site_url('home/tutorial'); ?>"><?php echo get_phrase('How_it_works'); ?></a>
+                            <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo lang_route('tutorial'); ?>"><?php echo get_phrase('How_it_works'); ?></a>
                         </li>
                     </ul>
 
@@ -1007,7 +1145,7 @@ if ($current_user_id) {
                                 </div>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->session->userdata('user_id')) { ?>
+                        <?php if ($this->session->userdata('user_id') && $this->session->userdata('role') != 'superadmin') { ?>
                             <!-- === COMMUNITY SWITCHER (NOUVEAU STYLE MODERNE) === -->
                             <div class="community-switcher" id="community-switcher" style="margin: 0 8px;">
                                 <button class="switcher-trigger" id="switcher-trigger">
@@ -1058,7 +1196,7 @@ if ($current_user_id) {
                                 <?php include 'components/navigation-components/login_register_component.php'; ?>
                             </li>
                             <li class="nav-item navbar-user" style="list-style: none;">
-                                <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-accent btn-custom" style="cursor:pointer !important;">
+                                <a href="<?php echo lang_route('join/community'); ?>" class="btn btn-accent btn-custom" style="cursor:pointer !important;">
                                     <?php echo get_phrase('Create_Community'); ?>
                                 </a>
                             </li>
@@ -1076,23 +1214,42 @@ if ($current_user_id) {
             <div class="offcanvas-body">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo site_url('home'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'home') echo 'active'; ?>" href="<?php echo lang_route('home'); ?>">
                             <?php echo get_phrase('Home'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo site_url('home/communities'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'communities') echo 'active'; ?>" href="<?php echo lang_route('communities'); ?>">
                             <?php echo get_phrase('Our_Communities'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo site_url('home/tutorial'); ?>">
+                        <a class="nav-link <?php if ($page_name === 'tutorial') echo 'active'; ?>" href="<?php echo lang_route('tutorial'); ?>">
                             <?php echo get_phrase('How_it_works'); ?>
                         </a>
                     </li>
                 </ul>
 
                 <div class="offcanvas-actions mt-3">
+                    <?php if ($this->session->userdata('user_id') && $this->session->userdata('role') != 'superadmin') { ?>
+                        <!-- Switcher de communauté (mobile) -->
+                        <div class="community-switcher mb-3" id="community-switcher-mobile" style="margin: 0 8px; list-style:none; width:100%; display:flex; justify-content:center;">
+                            <button class="switcher-trigger" id="switcher-trigger-mobile">
+                                <span class="current-role" id="current-role-label-mobile"><?php echo get_phrase("loading..."); ?></span>
+                                <i class="fas fa-chevron-down arrow-icon"></i>
+                            </button>
+                            <div id="community-menu-mobile" class="shadow">
+                                <div class="menu-list" id="role-dropdown-menu-mobile">
+                                    <!-- Rôles injectés par JS -->
+                                </div>
+                                <hr class="menu-divider">
+                                <button class="menu-item action-item create-item" id="open-create-community-btn-mobile">
+                                    <i class="fas fa-plus"></i>
+                                    <span><?php echo get_phrase("create_community"); ?></span>
+                                </button>
+                            </div>
+                        </div>
+                    <?php } ?>
                     <!-- Language Selector for Mobile -->
                     <?php if ($this->session->userdata('user_type') == 'superadmin' || $this->session->userdata('user_type') == 'admin' || $this->session->userdata('user_type') == 'teacher' || $this->session->userdata('user_type') == 'student'): ?>
                         <li class="dropdown notification-list topbar-dropdown language-selector mb-3" style="list-style: none; width:100%">
@@ -1139,16 +1296,23 @@ if ($current_user_id) {
 
                     <?php if ($this->session->userdata('user_id')) {  ?>
                         <li class="nav-item navbar-user-profile mb-3" style="margin:0 2px; list-style:none;">
-                            <div class="user-section p-2 border rounded">
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
-                                        alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
+                            <div class="p-2 border rounded">
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
+                                            alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
+                                        <span class="fw-semibold" style="font-size: 15px; color: var(--text);">
+                                            <?php echo $this->session->user_name; ?>
+                                        </span>
+                                    </div>
+                                    <a href="<?php echo site_url('login/logout'); ?>" class="btn btn-link text-danger" aria-label="<?php echo get_phrase('logout'); ?>" style="font-size: 18px;">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                    </a>
                                 </div>
-                                <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
                             </div>
                         </li>
                     <?php } else { ?>
-                        <a class="btn btn-accent btn-custom w-100" href="<?php echo site_url('admission/online_admission'); ?>">
+                        <a class="btn btn-accent btn-custom w-100" href="<?php echo lang_route('join/community'); ?>">
                             <?php echo get_phrase('Create_Community'); ?>
                         </a>
                     <?php } ?>
@@ -1291,7 +1455,7 @@ if ($current_user_id) {
                             <input type="file" class="file-input-saas" id="logo-upload" name="school_image" accept="image/*">
                         </div>
                         <div class="file-upload-saas wide" id="cover-upload-box">
-                            <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:9)") ?></span></div>
+                            <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:5)") ?></span></div>
                             <div class="image-preview-saas" id="cover-preview"></div>
                             <input type="file" class="file-input-saas" id="cover-upload" name="communityCover" accept="image/*">
                         </div>
@@ -1378,8 +1542,17 @@ if ($current_user_id) {
         window.csrfTokenName = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.csrfTokenValue = '<?php echo $this->security->get_csrf_hash(); ?>';
     </script>
-    <script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
+    <script src="<?php echo base_url('assets/backend/js/create_community_modal.min.js'); ?>"></script>
     <script>
+        // Language code mapping
+        var langCodeMap = {
+            'french': 'fr',
+            'english': 'en',
+            'arabic': 'ar',
+            'spanish': 'es',
+            'dutch': 'nl'
+        };
+
         function getLanguageList() {
             $.ajax({
                 url: "<?php echo route('language/dropdown'); ?>",
@@ -1393,7 +1566,7 @@ if ($current_user_id) {
 
         function getGuestLanguageList() {
             $.ajax({
-                url: "<?php echo site_url('home/dropdown_guest'); ?>",
+                url: "<?php echo site_url('home/dropdown_guest_lang'); ?>",
                 success: function(response) {
                     // Remplir à la fois desktop et mobile
                     $('#guest-language-list').html(response);
@@ -1403,11 +1576,73 @@ if ($current_user_id) {
         }
 
         function setGuestLanguage(lang) {
+            // Get the language code for URL
+            var langCode = langCodeMap[lang.toLowerCase()] || 'fr';
+            
             $.post("<?php echo site_url('home/set_guest_language'); ?>", {
                 language: lang,
                 <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
-            }, function() {
-                location.reload();
+            }, function(response) {
+                var supportedCodes = ['fr', 'en', 'ar', 'es', 'nl'];
+                var currentUrl = window.location.href;
+                var currentPath = window.location.pathname;
+                
+                // Get base URL without trailing slash
+                var baseUrl = '<?php echo rtrim(base_url(), "/"); ?>';
+                
+                // Extract the path part after the base URL
+                var fullPath = currentPath;
+                
+                // Get base path from the base URL  
+                try {
+                    var urlObj = new URL(baseUrl);
+                    var basePath = urlObj.pathname.replace(/\/$/, '');
+                    
+                    // Remove base path from current path
+                    if (basePath && fullPath.indexOf(basePath) === 0) {
+                        fullPath = fullPath.substring(basePath.length);
+                    }
+                } catch(e) {
+                    // Fallback for older browsers
+                    var basePath = baseUrl.replace(/^https?:\/\/[^\/]+/, '').replace(/\/$/, '');
+                    if (basePath && fullPath.indexOf(basePath) === 0) {
+                        fullPath = fullPath.substring(basePath.length);
+                    }
+                }
+                
+                // Clean up the path
+                fullPath = fullPath.replace(/^\/+/, ''); // Remove leading slashes
+                
+                // Split path into parts
+                var pathParts = fullPath.split('/').filter(function(p) { 
+                    return p !== '' && p !== 'home' && p !== 'index.php'; 
+                });
+                
+                // Check if first part is a language code and replace/add
+                if (pathParts.length > 0 && supportedCodes.indexOf(pathParts[0]) !== -1) {
+                    // Replace existing language prefix
+                    pathParts[0] = langCode;
+                } else if (pathParts.length > 0) {
+                    // Add new language prefix at the beginning
+                    pathParts.unshift(langCode);
+                } else {
+                    // Just the language code for home page
+                    pathParts = [langCode];
+                }
+                
+                // Build the new URL using site_url pattern
+                var newUrl = baseUrl + '/' + pathParts.join('/');
+                
+                // Debug (remove after testing)
+                console.log('Language switch debug:', {
+                    baseUrl: baseUrl,
+                    currentPath: currentPath,
+                    fullPath: fullPath,
+                    pathParts: pathParts,
+                    newUrl: newUrl
+                });
+                
+                window.location.href = newUrl;
             });
         }
     </script>
@@ -1436,6 +1671,11 @@ if ($current_user_id) {
             const menu = document.getElementById('community-menu');
             const roleMenu = document.getElementById('role-dropdown-menu');
             const currentLabel = document.getElementById('current-role-label');
+
+            // Si les éléments n'existent pas (utilisateur non connecté), on arrête
+            if (!switcher || !trigger || !menu || !roleMenu || !currentLabel) {
+                return;
+            }
 
             const currentRole = '<?php echo strtolower($this->session->userdata("role")); ?>';
 
@@ -1647,6 +1887,133 @@ if ($current_user_id) {
             // === Recharger après switch ===
             window.addEventListener('roleSwitched', loadUserRoles);
             document.getElementById('open-create-community-btn')?.addEventListener('click', () => {
+                document.getElementById('createCommunityModal').classList.add('show');
+            });
+        });
+
+        // === Initialisation du switcher (mobile) ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('community-switcher-mobile');
+            const trigger = document.getElementById('switcher-trigger-mobile');
+            const menu = document.getElementById('community-menu-mobile');
+            const roleMenu = document.getElementById('role-dropdown-menu-mobile');
+            const currentLabel = document.getElementById('current-role-label-mobile');
+            if (!switcher || !trigger || !menu || !roleMenu || !currentLabel) return;
+
+            const currentRole = '<?php echo strtolower($this->session->userdata("role")); ?>';
+
+            function loadUserRolesMobile() {
+                $.ajax({
+                    url: '<?php echo site_url("home/get_user_roles"); ?>',
+                    type: 'GET',
+                    success: function(response) {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        if (res.status === 'success') {
+                            renderRolesMobile(res.roles);
+                            updateCurrentLabelMobile(res.roles);
+                        }
+                    }
+                });
+            }
+
+            function renderRolesMobile(roles) {
+                roleMenu.innerHTML = '';
+                roles.forEach(role => {
+                    const item = document.createElement('button');
+                    item.className = 'menu-item';
+                    if (role.role.toLowerCase() === currentRole) {
+                        item.classList.add('selected');
+                    }
+                    const label = document.createElement('span');
+                    label.textContent = roleTranslations[role.role.toLowerCase()] || role.label;
+                    const badge = document.createElement('span');
+                    badge.className = `role-badge ${role.role.toLowerCase()}`;
+                    badge.textContent = role.count;
+                    item.appendChild(label);
+                    item.appendChild(badge);
+                    item.onclick = function(e) {
+                        e.stopPropagation();
+                        closeMenuMobile();
+                        if (role.count > 1) {
+                            openCommunityModal(role.role);
+                        } else {
+                            switchRoleMobile(role.role, role.communities[0].school_id);
+                        }
+                    };
+                    roleMenu.appendChild(item);
+                });
+            }
+
+            function updateCurrentLabelMobile(roles) {
+                const current = roles.find(r => r.role.toLowerCase() === currentRole);
+                currentLabel.textContent = current ?
+                    (roleTranslations[current.role.toLowerCase()] || current.label) :
+                    roleTranslations.student;
+            }
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = switcher.classList.contains('open');
+                closeMenuMobile();
+                if (!isOpen) {
+                    switcher.classList.add('open');
+                    positionMenuMobile();
+                }
+            });
+
+            function closeMenuMobile() {
+                switcher.classList.remove('open');
+            }
+
+            function positionMenuMobile() {
+                const rect = trigger.getBoundingClientRect();
+                menu.style.left = `${rect.left + (rect.width / 2)}px`;
+                menu.style.transform = `translateX(-50%)`;
+                menu.style.top = `${rect.bottom + 8}px`;
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!switcher.contains(e.target)) {
+                    closeMenuMobile();
+                }
+            });
+            document.addEventListener('touchstart', function(e) {
+                if (!switcher.contains(e.target)) {
+                    closeMenuMobile();
+                }
+            }, { passive: true });
+            document.getElementById('navbarOffcanvas')?.addEventListener('hide.bs.offcanvas', function() {
+                closeMenuMobile();
+            });
+            window.addEventListener('resize', positionMenuMobile);
+
+            function switchRoleMobile(role, school_id) {
+                const currentUrl = window.location.href;
+                $.ajax({
+                    url: '<?php echo site_url("home/switch_community_role_front"); ?>',
+                    type: 'POST',
+                    data: {
+                        school_id: school_id,
+                        role: role,
+                        return_url: currentUrl,
+                        <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+                    },
+                    success: function(response) {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        if (res.status === 'success') {
+                            window.dispatchEvent(new Event('roleSwitched'));
+                            window.location.href = res.redirect_url;
+                        } else {
+                            toastr.error(res.message || 'Erreur');
+                        }
+                    }
+                });
+            }
+
+            loadUserRolesMobile();
+            setTimeout(positionMenuMobile, 100);
+            window.addEventListener('roleSwitched', loadUserRolesMobile);
+            document.getElementById('open-create-community-btn-mobile')?.addEventListener('click', () => {
                 document.getElementById('createCommunityModal').classList.add('show');
             });
         });

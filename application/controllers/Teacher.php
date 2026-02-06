@@ -126,6 +126,38 @@ class Teacher extends CI_Controller {
 			}
 		}
 	}
+
+	/**
+	 * Update URL language prefix (only for frontend URLs)
+	 */
+	private function _update_url_language_prefix($url, $new_lang_code) {
+		$supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
+		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron', 'wall', 'class_wall');
+		$parsed = parse_url($url);
+		$path = isset($parsed['path']) ? $parsed['path'] : '/';
+		$base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+		$relative_path = $path;
+		if (!empty($base_path) && strpos($path, $base_path) === 0) {
+			$relative_path = substr($path, strlen($base_path));
+		}
+		$segments = explode('/', trim($relative_path, '/'));
+		$first_segment = !empty($segments[0]) ? strtolower($segments[0]) : '';
+		if (in_array($first_segment, $supported_codes)) {
+			$segments[0] = $new_lang_code;
+		} elseif (!in_array($first_segment, $backend_prefixes)) {
+			array_unshift($segments, $new_lang_code);
+		} else {
+			return $url;
+		}
+		$new_path = $base_path . '/' . implode('/', $segments);
+		$scheme = isset($parsed['scheme']) ? $parsed['scheme'] . '://' : '';
+		$host = isset($parsed['host']) ? $parsed['host'] : '';
+		$port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+		$query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+		$fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+		return $scheme . $host . $port . $new_path . $query . $fragment;
+	}
+
 	//dashboard
 	public function index(){
 		redirect(route('dashboard'), 'refresh');
@@ -1449,12 +1481,23 @@ class Teacher extends CI_Controller {
     $user_id = $this->session->userdata('user_id');
     $this->settings_model->update_system_language($user_id, $param2);
 
-    // Redirige vers la page précédente si elle existe, sinon vers le dashboard
+    // Get the new language code
+    $lang_codes = array(
+        'french' => 'fr',
+        'english' => 'en',
+        'arabic' => 'ar',
+        'spanish' => 'es',
+        'dutch' => 'nl'
+    );
+    $new_lang_code = isset($lang_codes[strtolower($param2)]) ? $lang_codes[strtolower($param2)] : 'en';
+
+    // Redirige vers la page précédente avec le nouveau préfixe de langue
     $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
     if (!empty($referer)) {
-        redirect($referer, 'refresh');
+        $redirect_url = $this->_update_url_language_prefix($referer, $new_lang_code);
+        redirect($redirect_url, 'location');
     } else {
-        redirect(site_url('home'), 'refresh');
+        redirect(site_url('teacher/dashboard'), 'location');
     }
 }
 
@@ -3821,9 +3864,34 @@ public function get_school_data() {
     }
 
     try {
+        // Récupérer l'ID de l'enseignant connecté
+        $current_user_id = $this->session->userdata('user_id');
+        $teacher = $this->db->get_where('teachers', ['user_id' => $current_user_id])->row_array();
+        $teacher_id = $teacher['id'] ?? null;
+        
+        // Récupérer les classes autorisées pour cet enseignant (attendance = 1)
+        $permitted_class_ids = [];
+        if ($teacher_id) {
+            $this->db->select('class_id');
+            $this->db->from('teacher_permissions');
+            $this->db->where('teacher_id', $teacher_id);
+            $this->db->where('attendance', 1);
+            $permitted_classes = $this->db->get()->result_array();
+            $permitted_class_ids = array_column($permitted_classes, 'class_id');
+        }
+        
         // Récupérer les classes
         $this->db->select('id, name');
         $this->db->where('school_id', $school_id);
+        
+        // Filtrer les classes selon les permissions de l'enseignant
+        if (!empty($permitted_class_ids)) {
+            $this->db->where_in('id', $permitted_class_ids);
+        } else {
+            // Si aucune permission, ne pas retourner de classes
+            $this->db->where('id', 0); // Condition impossible
+        }
+        
         $classes = $this->db->get('classes')->result_array();
 
         // Récupérer l'ID du superadmin connecté

@@ -56,17 +56,232 @@ if (!function_exists('get_user_language')) {
     $CI =& get_instance();
     $CI->load->database();
 
+    // First check if language is set in session (works for both logged-in and guests)
+    $session_lang = $CI->session->userdata('language');
+    if ($session_lang) {
+      return $session_lang;
+    }
+
     $user_id = $CI->session->userdata('user_id');
     if ($user_id) {
       $user_data = $CI->db->get_where('users', ['id' => $user_id])->row_array();
-      return $user_data['language'] ?? get_settings('language');
+      $language = isset($user_data['language']) && !empty($user_data['language']) 
+                  ? $user_data['language'] 
+                  : get_settings('language');
+      
+      // Cache in session for subsequent calls
+      $CI->session->set_userdata('language', $language);
+      return $language;
     }
 
-    // Pour les guests, retourne la langue stockée en session ou la langue par défaut
-    $lang = $CI->session->userdata('language');
-    return $lang ? $lang : get_settings('language');
+    // Default language
+    return get_settings('language');
   }
 }
+
+// =====================================================
+// LANGUAGE PREFIX URL HELPERS
+// =====================================================
+
+/**
+ * Get supported languages with their codes
+ */
+if (!function_exists('get_supported_lang_codes')) {
+  function get_supported_lang_codes() {
+    return array(
+      'fr' => 'french',
+      'en' => 'english',
+      'ar' => 'arabic',
+      'es' => 'spanish',
+      'nl' => 'dutch'
+    );
+  }
+}
+
+/**
+ * Get current language code (fr, en, ar, etc.)
+ */
+if (!function_exists('get_current_lang_code')) {
+  function get_current_lang_code() {
+    $CI =& get_instance();
+    
+    // First check if stored in session
+    $lang_code = $CI->session->userdata('lang_code');
+    if ($lang_code) {
+      return $lang_code;
+    }
+    
+    // Get from user language and compute the code
+    $lang_name = strtolower(get_user_language());
+    $supported = get_supported_lang_codes();
+    
+    foreach ($supported as $code => $name) {
+      if ($name === $lang_name) {
+        // Cache in session for subsequent calls
+        $CI->session->set_userdata('lang_code', $code);
+        return $code;
+      }
+    }
+    
+    // Default to English
+    $CI->session->set_userdata('lang_code', 'en');
+    return 'en';
+  }
+}
+
+/**
+ * Generate a language-prefixed URL for frontend pages
+ * 
+ * @param string $path The path without language prefix (e.g., 'home/communities')
+ * @param string|null $lang_code Optional language code, uses current if null
+ * @return string Full URL with language prefix
+ */
+if (!function_exists('lang_url')) {
+  function lang_url($path = '', $lang_code = null) {
+    if ($lang_code === null) {
+      $lang_code = get_current_lang_code();
+    }
+    
+    // Clean the path
+    $path = ltrim($path, '/');
+    
+    // List of frontend paths that should have language prefix
+    $frontend_paths = array(
+      'home', 'communities', 'tutorial', 'getting_started', 'help-center', 'faq',
+      'contact', 'support', 'about', 'affiliation', 'terms', 'terms_conditions',
+      'privacy_policy', 'community_details', 'trends', 'teachers', 'events',
+      'gallery', 'gallery_view', 'noticeboard', 'notice_details', 'join',
+      'webinaire'
+    );
+    
+    // Check if this path should have a language prefix
+    $should_prefix = false;
+    $path_parts = explode('/', $path);
+    $first_segment = isset($path_parts[0]) ? $path_parts[0] : '';
+    
+    // Remove 'home/' prefix if present for checking
+    if ($first_segment === 'home' && isset($path_parts[1])) {
+      $check_segment = $path_parts[1];
+      // Remove 'home' from path for certain routes
+      if (in_array($check_segment, $frontend_paths) || $check_segment === '') {
+        $should_prefix = true;
+        // Rewrite path to remove 'home/' prefix for clean URLs
+        if ($check_segment !== '' && $check_segment !== 'index') {
+          array_shift($path_parts); // Remove 'home'
+          $path = implode('/', $path_parts);
+        } else {
+          $path = ''; // Just the language prefix for home page
+        }
+      }
+    } else if (in_array($first_segment, $frontend_paths)) {
+      $should_prefix = true;
+    }
+    
+    if ($should_prefix) {
+      return site_url($lang_code . '/' . $path);
+    }
+    
+    // For non-frontend paths (backend, api, etc.), return without prefix
+    return site_url($path);
+  }
+}
+
+/**
+ * Generate a language-prefixed URL using route-style short names
+ * 
+ * @param string $route_name Short route name (e.g., 'communities', 'about')
+ * @param string|null $param Optional parameter
+ * @param string|null $lang_code Optional language code
+ * @return string Full URL with language prefix
+ */
+if (!function_exists('lang_route')) {
+  function lang_route($route_name, $param = null, $lang_code = null) {
+    if ($lang_code === null) {
+      $lang_code = get_current_lang_code();
+    }
+    
+    // Handle 'home' specially - just the language code
+    if ($route_name === 'home' || $route_name === '' || $route_name === 'index') {
+      return site_url($lang_code);
+    }
+    
+    $path = $route_name;
+    if ($param !== null) {
+      $path .= '/' . $param;
+    }
+    
+    return site_url($lang_code . '/' . $path);
+  }
+}
+
+/**
+ * Get URL for switching to a different language
+ * Preserves the current path but changes the language prefix
+ * 
+ * @param string $lang_code Target language code
+ * @return string URL with new language prefix
+ */
+if (!function_exists('switch_lang_url')) {
+  function switch_lang_url($lang_code) {
+    $CI =& get_instance();
+    $current_uri = $CI->uri->uri_string();
+    $supported = get_supported_lang_codes();
+    
+    // Check if current URI has a language prefix
+    $uri_parts = explode('/', $current_uri);
+    if (!empty($uri_parts[0]) && array_key_exists($uri_parts[0], $supported)) {
+      // Replace existing language prefix
+      $uri_parts[0] = $lang_code;
+      return site_url(implode('/', $uri_parts));
+    }
+    
+    // No existing prefix, add one
+    return site_url($lang_code . '/' . $current_uri);
+  }
+}
+
+/**
+ * Check if we are on a frontend page (to decide if we should use lang_url)
+ */
+if (!function_exists('is_frontend_page')) {
+  function is_frontend_page() {
+    $CI =& get_instance();
+    $controller = $CI->router->fetch_class();
+    
+    $frontend_controllers = array('home', 'articles', 'admission');
+    return in_array(strtolower($controller), $frontend_controllers);
+  }
+}
+
+/**
+ * Smart URL generator - uses lang_url for frontend, site_url for backend
+ */
+if (!function_exists('smart_url')) {
+  function smart_url($path = '', $lang_code = null) {
+    // Check if this looks like a frontend path
+    $frontend_indicators = array(
+      'home/', 'communities', 'tutorial', 'getting_started', 'help-center',
+      'faq', 'contact', 'support', 'about', 'affiliation', 'terms',
+      'privacy_policy', 'community_details', 'trends', 'teachers',
+      'events', 'gallery', 'noticeboard', 'join/', 'webinaire'
+    );
+    
+    $is_frontend = false;
+    foreach ($frontend_indicators as $indicator) {
+      if (strpos($path, $indicator) === 0 || $path === '' || $path === 'home') {
+        $is_frontend = true;
+        break;
+      }
+    }
+    
+    if ($is_frontend) {
+      return lang_url($path, $lang_code);
+    }
+    
+    return site_url($path);
+  }
+}
+
 if (!function_exists('get_common_settings')) {
   function get_common_settings($type = '')
   {
@@ -221,14 +436,14 @@ if (!function_exists('currency')) {
     $symbol = $CI->db->get('currencies')->row()->symbol;
 
     // Force AED symbol to 'AED' instead of Arabic
-    if ($currency_code == 'AED') {
+    if ($currency_code == 'AED' || $symbol == 'د.م' || $symbol == 'د.م.') {
       $symbol = 'AED';
     }
 
     $position = $settings_data['currency_position'];
 
     // Force right-space position for AED
-    if ($currency_code == 'AED') {
+    if ($currency_code == 'AED' || $symbol == 'AED') {
       $position = 'right-space';
     }
 
@@ -257,14 +472,14 @@ if (!function_exists('currency_payment')) {
     $symbol = $CI->db->get('currencies')->row()->symbol;
 
     // Force AED symbol to 'AED' instead of Arabic
-    if ($currency_code == 'AED') {
+    if ($currency_code == 'AED' || $symbol == 'د.م' || $symbol == 'د.م.') {
       $symbol = 'AED';
     }
 
     $position = $settings_data['currency_position'];
 
     // Force right-space position for AED
-    if ($currency_code == 'AED') {
+    if ($currency_code == 'AED' || $symbol == 'AED') {
       $position = 'right-space';
     }
 
@@ -293,7 +508,7 @@ if (!function_exists('currency_code_and_symbol')) {
     $symbol = $CI->db->get('currencies')->row()->symbol;
 
     // Force AED symbol to 'AED' instead of Arabic
-    if ($currency_code == 'AED') {
+    if ($currency_code == 'AED' || $symbol == 'د.م' || $symbol == 'د.م.') {
       $symbol = 'AED';
     }
 
@@ -346,10 +561,14 @@ if (!function_exists('active_session')) {
         $CI->db->where('sessions.status', 1);
         $session_details = $CI->db->get()->row_array();
         
+        if (empty($session_details)) {
+            return 0;
+        }
+
         if ($param1 == '') {
             return $session_details['id'];
         } else {
-            return $session_details[$param1];
+            return isset($session_details[$param1]) ? $session_details[$param1] : 0;
         }
     }
 }

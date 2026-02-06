@@ -127,6 +127,279 @@ class Settings_model extends CI_Model
     return $this->db->get_where('schools', array('id' => school_id()))->row_array();
   }
 
+  /**
+   * Compresse et redimensionne une image uploadée
+   * Préserve la qualité tout en optimisant la taille du fichier
+   * Utilise plusieurs stratégies de fallback pour maximiser la compatibilité
+   * 
+   * @param string $source_path Chemin du fichier temporaire uploadé
+   * @param string $destination_path Chemin de destination (sans extension)
+   * @param int $max_width Largeur maximale recommandée
+   * @param int $max_height Hauteur maximale recommandée
+   * @param int $quality Qualité de compression (1-100), défaut 90
+   * @return bool|string Retourne le chemin final ou false en cas d'erreur
+   */
+  private function compress_and_save_image($source_path, $destination_path, $max_width = 512, $max_height = 512, $quality = 90)
+  {
+      // Vérifier que le fichier existe
+      if (!file_exists($source_path)) {
+          log_message('error', 'Image compression: Source file not found - ' . $source_path);
+          return false;
+      }
+
+      // Vérifier que GD est disponible
+      if (!extension_loaded('gd')) {
+          log_message('error', 'Image compression: GD extension not available');
+          return false;
+      }
+
+      // Obtenir les informations de l'image
+      $image_info = @getimagesize($source_path);
+      if ($image_info === false) {
+          log_message('error', 'Image compression: Unable to get image info - ' . $source_path);
+          return false;
+      }
+
+      $original_width = $image_info[0];
+      $original_height = $image_info[1];
+      $mime_type = $image_info['mime'];
+
+      // Vérifier les dimensions minimales
+      if ($original_width < 1 || $original_height < 1) {
+          log_message('error', 'Image compression: Invalid image dimensions');
+          return false;
+      }
+
+      // Créer l'image source - Stratégie multi-fallback
+      $source_image = $this->create_image_from_file($source_path, $mime_type);
+      
+      if ($source_image === false) {
+          log_message('error', 'Image compression: Failed to create image resource after all attempts');
+          return false;
+      }
+
+      // Calculer les nouvelles dimensions en préservant le ratio
+      list($new_width, $new_height) = $this->calculate_dimensions(
+          $original_width, $original_height, $max_width, $max_height
+      );
+
+      // Créer et traiter l'image de destination
+      $destination_image = $this->create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type);
+
+      if ($destination_image === false) {
+          imagedestroy($source_image);
+          return false;
+      }
+
+      // Sauvegarder avec fallback de qualité
+      $final_path = $destination_path . '.jpg';
+      $save_result = $this->save_optimized_jpeg($destination_image, $final_path, $quality);
+
+      // Libérer la mémoire
+      imagedestroy($source_image);
+      imagedestroy($destination_image);
+
+      if (!$save_result) {
+          // Nettoyer le fichier partiellement créé s'il existe
+          if (file_exists($final_path)) {
+              @unlink($final_path);
+          }
+          log_message('error', 'Image compression: Failed to save image - ' . $final_path);
+          return false;
+      }
+
+      // Log du résultat
+      $this->log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height);
+
+      return $final_path;
+  }
+
+  /**
+   * Crée une ressource image depuis un fichier avec plusieurs stratégies
+   */
+  private function create_image_from_file($source_path, $mime_type)
+  {
+      $source_image = false;
+
+      // Stratégie 1: Selon le type MIME
+      switch ($mime_type) {
+          case 'image/jpeg':
+          case 'image/jpg':
+              $source_image = @imagecreatefromjpeg($source_path);
+              break;
+          case 'image/png':
+              $source_image = @imagecreatefrompng($source_path);
+              break;
+          case 'image/gif':
+              $source_image = @imagecreatefromgif($source_path);
+              break;
+          case 'image/webp':
+              if (function_exists('imagecreatefromwebp')) {
+                  $source_image = @imagecreatefromwebp($source_path);
+              }
+              break;
+          case 'image/bmp':
+          case 'image/x-ms-bmp':
+              if (function_exists('imagecreatefrombmp')) {
+                  $source_image = @imagecreatefrombmp($source_path);
+              }
+              break;
+      }
+
+      // Stratégie 2: Fallback avec imagecreatefromstring
+      if ($source_image === false) {
+          $image_data = @file_get_contents($source_path);
+          if ($image_data !== false) {
+              $source_image = @imagecreatefromstring($image_data);
+          }
+      }
+
+      // Stratégie 3: Essayer tous les formats connus
+      if ($source_image === false) {
+          $functions = ['imagecreatefromjpeg', 'imagecreatefrompng', 'imagecreatefromgif'];
+          if (function_exists('imagecreatefromwebp')) $functions[] = 'imagecreatefromwebp';
+          if (function_exists('imagecreatefrombmp')) $functions[] = 'imagecreatefrombmp';
+          
+          foreach ($functions as $func) {
+              $source_image = @$func($source_path);
+              if ($source_image !== false) {
+                  log_message('info', "Image loaded using fallback: $func");
+                  break;
+              }
+          }
+      }
+
+      return $source_image;
+  }
+
+  /**
+   * Calcule les nouvelles dimensions en préservant le ratio
+   */
+  private function calculate_dimensions($original_width, $original_height, $max_width, $max_height)
+  {
+      $new_width = $original_width;
+      $new_height = $original_height;
+
+      if ($original_width > $max_width || $original_height > $max_height) {
+          $ratio_width = $max_width / $original_width;
+          $ratio_height = $max_height / $original_height;
+          $ratio = min($ratio_width, $ratio_height);
+          
+          $new_width = max(1, (int) round($original_width * $ratio));
+          $new_height = max(1, (int) round($original_height * $ratio));
+      }
+
+      return [$new_width, $new_height];
+  }
+
+  /**
+   * Crée et configure l'image de destination avec resampling haute qualité
+   */
+  private function create_destination_image($source_image, $original_width, $original_height, $new_width, $new_height, $mime_type)
+  {
+      $destination_image = @imagecreatetruecolor($new_width, $new_height);
+
+      if ($destination_image === false) {
+          log_message('error', 'Image compression: Failed to create destination image');
+          return false;
+      }
+
+      // Configurer selon le type source
+      if ($mime_type === 'image/png') {
+          // Préserver la transparence pour PNG (fond blanc pour JPEG final)
+          $white = imagecolorallocate($destination_image, 255, 255, 255);
+          imagefilledrectangle($destination_image, 0, 0, $new_width, $new_height, $white);
+      } else {
+          // Fond blanc pour tous les autres formats
+          $white = imagecolorallocate($destination_image, 255, 255, 255);
+          imagefilledrectangle($destination_image, 0, 0, $new_width, $new_height, $white);
+      }
+
+      // Activer l'interpolation de haute qualité (JPEG progressif)
+      imageinterlace($destination_image, true);
+
+      // Redimensionner avec resampling de haute qualité
+      $resample_result = imagecopyresampled(
+          $destination_image,
+          $source_image,
+          0, 0, 0, 0,
+          $new_width, $new_height,
+          $original_width, $original_height
+      );
+
+      if (!$resample_result) {
+          imagedestroy($destination_image);
+          log_message('error', 'Image compression: Resampling failed');
+          return false;
+      }
+
+      return $destination_image;
+  }
+
+  /**
+   * Sauvegarde en JPEG optimisé avec fallback de qualité si nécessaire
+   */
+  private function save_optimized_jpeg($image, $path, $quality)
+  {
+      // Essayer avec la qualité demandée
+      $result = @imagejpeg($image, $path, $quality);
+      
+      if ($result && file_exists($path)) {
+          $file_size = filesize($path);
+          
+          // Si le fichier est trop gros (> 500KB), réduire la qualité progressivement
+          $max_size = 500 * 1024; // 500 KB
+          $min_quality = 70;
+          
+          while ($file_size > $max_size && $quality > $min_quality) {
+              $quality -= 5;
+              $result = @imagejpeg($image, $path, $quality);
+              if ($result && file_exists($path)) {
+                  $file_size = filesize($path);
+                  log_message('info', "Image quality reduced to $quality% - Size: " . $this->format_bytes($file_size));
+              } else {
+                  break;
+              }
+          }
+      }
+
+      return $result && file_exists($path);
+  }
+
+  /**
+   * Log les résultats de la compression
+   */
+  private function log_compression_result($source_path, $final_path, $original_width, $original_height, $new_width, $new_height)
+  {
+      $original_size = @filesize($source_path) ?: 0;
+      $new_size = @filesize($final_path) ?: 0;
+      $reduction = $original_size > 0 ? round((1 - ($new_size / $original_size)) * 100, 1) : 0;
+      
+      log_message('info', sprintf(
+          'Image compressed: %dx%d -> %dx%d, %s -> %s (%.1f%% reduction)',
+          $original_width, $original_height,
+          $new_width, $new_height,
+          $this->format_bytes($original_size),
+          $this->format_bytes($new_size),
+          max(0, $reduction)
+      ));
+  }
+
+  /**
+   * Formate une taille en bytes de manière lisible
+   * @param int $bytes
+   * @return string
+   */
+  private function format_bytes($bytes)
+  {
+      $units = ['B', 'KB', 'MB', 'GB'];
+      $bytes = max($bytes, 0);
+      $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+      $pow = min($pow, count($units) - 1);
+      $bytes /= pow(1024, $pow);
+      return round($bytes, 2) . ' ' . $units[$pow];
+  }
+
   public function get_current_settings_school_data()
   {
     return $this->db->get_where('settings_school', array('school_id' => school_id()))->row_array();
@@ -154,33 +427,68 @@ class Settings_model extends CI_Model
     $tax_residence = htmlspecialchars_decode($this->input->post('tax_residence'));
   
     // Validation Tax Residence
-    if (!in_array($tax_residence, ['MA', 'UAE'])) {
+    if (!in_array($tax_residence, ['MA', 'UAE','AE'])) {
         log_message('error', 'Invalid Tax Residence value: ' . $tax_residence);
         return json_encode(['status' => false, 'notification' => 'Invalid Tax Residence value']);
     }
     
     // Set country code based on tax residence (or use tax residence directly if it IS the code)
     $country_code = $tax_residence;
+    $data['country'] = $country_code;
 
     $this->db->where('id', $schoolId);
     $this->db->update('schools', $data);
 
-    // ----------------- Upload logo -----------------
-    if(isset($_FILES['school_image']['name']) && $_FILES['school_image']['name'] != '') {
+    // ----------------- Upload logo (compressé) -----------------
+    if(isset($_FILES['school_image']['name']) && $_FILES['school_image']['name'] != '' && $_FILES['school_image']['error'] === UPLOAD_ERR_OK) {
         $logo_path = 'uploads/schools/';
         if(!is_dir($logo_path)){
             mkdir($logo_path, 0777, true);
         }
-        move_uploaded_file($_FILES['school_image']['tmp_name'], $logo_path . $schoolId . '.jpg');
+        
+        // Compresser et sauvegarder le logo (512x512 recommandé, qualité 90%)
+        $logo_result = $this->compress_and_save_image(
+            $_FILES['school_image']['tmp_name'],
+            $logo_path . $schoolId,
+            512,   // max width
+            512,   // max height
+            90     // qualité JPEG
+        );
+        
+        if ($logo_result === false) {
+            log_message('error', 'Failed to compress school logo for school_id: ' . $schoolId);
+            return json_encode([
+                'status' => false, 
+                'error_type' => 'logo',
+                'error_message' => get_phrase('image_processing_failed_please_try_another_image')
+            ]);
+        }
     }
 
-    // ----------------- Upload cover -----------------
-    if(isset($_FILES['school_cover']['name']) && $_FILES['school_cover']['name'] != '') {
+    // ----------------- Upload cover (compressé) -----------------
+    if(isset($_FILES['school_cover']['name']) && $_FILES['school_cover']['name'] != '' && $_FILES['school_cover']['error'] === UPLOAD_ERR_OK) {
         $cover_path = 'uploads/communityCover/';
         if(!is_dir($cover_path)){
             mkdir($cover_path, 0777, true);
         }
-        move_uploaded_file($_FILES['school_cover']['tmp_name'], $cover_path . $schoolId . '.jpg');
+        
+        // Compresser et sauvegarder la cover (1920x600 recommandé, qualité 90%)
+        $cover_result = $this->compress_and_save_image(
+            $_FILES['school_cover']['tmp_name'],
+            $cover_path . $schoolId,
+            1920,  // max width
+            600,   // max height
+            90     // qualité JPEG
+        );
+        
+        if ($cover_result === false) {
+            log_message('error', 'Failed to compress school cover for school_id: ' . $schoolId);
+            return json_encode([
+                'status' => false, 
+                'error_type' => 'cover',
+                'error_message' => get_phrase('cover_image_processing_failed_please_try_another_image')
+            ]);
+        }
     }
     
     // ----------------- Settings school -----------------
@@ -191,10 +499,6 @@ class Settings_model extends CI_Model
 
 
     
-    // Mettre à jour country dans schools (source unique de vérité)
-    $this->db->where('id', $schoolId);
-    $this->db->update('schools', ['country' => $country_code]);
-
     // Gestion de la suppression du document
     if ($this->input->post('delete_tax_document') == '1') {
         // Récupérer le nom du fichier actuel
@@ -569,14 +873,31 @@ class Settings_model extends CI_Model
 
  // Settings_model.php
   public function update_system_language($user_id = "", $selected_language = "") {
+    // Map language names to codes for URL prefixes
+    $lang_codes = array(
+        'french' => 'fr',
+        'english' => 'en',
+        'arabic' => 'ar',
+        'spanish' => 'es',
+        'dutch' => 'nl'
+    );
+    
     if (!empty($user_id)) {
         $this->db->where('id', $user_id);
         $this->db->update('users', ['language' => $selected_language]);
-
     } else {
         $this->db->where('id', 1);
         $this->db->update('settings', ['language' => $selected_language]);
     }
+    
+    // Update session with the new language and lang_code
+    $CI =& get_instance();
+    $CI->session->set_userdata('language', $selected_language);
+    
+    // Set the language code for URL prefixes
+    $lang_lower = strtolower($selected_language);
+    $code = isset($lang_codes[$lang_lower]) ? $lang_codes[$lang_lower] : 'en';
+    $CI->session->set_userdata('lang_code', $code);
   }
   function get_currencies()
   {

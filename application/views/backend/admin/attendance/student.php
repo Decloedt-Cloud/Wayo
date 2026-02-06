@@ -154,6 +154,75 @@
         transform: translateY(-2px);
     }
 
+    /* Responsive Media Queries */
+    @media (max-width: 768px) {
+        .exp-attendance-toggle {
+            flex-direction: column;
+            gap: 4px;
+            padding: 2px;
+        }
+        
+        .exp-attendance-label {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            justify-content: center;
+            min-width: 80px;
+        }
+        
+        .exp-actions-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .exp-action-btn {
+            font-size: 0.85rem;
+            padding: 0.75rem;
+        }
+        
+        .exp-user-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .exp-user-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        
+        .exp-table th,
+        .exp-table td {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .exp-attendance-toggle {
+            width: 100%;
+        }
+        
+        .exp-attendance-label {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            min-width: 70px;
+        }
+        
+        .exp-table-wrapper {
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+        
+        .exp-table th {
+            font-size: 0.7rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .exp-table td {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+
 </style>
 
 <?php $school_id = school_id(); ?>

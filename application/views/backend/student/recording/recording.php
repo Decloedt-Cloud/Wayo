@@ -1,6 +1,6 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 
 <style>
 /* ========== MODERN DASHBOARD STYLES ========== */
@@ -285,7 +285,7 @@
     </div>
 </div>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 <script>
 function initDataTable() {
     // Vérifiez si la table n'est pas déjà initialisée

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.min.css">
 
 <!-- Quill Editor -->
 <link href="<?php echo base_url(); ?>assets/backend/css/quilljs/quill.snow.css" rel="stylesheet" type="text/css" />
@@ -241,11 +241,32 @@
                                 <div class="p-4 p-lg-5">
                                     <h4 class="section-title"><?php echo get_phrase('Academic information'); ?></h4>
 
-                                   <div class="quiz-form-group">
+                                    <div class="quiz-form-group">
                                         <label class="quiz-form-label" for="class_id_add_cours">
                                             <i class="fas fa-graduation-cap"></i>
                                             <?php echo get_phrase('Class'); ?> <span class="required">*</span>
                                         </label>
+
+                                        <?php
+                                        $permitted_class_ids = [];
+                                        if($this->session->userdata('teacher_login') == 1) {
+                                            $user_id = $this->session->userdata('user_id');
+                                            $current_school_id = school_id();
+                                            // Fix: Get teacher ID specific to current school
+                                            $teacher_data = $this->db->get_where('teachers', ['user_id' => $user_id, 'school_id' => $current_school_id])->row_array();
+                                            $teacher_id_perm = $teacher_data['id'] ?? null;
+                                            
+                                            if ($teacher_id_perm) {
+                                                $this->db->select('class_id');
+                                                $this->db->from('teacher_permissions');
+                                                $this->db->where('teacher_id', $teacher_id_perm);
+                                                // Teacher needs 'marks' permission to manage courses (consistent with list view)
+                                                $this->db->where('marks', 1);
+                                                $permitted_classes_result = $this->db->get()->result_array();
+                                                $permitted_class_ids = array_column($permitted_classes_result, 'class_id');
+                                            }
+                                        }
+                                        ?>
 
                                         <select class="quiz-form-control quiz-select" 
                                                 name="class_id[]" 
@@ -254,6 +275,11 @@
                                                 required>
                                             <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                             <?php foreach ($classes->result_array() as $class): ?>
+                                                <?php 
+                                                if($this->session->userdata('teacher_login') == 1 && !in_array($class['id'], $permitted_class_ids)) {
+                                                    continue;
+                                                }
+                                                ?>
                                                 <option value="<?php echo $class['id']; ?>">
                                                     <?php echo $class['name']; ?>
                                                 </option>
@@ -266,7 +292,7 @@
                                     </div>
 
                                     <?php if ($this->session->userdata('teacher_login') == 1): ?> 
-                                        <input type="hidden" name="user_id" value="<?php echo $this->session->userdata('user_id'); ?>">
+                                        <input type="hidden" name="user_id[]" value="<?php echo $this->session->userdata('user_id'); ?>">
                                     <?php else: ?>
 
                                         <div class="quiz-form-group">
@@ -636,6 +662,51 @@
 
         $('.course-steps-nav .nav-link').on('click', function() {
             setTimeout(updateTabIcons, 50);
+        });
+
+        // Listen for class selection change
+        $('#class_id_add_cours').on('change', function() {
+            var classIds = $(this).val();
+            var userSelect = $('#user_id');
+            
+            // Only if user_id select exists (it might not exist for teacher login)
+            if (userSelect.length === 0) return;
+            
+            // Get current CSRF token from hidden input
+            var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+            var csrfHash = $('input[name="' + csrfName + '"]').val();
+
+            if (!classIds || classIds.length === 0) {
+                userSelect.html('<option value="" disabled><?php echo get_phrase("select_a_teacher"); ?></option>');
+                return;
+            }
+            
+            $.ajax({
+                url: '<?php echo site_url("addons/courses/get_teachers_by_class_ids"); ?>',
+                type: 'POST',
+                data: {
+                    class_ids: classIds,
+                    [csrfName]: csrfHash
+                },
+                dataType: 'json',
+                success: function(response) {
+                    // Update CSRF token
+                    if(response.csrfName && response.csrfHash) {
+                        $('input[name="' + response.csrfName + '"]').val(response.csrfHash);
+                    }
+                    
+                    var options = '<option value="" disabled><?php echo get_phrase("select_a_teacher"); ?></option>';
+                    if (response.teachers && response.teachers.length > 0) {
+                        $.each(response.teachers, function(index, teacher) {
+                            options += '<option value="' + teacher.id + '">' + teacher.name + '</option>';
+                        });
+                    }
+                    userSelect.html(options);
+                },
+                error: function() {
+                    console.error('Error fetching teachers');
+                }
+            });
         });
     });
     

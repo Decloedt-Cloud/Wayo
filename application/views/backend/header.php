@@ -166,7 +166,7 @@ if ($active_school_id && $user_belongs_to_school) {
                             $user_role = strtolower($this->db->get_where('users', array('id' => $user_id))->row('role'));
                             
                             if ($user_role == 'admin'): ?>
-                                <span class="account-position"><?php echo get_phrase('school_admin'); ?></span>
+                                <span class="account-position"><?php echo get_phrase('admin'); ?></span>
                             <?php elseif ($user_role == 'teacher'): ?>
                                 <span class="account-position"><?php echo get_phrase('mentor'); ?></span>
                             <?php elseif ($user_role == 'student'): ?>
@@ -310,7 +310,7 @@ if ($active_school_id && $user_belongs_to_school) {
             <?php endif; ?>
 
             <!-- Bouton Discover -->
-            <a href="<?php echo site_url('home/communities'); ?>" class="btn btn-outline-dark website-button d-none d-md-inline-block">
+            <a href="<?php echo lang_route('communities'); ?>" class="btn btn-outline-dark website-button d-none d-md-inline-block">
                 <span class="dot"></span>
                 <?php echo get_phrase("Discover_our_communities"); ?>
                 <i class="mdi mdi-arrow-right ms-2 arrow-animate" aria-hidden="true"></i>
@@ -362,7 +362,7 @@ if ($active_school_id && $user_belongs_to_school) {
 
     
 </script>
-<script src="<?php echo base_url('assets/backend/js/create_community_modal.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/create_community_modal.min.js'); ?>"></script>
 <script type="text/javascript">
     let CURRENT_USER_ROLE = '<?php echo strtolower($this->session->userdata('role')); ?>';
     const ACTIVE_SCHOOL_ID = '<?php echo $active_school_id; ?>';

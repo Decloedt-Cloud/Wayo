@@ -33,7 +33,8 @@ class Student extends CI_Controller {
 		'skrill_checkout',
 		'instamojo_checkout',
 		'toyyibpay_checkout',
-		'payumoney_checkout'
+		'payumoney_checkout',
+		'online_admission'
 	];
 	
 	public function __construct(){
@@ -143,6 +144,37 @@ class Student extends CI_Controller {
 			->row();
 		
 		return !empty($student);
+	}
+
+	/**
+	 * Update URL language prefix (only for frontend URLs)
+	 */
+	private function _update_url_language_prefix($url, $new_lang_code) {
+		$supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
+		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron', 'wall', 'class_wall');
+		$parsed = parse_url($url);
+		$path = isset($parsed['path']) ? $parsed['path'] : '/';
+		$base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+		$relative_path = $path;
+		if (!empty($base_path) && strpos($path, $base_path) === 0) {
+			$relative_path = substr($path, strlen($base_path));
+		}
+		$segments = explode('/', trim($relative_path, '/'));
+		$first_segment = !empty($segments[0]) ? strtolower($segments[0]) : '';
+		if (in_array($first_segment, $supported_codes)) {
+			$segments[0] = $new_lang_code;
+		} elseif (!in_array($first_segment, $backend_prefixes)) {
+			array_unshift($segments, $new_lang_code);
+		} else {
+			return $url;
+		}
+		$new_path = $base_path . '/' . implode('/', $segments);
+		$scheme = isset($parsed['scheme']) ? $parsed['scheme'] . '://' : '';
+		$host = isset($parsed['host']) ? $parsed['host'] : '';
+		$port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+		$query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+		$fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+		return $scheme . $host . $port . $new_path . $query . $fragment;
 	}
 
 	// INDEX FUNCTION
@@ -860,12 +892,23 @@ class Student extends CI_Controller {
 			$user_id = $this->session->userdata('user_id');
 			$this->settings_model->update_system_language($user_id, $param2);
 
-			// Redirige vers la page précédente si elle existe, sinon vers le dashboard
+			// Get the new language code
+			$lang_codes = array(
+				'french' => 'fr',
+				'english' => 'en',
+				'arabic' => 'ar',
+				'spanish' => 'es',
+				'dutch' => 'nl'
+			);
+			$new_lang_code = isset($lang_codes[strtolower($param2)]) ? $lang_codes[strtolower($param2)] : 'en';
+
+			// Redirige vers la page précédente avec le nouveau préfixe de langue
 			$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 			if (!empty($referer)) {
-				redirect($referer, 'refresh');
+				$redirect_url = $this->_update_url_language_prefix($referer, $new_lang_code);
+				redirect($redirect_url, 'location');
 			} else {
-				redirect(site_url('home'), 'refresh');
+				redirect(site_url('student/dashboard'), 'location');
 			}
 		}
   
@@ -967,6 +1010,17 @@ class Student extends CI_Controller {
       $page_data['school_id'] = $id;
       $this->load->view('backend/academy/liste_classe', $page_data);
     }
+
+    if ($action == 'filter') {
+        $selected_class_id = $this->input->post('class_id');
+        $selected_user_id = $this->input->post('user_id');
+        // $selected_school_id = $this->session->userdata('active_school_id');
+        
+        $page_data['selected_class_id'] = $selected_class_id;
+        $page_data['selected_user_id'] = $selected_user_id;
+        // $page_data['selected_school_id'] = $selected_school_id;
+        $this->load->view('backend/academy/grid_view_for_student', $page_data);
+    }
   }
   //	academy ENDED
   public function online_admission($param1 = "", $user_id = "")
@@ -983,8 +1037,20 @@ class Student extends CI_Controller {
 		$data['price'] = htmlspecialchars($this->input->post('price'));
 		$data['currency'] = htmlspecialchars($this->input->post('currency'));
 		$data['session'] = active_session();
+		
+		// VAT data from form (new)
+		$data['vat_applicable'] = (int)$this->input->post('vat_applicable');
+		$data['vat_rate'] = (float)$this->input->post('vat_rate');
+		$data['vat_amount'] = (float)$this->input->post('vat_amount');
+		$data['sub_total'] = (float)$this->input->post('sub_total');
 	
 	  	$this->session->set_userdata('enrolment_data', $data);
+
+		// Switch session to the target school context immediately
+		if (!empty($data['school_id'])) {
+			$this->session->set_userdata('active_school_id', $data['school_id']);
+			$this->session->set_userdata('school_id', $data['school_id']);
+		}
 
 
 		// Si le prix est 0 (gratuit), on inscrit directement l'étudiant
@@ -1009,25 +1075,47 @@ class Student extends CI_Controller {
 		$num_rows_invoices = $this->db->get_where('invoices', array('class_id' => $data['class_id'],'student_id' => $data['student_id']))->num_rows();
 		// print_r($num_rows_invoices);die;
 		if($num_rows_invoices == 0){
-			// Calculer la TVA pour les classes
-			$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
-			$school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
-			$vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
-			$tax_residence  = isset($school['country']) ? $school['country'] : null;
+			// ========== VAT CALCULATION FOR CLASS INVOICE ==========
+			// IMPORTANT: Le prix reçu est TTC (inclut déjà la TVA)
+			// Les données VAT peuvent venir du formulaire OU être recalculées
 			
-			$vat_rate = 0;
-			if ($vat_applicable) {
-				if ($tax_residence === 'MA') {
-					$vat_rate = 20;
-				} elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
-					$vat_rate = 5;
+			$total_amount = (float)$data['price']; // Prix TTC
+			
+			// Utiliser les données VAT du formulaire si disponibles
+			if (!empty($data['vat_applicable']) && $data['vat_applicable'] == 1 && !empty($data['sub_total'])) {
+				// Données VAT fournies par le formulaire
+				$vat_applicable = true;
+				$vat_rate = $data['vat_rate'];
+				$sub_total = $data['sub_total'];
+				$vat_amount = $data['vat_amount'];
+			} else {
+				// Fallback: Recalculer la TVA depuis les settings école
+				$settings_school = $this->settings_model->get_settings_school_data($data['school_id']);
+				$school = $this->db->get_where('schools', ['id' => $data['school_id']])->row_array();
+				$vat_enabled = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
+				$tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
+				
+				$vat_rate = 0;
+				$vat_applicable = false;
+				
+				if ($vat_enabled && !empty($tax_residence)) {
+					$vat_applicable = true;
+					if ($tax_residence === 'MA') {
+						$vat_rate = 20;
+					} elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
+						$vat_rate = 5;
+					}
+				}
+				
+				// IMPORTANT: Le prix est TTC, donc on fait le calcul inversé
+				if ($vat_applicable && $vat_rate > 0) {
+					$sub_total = round($total_amount / (1 + ($vat_rate / 100)), 2);
+					$vat_amount = round($total_amount - $sub_total, 2);
+				} else {
+					$sub_total = $total_amount;
+					$vat_amount = 0;
 				}
 			}
-			
-			// Le prix reçu est HT pour les classes
-			$sub_total = (float)$data['price'];
-			$vat_amount = $sub_total * ($vat_rate / 100);
-			$total_amount = $sub_total + $vat_amount; // TTC
 			
 			$name = $this->db->get_where('schools', array('id' => $data['school_id']))->row('name');
 			$classe_name = $this->db->get_where('classes', array('id' => $data['class_id']))->row('name');
@@ -1077,6 +1165,12 @@ class Student extends CI_Controller {
         // 🔹 1. Récupération des données envoyées par le formulaire
         $data['student_id'] = $this->session->userdata('user_id'); 
         $data['school_id']  = htmlspecialchars($this->input->post('school_id'));
+
+        // Fallback: Si school_id est vide (ex: redirection qui perd le POST), utiliser le paramètre URL
+        if (empty($data['school_id']) && !empty($school_id)) {
+            $data['school_id'] = $school_id;
+        }
+
         $data['price']      = htmlspecialchars($this->input->post('price'));
         $data['currency']   = htmlspecialchars($this->input->post('currency'));
         $data['session']    = active_session();
@@ -1088,6 +1182,16 @@ class Student extends CI_Controller {
         if (!$school) {
             show_error('community not found.');
             return;
+        }
+
+        // Fallback: Si le prix est vide (car POST perdu), utiliser le prix de l'école
+        if ($data['price'] === '' || $data['price'] === null) {
+            $data['price'] = $school->price;
+            
+            // Si la devise est vide, essayer de la récupérer des settings (ou défaut)
+            if (empty($data['currency'])) {
+                 $data['currency'] = get_settings('system_currency');
+            }
         }
         $school_name = $school->name;
         
@@ -1854,12 +1958,19 @@ public function get_exams_paginated()
             
         } else {
             // Pas de conversion - validation standard
-            if (abs($secure_amount - $client_amount) > 0.01) {
-                log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}");
+            // TOLÉRANCE: 5% pour les arrondis TVA (au lieu de 0.01)
+            $tolerance = $secure_amount * 0.05; // 5% du montant
+            if (abs($secure_amount - $client_amount) > max($tolerance, 0.50)) {
+                log_message('error', "ALERTE SÉCURITÉ: Manipulation de montant détectée! Facture #{$invoice_id} - Montant BDD: {$secure_amount}, Montant client: {$client_amount}, Diff: " . abs($secure_amount - $client_amount));
                 $this->session->set_flashdata('error_message', get_phrase('payment_amount_mismatch'));
                 redirect(route('invoice'), 'refresh');
                 return;
             }
+            // Log warning si différence existe (mais tolérée)
+            if (abs($secure_amount - $client_amount) > 0.01) {
+                log_message('debug', "Payment: Différence tolérée pour facture #{$invoice_id} - BDD: {$secure_amount}, Client: {$client_amount}");
+            }
+            // TOUJOURS utiliser le montant de la BDD pour sécurité
             $amount_paid = $secure_amount;
         }
         
@@ -2062,17 +2173,18 @@ public function get_exams_paginated()
 
                 // UPDATE INVOICE IF CLASS PRICE CHANGED
                 if ($class) {
-                    $current_price = (float)$class->price;
+                    // IMPORTANT: Le prix de la classe est TTC (inclut déjà la TVA)
+                    $current_price_ttc = (float)$class->price;
                     $school_id = $page_data['invoice_details']['school_id'];
                     
-                    // Recalculate VAT
+                    // Get VAT settings
                     $settings_school = $this->settings_model->get_settings_school_data($school_id);
                     $school = $this->db->get_where('schools', ['id' => $school_id])->row_array();
                     $vat_applicable = isset($settings_school['vat_enabled']) && (int)$settings_school['vat_enabled'] === 1;
-                    $tax_residence  = isset($school['country']) ? $school['country'] : null;
+                    $tax_residence = isset($school['country']) ? strtoupper($school['country']) : null;
                     
                     $vat_rate = 0;
-                    if ($vat_applicable) {
+                    if ($vat_applicable && !empty($tax_residence)) {
                         if ($tax_residence === 'MA') {
                             $vat_rate = 20;
                         } elseif ($tax_residence === 'UAE' || $tax_residence === 'AE') {
@@ -2080,14 +2192,23 @@ public function get_exams_paginated()
                         }
                     }
 
-                    $vat_amount = $current_price * ($vat_rate / 100);
-                    $new_total_amount = $current_price + $vat_amount;
+                    // IMPORTANT: Calcul inversé car le prix est TTC
+                    // sub_total (HT) = TTC / (1 + taux)
+                    // vat_amount = TTC - HT
+                    if ($vat_rate > 0) {
+                        $sub_total = round($current_price_ttc / (1 + ($vat_rate / 100)), 2);
+                        $vat_amount = round($current_price_ttc - $sub_total, 2);
+                    } else {
+                        $sub_total = $current_price_ttc;
+                        $vat_amount = 0;
+                    }
+                    $new_total_amount = $current_price_ttc; // Le total reste le prix TTC
 
                     // If total amount differs, update invoice
                     if (abs($page_data['invoice_details']['total_amount'] - $new_total_amount) > 0.01) {
                          $update_data = [
                             'total_amount' => $new_total_amount,
-                            'sub_total'    => $current_price,
+                            'sub_total'    => $sub_total,
                             'vat_amount'   => $vat_amount,
                             'vat_rate'     => $vat_rate,
                             'updated_at'   => strtotime(date('d-M-Y'))
@@ -2097,7 +2218,7 @@ public function get_exams_paginated()
                         
                         // Update page data
                         $page_data['invoice_details']['total_amount'] = $new_total_amount;
-                        $page_data['invoice_details']['sub_total'] = $current_price;
+                        $page_data['invoice_details']['sub_total'] = $sub_total;
                         $page_data['invoice_details']['vat_amount'] = $vat_amount;
                         $page_data['invoice_details']['vat_rate'] = $vat_rate;
                     }
@@ -3211,6 +3332,7 @@ public function get_user_school() {
     $end_date = $this->input->get('end_date', true);
     $event_id = $this->input->get('id', true);
     $class_id = $this->input->get('class_id', true);
+    $nocache = $this->input->get('nocache', true);
 
     // Valider school_id (école active)
     if (!in_array((string)$school_id, $permitted_school_ids, true)) {
@@ -3266,7 +3388,7 @@ public function get_user_school() {
     $bbb_secret = $this->config->item('bbb_secret');
 
     // Construction de la requête pour les événements
-    $this->db->select('event_calendars.id AS event_id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
+    $this->db->select('event_calendars.id, event_calendars.title, event_calendars.description, event_calendars.starting_date, event_calendars.ending_date, event_calendars.starting_time, event_calendars.ending_time, event_calendars.recurrence_type, event_calendars.recurrence_end_date, event_calendars.custom_recurrence, event_calendars.visio, event_calendars.school_id, event_calendars.created_by, schools.name as school_name, classes.name as class_name, users.name as created_by_name');
     $this->db->from('event_calendars');
     $this->db->join('schools', 'event_calendars.school_id = schools.id', 'left');
     $this->db->join('users', 'event_calendars.created_by = users.id', 'left');
@@ -3274,16 +3396,24 @@ public function get_user_school() {
     $this->db->join('classes', 'participants.guest = classes.id AND participants.type = "class"', 'left');
     // Filtrer par l'école active
     $this->db->where('event_calendars.school_id', $school_id);
-    $this->db->where('
-        (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
-        OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
-    ');
-        
-        if ($event_id) {
+    
+    // Si on recherche un événement spécifique, vérifier d'abord l'accès
+    if ($event_id) {
+        // Vérifier que l'utilisateur a accès à cet événement via les participants
         $this->db->where('event_calendars.id', $event_id);
-        } else {
+        // Vérifier l'accès via les participants
+        $this->db->where('(
+            (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+            OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
+        )');
+    } else {
+        // Pour la liste des événements, appliquer les filtres normaux
+        $this->db->where('(
+            (participants.type = "class" AND participants.guest IN (' . implode(',', array_map('intval', $permitted_class_ids)) . '))
+            OR (participants.type = "individual" AND participants.guest = ' . intval($user_id) . ')
+        )');
         $this->db->where('(event_calendars.starting_date <= "' . $end_date . '" AND (event_calendars.ending_date >= "' . $start_date . '" OR event_calendars.ending_date IS NULL))');
-        }
+    }
 
         if ($class_id) {
         $this->db->where('participants.type', 'class');
@@ -3305,7 +3435,7 @@ public function get_user_school() {
 
         // Ajouter les informations des participants
         $event['participants'] = [];
-        $participants = $this->db->get_where('participants', ['event_id' => $event['event_id']])->result_array();
+        $participants = $this->db->get_where('participants', ['event_id' => $event['id']])->result_array();
         foreach ($participants as $participant) {
             $participant_data = [
                 'id' => $participant['guest'],
@@ -3404,7 +3534,7 @@ public function get_user_school() {
         if ($event['visio'] == 1) {
             $this->db->select('start_date, meeting_id');
             $this->db->from('appointments');
-            $this->db->where('event_id', $event['event_id']);
+            $this->db->where('event_id', $event['id']);
             $this->db->where('Etat', 1);
             $this->db->where('DATE(start_date) >=', $start_date);
             $this->db->where('DATE(start_date) <=', $end_date);

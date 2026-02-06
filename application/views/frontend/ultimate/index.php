@@ -11,7 +11,12 @@
   $active_school_id = $this->frontend_model->get_active_school_id();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<?php 
+  // Get current language code for HTML lang attribute
+  $html_lang = get_current_lang_code();
+  $is_rtl = (get_user_language() === 'arabic');
+?>
+<html lang="<?php echo $html_lang; ?>" <?php echo $is_rtl ? 'dir="rtl"' : 'dir="ltr"'; ?>>
   <head>
   
     <?php include 'metas.php'; ?>

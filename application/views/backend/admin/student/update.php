@@ -5,7 +5,7 @@
     $user_details = $this->user_model->get_user_details($student['user_id']);
 ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 
 <style>
 /* ============================================================================

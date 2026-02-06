@@ -1,4 +1,7 @@
 <!-- bundle -->
+<script type="text/javascript">
+  const ENABLE_TOASTS = <?php echo json_encode($this->config->item('enable_toasts') === NULL ? TRUE : $this->config->item('enable_toasts')); ?>;
+</script>
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/app.min.js"></script>
 
@@ -18,6 +21,7 @@
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/fullcalendar.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/summernote-bs4.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/backend/js/toastr.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.min.js"></script>
 
 <!-- JS de bootstrap-select -->
 <script src="<?php echo base_url(); ?>assets/backend/js/bootstrap-select.min.js"></script>
@@ -40,10 +44,9 @@ $(document).ready(function() {
 
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/jquery.validate.min.js"></script>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/custom.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.js"></script>
-<script src="<?php echo base_url(); ?>assets/backend/js/init.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/ajax_form_submission.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/content-placeholder.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/init.min.js"></script>
 
 <!-- dragula js-->
 <script src="<?php echo base_url(); ?>assets/backend/js/vendor/dragula.min.js"></script>
@@ -69,3 +72,6 @@ $(document).ready(function() {
 
 
 </script>
+
+<!-- Global Chat Notification Script -->
+<?php include APPPATH . 'views/backend/global_chat_notification.php'; ?>

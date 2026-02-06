@@ -45,6 +45,56 @@ class Admin extends REST_Controller {
     $languages = $this->admin_model->languages_get();
     $this->set_response($languages, REST_Controller::HTTP_OK);
   }
+
+  // VALIDATE USER TOKEN
+  public function user_get() {
+      $headers = $this->input->request_headers();
+      $token = null;
+
+      // Handle case-insensitive header keys
+      $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : (isset($headers['authorization']) ? $headers['authorization'] : null);
+
+      if ($authHeader) {
+          $matches = array();
+          if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+              $token = $matches[1];
+          }
+      }
+
+      if (!$token) {
+          $this->response(['status' => false, 'message' => 'Token not provided'], REST_Controller::HTTP_UNAUTHORIZED);
+          return;
+      }
+
+      try {
+          $decodedToken = $this->tokenHandler->DecodeToken($token);
+          
+          if (!isset($decodedToken['user_id'])) {
+               throw new Exception('User ID missing in token');
+          }
+
+          // Fetch full user details from database
+          $userDetails = $this->user_model->get_user_details($decodedToken['user_id']);
+          
+          if (!$userDetails) {
+              $this->response(['status' => false, 'message' => 'User not found'], REST_Controller::HTTP_NOT_FOUND);
+              return;
+          }
+
+          // AJOUT: Inclure l'URL de l'avatar avec cache busting pour la synchro Chat
+          $userDetails['avatar'] = $this->user_model->get_user_image($decodedToken['user_id']);
+          $userDetails['photo_profil'] = $userDetails['avatar']; // Alias pour compatibilité
+
+          // Ensure email and id are present (CrossAuthController requirement)
+          // The database column is 'id', but we can also add 'user_id' to match token if needed
+          // CrossAuthController looks for 'id' and 'email'
+          
+          $this->response(['status' => true, 'data' => $userDetails], REST_Controller::HTTP_OK);
+      } catch (Exception $e) {
+          $this->response(['status' => false, 'message' => 'Invalid Token'], REST_Controller::HTTP_UNAUTHORIZED);
+      }
+  }
+
   // menu
   public function menu_get() {
    

@@ -113,25 +113,50 @@ class Lms_model extends CI_Model
     } */
    public function filter_course_for_teacher($class_id = "all", $user_id = "all", $status = "all", $school_id = "all")
     {
-        $teacher_id = $this->session->userdata('user_id');
+        $teacher_user_id = $this->session->userdata('user_id');
+        $current_school_id = school_id();
+
+        // 1. Get teacher ID for the current school to check permissions
+        $teacher = $this->db->get_where('teachers', array('user_id' => $teacher_user_id, 'school_id' => $current_school_id))->row_array();
+        $real_teacher_id = isset($teacher['id']) ? $teacher['id'] : 0;
+
+        // 2. Get allowed class IDs from permissions (marks = 1, interpreted as manage)
+        $allowed_class_ids = [];
+        if ($real_teacher_id) {
+            $this->db->select('class_id');
+            $this->db->from('teacher_permissions');
+            $this->db->where('teacher_id', $real_teacher_id);
+            $this->db->where('marks', 1);
+            $perms = $this->db->get()->result_array();
+            $allowed_class_ids = array_column($perms, 'class_id');
+        }
+
+        // STRICT CHECK: If no class permissions, return empty immediately.
+        // The user requirement is strict: courses are visible ONLY if linked to an allowed class.
+        if (empty($allowed_class_ids)) {
+            return [];
+        }
 
         $this->db->select('
             course.*,
             GROUP_CONCAT(DISTINCT t.name SEPARATOR ", ") AS teacher_names
         ');
         $this->db->from('course');
-        $this->db->where('course.school_id', school_id());
+        $this->db->where('course.school_id', $current_school_id);
 
-        // Teacher can only see HIS/HER own courses (via course_teachers table)
-        $this->db->join('course_teachers ct', 'ct.course_id = course.id', 'inner');
-        $this->db->where('ct.user_id', $teacher_id);
-
-        // Join users table to get teacher names (for display)
+        // Join course_classes to filter by allowed classes
+        // Use INNER JOIN to ensure we only get courses that ARE in these classes
+        $this->db->join('course_classes cc', 'cc.course_id = course.id', 'inner');
+        
+        // Join course_teachers and users for display info
+        $this->db->join('course_teachers ct', 'ct.course_id = course.id', 'left');
         $this->db->join('users t', 't.id = ct.user_id', 'left');
 
-        // Filter by class using course_classes junction table
+        // Apply Permission Filter: Course MUST be in one of the allowed classes
+        $this->db->where_in('cc.class_id', $allowed_class_ids);
+
+        // Filter by class if selected in dropdown
         if ($class_id != "all" && !empty($class_id)) {
-            $this->db->join('course_classes cc', 'cc.course_id = course.id', 'inner');
             $this->db->where('cc.class_id', $class_id);
         }
 
@@ -433,6 +458,11 @@ class Lms_model extends CI_Model
     $class_ids = $this->input->post('class_id');   // tableau d'ids
     $teacher_ids = $this->input->post('user_id');  // tableau d'ids
 
+    // Ensure teacher_ids is an array
+    if (!empty($teacher_ids) && !is_array($teacher_ids)) {
+        $teacher_ids = array($teacher_ids);
+    }
+
     // Insérer dans table pivot course_classes
     if (!empty($class_ids)) {
         foreach ($class_ids as $class_id) {
@@ -518,6 +548,11 @@ class Lms_model extends CI_Model
         // Mettre à jour les relations multi-classes et multi-teachers
         $class_ids = $this->input->post('class_id');
         $teacher_ids = $this->input->post('user_id');
+
+        // Ensure teacher_ids is an array
+        if (!empty($teacher_ids) && !is_array($teacher_ids)) {
+            $teacher_ids = array($teacher_ids);
+        }
 
         $this->update_course_classes($course_id, $class_ids);
         $this->update_course_teachers($course_id, $teacher_ids);
@@ -1257,5 +1292,46 @@ class Lms_model extends CI_Model
             $this->db->where('id', $value);
             $this->db->update('exam_questions', $updater);
         }
+    }
+
+    // Get teachers by class selection
+    public function get_teachers_by_class_selection($class_ids = []) {
+        if (empty($class_ids)) {
+            return [];
+        }
+        
+        // Ensure class_ids is an array
+        if (!is_array($class_ids)) {
+            $class_ids = explode(',', $class_ids);
+        }
+        
+        // 1. Get teachers with permissions
+        $this->db->select('users.id, users.name');
+        $this->db->from('users');
+        $this->db->join('teachers', 'teachers.user_id = users.id');
+        $this->db->join('teacher_permissions', 'teacher_permissions.teacher_id = teachers.id');
+        $this->db->where_in('teacher_permissions.class_id', $class_ids);
+        $this->db->where('teacher_permissions.attendance', 1);
+        $this->db->where('users.school_id', school_id());
+        $this->db->group_by('users.id'); 
+        $teachers = $this->db->get()->result_array();
+
+        // 2. Get admins
+        $this->db->select('users.id, users.name');
+        $this->db->from('users');
+        $this->db->where('users.school_id', school_id());
+        $this->db->group_start();
+        $this->db->where('role', 'admin');
+        $this->db->group_end();
+        $admins = $this->db->get()->result_array();
+
+        // 3. Merge and deduplicate
+        $all_users = array_merge($teachers, $admins);
+        $unique_users = [];
+        foreach ($all_users as $user) {
+            $unique_users[$user['id']] = $user;
+        }
+
+        return array_values($unique_users);
     }
 }

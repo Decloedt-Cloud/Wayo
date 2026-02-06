@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/editCourse.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/editCourse.min.css">
 
 <!-- Quill Editor -->
 <link href="<?php echo base_url(); ?>assets/backend/css/quilljs/quill.snow.css" rel="stylesheet" type="text/css" />
@@ -136,9 +136,32 @@
                                                         <i class="fas fa-graduation-cap"></i>
                                                         <?php echo get_phrase('Class'); ?> <span class="required">*</span>
                                                     </label>
+
+                                                    <?php
+                                                    $permitted_class_ids = [];
+                                                    if($this->session->userdata('teacher_login') == 1) {
+                                                        $user_id = $this->session->userdata('user_id');
+                                                        $teacher_data = $this->db->get_where('teachers', ['user_id' => $user_id])->row_array();
+                                                        $teacher_id_perm = $teacher_data['id'] ?? null;
+                                                        if ($teacher_id_perm) {
+                                                            $this->db->select('class_id');
+                                                            $this->db->from('teacher_permissions');
+                                                            $this->db->where('teacher_id', $teacher_id_perm);
+                                                            $this->db->where('attendance', 1);
+                                                            $permitted_classes_result = $this->db->get()->result_array();
+                                                            $permitted_class_ids = array_column($permitted_classes_result, 'class_id');
+                                                        }
+                                                    }
+                                                    ?>
+
                                                     <select class="quiz-form-control quiz-select main-form-field" name="class_id[]" id="class_id_add_cours" multiple required>
                                                         <option value="" disabled><?php echo get_phrase('select_classes'); ?></option>
                                                         <?php foreach ($classes->result_array() as $class): ?>
+                                                            <?php 
+                                                            if($this->session->userdata('teacher_login') == 1 && !in_array($class['id'], $permitted_class_ids)) {
+                                                                continue;
+                                                            }
+                                                            ?>
                                                             <option value="<?php echo $class['id']; ?>"
                                                                 <?php if (in_array($class['id'], array_column($course_classes, 'id'))) echo 'selected'; ?>>
                                                                 <?php echo $class['name']; ?>
@@ -148,7 +171,7 @@
                                                 </div>
 
                                                 <?php if ($this->session->userdata('teacher_login') == 1): ?>
-                                                    <input type="hidden" name="user_id" value="<?php echo $this->session->userdata('user_id'); ?>">
+                                                    <input type="hidden" name="user_id[]" value="<?php echo $this->session->userdata('user_id'); ?>">
                                                 <?php else: ?>
                                                     <div class="quiz-form-group">
                                                         <label class="quiz-form-label" for="user_id">

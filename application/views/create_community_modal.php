@@ -122,7 +122,7 @@
                         <input type="file" class="file-input-saas" id="logo-upload" name="school_image" accept="image/*">
                     </div>
                     <div class="file-upload-saas wide" id="cover-upload-box">
-                        <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:9)") ?></span></div>
+                        <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:5)") ?></span></div>
                         <div class="image-preview-saas" id="cover-preview"></div>
                         <input type="file" class="file-input-saas" id="cover-upload" name="communityCover" accept="image/*">
                     </div>

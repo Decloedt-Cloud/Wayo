@@ -1,6 +1,6 @@
 
 
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 <?php 
 $exams = $this->db->get_where('exams', array('id' => $param1))->result_array(); 
 

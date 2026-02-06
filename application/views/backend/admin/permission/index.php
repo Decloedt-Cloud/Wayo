@@ -1,4 +1,4 @@
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
     
     <style>
     /* ============================================================================
@@ -163,7 +163,7 @@
 
     .exp-list-header {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
         padding: 1rem 1.5rem;
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         border-bottom: 1px solid var(--exp-border);
@@ -182,7 +182,7 @@
 
     .exp-list-item {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--exp-border);
         align-items: center;
@@ -405,10 +405,15 @@
                     $('input[name="' + response.csrfName + '"]').val(response.csrfHash); // Mise à jour du token CSRF
                 }
                 
-                // Update checkbox value
-                $('#'+checkbox_id).val(value);
+                // Update list content if provided
+                if(response.status) {
+                    $('.permission_content').html(response.status);
+                } else {
+                    // Update checkbox value if no HTML returned
+                    $('#'+checkbox_id).val(value);
+                }
                 
-                toastr.success('<?php echo get_phrase('permission_updated_successfully.'); ?>');
+                // toastr.success('<?php echo get_phrase('permission_updated_successfully.'); ?>');
             },
             error: function() {
                 toastr.error('<?php echo get_phrase('error_updating_permission'); ?>');

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 
 <style>
 /* ============================================================================
@@ -480,7 +480,7 @@
 <div class="idx-header">
     <div class="idx-header-left">
         <div class="idx-header-icon">
-            <i class="mdi mdi-file-document-multiple"></i>
+            <i class="fa-solid fa-file-invoice"></i>
         </div>
         <div class="idx-header-text">
             <h4><?php echo get_phrase('invoicing'); ?></h4>
@@ -489,10 +489,10 @@
     </div>
     <div class="idx-header-actions">
         <!-- <button type="button" class="idx-btn idx-btn-success" onclick="rightModal('<?php // echo site_url('modal/popup/invoice/mass'); ?>', '<?php echo get_phrase('add_mass_invoice'); ?>')">
-            <i class="mdi mdi-account-group"></i> <?php //echo get_phrase('add_mass_invoice'); ?>
+            <i class="fa-solid fa-users"></i> <?php //echo get_phrase('add_mass_invoice'); ?>
         </button> -->
         <button type="button" class="idx-btn idx-btn-primary" onclick="rightModal('<?php echo site_url('modal/popup/invoice/single'); ?>', '<?php echo get_phrase('add_single_invoice'); ?>')">
-            <i class="mdi mdi-plus"></i> <?php echo get_phrase('add_single_invoice'); ?>
+            <i class="fa-solid fa-plus"></i> <?php echo get_phrase('add_single_invoice'); ?>
         </button>
     </div>
 </div>
@@ -501,7 +501,7 @@
 <div class="idx-filter-panel">
     <div class="idx-filter-header">
         <span class="idx-filter-title">
-            <i class="mdi mdi-filter-variant"></i>
+            <i class="fa-solid fa-filter"></i>
             <?php echo get_phrase('filter_invoices'); ?>
         </span>
     </div>
@@ -510,20 +510,20 @@
             <!-- Date Range -->
             <div class="idx-filter-group">
                 <label class="idx-filter-label">
-                    <i class="mdi mdi-calendar-range"></i>
+                    <i class="fa-solid fa-calendar-days"></i>
                     <?php echo get_phrase('date_range'); ?>
                 </label>
                 <div id="reportrange" class="idx-date-picker" data-toggle="date-picker-range" data-target-display="#selectedValue" data-cancel-class="btn-light">
-                    <i class="mdi mdi-calendar"></i>
+                    <i class="fa-solid fa-calendar"></i>
                     <span id="selectedValue" class="idx-date-text"><?php echo date('d M Y', $date_from).' — '.date('d M Y', $date_to); ?></span>
-                    <i class="mdi mdi-chevron-down"></i>
+                    <i class="fa-solid fa-chevron-down"></i>
                 </div>
             </div>
             
             <!-- Class Filter -->
             <div class="idx-filter-group">
                 <label class="idx-filter-label">
-                    <i class="mdi mdi-school"></i>
+                    <i class="fa-solid fa-school"></i>
                     <?php echo get_phrase('class'); ?>
                 </label>
                 <select name="class" id="class_id_invoice" class="idx-select">
@@ -546,7 +546,7 @@
             <!-- Status Filter -->
             <div class="idx-filter-group">
                 <label class="idx-filter-label">
-                    <i class="mdi mdi-flag"></i>
+                    <i class="fa-solid fa-flag"></i>
                     <?php echo get_phrase('status'); ?>
                 </label>
                 <select name="status" id="status_invoice" class="idx-select">
@@ -560,7 +560,7 @@
             <div class="idx-filter-group">
                 <label class="idx-filter-label">&nbsp;</label>
                 <button type="button" class="idx-filter-btn" onclick="showAllInvoices()">
-                    <i class="mdi mdi-magnify"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
                     <?php echo get_phrase('apply_filter'); ?>
                 </button>
             </div>
@@ -570,13 +570,13 @@
     <!-- Export Row -->
     <div class="idx-export-row">
         <span style="color: var(--idx-gray); font-size: 0.85rem; margin-right: auto;">
-            <i class="mdi mdi-download"></i> <?php echo get_phrase('export'); ?>:
+            <i class="fa-solid fa-download"></i> <?php echo get_phrase('export'); ?>:
         </span>
         <button type="button" class="idx-export-btn csv" onclick="getExportUrl('csv')">
-            <i class="mdi mdi-file-delimited"></i> CSV
+            <i class="fa-solid fa-file-csv"></i> CSV
         </button>
         <button type="button" class="idx-export-btn pdf" onclick="getExportUrl('pdf')">
-            <i class="mdi mdi-file-pdf-box"></i> PDF
+            <i class="fa-solid fa-file-pdf"></i> PDF
         </button>
     </div>
 </div>
@@ -584,7 +584,7 @@
 <script>
 var showAllInvoices = function () {
     // Show loading state
-    $('.invoice_content').html('<div class="idx-loading"><i class="mdi mdi-loading"></i> '+<?php echo js_phrase('loading'); ?>+'...</div>');
+    $('.invoice_content').html('<div class="idx-loading"><i class="fa-solid fa-spinner fa-spin"></i> '+<?php echo js_phrase('loading'); ?>+'...</div>');
     
     var url = '<?php echo route('invoice/list'); ?>';
     var dateRange = $('#selectedValue').text();
@@ -604,7 +604,7 @@ var showAllInvoices = function () {
             initDataTable("basic-datatable");
         },
         error: function() {
-            $('.invoice_content').html('<div class="idx-loading" style="color: #dc2626;"><i class="mdi mdi-alert-circle"></i> '+<?php echo js_phrase('error_loading_data'); ?>+'</div>');
+            $('.invoice_content').html('<div class="idx-loading" style="color: #dc2626;"><i class="fa-solid fa-circle-exclamation"></i> '+<?php echo js_phrase('error_loading_data'); ?>+'</div>');
         }
     });
 }

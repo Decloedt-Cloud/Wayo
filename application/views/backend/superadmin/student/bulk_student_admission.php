@@ -1,5 +1,5 @@
 <?php $school_id = school_id(); ?>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.min.css">
 
 <div class="container">
     <div class="modern-card">

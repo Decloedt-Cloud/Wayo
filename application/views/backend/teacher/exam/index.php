@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/exam.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/curriculum.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/exam.min.css">
 
 <style>
 /* ============================================================================
@@ -96,7 +96,7 @@
 </style>
 
 <!-- SweetAlert2 -->
-<script type="text/javascript" src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+
 
 <!-- Mobile overlay -->
 <div class="exam-editor-overlay" id="editorOverlay" onclick="closeEditor()"></div>
@@ -302,7 +302,7 @@ function confirmDelete(url, callback) {
         text: '<?php echo addslashes(get_phrase('you_will_not_be_able_to_revert_this')); ?>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4f46e5',
+        confirmButtonColor: '#6366f1',
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<?php echo addslashes(get_phrase('yes_delete_it')); ?>',
         cancelButtonText: '<?php echo addslashes(get_phrase('cancel')); ?>',

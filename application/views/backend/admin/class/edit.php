@@ -650,6 +650,7 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
             </label>
             <input id="student_image" type="file" class="exp-image-upload" name="photo" accept="image/*" data-preview="student-image-preview">
         </div>
+        <div class="exp-form-hint"><?php echo get_phrase('recommended_resolution'); ?>: 800×800 px • <?php echo get_phrase('animated_gifs_will_be_converted_to_static'); ?></div>
     </div>
         <!-- Class Name -->
         <div class="exp-form-group">
@@ -749,7 +750,6 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                        class="exp-form-input"
                        id="start_date"
                        name="start_date"
-                       min="<?php echo date('Y-m-d'); ?>"
                        value="<?php echo (!empty($class['date_debut'])) ? date('Y-m-d', strtotime($class['date_debut'])) : ''; ?>">
                 <i class="mdi mdi-calendar-month exp-input-icon"></i>
             </div>
@@ -766,7 +766,6 @@ $currencies = $this->db->get_where('settings_school', array('school_id' => schoo
                        class="exp-form-input"
                        id="end_date"
                        name="end_date"
-                       min="<?php echo date('Y-m-d'); ?>"
                        value="<?php echo (!empty($class['date_fin'])) ? date('Y-m-d', strtotime($class['date_fin'])) : ''; ?>">
                 <i class="mdi mdi-calendar-month exp-input-icon"></i>
             </div>

@@ -273,7 +273,7 @@
   <div class="hero-overlay"></div>
   <div class="container position-relative hero-inner">
     <h1 class="fw-extrabold text-dark"><?php echo get_phrase("Support") ?></h1>
-    <p class="mt-2 mb-0"><?php echo get_phrase("Any questions?") ?>
+    <p class="mt-2 mb-0"><strong><?php echo get_phrase("Any questions?") ?></strong>
       <strong><?php echo get_phrase("Response guaranteed within 24 business hours.") ?></strong>
     </p>
   </div>
@@ -282,7 +282,7 @@
 <?php $this->load->view('frontend/alert_view'); ?>
 <main class="container py-5" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="row g-4 align-items-stretch">
-      <div class="col-12 col-lg-7">
+      <div class="col-12 col-lg-12">
         <form id="contact_send" class="glass p-3 p-md-4 needs-validation" action="<?php echo site_url('home/contact/send'); ?>" method="post" enctype="multipart/form-data" novalidate>
           <!-- Champ caché pour le jeton CSRF -->
                 <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
@@ -371,68 +371,66 @@
           </div>
         </form>
       </div>
- 
-      <!-- Sidebar infos -->
-      <aside class="col-12 col-lg-5">
-        <div class="glass h-100 p-3 p-md-4 <?php echo (get_user_language() === 'arabic') ? 'text-center' : 'text-start'; ?> d-flex flex-column justify-content-center align-items-center">
-          <h2 class="h4 fw-bold mb-4"><?php echo get_phrase('Support_Information'); ?></h2>
-          <ul class="list-unstyled d-flex flex-column gap-3 contact-list mb-4">
-            <li>
-              <i class="fa-solid fa-phone"></i>
-              <a class="text-decoration-none text-dark" href="tel:+971501548923">+971 50 154 8923</a>
-            </li>
-            <li>
-              <i class="fa-solid fa-envelope"></i>
-              <a class="text-decoration-none text-dark" href="mailto:info@wayo.cloud">info@wayo.cloud</a>
-            </li>
-            <li>
-              <i class="fa-solid fa-location-dot"></i>
-              <a class="text-decoration-none text-dark" href="#map">R320 Umm Hurair 2, Dubai, UAE</a>
-            </li>
-          </ul>
- 
-          <hr class="opacity-25 w-100 my-4">
-         
-          <h3 class="h6 fw-bold mb-3"><?php echo get_phrase('Follow_us'); ?></h3>
-          <div class="d-flex justify-content-center gap-2">
-            <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank" class="social-btn">
-              <i class="fa-brands fa-facebook-f"></i>
-            </a>
-            <a href="https://www.instagram.com/wayo_ma/" target="_blank" class="social-btn">
-              <i class="fa-brands fa-instagram"></i>
-            </a>
-            <a href="https://www.linkedin.com/company/wayo-ma/" target="_blank" class="social-btn">
-              <i class="fa-brands fa-linkedin-in"></i>
-            </a>
-            <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">
-              <i class="fa-brands fa-youtube"></i>
-            </a>
-          </div>
+      <div class="row g-4 align-items-stretch">
+        <!-- OÙ NOUS TROUVER -->
+        <div class="col-12 col-lg-8">
+          <article class="p-3 bg-white glass rounded-4 shadow-sm h-100">
+            <div class="map-embed rounded-3 h-100">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.773591177115!2d55.306372586657815!3d25.24454967224629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42d392745e8d%3A0x263aa4ef8ed1cdb8!2sUmm%20Hurair%20Rd%20-%20Dubai%20-%20Émirats%20arabes%20unis!5e0!3m2!1sfr!2sma!4v1759136094142!5m2!1sfr!2sma"
+                width="100%"
+                height="100%"
+                style="border:0; min-height: 450px;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+          </article>
         </div>
-      </aside>
+
+        <!-- Sidebar infos -->
+        <aside class="col-12 col-lg-4">
+          <div class="glass h-100 p-3 p-md-4 <?php echo (get_user_language() === 'arabic') ? 'text-center' : 'text-start'; ?> d-flex flex-column justify-content-center align-items-center">
+            <h2 class="h4 fw-bold mb-4"><?php echo get_phrase('Support_Information'); ?></h2>
+            <ul class="list-unstyled d-flex flex-column gap-3 contact-list mb-4">
+              <li>
+                <i class="fa-solid fa-phone"></i>
+                <a class="text-decoration-none text-dark" href="tel:+971501548923">+971 50 154 8923</a>
+              </li>
+              <li>
+                <i class="fa-solid fa-envelope"></i>
+                <a class="text-decoration-none text-dark" href="mailto:info@wayo.cloud">info@wayo.cloud</a>
+              </li>
+              <li>
+                <i class="fa-solid fa-location-dot"></i>
+                <a class="text-decoration-none text-dark" href="#map">R320 Umm Hurair 2, Dubai, UAE</a>
+              </li>
+            </ul>
+
+            <hr class="opacity-25 w-100 my-4">
+
+            <h3 class="h6 fw-bold mb-3"><?php echo get_phrase('Follow_us'); ?></h3>
+            <div class="d-flex justify-content-center gap-2">
+              <a href="https://www.facebook.com/people/Wayo-Academy/61572524656807/" target="_blank" class="social-btn">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a href="https://www.instagram.com/wayo_ma/" target="_blank" class="social-btn">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="https://www.linkedin.com/company/wayo-ma/" target="_blank" class="social-btn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+              <a href="https://www.youtube.com/@Wayo-ma" target="_blank" class="social-btn">
+                <i class="fa-brands fa-youtube"></i>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
  
- <!-- OÙ NOUS TROUVER -->
-    <section id="contact" class="contact py-5">
-      <div class="container">
-        <div class="row g-3 align-items-stretch">
-          <div class="col-12 col-lg-12" data-animate>
-            <article class="p-3 bg-white rounded-4 shadow-sm h-100">
-              <div class="map-embed rounded-3">
-                    <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.773591177115!2d55.306372586657815!3d25.24454967224629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42d392745e8d%3A0x263aa4ef8ed1cdb8!2sUmm%20Hurair%20Rd%20-%20Dubai%20-%20Émirats%20arabes%20unis!5e0!3m2!1sfr!2sma!4v1759136094142!5m2!1sfr!2sma%22"
-                    width="100%"
-                    height="450"
-                    style="border:0;"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade">
-                  </iframe>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
+
 </main>
  
 <!-- ===================== SCRIPT ===================== -->
@@ -667,13 +665,6 @@ submitBtn.classList.add('btn-loading');
 submitBtn.innerText = 'Sending...';
  
 const formData = new FormData(contactForm);
- 
-// 🟩 Afficher toutes les données du formulaire dans la console
-console.log("===== Données du formulaire =====");
-for (let [key, value] of formData.entries()) {
-  console.log(`${key}:`, value);
-}
-console.log("=================================");
  
 fetch(contactForm.action, {
   method: 'POST',

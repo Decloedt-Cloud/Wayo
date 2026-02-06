@@ -1,5 +1,5 @@
 <?php if ($working_page == 'filter'): ?>
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
     
     <style>
     /* ============================================================================
@@ -365,6 +365,9 @@
 <script>
     // Ensure showNotification is globally available
     window.showNotification = function(type, message) {
+        if (typeof ENABLE_TOASTS !== 'undefined' && !ENABLE_TOASTS) {
+            return;
+        }
         if(typeof toastr !== 'undefined') {
             toastr.options = {
                 closeButton: true,

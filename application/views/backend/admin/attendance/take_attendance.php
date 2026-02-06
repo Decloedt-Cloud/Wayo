@@ -222,7 +222,7 @@
                 <span class="exp-required">*</span>
             </label>
             <div class="exp-input-wrapper">
-                <input type="text" class="exp-form-input date" id="date_on_taking_attendance" data-bs-toggle="date-picker" data-single-date-picker="true" name="date" value="" required placeholder="<?php echo get_phrase('select_date'); ?>">
+                <input type="date" class="exp-form-input" id="date_on_taking_attendance" name="date" value="" required>
                 <i class="mdi mdi-calendar-range exp-input-icon"></i>
             </div>
         </div>
@@ -247,6 +247,13 @@
 
         <div id="student_content"></div>
 
+        <div class="exp-form-group" id="alertDiv" style="display: none;">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="mdi mdi-alert-circle-outline"></i>
+                <span id="alertMessage"><?php echo get_phrase('please_select_in_all_fields'); ?></span>
+            </div>
+        </div>
+
         <div class="exp-form-group" id="showStudentDiv">
             <a href="javascript:void(0);" class="exp-btn exp-btn-primary" id="update-btn" onclick="getStudentList()">
                 <i class="mdi mdi-eye"></i> <span><?php echo get_phrase('show_student_list'); ?></span>
@@ -270,11 +277,19 @@
             $('#showStudentDiv').show();
             $('#updateAttendanceDiv').hide();
             $('#student_content').hide();
+            // Cacher l'alerte si les champs sont remplis
+            if($('#date_on_taking_attendance').val() != '' && $('#class_id_on_taking_attendance').val() != '') {
+                $('#alertDiv').hide();
+            }
         });
         $('#class_id_on_taking_attendance').change(function(){
             $('#showStudentDiv').show();
             $('#updateAttendanceDiv').hide();
             $('#student_content').hide();
+            // Cacher l'alerte si les champs sont remplis
+            if($('#date_on_taking_attendance').val() != '' && $('#class_id_on_taking_attendance').val() != '') {
+                $('#alertDiv').hide();
+            }
         });
 
         // Auto-open calendar on click
@@ -341,8 +356,6 @@
         });
     });
 
-    $('#date_on_taking_attendance').daterangepicker();
-
     function getStudentList() {
         var date = $('#date_on_taking_attendance').val();
         var class_id = $('#class_id_on_taking_attendance').val();
@@ -383,7 +396,8 @@
                 }
             });
         }else{
-            toastr.error('<?php echo get_phrase('please_select_in_all_fields !'); ?>');
+            $('#alertDiv').show();
+            $('#alertMessage').text('<?php echo get_phrase('please_select_in_all_fields'); ?>');
         }
     }
 </script>

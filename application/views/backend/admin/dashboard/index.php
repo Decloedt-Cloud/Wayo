@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/main-responsive.min.css">
 <?php include APPPATH . 'views/backend/shared/trial_expired_modal.php'; ?>
 
 <!-- Google Fonts -->
@@ -612,7 +612,7 @@
   <!-- Header -->
   <div class="dash-header fade-up">
     <h1>
-      <span class="icon-box"><i class="fas fa-th-large"></i></span>
+      <span class="icon-box"><i class="fas fa-home"></i></span>
       <?php echo get_phrase('dashboard'); ?>
     </h1>
     <div class="date-badge">

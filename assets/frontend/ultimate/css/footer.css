@@ -1,4 +1,3 @@
-
 /*----------------------------------------------------------------------------------------------------------------
 Footer Styling
 ------------------------------------*/
@@ -25,8 +24,10 @@ Footer Styling
 }
 
 .custom-list-group-item {
-  background-color: #000000 !important; /* Custom background color */
-  color: white !important; /* Custom text color */
+  background-color: #000000 !important;
+  /* Custom background color */
+  color: white !important;
+  /* Custom text color */
 }
 
 .list-group h4 {
@@ -39,27 +40,29 @@ Footer Styling
 }
 
 .light-border-top {
-  border-top: 1px solid #ffffff; /* Custom border color */
+  border-top: 1px solid #ffffff;
+  /* Custom border color */
 }
 
 .light-border-bottom {
-  border-bottom: 1px solid #ffffff; /* Custom border color */
+  border-bottom: 1px solid #ffffff;
+  /* Custom border color */
 }
 
 .site-footer {
-  background:#fff;
+  background: #fff;
   color: #fff;
   padding: 25px 0;
 }
 
 .footer-top {
-  display:flex; 
-  flex-wrap:wrap;
-   align-items:center; 
-   justify-content:space-between; 
-   border-bottom:1px solid var(--line); 
-   padding-bottom:12px; 
-   margin-bottom:12px
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .footer-logo img {
@@ -75,7 +78,7 @@ Footer Styling
 .footer-nav a {
   font-weight: 500;
   color: #000000;
-  font-weight:800;
+  font-weight: 800;
   font-size: 0.9rem;
   transition: color 0.2s ease;
   text-decoration: none;
@@ -114,58 +117,78 @@ Footer Styling
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.footer-contact ul li{
+.footer-contact ul li {
   line-height: 1.5;
   font-size: 0.9rem;
   color: #000000;
   list-style-type: none;
-} 
-
-.footer-contact  p {
-    padding-block: 1em;
-    color: #000000;
-    font-size: 16px;
-    margin-block: 20px;
 }
-.footer-contact .infoContact{
+
+.footer-contact p {
+  padding-block: 1em;
+  color: #000000;
+  font-size: 16px;
+  margin-block: 20px;
+}
+
+.footer-contact .infoContact {
   display: flex;
   flex-direction: column;
   color: #000000;
 }
+
 .infoContact a {
-    text-decoration: none;
-    color: #000000;
-}
-.footer-links .infolinks{
-  display: flex;
-  flex-direction: column;
+  text-decoration: none;
   color: #000000;
 }
- .footer-links p {
-    padding-block: 1em;
-    color: #000000;
-    font-size: 16px;
-    margin-block: 20px;
-} 
-.footer-newsletter p{
-    padding-block: 1em;
-    color: #000000;
-    font-size: 16px;
-    margin-block: 20px;
+
+.footer-links .infolinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  color: #000000;
 }
 
-.btn:hover{
-    transform: translateY(-1px);
+.footer-links p,
+.footer-newsletter p {
+  color: #000000;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
 }
-.btn.accent{
-  background: var(--linear-gradient-style-Wayo); 
-  color:#fff; 
-  box-shadow:0 14px 28px rgba(244,122,31,.22);
+
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn.accent {
+  background: var(--linear-gradient-style-Wayo);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(244, 122, 31, .22);
   font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn.accent:hover::before {
+  left: 100%;
 }
 
 
@@ -178,8 +201,9 @@ Footer Styling
 
 
 .footer-links ul li::marker {
-    color: #ff6600;
+  color: #ff6600;
 }
+
 .site-footer[dir="rtl"] {
   direction: rtl;
 }
@@ -232,7 +256,7 @@ Footer Styling
   border-radius: 14px;
 }
 
-.newsletter-form button.btn-subscribe{
+.newsletter-form button.btn-subscribe {
   padding: 0.6rem 1.2rem;
   background: #FC7B30;
   color: #fff;
@@ -251,12 +275,14 @@ Footer Styling
 .footer-credits {
   text-align: center;
   font-size: 0.8rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
 }
 
 .footer-credits p {
   margin: 0.3rem 0;
-  color:var(--muted);
+  color: var(--muted);
 }
 
 
@@ -291,59 +317,65 @@ Footer Styling
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 768px){
-  .footer-top{
-        flex-direction: column;
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
   }
+
   .footer-social {
     padding-bottom: 30px;
   }
 }
 
 @media (max-width: 1180px) and (min-width: 480px) {
-    .footer-contact {
-    width: 27%;
-    }
-    .footer-links{
-    width: 27%;
-    }
-    .footer-newsletter {
-    width: 27%;
-    }
-    .newsletter-form {
-    flex-direction: column;
-      }
+  .footer-links {
+    width: 30%;
+  }
+
+  .footer-newsletter {
+    width: 100%;
+    margin-top: 1rem;
+  }
 }
+
 @media (max-width: 480px) {
-      nav.footer-nav ul {
-        padding-left: 0;
-    }
-      .newsletter-form {
-        flex-direction: row;
-    }
-    .footer-contact {
+  nav.footer-nav ul {
+    padding-left: 0;
+  }
+
+  .newsletter-form {
+    flex-direction: row;
+  }
+
+  .footer-contact {
     width: 100%;
-    }
-    .footer-contact p{
-      padding-block: 0;
-      margin-block: 0;
-    }
-    .footer-links{
+  }
+
+  .footer-contact p {
+    padding-block: 0;
+    margin-block: 0;
+  }
+
+  .footer-links {
     width: 100%;
-    }
-    .footer-links p{
-      padding-block: 0;
-      margin-block: 0;
-    }
-    .footer-newsletter {
+  }
+
+  .footer-links p {
+    padding-block: 0;
+    margin-block: 0;
+  }
+
+  .footer-newsletter {
     width: 100%;
-    }
-    .footer-newsletter p{
-      padding-block: 0;
-      margin-block: 0;
-    }
+  }
+
+  .footer-newsletter p {
+    padding-block: 0;
+    margin-block: 0;
+  }
 
 }
+
 /* Social Buttons Styles */
 .social-btn {
   width: 45px;
@@ -357,6 +389,25 @@ Footer Styling
   text-decoration: none;
   transition: all 0.3s ease;
   font-size: 1.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.social-btn:hover::before {
+  left: 100%;
 }
 
 .social-btn:hover {
@@ -364,4 +415,3 @@ Footer Styling
   box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
   color: white !important;
 }
-

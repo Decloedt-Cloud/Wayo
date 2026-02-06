@@ -444,28 +444,44 @@ if ($_FILES['image_file']['name'] != "") {
 			$marks = $row->marks;
 			$assignment = $row->assignment;
 
-			$data[$column_name] = $value;
+			if ($column_name == 'all') {
+				$data['marks'] = $value;
+				$data['attendance'] = $value;
+				$marks = (int) $value;
+				// $assignment = (int) $value; // Assignment is commented out in views
+			} else {
+				$data[$column_name] = $value;
+				
+				// Mets à jour la variable correspondant à la colonne modifiée
+				if ($column_name === 'marks') {
+					$marks = (int) $value;
+				}
+				if ($column_name === 'assignment') {
+					$assignment = (int) $value;
+				}
+			}
+
 			$this->db->where('class_id', $class_id);
 			$this->db->where('teacher_id', $teacher_id);
 			$this->db->update('teacher_permissions', $data);
 
-			// Mets à jour la variable correspondant à la colonne modifiée
-			if ($column_name === 'marks') {
-
-				$marks = (int) $value;
-			}
-			if ($column_name === 'assignment') {
-				$assignment = (int) $value;
-			}
 			log_message('debug', "Après update => marks: {$marks}, assignment: {$assignment}, column_name: {$column_name}, value: {$value}");
 
 		} else {
 			$data['class_id'] = $class_id;
 			$data['teacher_id'] = $teacher_id;
-			$data['marks'] = ($column_name === 'marks') ? 1 : 0;
-			$data['assignment'] = ($column_name === 'assignment') ? 1 : 0;
-
-			$data[$column_name] = 1;
+			
+			if ($column_name == 'all') {
+				$data['marks'] = $value;
+				$data['attendance'] = $value;
+				$data['assignment'] = 0; // Default
+			} else {
+				$data['marks'] = ($column_name === 'marks') ? 1 : 0;
+				$data['attendance'] = ($column_name === 'attendance') ? 1 : 0;
+				$data['assignment'] = ($column_name === 'assignment') ? 1 : 0;
+				$data[$column_name] = 1; // Override specifically if logic above was restrictive
+			}
+			
 			$this->db->insert('teacher_permissions', $data);
 			log_message('debug', 'Permission insérée : ' . json_encode($data));
 
@@ -1213,8 +1229,9 @@ if ($_FILES['image_file']['name'] != "") {
 	// Get User Image Starts
 	public function get_user_image($user_id)
 	{
-		if (file_exists('uploads/users/' . $user_id . '.jpg'))
-			return base_url() . 'uploads/users/' . $user_id . '.jpg';
+		$image_path = 'uploads/users/' . $user_id . '.jpg';
+		if (file_exists($image_path))
+			return base_url() . $image_path . '?v=' . filemtime($image_path);
 		else
 			return base_url() . 'uploads/users/placeholder.jpg';
 	}
@@ -1294,6 +1311,12 @@ if ($_FILES['image_file']['name'] != "") {
 	{
 		$result = $this->db->limit($limit, $start)->get_where('schools', array('status' => 1, 'Etat' => 1, 'category' => $category));
 		return $result;
+	}
+
+	public function get_schools_per_category_count($category)
+	{
+		$result = $this->db->get_where('schools', array('status' => 1, 'Etat' => 1, 'category' => $category));
+		return $result->num_rows();
 	}
 
 	public function get_schools_search($input, $limit, $start)
@@ -1592,6 +1615,13 @@ if ($_FILES['image_file']['name'] != "") {
 			$notification = get_phrase('updated_successfully');
 			$user = $this->db->get_where('users', array('id' => $user_id))->row();
 
+			// SYNC CHAT SERVICE
+			$this->_sync_user_to_chat_service($user_id);
+
+			// UPDATE SESSION (Nom & User Object)
+			$this->session->set_userdata('user_name', $user->name);
+			$this->session->set_userdata('user', $user);
+
 			$response = array(
 				'status' => true,
 				'notification' => $notification
@@ -1632,7 +1662,26 @@ if ($_FILES['image_file']['name'] != "") {
 			$current_password = $this->input->post('current_password');
 			$new_password = $this->input->post('new_password');
 			$confirm_password = $this->input->post('confirm_password');
-			if ($user_details['password'] == sha1($current_password) && $new_password == $confirm_password) {
+
+			if ($user_details['password'] != sha1($current_password)) {
+				$response = array(
+					'status' => false,
+					'field' => 'current_password',
+					'notification' => get_phrase('current_password_is_incorrect')
+				);
+			} elseif (strlen($new_password) < 8) {
+				$response = array(
+					'status' => false,
+					'field' => 'new_password',
+					'notification' => get_phrase('password_must_be_at_least_8_characters')
+				);
+			} elseif ($new_password != $confirm_password) {
+				$response = array(
+					'status' => false,
+					'field' => 'confirm_password',
+					'notification' => get_phrase('passwords_do_not_match')
+				);
+			} else {
 				$data['password'] = sha1($new_password);
 				$this->db->where('id', $user_id);
 				$this->db->update('users', $data);
@@ -1640,12 +1689,6 @@ if ($_FILES['image_file']['name'] != "") {
 				$response = array(
 					'status' => true,
 					'notification' => get_phrase('password_updated_successfully')
-				);
-			} else {
-
-				$response = array(
-					'status' => false,
-					'notification' => get_phrase('mismatch_password')
 				);
 			}
 		} else {
@@ -2189,7 +2232,8 @@ if ($_FILES['image_file']['name'] != "") {
 	public function register_user_form()
 	{
 		$emailPattern = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
-		$plainPassword = $this->input->post('password-student'); // Utilisation cohérente du champ
+		$plainPassword = $this->input->post('password-student');
+		
 		// Valider les champs requis
 		if (
 			$this->input->post('student_email') == '' ||
@@ -2295,11 +2339,65 @@ if ($_FILES['image_file']['name'] != "") {
 	}
 
 
-      public function get_schools_per_category_count($category)
+      public function count_schools_by_category($category)
 	{
 		$this->db->where('category', $category);
 		$this->db->where('status', 1);
 		$this->db->where('Etat', 1);
 		return $this->db->count_all_results('schools');
 	}
+private function _sync_user_to_chat_service($user_id)
+	{
+		// Récupérer les données fraîches de l'utilisateur
+		$user = $this->db->get_where('users', array('id' => $user_id))->row();
+		if (!$user) return;
+
+		// Construire l'URL de l'avatar
+		$avatar_path = 'uploads/users/' . $user->id . '.jpg';
+		$avatar_url = null;
+		if (file_exists($avatar_path)) {
+			$avatar_url = base_url($avatar_path);
+		}
+
+		$payload = [
+			'user_id' => $user->id,
+			'email' => $user->email,
+			'name' => $user->name,
+			'gender' => $user->gender, // Peut être null
+			'avatar' => $avatar_url
+		];
+
+		// URL du Chat Service (hardcodé comme ailleurs dans le projet)
+		$url = 'https://chat.wayo.site/api/auth/sync-user';
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+		curl_setopt($ch, CURLOPT_TIMEOUT, 2); // Timeout court pour ne pas bloquer l'UI
+		
+		$response = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		
+		if (curl_errno($ch)) {
+			log_message('error', 'Chat Sync Error: ' . curl_error($ch));
+		} else {
+			if ($http_code >= 400) {
+				log_message('error', 'Chat Sync Failed (' . $http_code . '): ' . $response);
+			} else {
+				log_message('info', 'Chat Sync Success for user ' . $user_id);
+			}
+		}
+		
+		curl_close($ch);
+	}
+
+  public function get_all_admins_count()
+	{
+		$this->db->where('role', 'admin');
+		$this->db->where('status', 1);
+		return $this->db->count_all_results('users');
+
+	}
+
 }

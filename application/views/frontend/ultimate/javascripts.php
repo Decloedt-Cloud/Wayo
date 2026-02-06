@@ -17,7 +17,7 @@
 
 
   <!-- JS Front -->
-  <script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/js/hs.core.js"></script>
+  <script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/js/hs.core.min.js"></script>
   <script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/js/components/hs.header.js"></script>
   <script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/js/components/hs.unfold.js"></script>
   <script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/js/components/hs.fancybox.js"></script>
@@ -131,52 +131,42 @@
 
 <!-- Custom JS. -->
 
-<script src="<?php echo base_url()?>assets/frontend/ultimate/js/nav.js" > </script>
+<script src="<?php echo base_url()?>assets/frontend/ultimate/js/nav.min.js" > </script>
 
 
 <?php
 if ($page_name == "home") {
 
   echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/sketch.min.js"></script>';
-  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/home.js"></script>';
+  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/home.min.js"></script>';
 
 } elseif ($page_name == "about") {
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
 
 } elseif ($page_name == "contact") {
-
-
-  // Charger Leaflet.js pour OpenStreetMap
-  echo '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>';
-    
-  echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />';
-  echo '<script>
-         const base_url = " '. $base_url . '";
-        </script>';
-  // Charger le script JavaScript pour la carte de contact
-  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/contact-map.js"></script>';
-
-  // Initialiser l'effet Rellax
-  echo '<script defer>var rellax = new Rellax(".rellax");</script>';
+  // Google Maps iframe est utilisé - pas besoin de Leaflet
+  // Initialiser l'effet Rellax seulement
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
 }
 
 else if ($page_name == "online_admission"){
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
-  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.js"></script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
+  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.min.js"></script>';
 
 }
 else if ($page_name == "online_admission_student"){
 
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
-  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.js"></script>';
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
+  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/online-admission.min.js"></script>';
 
 }
 
 else if($page_name == "communities"){
-  echo '<script defer >var rellax = new Rellax(".rellax");</script>';
-  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/courses.js"></script>';
+  // Rellax only if elements exist
+  echo '<script defer>if(document.querySelector(".rellax")){var rellax = new Rellax(".rellax");}</script>';
+  echo '<script src="' . $base_url . 'assets/frontend/ultimate/js/courses.min.js"></script>';
 
 }
 ?>

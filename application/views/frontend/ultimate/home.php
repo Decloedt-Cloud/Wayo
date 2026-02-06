@@ -19,7 +19,7 @@
         <!-- Colonne Gauche: Texte -->
         <div class="col-lg-5 col-xl-5">
           <div class="hero-copy">
-            <h1><span class="accent"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
+            <h1><span class="accent" style="text-transform: capitalize;"><?php echo get_phrase("Monetize") ?></span> <?php echo get_phrase("your_community_with_peace_of_mind.") ?></h1>
             <p class="sub"><?php echo get_phrase("We_specialize_in_secure_payment_platforms_that_don’t_freeze_mentors’_accounts._Build,_engage,_and_grow_your_revenue_without_limitations.") ?></p>
             <div class="hero-ctas">
               <?php if (!$this->session->userdata('user_id')): ?>
@@ -29,31 +29,19 @@
 
             <div class="chips">
               <div class="chip pill">
-                <span class="chip-icon money"><svg viewBox="0 0 24 24" width="18" height="18">
-                    <path fill="currentColor" d="M3 6h18v12H3z" opacity=".15" />
-                    <path fill="currentColor" d="M2 5h20v14H2zM5 9a3 3 0 0 0-3-3v12a3 3 0 0 0 3-3h14a3 3 0 0 0 3 3V6a3 3 0 0 0-3 3zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-                  </svg></span>
+                <span class="chip-icon money"><i class="fas fa-sack-dollar"></i></span>
                 <strong><?php echo get_phrase("Monetize_your_expertise") ?></strong>
               </div>
               <div class="chip pill">
-                <span class="chip-icon users"><svg viewBox="0 0 24 24" width="18" height="18">
-                    <path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2" />
-                    <path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z" />
-                  </svg></span>
-                <strong><?php echo get_phrase("Create_communities") ?></strong>
+                <span class="chip-icon users"><i class="fas fa-users"></i></span>
+                <strong><?php echo get_phrase("Create_communities_a") ?></strong>
               </div>
               <div class="chip pill">
-                <span class="chip-icon course"><svg viewBox="0 0 24 24" width="18" height="18">
-                    <path fill="currentColor" d="M4 6h16v12H4z" opacity=".2" />
-                    <path fill="currentColor" d="M3 5h18v14H3zM6 9h8v2H6zm0 4h12v2H6z" />
-                  </svg></span>
+                <span class="chip-icon course"><i class="fas fa-graduation-cap"></i></span>
                 <strong><?php echo get_phrase("Courses_&_live") ?></strong>
               </div>
               <div class="chip pill">
-                <span class="chip-icon social"><svg viewBox="0 0 24 24" width="18" height="18">
-                    <path fill="currentColor" d="M4 5h16v10H4z" opacity=".2" />
-                    <path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z" />
-                  </svg></span>
+                <span class="chip-icon social"><i class="fas fa-comments"></i></span>
                 <strong><?php echo get_phrase("Built-in_social") ?></strong>
               </div>
             </div>
@@ -68,23 +56,49 @@
             <?php
             $user_lang = get_user_language();
             if ($user_lang === 'french') {
-                $video_src = 'V5 Wayo Promo Video francais.mp4';
+                $video_mp4 = 'promo_fr.mp4';
+                $video_mp4_mobile = 'promo_fr_mobile.mp4';
+                $video_poster = 'poster_fr.webp';
             } elseif ($user_lang === 'arabic') {
-                $video_src = 'v2_Wayo_Academy_Promo_Video.mp4';
+                $video_mp4 = 'promo_ar.mp4';
+                $video_mp4_mobile = 'promo_ar_mobile.mp4';
+                $video_poster = 'poster_ar.webp';
             } else {
-                $video_src = 'Final En Wayo Promo Video anglais.mp4';
+                $video_mp4 = 'promo_en.mp4';
+                $video_mp4_mobile = 'promo_en_mobile.mp4';
+                $video_poster = 'poster_en.webp';
             }
+            $poster_url = base_url('uploads/videos/posters/' . $video_poster);
+            $mp4_url = base_url('uploads/videos/optimized/' . $video_mp4);
+            $mp4_mobile_url = base_url('uploads/videos/optimized/' . $video_mp4_mobile);
             ?>
-            <div class="ratio ratio-16x9 yt-desktop">
-              <video autoplay muted loop playsinline controls>
-                <source src="<?php echo base_url('uploads/videos/' . $video_src); ?>" type="video/mp4">
-                Votre navigateur ne supporte pas la lecture vidéo.
+            <!-- Plyr Video Player -->
+            <div class="plyr-container yt-desktop">
+              <video 
+                id="promo-video-desktop"
+                class="lazy-video plyr-video" 
+                autoplay
+                muted 
+                loop 
+                playsinline 
+                preload="auto" 
+                poster="<?php echo $poster_url; ?>"
+                data-src-mp4="<?php echo $mp4_url; ?>"
+                data-src-mp4-mobile="<?php echo $mp4_mobile_url; ?>">
               </video>
             </div>
-            <div class="ratio ratio-9x16 yt-mobile">
-              <video autoplay muted loop playsinline controls>
-                <source src="<?php echo base_url('uploads/videos/' . $video_src); ?>" type="video/mp4">
-                Votre navigateur ne supporte pas la lecture vidéo.
+            <div class="plyr-container yt-mobile">
+              <video 
+                id="promo-video-mobile"
+                class="lazy-video plyr-video" 
+                autoplay
+                muted 
+                loop 
+                playsinline 
+                preload="auto" 
+                poster="<?php echo $poster_url; ?>"
+                data-src-mp4="<?php echo $mp4_url; ?>"
+                data-src-mp4-mobile="<?php echo $mp4_mobile_url; ?>">
               </video>
             </div>
           </figure>
@@ -93,84 +107,6 @@
     </div>
   </section>
   </div>
-  <!-- Our key features -->
-  <section class="feature-nav-section" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-    <div class="container py-2">
-      <div class="row align-items-center">
-        <div class="col-12">
-          <h2 class="text-center"><?php echo get_phrase("Our key features") ?></h2>
-          <ul class="feature-nav">
-            <li class="active" data-feature="bbb" tabindex="0"><?php echo get_phrase("Online course") ?></li>
-            <li data-feature="social" tabindex="0"><?php echo get_phrase("Social") ?></li>
-            <li data-feature="quiz" tabindex="0"><?php echo get_phrase("Quiz") ?></li>
-          </ul>
-          <div class="feature-progress">
-            <div class="feature-progress-bar"></div>
-          </div>
-
-          <div id="bbb" class="feature-pane active">
-            <img src="uploads/images/decloedt/home/online_course.webp" alt="Online Course" loading="lazy" />
-          </div>
-          <div id="social" class="feature-pane">
-            <img src="uploads/images/decloedt/home/social.webp" alt="Social" loading="lazy" />
-          </div>
-          <div id="quiz" class="feature-pane">
-            <img src="uploads/images/decloedt/home/quiz.webp" alt="Quiz" loading="lazy" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- Comparaison Avant et Après Wayo ----->
-   <section class="position-relative comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-    <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7 unified-title-container" style="z-index: 1;">
-      <h2><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
-      <p class="text-center text-dark mb-5 fs-6"><?php echo get_phrase("Wayo Academy brings together everything needed to create, sell, and run your training courses without stress.") ?></p>
-      <div class="row g-4 ">
-            <!-- Sans Wayo Column -->
-            <div class="col-lg-6 col-md-12">
-                <div class="comparison-card sans-wayo h-100 shadow rounded-4 p-4 p-md-5">
-                    <div class="text-center">
-                        <span class="badge-header badge-sans"><?php echo get_phrase("Without Wayo"); ?></span>
-                    </div>
-
-                    <div class="image-placeholder mb-4 d-flex justify-content-center align-items-center rounded-3">
-                        <img src="uploads/images/decloedt/home/without-wayo.png" alt="Without Wayo" loading="lazy" />
-                    </div>
-
-                    <ul class="feature-list">
-                        <li> <?php echo get_phrase('Too many separate tools, loss of time and errors.'); ?></li>
-                        <li> <?php echo get_phrase('Scattered data, no clear visibility.'); ?></li>
-                        <li> <?php echo get_phrase('Manual processes, zero automation.'); ?></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Avec Wayo Column -->
-            <div class="col-lg-6 col-md-12">
-                <div class="comparison-card avec-wayo h-100 shadow rounded-4 p-4 p-md-5">
-                    <div class="text-center">
-                        <span class="badge-header badge-avec"><?php echo get_phrase("With Wayo"); ?></span>
-                    </div>
-
-                    <div class="image-placeholder">
-                        <img src="uploads/images/decloedt/home/with-wayo.png" alt="With Wayo" loading="lazy" />
-                    </div>
-
-                    <ul class="feature-list">
-                        <li><?php echo get_phrase('Single dashboard for courses and payments.'); ?></li>
-                        <li><?php echo get_phrase('Centralized data and clear reporting.'); ?></li>
-                        <li><?php echo get_phrase('Automation of tracking and communication.'); ?></li>
-                    </ul>
-                </div>
-            </div>
-      </div>
-      <!-- <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
-        
-      </div> -->
-    </div>
-  </section>
-  <!-------->
   <!-- Choose your plan -->
   <section class="position-relative pricing">
     <div class="container position-relative unified-title-container" style="z-index: 1;">
@@ -203,21 +139,19 @@
                   <h4><?php echo get_phrase("Included in your plan:"); ?></h4>
                   <ul>
                       <li>
-                          <div class="feature-icon money"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 6h18v12H3z" opacity=".15"/><path fill="currentColor" d="M2 5h20v14H2zM5 9a3 3 0 0 0-3-3v12a3 3 0 0 0 3-3h14a3 3 0 0 0 3 3V6a3 3 0 0 0-3 3zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg></div>
+                          <div class="feature-icon money"><i class="fas fa-sack-dollar"></i></div>
                           <div class="feature-text"><h5><?php echo get_phrase("Full monetization"); ?></h5><p><?php echo get_phrase("Sell your courses, subscriptions, and live sessions without restriction."); ?></p></div>
                       </li>
                       <li>
-                          <div class="feature-icon users"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" opacity=".2"/><path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z"/></svg></div>
+                          <div class="feature-icon users"><i class="fas fa-users"></i></div>
                           <div class="feature-text"><h5><?php echo get_phrase("Unlimited community"); ?></h5><p><?php echo get_phrase("Welcome as many members as you want."); ?></p></div>
-
                       </li>
                       <li>
-                          <div class="feature-icon course"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4 6h16v12H4z" opacity=".2"/><path fill="currentColor" d="M3 5h18v14H3zM6 9h8v2H6zm0 4h12v2H6z"/></svg></div>
+                          <div class="feature-icon course"><i class="fas fa-graduation-cap"></i></div>
                           <div class="feature-text"><h5><?php echo get_phrase("Unlimited educational content"); ?></h5><p><?php echo get_phrase("Create an infinite number of courses, modules, and quizzes."); ?></p></div>
-
                       </li>
-                       <li>
-                          <div class="feature-icon social"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z" opacity=".4"/><path fill="currentColor" d="M2 4h20v12H6l-4 4zM6 8h12v2H6zm0 4h8v2H6z"/></svg></div>
+                      <li>
+                          <div class="feature-icon social"><i class="fas fa-comments"></i></div>
                           <div class="feature-text"><h5><?php echo get_phrase("Engagement tools"); ?></h5><p><?php echo get_phrase("Access to the Social Hub, chat, calendar, and events."); ?></p></div>
                       </li>
                   </ul>
@@ -226,6 +160,174 @@
       </div>
     </div>
   </section>
+  <!-- Our key features -->
+  <section class="feature-nav-section" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+    <div class="container py-2">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <h2 class="text-center"><?php echo get_phrase("Our key features") ?></h2>
+          <ul class="feature-nav">
+            <li class="active" data-feature="bbb" tabindex="0"><?php echo get_phrase("Online course") ?></li>
+            <li data-feature="social" tabindex="0"><?php echo get_phrase("Ai") ?></li>
+            <li data-feature="quiz" tabindex="0"><?php echo get_phrase("Quiz") ?></li>
+          </ul>
+          <div class="feature-progress">
+            <div class="feature-progress-bar"></div>
+          </div>
+
+          <div id="bbb" class="feature-pane active">
+            <picture>
+              <source 
+                type="image/avif"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/online_course.avif'); ?>"
+                media="(min-width: 769px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/online_course-mobile.webp'); ?>"
+                media="(max-width: 768px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/online_course.webp'); ?>" />
+              <img 
+                src="<?php echo base_url('uploads/images/decloedt/home/optimized/online_course.webp'); ?>" 
+                alt="<?php echo get_phrase('Online Course'); ?>" 
+                width="2418" 
+                height="1600"
+                loading="lazy" />
+            </picture>
+          </div>
+          <div id="social" class="feature-pane">
+            <picture>
+              <source 
+                type="image/avif"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/Ai.avif'); ?>"
+                media="(min-width: 769px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/Ai-mobile.webp'); ?>"
+                media="(max-width: 768px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/Ai.webp'); ?>" />
+              <img 
+                src="<?php echo base_url('uploads/images/decloedt/home/optimized/Ai.webp'); ?>" 
+                alt="<?php echo get_phrase('Ai'); ?>" 
+                width="800" 
+                height="519"
+                loading="lazy" />
+            </picture>
+          </div>
+          <div id="quiz" class="feature-pane">
+            <picture>
+              <source 
+                type="image/avif"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/quiz_recent.avif'); ?>"
+                media="(min-width: 769px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/quiz_recent-mobile.webp'); ?>"
+                media="(max-width: 768px)" />
+              <source 
+                type="image/webp"
+                srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/quiz_recent.webp'); ?>" />
+              <img 
+                src="<?php echo base_url('uploads/images/decloedt/home/optimized/quiz_recent.webp'); ?>" 
+                alt="<?php echo get_phrase('Quiz'); ?>" 
+                width="862" 
+                height="580"
+                loading="lazy" />
+            </picture>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Comparaison Avant et Après Wayo ----->
+   <section class="position-relative comparaisonSec"  <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+    <div class="bg-white container position-relative shadow-lg rounded-lg py-4 px-7 unified-title-container" style="z-index: 1;">
+      <h2><?php echo get_phrase("A single platform. Zero hassle") ?></h2>
+      <p class="text-center text-dark mb-5 fs-6"><?php echo get_phrase("Wayo Academy brings together everything needed to create, sell, and run your training courses without stress.") ?></p>
+      <div class="row g-4 ">
+            <!-- Sans Wayo Column -->
+            <div class="col-lg-6 col-md-12">
+                <div class="comparison-card sans-wayo h-100 shadow rounded-4 p-4 p-md-5">
+                    <div class="text-center">
+                        <span class="badge-header badge-sans"><?php echo get_phrase("Without Wayo"); ?></span>
+                    </div>
+
+                    <div class="image-placeholder mb-4 d-flex justify-content-center align-items-center rounded-3">
+                        <picture>
+                          <source 
+                            type="image/avif"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/without-wayo.avif'); ?>"
+                            media="(min-width: 769px)" />
+                          <source 
+                            type="image/webp"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/without-wayo-mobile.webp'); ?>"
+                            media="(max-width: 768px)" />
+                          <source 
+                            type="image/webp"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/without-wayo.webp'); ?>" />
+                          <img 
+                            src="<?php echo base_url('uploads/images/decloedt/home/optimized/without-wayo.webp'); ?>" 
+                            alt="<?php echo get_phrase('Without Wayo'); ?>" 
+                            width="1006" 
+                            height="558"
+                            loading="lazy" />
+                        </picture>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li> <?php echo get_phrase('Too many separate tools, loss of time and errors.'); ?></li>
+                        <li> <?php echo get_phrase('Scattered data, no clear visibility.'); ?></li>
+                        <li> <?php echo get_phrase('Manual processes, zero automation.'); ?></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Avec Wayo Column -->
+            <div class="col-lg-6 col-md-12">
+                <div class="comparison-card avec-wayo h-100 shadow rounded-4 p-4 p-md-5">
+                    <div class="text-center">
+                        <span class="badge-header badge-avec"><?php echo get_phrase("With Wayo"); ?></span>
+                    </div>
+
+                    <div class="image-placeholder">
+                        <picture>
+                          <source 
+                            type="image/avif"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/with-wayo.avif'); ?>"
+                            media="(min-width: 769px)" />
+                          <source 
+                            type="image/webp"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/with-wayo-mobile.webp'); ?>"
+                            media="(max-width: 768px)" />
+                          <source 
+                            type="image/webp"
+                            srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/with-wayo.webp'); ?>" />
+                          <img 
+                            src="<?php echo base_url('uploads/images/decloedt/home/optimized/with-wayo.webp'); ?>" 
+                            alt="<?php echo get_phrase('With Wayo'); ?>" 
+                            width="983" 
+                            height="571"
+                            loading="lazy" />
+                        </picture>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li><?php echo get_phrase('Single dashboard for courses and payments.'); ?></li>
+                        <li><?php echo get_phrase('Centralized data and clear reporting.'); ?></li>
+                        <li><?php echo get_phrase('Automation of tracking and communication.'); ?></li>
+                    </ul>
+                </div>
+            </div>
+      </div>
+      <!-- <div class="pricing-table-container" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+        
+      </div> -->
+    </div>
+  </section>
+  <!-------->
   <!-- Why choose Wayo Academy -->
   <!-- <section class="features">
     <div class="container">
@@ -388,25 +490,96 @@
       <p class="subtitle"><?php echo get_phrase("Passionate professionals to guide you") ?></p>
       <div class="mentors-grid">
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor01-home.png" alt="Mentor 2" loading="lazy" />
+          <picture>
+            <source 
+              type="image/avif"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor01-home.avif'); ?>"
+              media="(min-width: 769px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor01-home-mobile.webp'); ?>"
+              media="(max-width: 768px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor01-home.webp'); ?>" />
+            <img 
+              src="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor01-home.webp'); ?>" 
+              alt="<?php echo get_phrase('Youssef_El_Omrani'); ?>" 
+              width="1024" 
+              height="1024"
+              loading="lazy" />
+          </picture>
           <h3><?php echo get_phrase("Youssef_El_Omrani") ?></h3>
           <p class="specialty"><?php echo get_phrase("Artificial_Intelligence_and_Data_Analysis") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor02-home.png" alt="Mentor 1" loading="lazy" />
+          <picture>
+            <source 
+              type="image/avif"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor02-home.avif'); ?>"
+              media="(min-width: 769px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor02-home-mobile.webp'); ?>"
+              media="(max-width: 768px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor02-home.webp'); ?>" />
+            <img 
+              src="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor02-home.webp'); ?>" 
+              alt="<?php echo get_phrase('Salma_Benkacem'); ?>" 
+              width="1024" 
+              height="1024"
+              loading="lazy" />
+          </picture>
           <h3><?php echo get_phrase("Salma_Benkacem") ?></h3>
           <p class="specialty"><?php echo get_phrase("Cybersecurity_and_Systems_Protection") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/mentor03-home.png" alt="Mentor 4" loading="lazy" />
+          <picture>
+            <source 
+              type="image/avif"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor03-home.avif'); ?>"
+              media="(min-width: 769px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor03-home-mobile.webp'); ?>"
+              media="(max-width: 768px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor03-home.webp'); ?>" />
+            <img 
+              src="<?php echo base_url('uploads/images/decloedt/home/optimized/mentor03-home.webp'); ?>" 
+              alt="<?php echo get_phrase('Hamza_Aït_Lahcen'); ?>" 
+              width="1024" 
+              height="1024"
+              loading="lazy" />
+          </picture>
           <h3><?php echo get_phrase("Hamza_Aït_Lahcen") ?></h3>
           <p class="specialty"><?php echo get_phrase("Web_and_Application_Development") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
         </div>
         <div class="mentor-card">
-          <img src="uploads/images/decloedt/home/logo-hwe.png" alt="Mentor 2" loading="lazy" />
+          <picture>
+            <source 
+              type="image/avif"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/logo-hwe.avif'); ?>" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/logo-hwe-mobile.webp'); ?>"
+              media="(max-width: 768px)" />
+            <source 
+              type="image/webp"
+              srcset="<?php echo base_url('uploads/images/decloedt/home/optimized/logo-hwe.webp'); ?>" />
+            <img 
+              src="<?php echo base_url('uploads/images/decloedt/home/optimized/logo-hwe.webp'); ?>" 
+              alt="<?php echo get_phrase('Moscaling_academy'); ?>" 
+              width="400" 
+              height="400"
+              loading="lazy" />
+          </picture>
           <h3><?php echo get_phrase("Moscaling_academy") ?></h3>
           <p class="specialty"><?php echo get_phrase("AI_&_Data") ?></p>
           <a href="#" class="btn btn-mentors"><?php echo get_phrase("Learn More") ?></a>
@@ -415,7 +588,7 @@
     </div>
   </section>
 
-      <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+      <!-- <section class="app-coming-soon" <?php echo (get_user_language() === 'arabic') ? 'dir="rtl"' : 'dir="ltr"'; ?>>
       <div class="app-frame">
         <div class="app-inner">
           <div class="app-media"><img src="https://i.postimg.cc/Z5nbcDC6/app.png" alt="Wayo app mockup"/></div>
@@ -430,12 +603,312 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
   <!------------------------------------------------------------------------------------------------>
 </main>
 <!-- ========== END MAIN ========== -->
+
+<link rel="stylesheet" href="<?php echo base_url('assets/frontend/ultimate/css/plyr/plyr.min.css'); ?>" />
+
+<!-- Plyr Custom Theme (Wayo Academy colors) + Images responsives -->
+<style>
+  /* Images responsives - maintient le ratio */
+  picture {
+    display: block;
+  }
+  picture img {
+    max-width: 100%;
+    height: auto;
+  }
+  /* Feature pane - pas d'espace blanc */
+  .feature-pane picture {
+    display: flex;
+    justify-content: center;
+  }
+  .feature-pane picture img {
+    width: auto;
+    max-width: 100%;
+    max-height: 500px;
+  }
+  
+  .plyr-container {
+    --plyr-color-main: #FC7B30;
+    --plyr-video-background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+  .plyr {
+    border-radius: 12px;
+  }
+  
+  /* Grand bouton Play central - Centrage corrigé */
+  .plyr__control--overlaid {
+    background: rgba(252, 123, 48, 0.9);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 12px;
+  }
+  .plyr__control--overlaid svg {
+    left: 0 !important;
+    top: 0 !important;
+    position: relative !important;
+    margin-left: 3px;
+    transform: none !important;
+  }
+  .plyr__control--overlaid:hover {
+    background: #FC7B30;
+  }
+  .plyr__control--overlaid:hover svg {
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+  
+  /* Petit bouton Play dans les contrôles - Centrage corrigé */
+  .plyr__controls .plyr__control {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+  }
+  .plyr__controls .plyr__control:hover,
+  .plyr__controls .plyr__control:focus,
+  .plyr__controls .plyr__control.plyr__tab-focus {
+    background: transparent !important;
+  }
+  .plyr__controls .plyr__control svg {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+  .plyr__controls [data-plyr="play"] svg {
+    margin-left: 2px;
+  }
+  .plyr__controls .plyr__control:hover svg {
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+  
+
+  .plyr__menu__container .plyr__control[role=menuitemradio][aria-checked=true]::before {
+    background: #FC7B30;
+  }
+</style>
+
 <script>
   window.translations = {
     month: '<?php echo get_phrase("month"); ?>'
   };
+</script>
+
+<!-- Polyfill pour passive event listeners (fix warnings Plyr) -->
+<script>
+(function() {
+  if (typeof EventTarget !== 'undefined') {
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
+    
+    EventTarget.prototype.addEventListener = function(type, listener, options) {
+      let newOptions = options;
+      if (passiveEvents.includes(type)) {
+        if (typeof options === 'boolean') {
+          newOptions = { capture: options, passive: true };
+        } else if (typeof options === 'object' || options === undefined) {
+          newOptions = { ...options, passive: options?.passive !== false };
+        }
+      }
+      return originalAddEventListener.call(this, type, listener, newOptions);
+    };
+  }
+})();
+</script>
+<script src="<?php echo base_url('assets/frontend/ultimate/js/plyr.polyfilled.min.js'); ?>"></script>
+
+<script>
+  // 🎬 Plyr Video Player - Autoplay au chargement + Pause quand hors écran
+  document.addEventListener('DOMContentLoaded', function() {
+    const videoElements = document.querySelectorAll('video.plyr-video');
+    const plyrInstances = new Map();
+    
+    // 📱 Détection intelligente: utiliser la version mobile si nécessaire
+    function shouldUseMobileVersion() {
+      const isSmallScreen = window.innerWidth <= 768;
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const isSlowConnection = connection && (
+        connection.saveData ||
+        connection.effectiveType === 'slow-2g' ||
+        connection.effectiveType === '2g' ||
+        connection.effectiveType === '3g'
+      );
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      return isSmallScreen || isSlowConnection || isMobileDevice;
+    }
+    
+    // 🎯 Initialiser Plyr et charger la vidéo
+    function initPlyrVideo(video, autoplay = false) {
+      if (video.dataset.loaded) return plyrInstances.get(video);
+      
+      const useMobile = shouldUseMobileVersion();
+      const mp4Src = useMobile ? video.dataset.srcMp4Mobile : video.dataset.srcMp4;
+      
+      if (mp4Src) {
+        // Ajouter la source
+        const source = document.createElement('source');
+        source.src = mp4Src;
+        source.type = 'video/mp4';
+        video.appendChild(source);
+        
+        // Initialiser Plyr avec autoplay muet
+        const player = new Plyr(video, {
+          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+          loop: { active: true },
+          muted: true,
+          autoplay: autoplay,
+          clickToPlay: true,
+          hideControls: true,
+          resetOnEnd: true,
+          keyboard: { focused: true, global: false },
+          tooltips: { controls: true, seek: true },
+          volume: 1,
+          storage: { enabled: false },
+          i18n: {
+            play: '<?php echo get_phrase("Play"); ?>',
+            pause: '<?php echo get_phrase("Pause"); ?>',
+            mute: '<?php echo get_phrase("Mute"); ?>',
+            unmute: '<?php echo get_phrase("Unmute"); ?>',
+            enterFullscreen: '<?php echo get_phrase("Enter fullscreen"); ?>',
+            exitFullscreen: '<?php echo get_phrase("Exit fullscreen"); ?>',
+            currentTime: '<?php echo get_phrase("Current time"); ?>',
+            duration: '<?php echo get_phrase("Duration"); ?>',
+            volume: '<?php echo get_phrase("Volume"); ?>'
+          }
+        });
+        
+        // 🔊 Fix robuste pour unmute
+        player.on('ready', function() {
+          // S'assurer que la vidéo démarre en muet
+          player.muted = true;
+          video.muted = true;
+          
+          // Créer un overlay "Cliquer pour le son"
+          const container = player.elements.container;
+          const soundOverlay = document.createElement('div');
+          soundOverlay.className = 'plyr-sound-overlay';
+          soundOverlay.innerHTML = '<span class="sound-icon">🔇</span><span class="sound-text"><?php echo get_phrase("Click for sound"); ?></span>';
+          soundOverlay.style.cssText = 'position:absolute;bottom:60px;right:10px;background:rgba(0,0,0,0.7);color:#fff;padding:8px 12px;border-radius:20px;cursor:pointer;z-index:10;display:flex;align-items:center;gap:6px;font-size:12px;transition:all 0.3s;';
+          container.style.position = 'relative';
+          container.appendChild(soundOverlay);
+          
+          // Fonction pour activer le son
+          function enableSound() {
+            player.muted = false;
+            video.muted = false;
+            player.volume = 1;
+            soundOverlay.style.display = 'none';
+          }
+          
+          // Fonction pour toggle play/pause
+          function togglePlayPause() {
+            if (player.playing) {
+              player.pause();
+            } else {
+              player.play();
+            }
+          }
+          
+          // Clic sur l'overlay (son)
+          soundOverlay.addEventListener('click', function(e) {
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+            enableSound();
+          });
+          
+          // Support tactile pour l'overlay (mobile)
+          soundOverlay.addEventListener('touchend', function(e) {
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+            enableSound();
+          }, { passive: false });
+          
+          // 📱 Support mobile: tap sur la vidéo pour play/pause
+          let lastTap = 0;
+          container.addEventListener('touchend', function(e) {
+            // Ignorer si on touche les contrôles
+            if (e.target.closest('.plyr__controls') || e.target.closest('.plyr-sound-overlay')) {
+              return;
+            }
+            
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            if (tapLength < 300 && tapLength > 0) {
+              // Double tap → activer le son
+              if (e.cancelable) e.preventDefault();
+              if (player.muted) {
+                enableSound();
+              }
+            } else {
+              // Simple tap → play/pause
+              if (e.cancelable) e.preventDefault();
+              togglePlayPause();
+            }
+            lastTap = currentTime;
+          }, { passive: false });
+          
+          // Cacher l'overlay si l'utilisateur utilise le bouton mute de Plyr
+          player.on('volumechange', function() {
+            if (!player.muted) {
+              soundOverlay.style.display = 'none';
+            } else {
+              soundOverlay.style.display = 'flex';
+            }
+          });
+        });
+        
+        video.dataset.loaded = 'true';
+        plyrInstances.set(video, player);
+        return player;
+      }
+      return null;
+    }
+    
+    // 🚀 Initialiser et lancer la vidéo immédiatement au chargement
+    videoElements.forEach(function(video) {
+      const player = initPlyrVideo(video, true);
+      if (player) {
+        player.play().catch(function() {});
+      }
+    });
+    
+    // 👁️ Observer pour pause/play quand hors écran
+    if ('IntersectionObserver' in window) {
+      const videoObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          const video = entry.target;
+          const player = plyrInstances.get(video);
+          
+          if (player) {
+            if (entry.isIntersecting) {
+              // ✅ Vidéo visible → Jouer
+              player.play().catch(function() {});
+            } else {
+              // ⏸️ Vidéo hors écran → Mettre en pause
+              player.pause();
+            }
+          }
+        });
+      }, { 
+        rootMargin: '50px',
+        threshold: 0.3
+      });
+      
+      videoElements.forEach(function(video) {
+        videoObserver.observe(video);
+      });
+    }
+  });
 </script>

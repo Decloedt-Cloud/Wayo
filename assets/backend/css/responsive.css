@@ -770,6 +770,9 @@ th {
 
 #update-logos-btn i {
   margin-right: 8px;
+}
+
+@media (max-width: 576px) {
   .page-title {
     margin-left: 0px;
   }
@@ -817,7 +820,6 @@ th {
   .pagination-controls {
     justify-content: center;
   }
- 
 }
 
 @media (max-width: 480px) {
@@ -825,6 +827,7 @@ th {
   table.dataTable > thead > tr > td:not(.sorting_disabled) {
     padding-right: 28px;
   }
+  
   .btncol {
     display: flex !important;
     justify-content: center !important;

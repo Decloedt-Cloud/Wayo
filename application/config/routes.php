@@ -49,7 +49,136 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+
+// =====================================================
+// LANGUAGE PREFIX CONFIGURATION
+// =====================================================
+// Supported language codes mapped to language names
+$supported_langs = array(
+    'fr' => 'french',
+    'en' => 'english',
+    'ar' => 'arabic',
+    'es' => 'spanish',
+    'nl' => 'dutch'
+);
+
+// Detect language prefix from URL (handles subdirectory installations)
+$lang_prefix = '';
+$lang_segment = '';
+if (isset($_SERVER['REQUEST_URI'])) {
+    $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    // Get the script path to determine base directory
+    $script_name = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+    $base_dir = rtrim(dirname($script_name), '/');
+    
+    // Remove base directory from request URI to get relative path
+    $relative_path = $request_uri;
+    if (!empty($base_dir) && strpos($request_uri, $base_dir) === 0) {
+        $relative_path = substr($request_uri, strlen($base_dir));
+    }
+    
+    // Parse the relative path
+    $uri_parts = explode('/', trim($relative_path, '/'));
+    
+    // Check if first segment is a language code
+    if (!empty($uri_parts[0]) && array_key_exists($uri_parts[0], $supported_langs)) {
+        $lang_prefix = $uri_parts[0];
+        $lang_segment = $uri_parts[0] . '/';
+        
+        // Store detected language in a constant for later use
+        if (!defined('DETECTED_LANG_CODE')) {
+            define('DETECTED_LANG_CODE', $lang_prefix);
+            define('DETECTED_LANG_NAME', $supported_langs[$lang_prefix]);
+        }
+    }
+}
+
+// =====================================================
+// LANGUAGE-PREFIXED FRONTEND ROUTES
+// =====================================================
+foreach ($supported_langs as $code => $lang_name) {
+    // Home routes with language prefix
+    $route[$code] = 'home/index/' . $code;
+    $route[$code . '/home'] = 'home/index/' . $code;
+    
+    // Communities
+    $route[$code . '/communities'] = 'home/communities/' . $code;
+    $route[$code . '/communities/(.+)'] = 'home/communities/' . $code . '/$1';
+    
+    // Tutorial / How it works
+    $route[$code . '/tutorial'] = 'home/tutorial/' . $code;
+    $route[$code . '/getting_started'] = 'home/tutorial/' . $code;
+    
+    // Help Center / FAQ
+    $route[$code . '/help-center'] = 'home/faq/' . $code;
+    $route[$code . '/faq'] = 'home/faq/' . $code;
+    
+    // Contact / Support
+    $route[$code . '/contact'] = 'home/contact/' . $code;
+    $route[$code . '/support'] = 'home/contact/' . $code;
+    $route[$code . '/support/send'] = 'home/contact/send/' . $code;
+    
+    // About
+    $route[$code . '/about'] = 'home/about/' . $code;
+    
+    // Affiliation
+    $route[$code . '/affiliation'] = 'home/affiliation/' . $code;
+    
+    // Terms and Privacy
+    $route[$code . '/terms'] = 'home/terms_conditions/' . $code;
+    $route[$code . '/terms_conditions'] = 'home/terms_conditions/' . $code;
+    $route[$code . '/privacy_policy'] = 'home/privacy_policy/' . $code;
+    
+    // Community details
+    $route[$code . '/community_details'] = 'home/community_details/' . $code;
+    $route[$code . '/community_details/(.+)'] = 'home/community_details/$1/' . $code;
+    
+    // Trends / Articles
+    $route[$code . '/trends'] = 'articles/index/' . $code;
+    $route[$code . '/trends/category/(:any)'] = 'articles/category/$1/' . $code;
+    $route[$code . '/trends/tag/(:any)'] = 'articles/tag/$1/' . $code;
+    $route[$code . '/trends/page/(:any)'] = 'articles/page/$1/' . $code;
+    $route[$code . '/trends/(:any)'] = 'articles/show/$1/' . $code;
+    
+    // Teachers
+    $route[$code . '/teachers'] = 'home/teachers/' . $code;
+    $route[$code . '/teachers/(.+)'] = 'home/teachers/$1/' . $code;
+    
+    // Events
+    $route[$code . '/events'] = 'home/events/' . $code;
+    $route[$code . '/events/(.+)'] = 'home/events/$1/' . $code;
+    
+    // Gallery
+    $route[$code . '/gallery'] = 'home/gallery/' . $code;
+    $route[$code . '/gallery/(.+)'] = 'home/gallery/$1/' . $code;
+    $route[$code . '/gallery_view/(:any)'] = 'home/gallery_view/$1/' . $code;
+    $route[$code . '/gallery_view/(:any)/(.+)'] = 'home/gallery_view/$1/$2/' . $code;
+    
+    // Noticeboard
+    $route[$code . '/noticeboard'] = 'home/noticeboard/' . $code;
+    $route[$code . '/noticeboard/(.+)'] = 'home/noticeboard/$1/' . $code;
+    $route[$code . '/notice_details/(:any)'] = 'home/notice_details/$1/' . $code;
+    
+    // Admission routes with language prefix
+    $route[$code . '/join/community'] = 'admission/online_admission/' . $code;
+    $route[$code . '/join/community/(.+)'] = 'admission/online_admission/$1/' . $code;
+    $route[$code . '/join/member'] = 'admission/online_admission_student/' . $code;
+    $route[$code . '/join/member/(.+)'] = 'admission/online_admission_student/$1/' . $code;
+    
+    // Webinaire
+    $route[$code . '/webinaire'] = 'home/webinaire/' . $code;
+}
+
+$route['superadmin/community_list'] = 'superadmin/school';
+$route['superadmin/community_list/(:any)'] = 'superadmin/school/$1';
+
 $route['default_controller'] = 'home';
+
+// Custom Routes for Chat
+$route['app/chat'] = 'chat';
+
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = TRUE;
 
@@ -58,9 +187,18 @@ $route['getting_started'] = 'home/tutorial';
 $route['help-center'] = 'home/faq';
 $route['communities'] = 'home/communities';
 $route['communities/(.+)'] = 'home/communities/$1';
+
+// Trends Routes (formerly Blog)
+$route['trends'] = 'articles/index';
+$route['trends/category/(:any)'] = 'articles/category/$1';
+$route['trends/tag/(:any)'] = 'articles/tag/$1';
+$route['trends/page/(:any)'] = 'articles/page/$1';
+$route['trends/(:any)'] = 'articles/show/$1';
+
 $route['tutorial'] = 'home/tutorial';
 $route['contact'] = 'home/contact';
 $route['support'] = 'home/contact';
+$route['support/send'] = 'home/contact/send';
 $route['about'] = 'home/about';
 $route['faq'] = 'home/faq';
 $route['affiliation'] = 'home/affiliation';
@@ -76,8 +214,28 @@ $route['join/community/(.+)'] = 'admission/online_admission/$1';
 $route['join/member'] = 'admission/online_admission_student';
 $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
 
+// Direct routes for registration (bypasses URL rewriting)
+$route['register/member'] = 'admission/register_member';
+$route['register/community'] = 'admission/register_community';
+
+// Routes for app rewriter
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(.+)'] = 'student/join_school/$1';
+
+// Wall Routes
+$route['(.+)/community_wall'] = 'wall/community';
+$route['(.+)/class_wall'] = 'wall/class';
+$route['(.+)/class_wall/(:num)'] = 'wall/class/$2';
+$route['community_wall'] = 'wall/community';
+$route['class_wall'] = 'wall/class';
+$route['class_wall/(:num)'] = 'wall/class/$1';
+
+
+
+$route['academy/student/filter'] = 'student/academy/filter';
 
 // API Routes
+$route['api/user'] = 'api/Admin/user';
 $route['api/login'] = 'api/Admin/login';
 $route['api/menu'] = 'api/Admin/menu';
 
@@ -353,6 +511,20 @@ $route['api/UpdateSystemSettings/(:num)'] = 'api/Admin/update_system_settings/$1
 
 
 $route['api/GetSystemLogo/(:num)'] = "api/Admin/system_logo/$1";
+
+// Wall API Routes
+$route['api/communities/(:num)/wall']['GET'] = 'api/Wall/community/$1';
+$route['api/communities/(:num)/wall']['POST'] = 'api/Wall/community_posts/$1';
+$route['api/communities/(:num)/announcements']['POST'] = 'api/Wall/announcements/$1';
+
+$route['api/classes/(:num)/wall']['GET'] = 'api/Wall/class/$1';
+$route['api/classes/(:num)/wall']['POST'] = 'api/Wall/class_posts/$1';
+
+$route['api/posts/(:num)/report']['POST'] = 'api/Wall/report/$1';
+$route['api/posts/(:num)/hide']['POST'] = 'api/Wall/hide/$1';
+$route['api/posts/(:num)/unhide']['POST'] = 'api/Wall/unhide/$1';
+$route['api/posts/(:num)']['DELETE'] = 'api/Wall/posts/$1';
+
 $route['api/UpdateSystemLogo/(:num)'] = "api/Admin/update_system_logo/$1";
 
 
@@ -535,6 +707,12 @@ $route['api/GetSyllabus/(:any)/(:num)'] = 'api/Admin/syllabus_by_class_section/$
 $route['api/CreateSyllabus'] = 'api/Admin/create_syllabus';
 $route['api/DeleteSyllabus'] = 'api/Admin/delete_syllabus';
 
+// API Wall Routes (Fix for frontend mismatch)
+$route['api/classes/(:num)/wall'] = 'api/wall/class/$1';
+$route['api/classes/(:num)/wall/posts'] = 'api/wall/class_posts/$1';
+$route['api/communities/(:num)/wall'] = 'api/wall/community/$1';
+$route['api/communities/(:num)/wall/posts'] = 'api/wall/community_posts/$1';
+$route['api/communities/(:num)/announcements'] = 'api/wall/announcements/$1';
 
 
 
@@ -692,8 +870,49 @@ $route['cron/fx_clear_cache'] = 'Cron/fx_clear_cache';
 $route['cron/fx_test_api'] = 'Cron/fx_test_api';
 
 
-$route['payment/community/(:num)'] = 'student/payment/community/$1';
+// =====================================================
+// WAYO WALLS V1 ROUTES
+// =====================================================
+// Community Wall Routes
+$route['api/communities/(:num)/wall'] = 'api/Wall/community/$1';
+$route['api/communities/(:num)/wall/posts'] = 'api/Wall/community_posts/$1';
+$route['api/communities/(:num)/announcements'] = 'api/Wall/announcements/$1';
 
+// Class Wall Routes
+$route['api/classes/(:num)/wall'] = 'api/Wall/class/$1';
+$route['api/classes/(:num)/wall/posts'] = 'api/Wall/class_posts/$1';
+
+// Post Moderation Routes
+$route['api/posts/(:num)/report']['POST'] = 'api/Wall/report/$1';
+$route['api/posts/(:num)/hide']['POST'] = 'api/Wall/hide/$1';
+$route['api/posts/(:num)/unhide']['POST'] = 'api/Wall/unhide/$1';
+$route['api/posts/(:num)']['DELETE'] = 'api/Wall/posts/$1';
+
+// Moderation Dashboard Routes
+$route['api/moderation/posts'] = 'api/Wall/moderation_posts';
+$route['api/moderation/reports'] = 'api/Wall/reports';
+$route['api/reports/(:num)/status'] = 'api/Wall/report_status/$1';
+
+// Wall Page Routes
+$route['wall/community/(:num)'] = 'wall/community/$1';
+$route['wall/class/(:num)'] = 'wall/class/$1';
+$route['wall/moderation'] = 'wall/moderation';
+
+$route['payment/community/(:num)'] = 'student/payment/community/$1';
+$route['app/online_admission'] = 'student/online_admission';
+$route['app/online_admission/(:any)'] = 'student/online_admission/$1';
+$route['app/payment'] = 'student/payment';
+$route['app/online_admission'] = 'admin/online_admission';
+// $route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
+$route['app/payment/(:any)'] = 'admin/payment/$1';
+$route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
+
+// FIX: Route for app/join_school
+$route['app/join_school'] = 'student/join_school';
+$route['app/join_school/(:any)'] = 'student/join_school/$1';
+$route['app/courses/(:num)'] = 'student/courses/$1';
+$route['app/class_wall'] = 'wall/class';
+$route['app/class_wall/(:num)'] = 'wall/class/$1';
 /*
 | -------------------------------------------------------------------------
 | CUSTOM ROUTE FOR APP URL MASKING
@@ -761,6 +980,8 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/announcements/(.+)'] = $role_route . '/event_calendar/$1';
         $route['app/community_settings'] = $role_route . '/school_settings';
         $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
+        $route['app/community_list'] = $role_route . '/school';
+        $route['app/community_list/(.+)'] = $role_route . '/school/$1';
         $route['app/courses'] = 'addons/courses';
         $route['app/courses/(:num)'] = 'student/manage_class/courses/$1';
         $route['app/courses/(.+)'] = 'addons/courses/$1';

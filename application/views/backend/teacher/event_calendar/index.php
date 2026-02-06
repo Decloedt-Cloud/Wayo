@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <style>
 /* ============================================================================
    EVENT CALENDAR - MODERN DESIGN
@@ -349,6 +349,9 @@
    }
 
    function showNotification(type, message) {
+    <?php if ($this->config->item('enable_toasts') == FALSE): ?>
+        return;
+    <?php endif; ?>
     toastr.options = {
         closeButton: true,
         progressBar: true,

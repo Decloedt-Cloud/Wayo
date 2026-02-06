@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <style>
    .alert-modern .icon {
       background-color: #6c757d;
@@ -166,7 +166,7 @@
 </div>
 </div>
 
-<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/sweetalert.min.js"></script>
 <script>
 function initDataTable() {
     // Vérifiez si la table n'est pas déjà initialisée

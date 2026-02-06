@@ -14,9 +14,8 @@
 <link href="<?php echo base_url(); ?>assets/backend/css/app.min.css" rel="stylesheet" type="text/css" />
 
 <!-- CUSTOM CSS FILES -->
-<link href="<?php echo base_url(); ?>assets/backend/css/custom.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url(); ?>assets/backend/css/content-placeholder.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url(); ?>assets/backend/css/addon.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/backend/css/custom.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/backend/css/content-placeholder.min.css" rel="stylesheet" type="text/css" />
 
 <!--Notify for ajax-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
