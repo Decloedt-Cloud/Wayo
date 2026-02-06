@@ -380,6 +380,8 @@ class Wall extends REST_Controller
             }
         }
 
+        log_message('error', "DEBUG_WALL: class_get for Wall ID {$wall['id']}, Include Hidden: " . ($include_hidden ? 'Yes' : 'No'));
+
         // Get posts
         $posts = $this->wall_model->get_wall_posts($wall['id'], [
             'page' => $page,

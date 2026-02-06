@@ -39,7 +39,7 @@
 
 .editor-container {
     border-radius: 12px;
-    overflow: hidden;
+    /* overflow: hidden; Removed to prevent tooltip clipping */
     border: 1px solid #e2e8f0;
     background: white;
 }
@@ -61,6 +61,14 @@
 .ql-editor {
     min-height: 200px;
     padding: 1rem;
+}
+
+/* Fix Quill Tooltip Positioning (No visual style changes) */
+.ql-snow .ql-tooltip {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    white-space: nowrap !important;
+    z-index: 1000 !important;
 }
 
 /* Modern Buttons */

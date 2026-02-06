@@ -98,7 +98,6 @@ class Wall_model extends CI_Model
             'include_hidden' => false,
             'page' => 1,
             'limit' => 20,
-            'user_id' => null,
             'type' => null
         ];
 
@@ -107,6 +106,8 @@ class Wall_model extends CI_Model
         $this->db->select('p.*, u.name as author_name, u.email as author_email');
         $this->db->from('posts p');
         $this->db->join('users u', 'u.id = p.author_user_id', 'left');
+        
+        // STRICTLY filter by Wall ID (Class Membership)
         $this->db->where('p.wall_id', $wall_id);
         $this->db->where('p.deleted_at', NULL);
 
@@ -115,10 +116,7 @@ class Wall_model extends CI_Model
             $this->db->where('p.type', $options['type']);
         }
         
-        // Debug Query
-        log_message('error', 'Wall_model::get_wall_posts Query: ' . $this->db->get_compiled_select('', false));
-
-        // Hide hidden posts unless explicitly requested and user has permission
+        // Hide hidden posts unless explicitly requested
         if (!$options['include_hidden']) {
             $this->db->where('p.status', 'published');
         }
@@ -129,8 +127,16 @@ class Wall_model extends CI_Model
         $offset = ($options['page'] - 1) * $options['limit'];
         $this->db->limit($options['limit'], $offset);
 
+        // Debug Query
+        $sql = $this->db->get_compiled_select('', false);
+        log_message('error', 'Wall_model::get_wall_posts Query: ' . $sql);
+
         $query = $this->db->get();
-        return $query->result_array();
+        $result = $query->result_array();
+        
+        log_message('error', 'Wall_model::get_wall_posts Result Count: ' . count($result));
+        
+        return $result;
     }
 
     /**

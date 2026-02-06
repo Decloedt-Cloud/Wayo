@@ -303,6 +303,7 @@ class WallAuthorization
             $this->ci->db->reset_query();
 
             // Check 1: Enrollment
+            $this->ci->db->select('e.id');
             $this->ci->db->from('enrols e');
             $this->ci->db->join('students s', 's.id = e.student_id', 'left');
             $this->ci->db->join('users u', 'u.id = s.user_id', 'left');
@@ -310,7 +311,7 @@ class WallAuthorization
             $this->ci->db->where('e.class_id', $class_id);
             $this->ci->db->limit(1);
             
-            if ($this->ci->db->count_all_results() > 0) {
+            if ($this->ci->db->get()->num_rows() > 0) {
                 $this->ci->db->db_debug = $original_debug;
                 return true;
             }
@@ -319,6 +320,7 @@ class WallAuthorization
             $this->ci->db->reset_query();
 
             // Check 2: Paid Invoice (Purchased Course)
+            $this->ci->db->select('i.id');
             $this->ci->db->from('invoices i');
             $this->ci->db->join('students s', 's.id = i.student_id', 'left');
             $this->ci->db->join('users u', 'u.id = s.user_id', 'left');
@@ -332,7 +334,7 @@ class WallAuthorization
             $this->ci->db->group_end();
             $this->ci->db->limit(1);
 
-            $result = $this->ci->db->count_all_results() > 0;
+            $result = $this->ci->db->get()->num_rows() > 0;
             
             // Log if result is false to help debugging
             if (!$result) {
@@ -346,6 +348,7 @@ class WallAuthorization
             
         } catch (Exception $e) {
             log_message('error', "DEBUG_WALL: Exception in is_class_member: " . $e->getMessage());
+            $this->ci->db->reset_query();
             $this->ci->db->db_debug = $original_debug;
             return false;
         }

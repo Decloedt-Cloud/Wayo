@@ -58,7 +58,7 @@ class Superadmin extends CI_Controller
    */
   private function _update_url_language_prefix($url, $new_lang_code) {
     $supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
-    $backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron');
+    $backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron', 'wall', 'class_wall');
     $parsed = parse_url($url);
     $path = isset($parsed['path']) ? $parsed['path'] : '/';
     $base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');

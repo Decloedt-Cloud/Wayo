@@ -42,10 +42,14 @@
 }
 
 .page-header h1 {
-    font-size: 1.8rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.875rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 /* Class List Grid */

@@ -154,7 +154,7 @@ class Admin extends CI_Controller
 		$supported_codes = array('fr', 'en', 'ar', 'es', 'nl');
 		
 		// Backend routes that should NOT have language prefix
-		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron');
+		$backend_prefixes = array('app', 'admin', 'teacher', 'student', 'superadmin', 'login', 'api', 'cron', 'wall', 'class_wall');
 		
 		// Parse the URL
 		$parsed = parse_url($url);

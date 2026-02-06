@@ -233,7 +233,7 @@ class Wall extends CI_Controller
 
             $page_data['wall'] = $wall;
             $page_data['class'] = $class;
-            $page_data['page_title'] = $class['name'] . ' - ' . get_phrase('wall');
+            $page_data['page_title'] = 'wall';
         }
 
         $this->load->view('backend/index', $page_data);
