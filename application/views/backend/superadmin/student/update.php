@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/single-student-admission.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/single-student-admission.min.css">
 
 <!--title-->
 <div class="col-xl-12">

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <?php  $expense_category_details = $this->db->get_where('expense_categories', array('id' => $param1))->row_array(); ?>
 <form method="POST" class="d-block ajaxForm" action="<?php echo route('expense_category/update/'.$param1); ?>">

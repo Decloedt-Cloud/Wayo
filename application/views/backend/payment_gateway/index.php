@@ -27,6 +27,13 @@
 		// --------- DEFINE payment_type from invoice_details ---------
 		$payment_type = isset($invoice_details['payment_type']) ? $invoice_details['payment_type'] : '';
 		
+		// SÉCURITÉ: Forcer $amount_to_pay depuis invoice_details si incohérence détectée
+		$invoice_total = (float)($invoice_details['total_amount'] ?? 0);
+		if (!isset($amount_to_pay) || abs((float)$amount_to_pay - $invoice_total) > 0.01) {
+			$amount_to_pay = $invoice_total;
+			error_log("PAYMENT VIEW: amount_to_pay forcé à {$amount_to_pay} (invoice_total={$invoice_total})");
+		}
+		
 		// --------- TVA / VAT CALCULATION ---------
 		// On récupère les réglages fiscaux de la communauté / école
 		$school_id_for_vat = isset($invoice_details['school_id']) ? $invoice_details['school_id'] : school_id();
@@ -195,6 +202,38 @@
 			$paypal_enabled = isset($paypal_enabled) && $paypal_enabled;
 			// Les variables $stripe_public_key, $paypal_client_id_sandbox, etc. 
 			// sont déjà définies depuis le contrôleur via payment_settings
+		}
+
+		// =====================================================
+		// TVA POUR PAIEMENTS STUDENT → ADMIN
+		// Basé sur les settings de l'école (vat_enabled)
+		// =====================================================
+		$is_student_payment = !$is_subscription_admin;
+		$student_vat_applicable = false;
+		$student_vat_rate = 0;
+		$student_sub_total = (float)$amount_to_pay;
+		$student_vat_amount = 0;
+		$student_grand_total = (float)$amount_to_pay;
+
+		if ($is_student_payment && $vat_applicable && !empty($tax_residence)) {
+			$student_vat_applicable = true;
+			
+			// Déterminer le taux TVA selon la résidence fiscale de l'école
+			if ($tax_residence === 'MA') {
+				$student_vat_rate = 20;
+			} elseif (in_array($tax_residence, ['AE', 'UAE'])) {
+				$student_vat_rate = 5;
+			} else {
+				// Autres pays - utiliser le taux configuré si disponible
+				$student_vat_rate = isset($settings_school['vat_rate']) ? (float)$settings_school['vat_rate'] : 20;
+			}
+			
+			// Calcul TVA inversée (le montant affiché est TTC)
+			// sub_total = TTC / (1 + taux)
+			// vat_amount = TTC - sub_total
+			$student_sub_total = round($amount_to_pay / (1 + ($student_vat_rate / 100)), 2);
+			$student_vat_amount = round($amount_to_pay - $student_sub_total, 2);
+			$student_grand_total = (float)$amount_to_pay; // Le montant reste le même (TTC)
 		}
 
 		// Check if Morocco B2B applies
@@ -399,6 +438,32 @@
 						</div>
 					</div>
 					
+					<!-- VAT Info Banner - FOR STUDENT PAYMENTS WITH VAT -->
+					<?php if ($student_vat_applicable && !$is_subscription_admin): ?>
+					<div class="vat-banner mb-3 student-vat <?php echo (in_array($tax_residence, ['UAE', 'AE'])) ? 'uae' : ''; ?>">
+						<div class="vat-banner-main" style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">
+							<div class="vat-banner-country">
+								<?php echo ($tax_residence === 'MA') ? '🇲🇦' : (in_array($tax_residence, ['UAE', 'AE']) ? '🇦🇪' : '🏛️'); ?>
+							</div>
+							<div class="vat-banner-info">
+								<div class="vat-banner-title">
+									<?php echo get_phrase('Vat applied'); ?> - <?php echo ($tax_residence === 'MA') ? get_phrase('Morocco') : (in_array($tax_residence, ['UAE', 'AE']) ? get_phrase('United Arab Emirates') : $tax_residence); ?>
+								</div>
+								<div class="vat-banner-details">
+									<?php echo get_phrase('Vat rate'); ?>: <?php echo $student_vat_rate; ?>% • <?php echo get_phrase('School Tax Settings'); ?>
+								</div>
+							</div>
+							<div class="vat-banner-badge">
+								<?php echo ($tax_residence === 'MA') ? 'TVA' : 'VAT'; ?> <?php echo $student_vat_rate; ?>%
+							</div>
+						</div>
+						<div class="vat-banner-notice">
+							<i class="fa fa-info-circle"></i>
+							<?php echo get_phrase('Vat calculated automatically based on school tax settings'); ?>
+						</div>
+					</div>
+					<?php endif; ?>
+
 					<!-- VAT Info Banner - ONLY FOR SUBSCRIPTION_ADMIN (Admin → Superadmin) -->
 					<?php if ($is_subscription_admin && $has_vat_config && in_array($tax_residence, ['MA', 'AE', 'UAE'])): ?>
 					<div class="vat-banner mb-3 <?php echo ($tax_residence === 'UAE' || $tax_residence === 'AE') ? 'uae' : ''; ?>" style="--entity-color: <?php echo $entity_color; ?>;">
@@ -504,9 +569,15 @@
 					<!-- STRIPE FORM - Modified -->
 					<?php if ($stripe_enabled): ?>
 					<?php 
-					// Montant à payer selon le type de paiement
-					$form_amount = $is_subscription_admin ? $grand_total : $amount_to_pay;
+					// SÉCURITÉ: Toujours utiliser le montant de la facture (BDD) pour l'URL
+					// Ne jamais utiliser les montants calculés (grand_total) qui peuvent différer
+					$form_amount = $is_subscription_admin ? $grand_total : (float)$invoice_details['total_amount'];
 					$form_currency = $is_subscription_admin ? $display_currency : ($currency ?? 'MAD');
+					
+					// Debug logging si différence détectée
+					if (!$is_subscription_admin && abs($form_amount - $amount_to_pay) > 0.01) {
+						error_log("PAYMENT DEBUG: form_amount={$form_amount} vs amount_to_pay={$amount_to_pay} - Using invoice total");
+					}
 					
 					// Détecter le type d'utilisateur connecté
 					$current_user_type = $this->session->userdata('user_type');
@@ -536,15 +607,19 @@
 												<input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 												<input type="hidden" name="currency" value="<?php echo $form_currency;?>" />
 												<input type="hidden" name="payment_type" value="<?php echo $payment_type;?>" />
-												<?php if ($is_subscription_admin): ?>
-												<input type="hidden" name="vat_amount" value="<?php echo $vat_amount;?>" />
-												<input type="hidden" name="vat_rate" value="<?php echo $vat_rate;?>" />
-												<input type="hidden" name="sub_total" value="<?php echo $sub_total;?>" />
-												<?php else: ?>
-												<input type="hidden" name="vat_amount" value="0" />
-												<input type="hidden" name="vat_rate" value="0" />
-												<input type="hidden" name="sub_total" value="<?php echo $amount_to_pay;?>" />
-												<?php endif; ?>
+											<?php if ($is_subscription_admin): ?>
+											<input type="hidden" name="vat_amount" value="<?php echo $vat_amount;?>" />
+											<input type="hidden" name="vat_rate" value="<?php echo $vat_rate;?>" />
+											<input type="hidden" name="sub_total" value="<?php echo $sub_total;?>" />
+											<?php elseif ($student_vat_applicable): ?>
+											<input type="hidden" name="vat_amount" value="<?php echo $student_vat_amount;?>" />
+											<input type="hidden" name="vat_rate" value="<?php echo $student_vat_rate;?>" />
+											<input type="hidden" name="sub_total" value="<?php echo $student_sub_total;?>" />
+											<?php else: ?>
+											<input type="hidden" name="vat_amount" value="0" />
+											<input type="hidden" name="vat_rate" value="0" />
+											<input type="hidden" name="sub_total" value="<?php echo $amount_to_pay;?>" />
+											<?php endif; ?>
 												<input type="hidden" name="total_amount" value="<?php echo $form_amount;?>" />
 												<input type="hidden" name="type" value="<?php echo $type;?>" />
 												
@@ -651,6 +726,13 @@
 																HT: <?php echo number_format($sub_total, 2); ?> + TVA <?php echo $vat_rate; ?>%: <?php echo number_format($vat_amount, 2); ?> = <?php echo number_format($grand_total, 2); ?> <?php echo $display_currency; ?>
 															<?php endif; ?>
 														</small>
+													<?php elseif ($student_vat_applicable): ?>
+														<!-- STUDENT PAYMENT WITH VAT -->
+														<span id="stripe-base-amount"><?php echo number_format($amount_to_pay, 2); ?></span> <?php echo $currency ?? 'MAD'; ?>
+														<br/>
+														<small>
+															HT: <?php echo number_format($student_sub_total, 2); ?> + <?php echo ($tax_residence === 'MA') ? 'TVA' : 'VAT'; ?> <?php echo $student_vat_rate; ?>%: <?php echo number_format($student_vat_amount, 2); ?> = <?php echo number_format($amount_to_pay, 2); ?> <?php echo $currency ?? 'MAD'; ?>
+														</small>
 													<?php else: ?>
 														<!-- AUTRES PAIEMENTS: Simple montant -->
 														<span id="stripe-base-amount"><?php echo number_format($amount_to_pay, 2); ?></span> <?php echo $currency ?? 'MAD'; ?>
@@ -744,7 +826,7 @@
 								</span>
 							</div>
 						</div>
-						<?php if ($has_vat_config): ?>
+						<?php if ($has_vat_config || $student_vat_applicable): ?>
 						<div class="product-card-footer">
 							<span class="vat-included-badge">
 								<i class="fa fa-check-circle mr-1"></i>
@@ -808,6 +890,33 @@
 								<span class="currency-display"><?php echo $display_currency; ?></span>
 							</strong>
 						</div>
+						<?php elseif ($student_vat_applicable): ?>
+						<!-- Subtotal HT - STUDENT PAYMENT WITH VAT -->
+						<div class="d-flex justify-content-between p-3" style="border-bottom: 1px solid #f1f3f4;">
+							<span style="color: #5f6368;">
+								<i class="fa fa-file-invoice mr-2" style="color: #9aa0a6;"></i>
+								<?php echo get_phrase('subtotal'); ?> (HT)
+							</span>
+							<strong style="color: #202124;">
+								<span class="amount-subtotal"><?php echo number_format($student_sub_total, 2); ?></span> 
+								<span class="currency-display"><?php echo $currency ?? 'MAD'; ?></span>
+							</strong>
+						</div>
+						
+						<!-- VAT Amount - STUDENT PAYMENT -->
+						<div class="d-flex justify-content-between p-3" style="background: #f8f9fa; border-bottom: 1px solid #f1f3f4;">
+							<span style="color: #5f6368;">
+								<i class="fa fa-percent mr-2" style="color: #9aa0a6;"></i>
+								<?php echo get_phrase('vat'); ?> 
+								<span class="badge badge-secondary ml-1" style="font-size: 10px; vertical-align: middle;">
+									<?php echo $student_vat_rate; ?>%
+								</span>
+							</span>
+							<strong style="color: #202124;">
+								<span class="amount-vat"><?php echo number_format($student_vat_amount, 2); ?></span> 
+								<span class="currency-display"><?php echo $currency ?? 'MAD'; ?></span>
+							</strong>
+						</div>
 						<?php endif; ?>
 
 						<!-- Total -->
@@ -816,6 +925,8 @@
 								<i class="fa fa-calculator mr-2"></i>
 								<?php echo get_phrase('Total'); ?> 
 								<?php if ($is_subscription_admin && ($vat_rate > 0 || in_array($tax_residence, ['UAE', 'AE']))): ?>
+								<small style="opacity: 0.8;">(TTC)</small>
+								<?php elseif ($student_vat_applicable): ?>
 								<small style="opacity: 0.8;">(TTC)</small>
 								<?php endif; ?>
 							</span>
@@ -860,6 +971,47 @@
 										<i class="fa fa-credit-card"></i> PSP: <?php echo htmlspecialchars($entity_psp); ?>
 									</div>
 									<?php endif; ?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<?php endif; ?>
+
+					<!-- VAT Details Card - FOR STUDENT PAYMENTS -->
+					<?php if ($student_vat_applicable && !$is_subscription_admin): ?>
+					<div class="vat-details-card mt-3" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 8px; border: 1px solid #81c784; overflow: hidden;">
+						<div class="p-2 text-center" style="background: rgba(46, 125, 50, 0.1); border-bottom: 1px solid #81c784;">
+							<span style="font-size: 12px; font-weight: 600; color: #2e7d32; text-transform: uppercase; letter-spacing: 0.5px;">
+								<i class="fa fa-info-circle mr-1"></i>
+								<?php echo get_phrase('VAT Information'); ?>
+							</span>
+						</div>
+						<div class="p-3">
+							<div class="row" style="font-size: 12px;">
+								<div class="col-6 mb-2">
+									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('VAT Rate'); ?></div>
+									<strong style="color: #2e7d32; font-size: 14px;"><?php echo $student_vat_rate; ?>%</strong>
+								</div>
+								<div class="col-6 mb-2">
+									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('Currency'); ?></div>
+									<strong style="color: #2e7d32; font-size: 14px;"><?php echo $currency ?? 'MAD'; ?></strong>
+								</div>
+								<div class="col-12">
+									<div style="color: #5f6368; font-size: 10px; text-transform: uppercase;"><?php echo get_phrase('Tax Residence'); ?></div>
+									<strong style="color: #2e7d32; font-size: 13px;">
+										<?php 
+										if ($tax_residence === 'MA') {
+											echo get_phrase('Morocco') . ' 🇲🇦';
+										} elseif (in_array($tax_residence, ['UAE', 'AE'])) {
+											echo get_phrase('United Arab Emirates') . ' 🇦🇪';
+										} else {
+											echo $tax_residence;
+										}
+										?>
+									</strong>
+									<div style="font-size: 10px; color: #888; margin-top: 2px;">
+										<i class="fa fa-school"></i> <?php echo get_phrase('School VAT Settings'); ?>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -969,28 +1121,30 @@
 			
 			// ========== MONTANTS CONVERTIS ==========
 			var fxData = {
-				conversion_needed: <?php echo ($conversion_needed && !$has_vat_config) ? 'true' : 'false'; ?>,
-				has_vat_config: <?php echo $has_vat_config ? 'true' : 'false'; ?>,
+				conversion_needed: <?php echo ($conversion_needed && !$has_vat_config && !$student_vat_applicable) ? 'true' : 'false'; ?>,
+				has_vat_config: <?php echo ($has_vat_config || $student_vat_applicable) ? 'true' : 'false'; ?>,
+				is_student_vat: <?php echo $student_vat_applicable ? 'true' : 'false'; ?>,
+				student_vat_rate: <?php echo $student_vat_applicable ? $student_vat_rate : 0; ?>,
 				original_currency: '<?php echo $original_currency; ?>',
-				display_currency: '<?php echo $display_currency; ?>',
-				original_sub_total: <?php echo $is_morocco_b2b ? $sub_total : $original_sub_total; ?>,
-				original_vat_amount: <?php echo $is_morocco_b2b ? $vat_amount : $original_vat_amount; ?>,
-				original_grand_total: <?php echo $is_morocco_b2b ? $grand_total : $original_grand_total; ?>,
+				display_currency: '<?php echo $student_vat_applicable ? ($currency ?? 'MAD') : $display_currency; ?>',
+				original_sub_total: <?php echo $student_vat_applicable ? $student_sub_total : ($is_morocco_b2b ? $sub_total : $original_sub_total); ?>,
+				original_vat_amount: <?php echo $student_vat_applicable ? $student_vat_amount : ($is_morocco_b2b ? $vat_amount : $original_vat_amount); ?>,
+				original_grand_total: <?php echo $student_vat_applicable ? $student_grand_total : ($is_morocco_b2b ? $grand_total : $original_grand_total); ?>,
 				stripe: {
-					currency: '<?php echo $has_vat_config ? $display_currency : $stripe_currency; ?>',
-					sub_total: <?php echo $has_vat_config ? $sub_total : (isset($stripe_sub_total_converted) ? $stripe_sub_total_converted : $stripe_sub_total); ?>,
-					vat_amount: <?php echo $has_vat_config ? $vat_amount : (isset($stripe_vat_amount_converted) ? $stripe_vat_amount_converted : $stripe_vat_amount); ?>,
-					grand_total: <?php echo $has_vat_config ? $grand_total : (isset($stripe_converted_amount) ? $stripe_converted_amount : $stripe_grand_total); ?>,
-					fx_rate: <?php echo $has_vat_config ? 1.0 : (isset($stripe_fx_rate_val) && $stripe_fx_rate_val != 1.0 ? $stripe_fx_rate_val : (isset($stripe_sub_total_converted) && $stripe_sub_total_converted > 0 ? ($stripe_sub_total_converted / $original_sub_total) : 1.0)); ?>,
-					needs_conversion: <?php echo ($stripe_needs_conversion && !$has_vat_config) ? 'true' : 'false'; ?>
+					currency: '<?php echo ($has_vat_config || $student_vat_applicable) ? ($student_vat_applicable ? ($currency ?? 'MAD') : $display_currency) : $stripe_currency; ?>',
+					sub_total: <?php echo $student_vat_applicable ? $student_sub_total : ($has_vat_config ? $sub_total : (isset($stripe_sub_total_converted) ? $stripe_sub_total_converted : $stripe_sub_total)); ?>,
+					vat_amount: <?php echo $student_vat_applicable ? $student_vat_amount : ($has_vat_config ? $vat_amount : (isset($stripe_vat_amount_converted) ? $stripe_vat_amount_converted : $stripe_vat_amount)); ?>,
+					grand_total: <?php echo $student_vat_applicable ? $student_grand_total : ($has_vat_config ? $grand_total : (isset($stripe_converted_amount) ? $stripe_converted_amount : $stripe_grand_total)); ?>,
+					fx_rate: <?php echo ($has_vat_config || $student_vat_applicable) ? 1.0 : (isset($stripe_fx_rate_val) && $stripe_fx_rate_val != 1.0 ? $stripe_fx_rate_val : (isset($stripe_sub_total_converted) && $stripe_sub_total_converted > 0 ? ($stripe_sub_total_converted / $original_sub_total) : 1.0)); ?>,
+					needs_conversion: <?php echo ($stripe_needs_conversion && !$has_vat_config && !$student_vat_applicable) ? 'true' : 'false'; ?>
 				},
 				paypal: {
-					currency: '<?php echo $has_vat_config ? $display_currency : $paypal_currency; ?>',
-					sub_total: <?php echo $has_vat_config ? $sub_total : (isset($paypal_sub_total_converted) ? $paypal_sub_total_converted : $paypal_sub_total); ?>,
-					vat_amount: <?php echo $has_vat_config ? $vat_amount : (isset($paypal_vat_amount_converted) ? $paypal_vat_amount_converted : $paypal_vat_amount); ?>,
-					grand_total: <?php echo $has_vat_config ? $grand_total : (isset($paypal_converted_amount) ? $paypal_converted_amount : $paypal_grand_total); ?>,
-					fx_rate: <?php echo $has_vat_config ? 1.0 : (isset($paypal_fx_rate_val) && $paypal_fx_rate_val != 1.0 ? $paypal_fx_rate_val : (isset($paypal_sub_total_converted) && $paypal_sub_total_converted > 0 ? ($paypal_sub_total_converted / $original_sub_total) : 1.0)); ?>,
-					needs_conversion: <?php echo ($paypal_needs_conversion && !$has_vat_config) ? 'true' : 'false'; ?>
+					currency: '<?php echo ($has_vat_config || $student_vat_applicable) ? ($student_vat_applicable ? ($currency ?? 'MAD') : $display_currency) : $paypal_currency; ?>',
+					sub_total: <?php echo $student_vat_applicable ? $student_sub_total : ($has_vat_config ? $sub_total : (isset($paypal_sub_total_converted) ? $paypal_sub_total_converted : $paypal_sub_total)); ?>,
+					vat_amount: <?php echo $student_vat_applicable ? $student_vat_amount : ($has_vat_config ? $vat_amount : (isset($paypal_vat_amount_converted) ? $paypal_vat_amount_converted : $paypal_vat_amount)); ?>,
+					grand_total: <?php echo $student_vat_applicable ? $student_grand_total : ($has_vat_config ? $grand_total : (isset($paypal_converted_amount) ? $paypal_converted_amount : $paypal_grand_total)); ?>,
+					fx_rate: <?php echo ($has_vat_config || $student_vat_applicable) ? 1.0 : (isset($paypal_fx_rate_val) && $paypal_fx_rate_val != 1.0 ? $paypal_fx_rate_val : (isset($paypal_sub_total_converted) && $paypal_sub_total_converted > 0 ? ($paypal_sub_total_converted / $original_sub_total) : 1.0)); ?>,
+					needs_conversion: <?php echo ($paypal_needs_conversion && !$has_vat_config && !$student_vat_applicable) ? 'true' : 'false'; ?>
 				},
 				rate_date: '<?php echo $fx_rate_date; ?>',
 				stale: <?php echo $fx_stale_flag ? 'true' : 'false'; ?>
@@ -1009,12 +1163,18 @@
 		<script type="text/javascript">
 			// Protect VAT-calculated values from being modified by other JavaScript
 			document.addEventListener('DOMContentLoaded', function() {
-				<?php if ($has_vat_config): ?>
+				<?php if ($has_vat_config || $student_vat_applicable): ?>
 				// For VAT-configured payments, lock the values to prevent changes
 				var vatProtection = {
+					<?php if ($is_subscription_admin): ?>
 					originalTotal: <?php echo $grand_total; ?>,
 					originalSubtotal: <?php echo $sub_total; ?>,
 					originalVat: <?php echo $vat_amount; ?>,
+					<?php else: ?>
+					originalTotal: <?php echo $student_vat_applicable ? $student_grand_total : $amount_to_pay; ?>,
+					originalSubtotal: <?php echo $student_vat_applicable ? $student_sub_total : $amount_to_pay; ?>,
+					originalVat: <?php echo $student_vat_applicable ? $student_vat_amount : 0; ?>,
+					<?php endif; ?>
 
 					lockValues: function() {
 						// Find and lock amount display elements
@@ -1244,6 +1404,15 @@
 
 			/* UAE variant */
 			.vat-banner.uae .vat-banner-main {
+				background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+			}
+
+			/* Student VAT variant */
+			.vat-banner.student-vat .vat-banner-main {
+				background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+			}
+
+			.vat-banner.student-vat.uae .vat-banner-main {
 				background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
 			}
 
@@ -2080,24 +2249,27 @@
                             
                             // Make AJAX call to save payment info
                             <?php 
+                            // SÉCURITÉ: Utiliser le montant de la facture (BDD) pour l'URL PayPal
+                            $paypal_form_amount = $is_subscription_admin ? $grand_total : (float)$invoice_details['total_amount'];
+                            
                             // Pour les paiements school_join ou community, rediriger selon le type d'utilisateur
                             $is_community_payment = ($payment_type === 'school_join' || $type === 'community');
                             if ($is_community_payment) {
                                 if ($is_admin_logged) {
                                     // Admin: utiliser admin/payment_success et rediriger vers admin/dashboard
-                                    $paypal_success_url = site_url('admin/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_success_url = site_url('admin/payment_success/paypal/' . $invoice_id . '/' . $paypal_form_amount . '/0/community');
                                     $paypal_redirect_url = site_url('admin/dashboard');
                                 } elseif ($is_teacher_logged) {
                                     // Teacher: utiliser student comme fallback, rediriger vers community_details
-                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $paypal_form_amount . '/0/community');
                                     $paypal_redirect_url = site_url('community_details/' . ($invoice_details['school_id'] ?? ''));
                                 } else {
                                     // Student: utiliser student/payment_success
-                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/community');
+                                    $paypal_success_url = site_url('student/payment_success/paypal/' . $invoice_id . '/' . $paypal_form_amount . '/0/community');
                                     $paypal_redirect_url = site_url('community_details/' . ($invoice_details['school_id'] ?? ''));
                                 }
                             } else {
-                                $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $grand_total . '/0/' . $type);
+                                $paypal_success_url = route('payment_success/paypal/' . $invoice_id . '/' . $paypal_form_amount . '/0/' . $type);
                                 $paypal_redirect_url = route('invoice');
                             }
                             ?>
@@ -2631,5 +2803,37 @@ body {
     }
 }
 </style>
+		<!-- Security Protection Script -->
+		<script type="text/javascript">
+			document.addEventListener('contextmenu', function(e) {
+				e.preventDefault();
+			});
+
+			document.onkeydown = function(e) {
+				if (event.keyCode == 123) {
+					return false;
+				}
+				if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+					return false;
+				}
+				if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+					return false;
+				}
+				if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+					return false;
+				}
+				if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+					return false;
+				}
+			}
+		</script>
+		<style>
+		body {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		</style>
 	</body>
 </html>

@@ -155,6 +155,11 @@ class App_Access {
                 $clean_uri === $target || 
                 strpos($clean_uri, $target . '?') === 0) {
                 
+                // Skip redirect for POST requests to preserve form data
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    return; // Let the request continue without redirect
+                }
+                
                 $new_uri = substr_replace($clean_uri, $replacement, 0, strlen($target));
                 $redirect_url = rtrim($base_url, '/') . $new_uri;
                 header("Location: " . $redirect_url, true, 301);

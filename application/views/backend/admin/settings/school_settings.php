@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/schoolSettings.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/schoolSettings.min.css">
 
 <?php 
 $school_data = $this->settings_model->get_current_school_data();

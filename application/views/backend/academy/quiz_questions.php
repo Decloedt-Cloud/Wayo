@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/manageQuizQuestions.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/manageQuizQuestions.min.css">
 
 <?php
 // $param1 is Quiz id

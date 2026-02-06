@@ -134,21 +134,21 @@ header,
   height: 60px !important;
   overflow: visible;
   width: 100%;
+}
 
-  .logo {
-    scale: 0.8;
-    transition: all 0.5s ease-in-out;
-  }
+.small-nav .logo {
+  scale: 0.8;
+  transition: all 0.5s ease-in-out;
+}
 
-  .user-dropdown {
-    bottom: -0px;
-    right: 30px;
-  }
+.small-nav .user-dropdown {
+  bottom: -0px;
+  right: 30px;
+}
 
-  #navBar {
-    height: 60px;
-    transition: all 0.2s ease-in-out;
-  }
+.small-nav #navBar {
+  height: 60px;
+  transition: all 0.2s ease-in-out;
 }
 
 .nav-link {

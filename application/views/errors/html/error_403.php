@@ -6,7 +6,7 @@ $redirect_url = "http://localhost/School-Management-De/";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="/School-Management-De/assets/backend/css/error_403.css">
+<link rel="stylesheet" href="/School-Management-De/assets/backend/css/error_403.min.css">
 
 </head>
 <body>

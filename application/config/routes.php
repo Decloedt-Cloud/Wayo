@@ -214,6 +214,10 @@ $route['join/community/(.+)'] = 'admission/online_admission/$1';
 $route['join/member'] = 'admission/online_admission_student';
 $route['join/member/(.+)'] = 'admission/online_admission_student/$1';
 
+// Direct routes for registration (bypasses URL rewriting)
+$route['register/member'] = 'admission/register_member';
+$route['register/community'] = 'admission/register_community';
+
 // Routes for app rewriter
 $route['app/join_school'] = 'student/join_school';
 $route['app/join_school/(.+)'] = 'student/join_school/$1';
@@ -227,6 +231,8 @@ $route['class_wall'] = 'wall/class';
 $route['class_wall/(:num)'] = 'wall/class/$1';
 
 
+
+$route['academy/student/filter'] = 'student/academy/filter';
 
 // API Routes
 $route['api/user'] = 'api/Admin/user';
@@ -896,6 +902,8 @@ $route['payment/community/(:num)'] = 'student/payment/community/$1';
 $route['app/online_admission'] = 'student/online_admission';
 $route['app/online_admission/(:any)'] = 'student/online_admission/$1';
 $route['app/payment'] = 'student/payment';
+$route['app/online_admission'] = 'admin/online_admission';
+// $route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
 $route['app/payment/(:any)'] = 'admin/payment/$1';
 $route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 

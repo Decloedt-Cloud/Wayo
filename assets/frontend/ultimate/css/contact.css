@@ -68,9 +68,16 @@ img {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: url("https://i.postimg.cc/Qtk6hbsc/qa.png") center/cover no-repeat;
+  background: url("../../../../uploads/images/decloedt/img/optimized/bg-communities.webp") center/cover no-repeat;
   opacity: .08;
   mix-blend-mode: multiply;
+}
+
+/* AVIF pour navigateurs compatibles */
+@supports (background-image: url("test.avif")) {
+  .hero-overlay {
+    background-image: url('../../../../uploads/images/decloedt/img/optimized/bg-communities.avif');
+  }
 }
 
 .hero-inner h1 {

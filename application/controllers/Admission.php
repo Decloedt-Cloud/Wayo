@@ -89,6 +89,48 @@ class Admission extends CI_Controller
             $this->load->view('frontend/' . $this->theme . '/index', $page_data);
         }
 
+    /**
+     * Direct endpoint for member registration
+     * Bypasses URL rewriting system to preserve POST data
+     */
+    public function register_member()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([
+                'status' => false,
+                'message' => 'Method not allowed',
+                'csrf' => [
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash()
+                ]
+            ]);
+            return;
+        }
+        
+        echo $this->user_model->register_user_form();
+    }
+
+    /**
+     * Direct endpoint for community registration
+     * Bypasses URL rewriting system to preserve POST data
+     */
+    public function register_community()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([
+                'status' => false,
+                'message' => 'Method not allowed',
+                'csrf' => [
+                    'csrfName' => $this->security->get_csrf_token_name(),
+                    'csrfHash' => $this->security->get_csrf_hash()
+                ]
+            ]);
+            return;
+        }
+        
+        echo $this->frontend_model->online_admission_school();
+    }
+
     public function check_duplication_ajax()
     {
         $type = $this->input->post('type'); // 'email' or 'school_name'

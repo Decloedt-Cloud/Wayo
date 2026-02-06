@@ -27,7 +27,7 @@ $is_chat_page = (strpos($_SERVER['REQUEST_URI'], 'app/chat') !== false || strpos
 if (!$is_chat_page): 
 ?>
 <script src="<?php echo base_url('assets/backend/js/pusher.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/backend/js/echo.iife.js'); ?>"></script>
+<script src="<?php echo base_url('assets/backend/js/echo.iife.min.js'); ?>"></script>
 <?php endif; ?>
 
 <script>
@@ -35,8 +35,8 @@ if (!$is_chat_page):
     // Namespace GlobalChatNotifier pour éviter les conflits
     const GlobalChatNotifier = {
         config: {
-            chatServiceUrl: 'http://localhost:8000/api/v1',
-            authUrl: 'http://localhost:8000/api/auth/cross-auth',
+            chatServiceUrl: 'https://chat.wayo.site/api/v1',
+            authUrl: 'https://chat.wayo.site/api/auth/cross-auth',
             wapToken: '<?php echo $wap_token; ?>',
             appId: 'wayo',
             authToken: null,
@@ -160,10 +160,10 @@ if (!$is_chat_page):
                 this.echo = new Echo({
                     broadcaster: 'reverb',
                     key: 'iuvcjjlml7xkwbdfaxo3',
-                    wsHost: 'localhost',
-                    wsPort: 8080,
-                    wssPort: 8080,
-                    forceTLS: false,
+                    wsHost: 'chat.wayo.site',
+                    wsPort: 443,
+                    wssPort: 443,
+                    forceTLS: true,
                     enabledTransports: ['ws', 'wss'],
                     authEndpoint: this.config.chatServiceUrl + '/broadcasting/auth',
                     auth: {

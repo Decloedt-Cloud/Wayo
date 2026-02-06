@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
 
 <div class="row" style="min-width: 300px;">
     <div class="col-md-12">

@@ -11,19 +11,16 @@
         <h3 class="widget-title"><?php echo get_phrase('Recent_trends'); ?></h3>
         <!-- Ces données devraient idéalement venir du contrôleur -->
         <a href="#" class="recent-post-item">
-            <img src="<?php echo base_url('uploads/images/trends/clawdBot.webp'); ?>" alt="" class="recent-post-img">
+            <picture>
+                <source type="image/avif" srcset="<?php echo base_url('uploads/images/trends/optimized/clawdBot.avif'); ?>">
+                <source type="image/webp" srcset="<?php echo base_url('uploads/images/trends/optimized/clawdBot.webp'); ?>">
+                <img src="<?php echo base_url('uploads/images/trends/clawdBot.webp'); ?>" alt="<?php echo get_phrase('how_clawdbot_is_changing_digital_content'); ?>" class="recent-post-img" loading="lazy">
+            </picture>
             <div>
                 <h4 class="recent-post-title"><?php echo get_phrase('how_clawdbot_is_changing_digital_content'); ?></h4>
-                <span class="meta-item">22 Jan, 2025</span>
+                <span class="meta-item"><?php echo date('d M, Y', strtotime($article['created_at'])); ?></span>
             </div>
         </a>
-        <!-- <a href="#" class="recent-post-item">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80" alt="" class="recent-post-img">
-            <div>
-                <h4 class="recent-post-title">Comment créer une communauté engagée</h4>
-                <span class="meta-item">21 Jan, 2025</span>
-            </div>
-        </a> -->
     </div>
 
     <!-- <div class="sidebar-widget">

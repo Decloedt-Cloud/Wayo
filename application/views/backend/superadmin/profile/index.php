@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive-profile.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive-profile.min.css">
 <!-- start page title -->
 <div class="col-xl-12">
     <div class="header-card">

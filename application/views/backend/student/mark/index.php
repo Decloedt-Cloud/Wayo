@@ -13,7 +13,7 @@ $this->db->where('enrols.session', $session_id);
 $enrolments = $this->db->get()->result_array();
 ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
 <!--title-->
 <div class="col-xl-12">
     <div class="header-card">

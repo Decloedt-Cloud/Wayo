@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/single-student-admission.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/backend/css/edit-design-button.min.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/single-student-admission.min.css">
 
 <?php $classes = $this->db->get_where('classes', array('id' => $param1))->result_array(); ?>
 <?php foreach($classes as $class){ ?>

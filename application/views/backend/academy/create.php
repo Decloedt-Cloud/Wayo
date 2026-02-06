@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/createCourse.min.css">
 
 <!-- Quill Editor -->
 <link href="<?php echo base_url(); ?>assets/backend/css/quilljs/quill.snow.css" rel="stylesheet" type="text/css" />
