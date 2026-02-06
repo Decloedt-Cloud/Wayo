@@ -998,6 +998,8 @@ $selected_user_id = $selected_user_id ?? 'all';
             ->group_start()
             ->where('classes.date_fin >=', date('Y-m-d'))
             ->or_where('classes.date_fin', null)
+            ->or_where('classes.date_fin', '')
+            ->or_where('classes.date_fin', '0000-00-00')
             ->group_end();
 
         if ($selected_school_id != 'all')

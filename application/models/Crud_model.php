@@ -94,6 +94,8 @@ class Crud_model extends CI_Model
 		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
 		$data['school_id'] = $this->school_id;
 
+		$this->db->insert('classes', $data);
+		$insert_id = $this->db->insert_id();
 
 		// Créer une class_room avec le même nom que la classe
 		// $room_data = [
@@ -136,6 +138,7 @@ class Crud_model extends CI_Model
 
 		$data['nombre_max_membre'] = html_escape($this->input->post('max_members'));
 		$this->db->where('id', $param1);
+		$this->db->update('classes', $data);
 
 		// Mettre à jour la class_room associée
 		// $this->db->where('class_id', $param1);
