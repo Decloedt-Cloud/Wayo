@@ -34,7 +34,7 @@
         <ul style="padding-left:1.2rem;margin-bottom:0;">
           <li class="mb-2">
             <?php echo get_phrase("You_can_close_this_guide_at_any_time_button"); ?>
-            <strong>✕</strong> <?php echo get_phrase("or_Esc"); ?>)
+            <strong>(✕)</strong> <?php echo get_phrase("or_button"); ?> <strong><?php echo get_phrase("(skip)"); ?></strong>
           </li>
           <li>
             <?php echo get_phrase("Proceed_with"); ?>
@@ -62,7 +62,7 @@
         <ul style="padding-left:1.2rem;margin-bottom:0;">
           <li class="mb-2"><strong><?php echo get_phrase("Name_&_Description"); ?>:</strong> <?php echo get_phrase("Name_your_community_and_describe_what_you_do"); ?></li>
           <li class="mb-2"><strong><?php echo get_phrase("Logo"); ?>:</strong> <?php echo get_phrase("Preferably_square_recommended_512x512"); ?></li>
-          <li class="mb-2"><strong><?php echo get_phrase("Cover"); ?>:</strong> <?php echo get_phrase("16_9_format_example_1600x900"); ?></li>
+          <li class="mb-2"><strong><?php echo get_phrase("Cover"); ?>:</strong> <?php echo get_phrase("16_9_format_example_1920x600"); ?></li>
           <li class="mb-2"><strong><?php echo get_phrase("Visibility"); ?>:</strong> <?php echo get_phrase("Public_or_private_access_requires_admin_approval"); ?></li>
         </ul>
       </div>

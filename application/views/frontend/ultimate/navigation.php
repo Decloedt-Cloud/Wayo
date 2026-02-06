@@ -396,6 +396,31 @@ if ($current_user_id) {
         margin-top: 8px;
     }
 
+    #community-menu-mobile {
+        display: none !important;
+        position: fixed !important;
+        width: 234px !important;
+        background: white !important;
+        border: 1px solid #ddd !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        z-index: 9999 !important;
+        padding: 0 !important;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 8px;
+    }
+
+    #community-switcher-mobile.open #community-menu-mobile {
+        display: block !important;
+    }
+
+    /* Z-index plus élevé pour le menu de langue dans l'offcanvas mobile */
+    #navbarOffcanvas .language-selector .dropdown-menu {
+        z-index: 10060 !important;
+    }
+
     .menu-list {
         max-height: 200px;
         overflow-y: auto;
@@ -1206,6 +1231,25 @@ if ($current_user_id) {
                 </ul>
 
                 <div class="offcanvas-actions mt-3">
+                    <?php if ($this->session->userdata('user_id') && $this->session->userdata('role') != 'superadmin') { ?>
+                        <!-- Switcher de communauté (mobile) -->
+                        <div class="community-switcher mb-3" id="community-switcher-mobile" style="margin: 0 8px; list-style:none; width:100%; display:flex; justify-content:center;">
+                            <button class="switcher-trigger" id="switcher-trigger-mobile">
+                                <span class="current-role" id="current-role-label-mobile"><?php echo get_phrase("loading..."); ?></span>
+                                <i class="fas fa-chevron-down arrow-icon"></i>
+                            </button>
+                            <div id="community-menu-mobile" class="shadow">
+                                <div class="menu-list" id="role-dropdown-menu-mobile">
+                                    <!-- Rôles injectés par JS -->
+                                </div>
+                                <hr class="menu-divider">
+                                <button class="menu-item action-item create-item" id="open-create-community-btn-mobile">
+                                    <i class="fas fa-plus"></i>
+                                    <span><?php echo get_phrase("create_community"); ?></span>
+                                </button>
+                            </div>
+                        </div>
+                    <?php } ?>
                     <!-- Language Selector for Mobile -->
                     <?php if ($this->session->userdata('user_type') == 'superadmin' || $this->session->userdata('user_type') == 'admin' || $this->session->userdata('user_type') == 'teacher' || $this->session->userdata('user_type') == 'student'): ?>
                         <li class="dropdown notification-list topbar-dropdown language-selector mb-3" style="list-style: none; width:100%">
@@ -1252,12 +1296,19 @@ if ($current_user_id) {
 
                     <?php if ($this->session->userdata('user_id')) {  ?>
                         <li class="nav-item navbar-user-profile mb-3" style="margin:0 2px; list-style:none;">
-                            <div class="user-section p-2 border rounded">
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
-                                        alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
+                            <div class="p-2 border rounded">
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="<?php echo $this->user_model->get_user_image($this->session->userdata('user_id')); ?>"
+                                            alt="user-image" class="rounded-circle nav-user-img" style="width: 40px; height: 40px;">
+                                        <span class="fw-semibold" style="font-size: 15px; color: var(--text);">
+                                            <?php echo $this->session->user_name; ?>
+                                        </span>
+                                    </div>
+                                    <a href="<?php echo site_url('login/logout'); ?>" class="btn btn-link text-danger" aria-label="<?php echo get_phrase('logout'); ?>" style="font-size: 18px;">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                    </a>
                                 </div>
-                                <?php include 'components/navigation-components/user_loggedin_component.php'; ?>
                             </div>
                         </li>
                     <?php } else { ?>
@@ -1404,7 +1455,7 @@ if ($current_user_id) {
                             <input type="file" class="file-input-saas" id="logo-upload" name="school_image" accept="image/*">
                         </div>
                         <div class="file-upload-saas wide" id="cover-upload-box">
-                            <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:9)") ?></span></div>
+                            <div class="upload-placeholder-saas"><i class="fas fa-image"></i><span><?php echo get_phrase("cover_(16:5)") ?></span></div>
                             <div class="image-preview-saas" id="cover-preview"></div>
                             <input type="file" class="file-input-saas" id="cover-upload" name="communityCover" accept="image/*">
                         </div>
@@ -1836,6 +1887,133 @@ if ($current_user_id) {
             // === Recharger après switch ===
             window.addEventListener('roleSwitched', loadUserRoles);
             document.getElementById('open-create-community-btn')?.addEventListener('click', () => {
+                document.getElementById('createCommunityModal').classList.add('show');
+            });
+        });
+
+        // === Initialisation du switcher (mobile) ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('community-switcher-mobile');
+            const trigger = document.getElementById('switcher-trigger-mobile');
+            const menu = document.getElementById('community-menu-mobile');
+            const roleMenu = document.getElementById('role-dropdown-menu-mobile');
+            const currentLabel = document.getElementById('current-role-label-mobile');
+            if (!switcher || !trigger || !menu || !roleMenu || !currentLabel) return;
+
+            const currentRole = '<?php echo strtolower($this->session->userdata("role")); ?>';
+
+            function loadUserRolesMobile() {
+                $.ajax({
+                    url: '<?php echo site_url("home/get_user_roles"); ?>',
+                    type: 'GET',
+                    success: function(response) {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        if (res.status === 'success') {
+                            renderRolesMobile(res.roles);
+                            updateCurrentLabelMobile(res.roles);
+                        }
+                    }
+                });
+            }
+
+            function renderRolesMobile(roles) {
+                roleMenu.innerHTML = '';
+                roles.forEach(role => {
+                    const item = document.createElement('button');
+                    item.className = 'menu-item';
+                    if (role.role.toLowerCase() === currentRole) {
+                        item.classList.add('selected');
+                    }
+                    const label = document.createElement('span');
+                    label.textContent = roleTranslations[role.role.toLowerCase()] || role.label;
+                    const badge = document.createElement('span');
+                    badge.className = `role-badge ${role.role.toLowerCase()}`;
+                    badge.textContent = role.count;
+                    item.appendChild(label);
+                    item.appendChild(badge);
+                    item.onclick = function(e) {
+                        e.stopPropagation();
+                        closeMenuMobile();
+                        if (role.count > 1) {
+                            openCommunityModal(role.role);
+                        } else {
+                            switchRoleMobile(role.role, role.communities[0].school_id);
+                        }
+                    };
+                    roleMenu.appendChild(item);
+                });
+            }
+
+            function updateCurrentLabelMobile(roles) {
+                const current = roles.find(r => r.role.toLowerCase() === currentRole);
+                currentLabel.textContent = current ?
+                    (roleTranslations[current.role.toLowerCase()] || current.label) :
+                    roleTranslations.student;
+            }
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = switcher.classList.contains('open');
+                closeMenuMobile();
+                if (!isOpen) {
+                    switcher.classList.add('open');
+                    positionMenuMobile();
+                }
+            });
+
+            function closeMenuMobile() {
+                switcher.classList.remove('open');
+            }
+
+            function positionMenuMobile() {
+                const rect = trigger.getBoundingClientRect();
+                menu.style.left = `${rect.left + (rect.width / 2)}px`;
+                menu.style.transform = `translateX(-50%)`;
+                menu.style.top = `${rect.bottom + 8}px`;
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!switcher.contains(e.target)) {
+                    closeMenuMobile();
+                }
+            });
+            document.addEventListener('touchstart', function(e) {
+                if (!switcher.contains(e.target)) {
+                    closeMenuMobile();
+                }
+            }, { passive: true });
+            document.getElementById('navbarOffcanvas')?.addEventListener('hide.bs.offcanvas', function() {
+                closeMenuMobile();
+            });
+            window.addEventListener('resize', positionMenuMobile);
+
+            function switchRoleMobile(role, school_id) {
+                const currentUrl = window.location.href;
+                $.ajax({
+                    url: '<?php echo site_url("home/switch_community_role_front"); ?>',
+                    type: 'POST',
+                    data: {
+                        school_id: school_id,
+                        role: role,
+                        return_url: currentUrl,
+                        <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+                    },
+                    success: function(response) {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        if (res.status === 'success') {
+                            window.dispatchEvent(new Event('roleSwitched'));
+                            window.location.href = res.redirect_url;
+                        } else {
+                            toastr.error(res.message || 'Erreur');
+                        }
+                    }
+                });
+            }
+
+            loadUserRolesMobile();
+            setTimeout(positionMenuMobile, 100);
+            window.addEventListener('roleSwitched', loadUserRolesMobile);
+            document.getElementById('open-create-community-btn-mobile')?.addEventListener('click', () => {
                 document.getElementById('createCommunityModal').classList.add('show');
             });
         });
