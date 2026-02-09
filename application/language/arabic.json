@@ -4024,5 +4024,10 @@
     "enter_your_email_to_receive_reset_link": "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "قم بتسجيل الدخول للوصول إلى لوحة التحكم وإدارة مدرستك بكفاءة",
     "login_failed": "فشل تسجيل الدخول",
-    "failed_to_send_reset_link": "فشل إرسال رابط إعادة التعيين"
+    "failed_to_send_reset_link": "فشل إرسال رابط إعادة التعيين",
+    "community_visibility": "رؤية المجتمع",
+    "toggle_community_visibility": "تبديل رؤية المجتمع",
+    "public_community": "مجتمع عام",
+    "public_community_-_open_access": "مجتمع عام - وصول مفتوح",
+    "community_state_updated_successfully": "تم تحديث حالة المجتمع بنجاح"
 }

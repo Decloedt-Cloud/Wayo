@@ -4160,5 +4160,10 @@
     "enter_your_email_to_receive_reset_link": "Voer je e-mailadres in om een resetlink te ontvangen",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Log in om toegang te krijgen tot je dashboard en je school efficiënt te beheren",
     "login_failed": "Inloggen mislukt",
-    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt"
+    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt",
+    "community_visibility": "Zichtbaarheid van de community",
+    "toggle_community_visibility": "Zichtbaarheid van de community aan/uit zetten",
+    "public_community": "Openbare community",
+    "public_community_-_open_access": "Openbare community - open toegang",
+    "community_state_updated_successfully": "Communitystatus succesvol bijgewerkt"
 }

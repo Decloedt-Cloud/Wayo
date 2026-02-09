@@ -4489,5 +4489,10 @@
     "allow_managing_marks": "Allow managing marks",
     "allow_taking_attendance": "Allow taking attendance",
     "allow_all_permissions": "Allow all permissions",
-    "full_access": "Full access"
+    "full_access": "Full access",
+    "community_visibility": "Community visibility",
+    "toggle_community_visibility": "Toggle community visibility",
+    "public_community": "Public community",
+    "public_community_-_open_access": "Public community - open access",
+    "community_state_updated_successfully": "Community state updated successfully"
 }
