@@ -1481,7 +1481,7 @@ stopPolling() {
     $('#createEventModal').on('show.bs.modal', () => {
       $('#participantsSearchInput').val('');
       $('#participantsBadges').empty();
-      $('#participantsDropdownMenu').html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+      $('#participantsDropdownMenu').html('');
       $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
       $('#participantsInput').val('[]');
       $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
@@ -1595,16 +1595,12 @@ stopPolling() {
     e.stopPropagation();
     const dropdown = $('#participantsDropdownMenu');
     const searchTerm = $(this).val().toLowerCase().trim();
+    const schoolId = $('#createSchoolId').val();
 
-    if (!searchTerm) {
-        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
-        dropdown.addClass('show').parent().addClass('open');
-    } else {
-        // Charger et filtrer les options si un texte est saisi
-        const schoolId = $('#createSchoolId').val();
-        if (schoolId) {
-            const selected = JSON.parse($('#participantsInput').val() || '[]');
-            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+    if (schoolId) {
+        const selected = JSON.parse($('#participantsInput').val() || '[]');
+        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+            if (searchTerm) {
                 dropdown.find('label').each(function() {
                     const text = $(this).text().toLowerCase();
                     $(this).toggle(text.includes(searchTerm));
@@ -1613,24 +1609,21 @@ stopPolling() {
                 if (!anyVisible) {
                     dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
                 }
-                dropdown.addClass('show').parent().addClass('open');
-            });
-        }
+            }
+            dropdown.addClass('show').parent().addClass('open');
+        });
     }
 });
 
   $('#participantsSearchInput').off('input').on('input', function() {
     const searchTerm = $(this).val().toLowerCase().trim();
     const dropdown = $('#participantsDropdownMenu');
+    const schoolId = $('#createSchoolId').val();
 
-    if (!searchTerm) {
-        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
-        dropdown.addClass('show').parent().addClass('open');
-    } else {
-        const schoolId = $('#createSchoolId').val();
-        if (schoolId) {
-            const selected = JSON.parse($('#participantsInput').val() || '[]');
-            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+    if (schoolId) {
+        const selected = JSON.parse($('#participantsInput').val() || '[]');
+        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+            if (searchTerm) {
                 const anyVisible = dropdown.find('label').filter(function() {
                     const text = $(this).text().toLowerCase();
                     const isVisible = text.includes(searchTerm);
@@ -1641,9 +1634,9 @@ stopPolling() {
                 if (!anyVisible) {
                     dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
                 }
-                dropdown.addClass('show').parent().addClass('open');
-            });
-        }
+            }
+            dropdown.addClass('show').parent().addClass('open');
+        });
     }
 });
 
@@ -2863,17 +2856,12 @@ $('#editEventBtn').on('click', () => {
     e.stopPropagation();
     const dropdown = $('#editParticipantsDropdownMenu');
     const searchTerm = $(this).val().toLowerCase().trim();
+    const schoolId = $('#school_id').val();
 
-    // Si le champ est vide, afficher le message par défaut
-    if (!searchTerm) {
-        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
-        dropdown.addClass('show').parent().addClass('open');
-    } else {
-        // Si du texte est saisi, charger et filtrer les options
-        const schoolId = $('#school_id').val();
-        if (schoolId) {
-            const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
-            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+    if (schoolId) {
+        const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
+        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+            if (searchTerm) {
                 dropdown.find('label').each(function() {
                     const text = $(this).text().toLowerCase();
                     $(this).toggle(text.includes(searchTerm));
@@ -2882,25 +2870,21 @@ $('#editEventBtn').on('click', () => {
                 if (!anyVisible) {
                     dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
                 }
-                dropdown.addClass('show').parent().addClass('open');
-            });
-        }
+            }
+            dropdown.addClass('show').parent().addClass('open');
+        });
     }
 });
   // Gestion du champ de recherche et des badges pour eventEditModal
 $('#editParticipantsSearchInput').on('input', function() {
     const searchTerm = $(this).val().toLowerCase().trim();
     const dropdown = $('#editParticipantsDropdownMenu');
+    const schoolId = $('#school_id').val();
 
-    if (!searchTerm) {
-        dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
-        dropdown.addClass('show').parent().addClass('open');
-    } else {
-        const schoolId = $('#school_id').val();
-        if (schoolId) {
-            const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
-            CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
-                // Filtrer les éléments en fonction du terme de recherche
+    if (schoolId) {
+        const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
+        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
+            if (searchTerm) {
                 const anyVisible = dropdown.find('label').filter(function() {
                     const text = $(this).text().toLowerCase();
                     const isVisible = text.includes(searchTerm);
@@ -2908,13 +2892,12 @@ $('#editParticipantsSearchInput').on('input', function() {
                     return isVisible;
                 }).length > 0;
 
-                // Afficher un message si aucun résultat
                 if (!anyVisible) {
                     dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
                 }
-                dropdown.addClass('show').parent().addClass('open');
-            });
-        }
+            }
+            dropdown.addClass('show').parent().addClass('open');
+        });
     }
 });
 
