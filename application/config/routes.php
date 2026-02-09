@@ -899,11 +899,7 @@ $route['wall/class/(:num)'] = 'wall/class/$1';
 $route['wall/moderation'] = 'wall/moderation';
 
 $route['payment/community/(:num)'] = 'student/payment/community/$1';
-$route['app/online_admission'] = 'student/online_admission';
-$route['app/online_admission/(:any)'] = 'student/online_admission/$1';
 $route['app/payment'] = 'student/payment';
-$route['app/online_admission'] = 'admin/online_admission';
-// $route['app/online_admission/(:any)'] = 'admin/online_admission/$1';
 $route['app/payment/(:any)'] = 'admin/payment/$1';
 $route['app/payment/(:any)/(:any)'] = 'admin/payment/$1/$2';
 
@@ -978,6 +974,8 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/app') !
         $route['app/certifications/(.+)'] = $role_route . '/exam/$1';
         $route['app/announcements'] = $role_route . '/event_calendar';
         $route['app/announcements/(.+)'] = $role_route . '/event_calendar/$1';
+        $route['app/online_admission'] = $role_route . '/online_admission';
+        $route['app/online_admission/(.+)'] = $role_route . '/online_admission/$1';
         $route['app/community_settings'] = $role_route . '/school_settings';
         $route['app/community_settings/(.+)'] = $role_route . '/school_settings/$1';
         $route['app/community_list'] = $role_route . '/school';
