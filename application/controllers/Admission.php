@@ -43,6 +43,18 @@ class Admission extends CI_Controller
         }
     }
 
+    // ACTIVE SCHOOL ID FOR FRONTEND
+    function active_school_id_for_frontend($active_school_id = "")
+    {
+        if (addon_status('multi-school') && $active_school_id > 0) {
+            $this->session->set_userdata('active_school_id', $active_school_id);
+        } else {
+            $active_school_id = get_settings('school_id');
+            $this->session->set_userdata('active_school_id', $active_school_id);
+        }
+    }
+
+
 
     /*Admissions*/
     function online_admission($param1 = "", $param2 = "")

@@ -144,17 +144,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 			}
 			else
 			{
-				$this->_mysqli->options(MYSQLI_INIT_COMMAND,
-					'SET SESSION sql_mode =
-					REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
-					@@sql_mode,
-					"STRICT_ALL_TABLES,", ""),
-					",STRICT_ALL_TABLES", ""),
-					"STRICT_ALL_TABLES", ""),
-					"STRICT_TRANS_TABLES,", ""),
-					",STRICT_TRANS_TABLES", ""),
-					"STRICT_TRANS_TABLES", "")'
-				);
+                $this->_mysqli->options(MYSQLI_INIT_COMMAND, 'SET SESSION sql_mode = "NO_ENGINE_SUBSTITUTION"');
 			}
 		}
 
