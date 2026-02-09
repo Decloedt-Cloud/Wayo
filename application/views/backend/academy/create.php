@@ -830,28 +830,20 @@
     }
 
 
-    const activeText = "<?php echo get_phrase('active'); ?>";
-    const inactiveText = "<?php echo get_phrase('inactive'); ?>";
+    $(document).ready(function() {
+        var activeText = "<?php echo get_phrase('active'); ?>";
+        var inactiveText = "<?php echo get_phrase('inactive'); ?>";
 
-    const courseSwitch = document.getElementById('courseActiveSwitch');
-    const courseStatus = document.getElementById('course_status');
-    const switchLabel = document.querySelector('label.switch');
-
-    switchLabel.textContent = inactiveText;
-    courseStatus.value = 'inactive';
-
-    courseSwitch.addEventListener('change', function() {
-        if (this.checked) {
-            switchLabel.textContent = activeText;
-            courseStatus.value = 'active';
-            switchLabel.classList.add('text-success');
-            switchLabel.classList.remove('text-danger');
-        } else {
-            switchLabel.textContent = inactiveText;
-            courseStatus.value = 'inactive';
-            switchLabel.classList.add('text-danger');
-            switchLabel.classList.remove('text-success');
-        }
+        $(document).on('change', '#courseActiveSwitch', function() {
+            var $label = $('label[for="courseActiveSwitch"]');
+            if ($(this).is(':checked')) {
+                $('#course_status').val('active');
+                $label.text(activeText).removeClass('text-danger').addClass('text-success');
+            } else {
+                $('#course_status').val('inactive');
+                $label.text(inactiveText).removeClass('text-success').addClass('text-danger');
+            }
+        });
     });
 
     document.addEventListener('DOMContentLoaded', function() {

@@ -2,6 +2,12 @@
 $quiz_questions = $this->lms_model->get_quiz_questions($lesson_details['id']);
 $lesson_progress = lesson_progress($lesson_details['id']);
 $question_count = count($quiz_questions->result_array());
+
+// Vérifier si l'utilisateur a déjà passé ce quiz au moins une fois
+$user_id = $this->session->userdata('user_id');
+$has_previous_attempt = $this->db->where('user_id', $user_id)
+    ->where('quiz_id', $lesson_details['id'])
+    ->count_all_results('quiz_responses') > 0;
 ?>
 
 <style>
@@ -210,7 +216,7 @@ $question_count = count($quiz_questions->result_array());
     height: 100%;
     background: linear-gradient(90deg, var(--secondary), #f59e0b, #ef4444);
     border-radius: 2px;
-    animation: timerCountdown 15s linear forwards;
+    animation: timerCountdown 30s linear forwards;
 }
 
 @keyframes timerCountdown {
@@ -389,7 +395,7 @@ $question_count = count($quiz_questions->result_array());
                 <span class="quiz-stat-label"><?php echo get_phrase('questions'); ?></span>
             </div>
             <div class="quiz-stat">
-                <span class="quiz-stat-value">15s</span>
+                <span class="quiz-stat-value">30s</span>
                 <span class="quiz-stat-label"><?php echo get_phrase('per_question'); ?></span>
             </div>
         </div>
@@ -400,10 +406,12 @@ $question_count = count($quiz_questions->result_array());
                 <i class="fas fa-play"></i>
                 <?php echo get_phrase('start_quiz'); ?>
             </button>
+            <?php if ($has_previous_attempt): ?>
             <button type="button" class="quiz-btn quiz-btn-secondary" onclick="check_result();">
                 <i class="fas fa-chart-bar"></i>
                 <?php echo get_phrase('check_result'); ?>
             </button>
+            <?php endif; ?>
         </div>
         <?php else: ?>
         <p class="text-muted"><?php echo get_phrase('no_questions_available'); ?></p>
@@ -432,7 +440,7 @@ $question_count = count($quiz_questions->result_array());
                         </span>
                         <span class="question-timer">
                             <i class="fas fa-clock"></i>
-                            <span id="timer<?php echo $question_num; ?>">00:15</span>
+                            <span id="timer<?php echo $question_num; ?>">00:30</span>
                         </span>
                     </div>
                     
@@ -454,15 +462,14 @@ $question_count = count($quiz_questions->result_array());
                         
                         <div class="options-list">
                             <?php foreach ($options as $key2 => $option): ?>
-                            <label class="option-item" for="quiz-<?php echo $quiz_question['id']; ?>-opt-<?php echo $key2 + 1; ?>" onclick="selectOption(this)">
+                            <div class="option-item" onclick="toggleOption(this, '<?php echo $quiz_question['id']; ?>')">
                                 <input type="checkbox" 
                                        name="<?php echo $quiz_question['id']; ?>[]" 
                                        value="<?php echo $key2 + 1; ?>"
-                                       id="quiz-<?php echo $quiz_question['id']; ?>-opt-<?php echo $key2 + 1; ?>"
-                                       onclick="enableNextButton('<?php echo $quiz_question['id']; ?>')">
+                                       id="quiz-<?php echo $quiz_question['id']; ?>-opt-<?php echo $key2 + 1; ?>">
                                 <span class="option-checkbox"></span>
                                 <span class="option-text"><?php echo $option; ?></span>
-                            </label>
+                            </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -499,139 +506,22 @@ $question_count = count($quiz_questions->result_array());
 </div>
 
 <script>
-// Timer management
-let timers = {};
-const totalQuestions = <?php echo $question_count; ?>;
+// Toggle option: gère le clic sur toute la carte (pas seulement la checkbox)
+function toggleOption(element, questionId) {
+    var checkbox = element.querySelector('input[type="checkbox"]');
+    if (!checkbox) return;
 
-function selectOption(element) {
-    // Toggle selected class
-    element.classList.toggle('selected');
-}
+    // Toggle checkbox state manuellement
+    checkbox.checked = !checkbox.checked;
 
-function enableNextButton(questionId) {
-    const button = document.getElementById('next-btn-' + questionId);
-    button.disabled = false;
-}
-
-function stopAllTimers() {
-    Object.keys(timers).forEach(function(key) {
-        clearInterval(timers[key]);
-    });
-    timers = {};
-}
-
-function startTimer(index) {
-    stopAllTimers();
-    let timerSpan = document.getElementById('timer' + index);
-    let timerBar = document.getElementById('timer-bar-' + index);
-    let timeLeft = 15;
-    
-    timerSpan.textContent = '00:' + (timeLeft < 10 ? '0' + timeLeft : timeLeft);
-    timerBar.style.animation = 'none';
-    timerBar.offsetHeight; // Trigger reflow
-    timerBar.style.animation = 'timerCountdown 15s linear forwards';
-
-    let timer = setInterval(function() {
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            delete timers[index];
-            
-            if (index < totalQuestions) {
-                showNextQuestion(index + 1);
-            } else {
-                submitQuiz();
-            }
-        } else {
-            timerSpan.textContent = '00:' + (timeLeft < 10 ? '0' + timeLeft : timeLeft);
-            timeLeft--;
-        }
-    }, 1000);
-    
-    timers[index] = timer;
-}
-
-function showNextQuestion(nextQuestionNumber) {
-    // Hide all questions
-    document.querySelectorAll('#quiz_form > div').forEach(function(question) {
-        question.classList.add('hidden');
-    });
-    
-    // Show next question
-    const nextQuestion = document.getElementById('question-number-' + nextQuestionNumber);
-    if (nextQuestion) {
-        nextQuestion.classList.remove('hidden');
-        startTimer(nextQuestionNumber);
+    // Toggle visual class
+    if (checkbox.checked) {
+        element.classList.add('selected');
+    } else {
+        element.classList.remove('selected');
     }
-}
 
-function getStarted(questionNumber) {
-    document.getElementById('quiz-header').style.display = 'none';
-    document.getElementById('question-number-' + questionNumber).classList.remove('hidden');
-    startTimer(questionNumber);
-}
-
-function submitQuiz() {
-    stopAllTimers();
-    let form = document.getElementById('quiz_form');
-    let submitButton = form.querySelector('button:not([disabled])');
-    if (submitButton) {
-        submitButton.disabled = true;
-    }
-    form.submit();
-}
-
-function retakeQuiz() {
-    window.location.reload();
-}
-
-function check_result() {
-    fetch('/quiz/results?lesson_id=<?php echo $lesson_details['id']; ?>', {
-        method: 'GET',
-        headers: {
-            'X-CSRF-Token': '<?php echo $this->security->get_csrf_hash(); ?>'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network error: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        let quizResult = document.getElementById('quiz-result');
-        if (data.error) {
-            quizResult.innerHTML = `<div class="quiz-info-card"><p class="text-muted">${data.error}</p></div>`;
-            return;
-        }
-        
-        quizResult.innerHTML = `
-            <div class="quiz-info-card" style="margin-top: 1.5rem;">
-                <div class="quiz-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
-                    <i class="fas fa-trophy" style="color: #059669;"></i>
-                </div>
-                <h2 class="quiz-info-title"><?php echo get_phrase('your_results'); ?></h2>
-                <div class="quiz-stats">
-                    <div class="quiz-stat">
-                        <span class="quiz-stat-value" style="color: ${data.score >= 50 ? '#059669' : '#ef4444'};">${data.score}%</span>
-                        <span class="quiz-stat-label"><?php echo get_phrase('score'); ?></span>
-                    </div>
-                    <div class="quiz-stat">
-                        <span class="quiz-stat-value">${data.correct_answers}/${data.total_questions}</span>
-                        <span class="quiz-stat-label"><?php echo get_phrase('correct'); ?></span>
-                    </div>
-                </div>
-                <div class="quiz-actions">
-                    <button type="button" class="quiz-btn quiz-btn-primary" onclick="retakeQuiz()">
-                        <i class="fas fa-redo-alt"></i>
-                        <?php echo get_phrase('retake_quiz'); ?>
-                    </button>
-                </div>
-            </div>
-        `;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while fetching results: ' + error.message);
-    });
+    // Activer le bouton "Suivant"
+    enableNextButton(questionId);
 }
 </script>

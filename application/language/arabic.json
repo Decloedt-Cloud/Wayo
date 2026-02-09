@@ -2442,6 +2442,7 @@
     "start_with_your_profile": "ابدأ بملفك الشخصي، ثم أنشئ مجتمعك، وحدد السعر، وانشره",
     "invalid_file_type": "نوع الملف غير صالح",
     "file_size_exceeds_10mb": "حجم الملف يتجاوز 10 ميجا بايت",
+    "file_size_exceeds_20mb": "حجم الملف يتجاوز 20 ميجا بايت",
     "membres": "أعضاء",
     "launch_and_monetize": "الإطلاق وتحقيق الدخل",
     "transparency,_security,_and_control_over_your_data.": "الشفافية والأمان والتحكم في بياناتك.",
@@ -4024,5 +4025,10 @@
     "enter_your_email_to_receive_reset_link": "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "قم بتسجيل الدخول للوصول إلى لوحة التحكم وإدارة مدرستك بكفاءة",
     "login_failed": "فشل تسجيل الدخول",
-    "failed_to_send_reset_link": "فشل إرسال رابط إعادة التعيين"
+    "failed_to_send_reset_link": "فشل إرسال رابط إعادة التعيين",
+    "total_syllabus": "المنهج الدراسي الكامل",
+    "max_size:_10_mo": "أقصى حجم: 10 Mo",
+    "max_size:_20_mo": "أقصى حجم: 20 Mo",
+    "upload_and_share_study_materials": "قم بتحميل ومشاركة المواد الدراسية",
+    "enter_syllabus_title": "أدخل عنوان المنهج"
 }

@@ -2591,6 +2591,7 @@
     "upload_a_logo_(png,_256×256)_and_a_cover_image_(jpg/png,_1920×600)_to_make_your_page_look_professional.": "Upload een logo (PNG, 256×256) en een coverafbeelding (JPG/PNG, 1920×600) om je pagina er professioneel uit te laten zien.",
     "invalid_file_type": "Ongeldig bestandstype",
     "file_size_exceeds_10mb": "Bestandsgrootte overschrijdt 10 MB",
+    "file_size_exceeds_20mb": "Bestandsgrootte overschrijdt 20 MB",
     "membres": "Leden",
     "transparency,_security,_and_control_over_your_data.": "Transparantie, veiligheid en controle over je gegevens.",
     "🇲🇦_law_09-08": "🇲🇦 Wet 09-08",
@@ -4160,5 +4161,11 @@
     "enter_your_email_to_receive_reset_link": "Voer je e-mailadres in om een resetlink te ontvangen",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Log in om toegang te krijgen tot je dashboard en je school efficiënt te beheren",
     "login_failed": "Inloggen mislukt",
-    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt"
+    "failed_to_send_reset_link": "Verzenden van resetlink is mislukt",
+    "max_size:_10_mo": "Maximale grootte: 10 Mb",
+    "max_size:_20_mo": "Maximale grootte: 20 Mb",
+    "total_syllabus": "Volledig lesprogramma",
+    "upload_and_share_study_materials": "Studiemateriaal uploaden en delen",
+    "enter_syllabus_title": "Voer de titel van het lesprogramma in",
+    "bestandsgrootte_overschrijdt_10_mb": "Bestandsgrootte overschrijdt 10 mb"
 }

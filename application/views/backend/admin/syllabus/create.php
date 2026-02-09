@@ -273,8 +273,9 @@
             </div>
             <small class="text-muted mt-1 d-block">
                 <i class="mdi mdi-information-outline"></i> 
-                <?php echo get_phrase('allowed_files'); ?>: .pdf, .doc, .docx, .txt
+                <?php echo get_phrase('allowed_files'); ?>: .pdf, .doc, .docx, .txt • <?php echo get_phrase('max_size:_20_mo'); ?>
             </small>
+            <small id="syllabus_file_error" class="text-danger mt-1 d-none"></small>
         </div>
 
         <div class="exp-form-group mt-4">
@@ -295,10 +296,10 @@ $('document').ready(function(){
         e.preventDefault(); // Bloque le comportement normal
         var form = $(this);
 
-        var maxSize = 10 * 1024 * 1024; // 10 Mo en bytes
+        var maxSize = 20 * 1024 * 1024; // 20 Mo en bytes
         var syllabusFile = $('#syllabus_file')[0].files[0];
         if (syllabusFile && syllabusFile.size > maxSize) {
-            error_notify('<?php echo js_phrase(get_phrase('file_size_exceeds_10mb')); ?>');
+            $('#syllabus_file_error').text('<?php echo js_phrase(get_phrase('file_size_exceeds_20mb')); ?>').removeClass('d-none').addClass('d-block');
             return false; // Arrête l'exécution si le fichier est trop grand
         }
 
@@ -353,6 +354,16 @@ $('document').ready(function(){
                 submitButton.prop('disabled', false).html('<i class="mdi mdi-plus"></i><?php echo htmlspecialchars(get_phrase('create_syllabus'), ENT_QUOTES); ?>');
             }
         }); 
+    });
+
+    $('#syllabus_file').on('change', function() {
+        var maxSize = 20 * 1024 * 1024;
+        var f = this.files[0];
+        if (f && f.size > maxSize) {
+            $('#syllabus_file_error').text('<?php echo js_phrase(get_phrase('file_size_exceeds_20mb')); ?>').removeClass('d-none').addClass('d-block');
+        } else {
+            $('#syllabus_file_error').text('').addClass('d-none').removeClass('d-block');
+        }
     });
 
     function getCsrfToken() {

@@ -2488,6 +2488,7 @@
     "start_with_your_profile": "Start with your profile, then create your community, set the price, and publish.",
     "invalid_file_type": "Invalid file type",
     "file_size_exceeds_10mb": "File size exceeds 10mb",
+    "file_size_exceeds_20mb": "File size exceeds 20mb",
     "spaces": "Spaces",
     "0_communities_found_for_search": "0 communities found for search",
     "launch_and_monetize": "Launch and monetize",
@@ -4489,5 +4490,16 @@
     "allow_managing_marks": "Allow managing marks",
     "allow_taking_attendance": "Allow taking attendance",
     "allow_all_permissions": "Allow all permissions",
-    "full_access": "Full access"
+    "full_access": "Full access",
+    "max_size:_10_mo": "Max size: 10 Mo",
+    "max_size:_20_mo": "Max size: 20 Mo",
+    "no_schools_found": "No schools found",
+    "no_pending_school_applications": "No pending school applications",
+    "excellent_work": "Excellent work",
+    "good_effort": "Good effort",
+    "no_lessons_available_for_quiz": "No lessons available to generate a quiz",
+    "quiz_requires_at_least_one_lesson": "The current section or a previous section must contain at least one lesson before you can generate a quiz with AI.",
+    "end_date_must_be_on_or_after_start_date": "End date must be on or after start date",
+    "course_settings": "Course settings",
+    "descriptions": "Descriptions"
 }

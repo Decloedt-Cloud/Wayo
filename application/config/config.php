@@ -547,6 +547,7 @@ $config['csrf_exclude_uris'] = array(
     'app/recording/.*', //student
     'app/attendance/filter', //student
     'app/courses/manage_multiple_choices_options', //addons
+    'app/courses/save_course_progress', //addons
     'app/courses/generate_outline_schemas', //addons
     'app/courses/apply_outline_schema', //addons
     'app/courses/generate_quiz_from_lessons', //addons
