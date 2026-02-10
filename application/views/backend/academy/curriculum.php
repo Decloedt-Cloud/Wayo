@@ -64,6 +64,16 @@
 })();
 </script>
 
+<!-- Course Header Bar -->
+<div class="curriculum-course-header">
+    <div class="curriculum-course-info">
+        <h2 class="curriculum-course-title"><?php echo html_escape($course['title']); ?></h2>
+        <span class="curriculum-course-status <?php echo $course['status'] == 'active' ? 'active' : 'inactive'; ?>">
+            <?php echo get_phrase($course['status']); ?>
+        </span>
+    </div>
+</div>
+
 <div class="curriculum-container">
     <!-- Left Panel - Preview (Hidden by default) -->
     <div class="editor-panel" id="previewPanel" style="display: none;">
@@ -1634,7 +1644,8 @@ function openQuizPreview(quizId, sectionId, title) {
                         if (options.length > 0) {
                             html += '<div class="question-options-list">';
                             options.forEach(function(opt, optIndex) {
-                                const isCorrect = correctAnswers.includes(optIndex) || correctAnswers.includes(optIndex.toString());
+                                const oneIdx = optIndex + 1;
+                                const isCorrect = correctAnswers.includes(oneIdx) || correctAnswers.includes(oneIdx.toString());
                                 html += '<div class="question-option ' + (isCorrect ? 'correct' : '') + '">';
                                 html += '<span class="option-badge">' + String.fromCharCode(65 + optIndex) + '</span>';
                                 html += '<span class="option-text">' + opt + '</span>';
@@ -2222,10 +2233,11 @@ function addQuestion(questionData = null) {
     // Add default answers
     if (questionData && questionData.options) {
         questionData.options.forEach((option, index) => {
-            // Compare as numbers since correct_answers contains numbers
+            // correct_answers est 1-indexed (1, 2, 3...) pour correspondre au quiz player
+            const oneIndexed = index + 1;
             const isCorrect = questionData.correct_answers && (
-                questionData.correct_answers.includes(index) || 
-                questionData.correct_answers.includes(index.toString())
+                questionData.correct_answers.includes(oneIndexed) || 
+                questionData.correct_answers.includes(oneIndexed.toString())
             );
             addAnswer(questionId, option, isCorrect);
         });
@@ -2344,7 +2356,7 @@ function getQuestionsData() {
             if (answerText) {
                 options.push(answerText);
                 if (isCorrect) {
-                    correctAnswers.push(options.length - 1);
+                    correctAnswers.push(options.length); // 1-indexed pour correspondre au quiz player
                 }
             }
         });
@@ -3861,6 +3873,10 @@ function removeFileUpload(previewId, uploadAreaId) {
 // ==========================================
 
 function openPdfImportModal() {
+    // Pauser les autosave pour libérer le thread principal (évite la latence des clics)
+    clearTimeout(AutoSaveManager.lessonAutosaveTimer);
+    clearTimeout(AutoSaveManager.quizAutosaveTimer);
+
     showModal('pdfImportModal');
     resetPdfImportModal();
     initPdfDropZoneEvents();
@@ -3878,6 +3894,10 @@ function closePdfImportModal() {
     // Clean up file upload events
     cleanupFileUploadEvents('pdfDropZone', 'pdfFileInput');
     pdfEventsInitialized = false;
+
+    // Relancer les autosave si nécessaire
+    if (AutoSaveManager.lessonDirty) AutoSaveManager.scheduleAutosave('lesson');
+    if (AutoSaveManager.quizDirty) AutoSaveManager.scheduleAutosave('quiz');
 }
 
 function resetPdfImportModal() {
@@ -3973,77 +3993,86 @@ function generateOutlineSchemas() {
     if (!currentPdfJsonPath) {
         return;
     }
-    
-    // Set generation flag to block modal closing
-    isOutlineGenerating = true;
-    
-    // Hide close button during generation
-    document.getElementById('pdfModalCloseBtn').style.display = 'none';
-    
+
+    // Feedback visuel IMMÉDIAT : désactiver le bouton + spinner
+    const saveBtn = document.getElementById('btnSaveOutline');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <?php echo addslashes(get_phrase("generating")); ?>...';
+    }
+
+    // Collecter les données légères immédiatement
     const outlineData = getOutlineRulesData();
-    
-    // Get course context data (prerequisites, field_of_activity, course_style)
     const courseId = <?php echo $param1 ?? 0; ?>;
-    
-    // Show schema selection view with loading
-    document.querySelector('.outline-rules-body').style.display = 'none';
-    document.getElementById('outlineRulesFooter').style.display = 'none';
-    const schemaSelectionEl = document.getElementById('outlineSchemaSelection');
-    schemaSelectionEl.style.display = 'block';
-    schemaSelectionEl.classList.add('is-loading'); // Add loading class to hide content
-    document.getElementById('outlineSchemaFooter').style.display = 'none'; // Hide footer during generation
-    showModal('schemaLoadingOverlay');
-    
-    // Call DeepSeek API
     const csrfName = document.getElementById('csrf_name')?.value || '<?php echo $this->security->get_csrf_token_name(); ?>';
     const csrfHash = document.getElementById('csrf_hash')?.value || '<?php echo $this->security->get_csrf_hash(); ?>';
-    
-    const formData = new FormData();
-    formData.append('course_id', courseId);
-    formData.append('pdf_json_path', currentPdfJsonPath);
-    formData.append('outline_rules', JSON.stringify(outlineData));
-    formData.append(csrfName, csrfHash);
-    
-    fetch('<?php echo site_url('addons/courses/generate_outline_schemas'); ?>', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Reset generation flag - schemas generated, user can close modal
-        isOutlineGenerating = false;
-        
-        // Show close button again
-        document.getElementById('pdfModalCloseBtn').style.display = '';
-        
-        hideModal('schemaLoadingOverlay');
-        document.getElementById('outlineSchemaSelection').classList.remove('is-loading'); // Remove loading class
-        // Always show footer after loading completes
-        document.getElementById('outlineSchemaFooter').style.display = 'flex';
-        
-        if (data.error) {
-            console.error('Error:', data.error);
+
+    // Différer les manipulations DOM lourdes au prochain frame (libère le thread pour le feedback visuel)
+    requestAnimationFrame(function() {
+        // Set generation flag to block modal closing
+        isOutlineGenerating = true;
+
+        // Hide close button during generation
+        document.getElementById('pdfModalCloseBtn').style.display = 'none';
+
+        // Show schema selection view with loading
+        document.querySelector('.outline-rules-body').style.display = 'none';
+        document.getElementById('outlineRulesFooter').style.display = 'none';
+        const schemaSelectionEl = document.getElementById('outlineSchemaSelection');
+        schemaSelectionEl.style.display = 'block';
+        schemaSelectionEl.classList.add('is-loading');
+        document.getElementById('outlineSchemaFooter').style.display = 'none';
+        showModal('schemaLoadingOverlay');
+
+        // Call API
+        const formData = new FormData();
+        formData.append('course_id', courseId);
+        formData.append('pdf_json_path', currentPdfJsonPath);
+        formData.append('outline_rules', JSON.stringify(outlineData));
+        formData.append(csrfName, csrfHash);
+
+        fetch('<?php echo site_url('addons/courses/generate_outline_schemas'); ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            isOutlineGenerating = false;
+            document.getElementById('pdfModalCloseBtn').style.display = '';
+            hideModal('schemaLoadingOverlay');
+            document.getElementById('outlineSchemaSelection').classList.remove('is-loading');
+            document.getElementById('outlineSchemaFooter').style.display = 'flex';
+            resetSaveOutlineBtn();
+
+            if (data.error) {
+                console.error('Error:', data.error);
+                backToOutlineRules();
+                return;
+            }
+
+            if (data.schemas) {
+                generatedSchemas = data.schemas;
+                populateSchemaCards(data.schemas);
+            }
+        })
+        .catch(error => {
+            isOutlineGenerating = false;
+            document.getElementById('pdfModalCloseBtn').style.display = '';
+            hideModal('schemaLoadingOverlay');
+            document.getElementById('outlineSchemaSelection').classList.remove('is-loading');
+            resetSaveOutlineBtn();
+            console.error('Failed to generate schemas:', error.message);
             backToOutlineRules();
-            return;
-        }
-        
-        if (data.schemas) {
-            generatedSchemas = data.schemas;
-            populateSchemaCards(data.schemas);
-        }
-    })
-    .catch(error => {
-        // Reset generation flag on error
-        isOutlineGenerating = false;
-        
-        // Show close button again
-        document.getElementById('pdfModalCloseBtn').style.display = '';
-        
-        hideModal('schemaLoadingOverlay');
-        document.getElementById('outlineSchemaSelection').classList.remove('is-loading'); // Remove loading class
-        console.error('Failed to generate schemas:', error.message);
-        backToOutlineRules();
+        });
     });
+}
+
+function resetSaveOutlineBtn() {
+    const saveBtn = document.getElementById('btnSaveOutline');
+    if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<?php echo addslashes(get_phrase("save")); ?>';
+    }
 }
 
 // Translation constants for schema stats
@@ -4787,7 +4816,10 @@ function extractPdfStructure(file) {
                             </div>
                             <div class="ai-quiz-lessons-empty" id="aiQuizLessonsEmpty" style="display: none;">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <span><?php echo get_phrase("no_lessons_available"); ?></span>
+                                <span><?php echo get_phrase("no_lessons_available_for_quiz"); ?></span>
+                                <small style="color: #9ca3af; margin-top: 4px; text-align: center; line-height: 1.5;">
+                                    <?php echo get_phrase("quiz_requires_at_least_one_lesson"); ?>
+                                </small>
                             </div>
                             <div class="ai-quiz-lessons-list" id="aiQuizLessonsList" style="display: none;">
                                 <!-- Lessons will be loaded here dynamically -->

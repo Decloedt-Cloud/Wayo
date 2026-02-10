@@ -249,14 +249,14 @@ function getStarted(first_quiz_question) {
     $('#lesson-summary').hide();
     $('#question-number-' + first_quiz_question).removeClass('hidden').show();
     currentQuestion = first_quiz_question;
-    startTimer(15);
+    startTimer(30);
 }
 
 function showNextQuestion(next_question) {
     $('#question-number-' + (next_question - 1)).addClass('hidden').hide();
     $('#question-number-' + next_question).removeClass('hidden').show();
     currentQuestion = next_question;
-    startTimer(15);
+    startTimer(30);
 }
 
 function startTimer(duration) {
@@ -273,7 +273,7 @@ function startTimer(duration) {
     if (timerBar) {
         timerBar.style.animation = 'none';
         timerBar.offsetHeight; // Trigger reflow
-        timerBar.style.animation = 'timerCountdown 15s linear forwards';
+        timerBar.style.animation = 'timerCountdown 30s linear forwards';
     }
 
     // Démarrer le nouvel intervalle de mise à jour du chronomètre
@@ -318,24 +318,26 @@ function stopTimer() {
 function submitQuiz() {
   quizSubmitted = true;
   var lesson_id = '<?php echo $lesson_id; ?>';
-  
-  // Use the new checkbox ID format: lesson-{id}
-  var checkbox = document.getElementById('lesson-' + lesson_id);
-  if (checkbox) {
-    checkbox.checked = true;
-  }
-  
-  markThisLessonAsCompleted(lesson_id);
-  
+
+  // Sérialiser le formulaire AVANT tout autre appel AJAX (pour garder un CSRF valide)
+  var formData = $('form#quiz_form').serialize();
+
   $.ajax({
       url: '<?php echo site_url('addons/lessons/submit_quiz'); ?>',
       type: 'post',
-      data: $('form#quiz_form').serialize(),
+      data: formData,
       success: function(response) {
-          // Hide quiz body (use quiz-wrapper for new design)
+          // Afficher les résultats
           $('.quiz-wrapper #quiz-header').hide();
           $('.quiz-wrapper form').hide();
           $('#quiz-result').html(response).show();
+
+          // Marquer la leçon comme complétée APRÈS la soumission du quiz
+          var checkbox = document.getElementById('lesson-' + lesson_id);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+          markThisLessonAsCompleted(lesson_id);
       }
   });
 }
@@ -343,23 +345,23 @@ function submitQuiz() {
 function check_result() {
   quizSubmitted = true;
   var lesson_id = '<?php echo $lesson_id; ?>';
-  
-  // Use the new checkbox ID format: lesson-{id}
-  var checkbox = document.getElementById('lesson-' + lesson_id);
-  if (checkbox) {
-    checkbox.checked = true;
-  }
-  
-  markThisLessonAsCompleted(lesson_id);
-  
+
+  var formData = $('form#quiz_form').serialize();
+
   $.ajax({
       url: '<?php echo site_url('addons/lessons/check_result'); ?>',
       type: 'post',
-      data: $('form#quiz_form').serialize(),
+      data: formData,
       success: function(response) {
           $('.quiz-wrapper #quiz-header').hide();
           $('.quiz-wrapper form').hide();
           $('#quiz-result').html(response).show();
+
+          var checkbox = document.getElementById('lesson-' + lesson_id);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+          markThisLessonAsCompleted(lesson_id);
       }
   });
 }

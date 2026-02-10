@@ -475,8 +475,6 @@ class Student extends CI_Controller {
             $this->db->group_start();
                 // Access via recording class
                 $this->db->where_in('r.class_id', $class_ids_list);
-                // Access via appointment class
-                $this->db->or_where_in('a.classe_id', $class_ids_list);
                 // Access via participant (individual)
                 $this->db->or_group_start();
                     $this->db->where('p.type', 'individual');

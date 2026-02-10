@@ -2,21 +2,21 @@
     <?php
     $current_school_id = school_id();
     $student_status_check = $this->db->get_where('students', [
-        'user_id' => $this->session->userdata('user_id'), 
+        'user_id' => $this->session->userdata('user_id'),
         'school_id' => $current_school_id
     ])->row_array();
 
     if ($student_status_check && (int)$student_status_check['status'] === 0):
     ?>
-    <div class="alert alert-warning mb-4" role="alert" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: linear-gradient(135deg, #fff3cd, #ffecb5);">
-        <h4 class="alert-heading d-flex align-items-center" style="color: #856404; font-weight: 700;">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <?php echo get_phrase('pending_approval'); ?>
-        </h4>
-        <p class="mb-0 mt-2" style="color: #856404; font-size: 1.1em;">
-            <?php echo get_phrase('you_must_wait_for_the_community_owner_approval_to_access_services'); ?>
-        </p>
-    </div>
+        <div class="alert alert-warning mb-4" role="alert" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: linear-gradient(135deg, #fff3cd, #ffecb5);">
+            <h4 class="alert-heading d-flex align-items-center" style="color: #856404; font-weight: 700;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <?php echo get_phrase('pending_approval'); ?>
+            </h4>
+            <p class="mb-0 mt-2" style="color: #856404; font-size: 1.1em;">
+                <?php echo get_phrase('you_must_wait_for_the_community_owner_approval_to_access_services'); ?>
+            </p>
+        </div>
     <?php endif; ?>
 
     <!-- Header -->
@@ -30,7 +30,7 @@
         <div class="header-actions">
             <div class="date-badge">
                 <i class="far fa-calendar-alt"></i>
-                <span><?php echo date('d M, Y'); ?></span>
+                <span><?php echo get_phrase(strtolower(date('l'))) . ', ' . date('j') . ' ' . get_phrase(strtolower(date('F'))) . ' ' . date('Y'); ?></span>
             </div>
         </div>
     </div>
@@ -43,11 +43,11 @@
                 <p class="card-subtitle"><?php echo get_phrase('track_your_payments_and_invoices'); ?></p>
             </div>
         </div>
-        
+
         <div class="modern-card-body">
-             <div class="invoice_content">
+            <div class="invoice_content">
                 <?php include 'list.php'; ?>
-             </div>
+            </div>
         </div>
     </div>
 </div>
@@ -263,17 +263,17 @@
         .modern-dashboard {
             padding: 1rem;
         }
-        
+
         .dash-header {
             flex-direction: column;
             align-items: flex-start;
             gap: 1rem;
         }
-        
+
         .modern-card {
             padding: 1.5rem;
         }
-        
+
         .modern-table-wrapper {
             overflow-x: auto;
         }
@@ -281,16 +281,18 @@
 </style>
 
 <script>
-var showAllInvoices = function () {
-    var url = '<?php echo route('invoice/list'); ?>';
-    $.ajax({
-        type : 'GET',
-        url: url,
-        data : {date : $('#selectedValue').text()},
-        success : function(response) {
-            $('.invoice_content').html(response);
-            // Re-init any plugins if needed
-        }
-    });
-}
+    var showAllInvoices = function() {
+        var url = '<?php echo route('invoice/list'); ?>';
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                date: $('#selectedValue').text()
+            },
+            success: function(response) {
+                $('.invoice_content').html(response);
+                // Re-init any plugins if needed
+            }
+        });
+    }
 </script>

@@ -1635,12 +1635,17 @@ stopPolling() {
 
   bindGlobalEvents() {
     $('#createEventModal').on('show.bs.modal', () => {
-      CalendarApp.resetPicker('create');
-      $('#createeventEndDate').on('change', () => {
+      $('#participantsSearchInput').val('');
+      $('#participantsBadges').empty();
+      $('#participantsDropdownMenu').html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("Write something to search..."); ?></div>');
+      $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
+      $('#participantsInput').val('[]');
+      $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
+      $('#createeventEndDate').on('blur', () => {
         const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
         if (startDate && endDate && endDate < startDate) {
-          CalendarApp.showNotification('error', "End date must be on or after start date");
+          CalendarApp.showNotification('error', "<?php echo get_phrase('end_date_must_be_on_or_after_start_date'); ?>");
           $('#createeventEndDate').val('');
         }
       });

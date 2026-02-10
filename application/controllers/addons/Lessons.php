@@ -146,9 +146,12 @@ class Lessons extends CI_Controller {
         $submitted_answer_status = 0;
         $correct_answers = json_decode($quiz_question['correct_answers']);
         $submitted_answers = array();
-        foreach ($this->input->post($quiz_question['id']) as $each_submission) {
-            if (isset($each_submission)) {
-                array_push($submitted_answers, $each_submission);
+        $post_answers = $this->input->post($quiz_question['id']);
+        if (is_array($post_answers)) {
+            foreach ($post_answers as $each_submission) {
+                if (isset($each_submission)) {
+                    array_push($submitted_answers, $each_submission);
+                }
             }
         }
         sort($correct_answers);
