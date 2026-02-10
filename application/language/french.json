@@ -4167,5 +4167,10 @@
     "enter_your_email_to_receive_reset_link": "Entrez votre email pour recevoir le lien de réinitialisation",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Connectez-vous pour accéder à votre tableau de bord et gérer votre école efficacement",
     "login_failed": "Échec de la connexion",
-    "failed_to_send_reset_link": "Échec de l'envoi du lien de réinitialisation"
+    "failed_to_send_reset_link": "Échec de l'envoi du lien de réinitialisation",
+    "community_visibility": "Visibilité de la communauté",
+    "toggle_community_visibility": "Basculer la visibilité de la communauté",
+    "public_community": "Communauté publique",
+    "public_community_-_open_access": "Communauté publique – accès libre",
+    "community_state_updated_successfully": "L'état de la communauté a été mis à jour avec succès"
 }

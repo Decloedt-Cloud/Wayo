@@ -4070,5 +4070,10 @@
     "enter_your_email_to_receive_reset_link": "Ingresa tu correo electrónico para recibir el enlace de restablecimiento",
     "login_to_access_your_dashboard_and_manage_your_school_efficiently": "Inicia sesión para acceder a tu panel y gestionar tu escuela de manera eficiente",
     "login_failed": "Inicio de sesión fallido",
-    "failed_to_send_reset_link": "No se pudo enviar el enlace de restablecimiento"
+    "failed_to_send_reset_link": "No se pudo enviar el enlace de restablecimiento",
+    "community_visibility": "Visibilidad de la comunidad",
+    "toggle_community_visibility": "Alternar visibilidad de la comunidad",
+    "public_community": "Comunidad pública",
+    "public_community_-_open_access": "Comunidad pública - acceso abierto",
+    "community_state_updated_successfully": "Estado de la comunidad actualizado correctamente"
 }
