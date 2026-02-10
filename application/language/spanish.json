@@ -2846,7 +2846,6 @@
     "all_programs": "Todos los programas",
     "inicio": "Inicio",
     "your_community_with_peace_of_mind.": "tu comunidad con tranquilidad",
-    "we_specialize_in_secure_payment_platforms_that_don’t_freeze_mentors’_accounts._build,_engage,_and_grow_your_revenue_without_limitations.": "Nos especializamos en plataformas de pago seguras que no bloquean las cuentas de los mentores. Construye, interactúa y aumenta tus ingresos sin limitaciones.",
     "monetize_your_expertise": "Monetiza tu experiencia",
     "courses_&_live": "Cursos y en vivo",
     "built-in_social": "Funciones sociales integradas",
@@ -4113,5 +4112,6 @@
     "toggle_community_visibility": "Alternar visibilidad de la comunidad",
     "public_community": "Comunidad pública",
     "public_community_-_open_access": "Comunidad pública - acceso abierto",
-    "community_state_updated_successfully": "Estado de la comunidad actualizado correctamente"
+    "community_state_updated_successfully": "Estado de la comunidad actualizado correctamente",
+    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "La plataforma todo en uno para crear, dinamizar y vender: cursos, videollamadas, chat y pagos integrados."
 }
