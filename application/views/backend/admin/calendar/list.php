@@ -1,5 +1,178 @@
 
 <style>
+    /* Participants Picker - Modern Chip Input */
+    .pp-picker {
+        position: relative;
+    }
+    .pp-field {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        min-height: 42px;
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: #fff;
+        cursor: text;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .pp-field:hover {
+        border-color: #adb5bd;
+    }
+    .pp-field.pp-focus {
+        border-color: var(--exp-primary, #6366f1);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+    .pp-field .pp-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--exp-primary, #6366f1);
+        color: #fff;
+        border-radius: 16px;
+        padding: 2px 6px 2px 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+        max-width: 200px;
+        animation: ppChipIn 0.15s ease;
+    }
+    @keyframes ppChipIn {
+        from { transform: scale(0.85); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .pp-field .pp-chip .pp-chip-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .pp-field .pp-chip .pp-chip-x {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        cursor: pointer;
+        font-size: 0.75rem;
+        line-height: 1;
+        transition: background 0.15s;
+        flex-shrink: 0;
+    }
+    .pp-field .pp-chip .pp-chip-x:hover {
+        background: rgba(255,255,255,0.45);
+    }
+    .pp-field .pp-input {
+        flex: 1;
+        min-width: 100px;
+        border: none;
+        outline: none;
+        font-size: 0.88rem;
+        background: transparent;
+        padding: 2px 0;
+    }
+    .pp-field .pp-input::placeholder {
+        color: #adb5bd;
+    }
+    .pp-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1060;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        max-height: 260px;
+        overflow-y: auto;
+        display: none;
+    }
+    .pp-picker.pp-open .pp-dropdown {
+        display: block;
+    }
+    .pp-picker.pp-open .pp-field {
+        border-radius: 8px 8px 0 0;
+        border-bottom-color: #dee2e6;
+    }
+    .pp-dropdown .pp-group {
+        padding: 8px 14px 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #8b8fa3;
+        user-select: none;
+    }
+    .pp-dropdown .pp-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        cursor: pointer;
+        transition: background 0.1s;
+        font-size: 0.88rem;
+        color: #333;
+    }
+    .pp-dropdown .pp-item:hover {
+        background: #f1f3f9;
+    }
+    .pp-dropdown .pp-item.pp-checked {
+        background: rgba(99, 102, 241, 0.06);
+    }
+    .pp-dropdown .pp-item .pp-check-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        border: 2px solid #ced4da;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        flex-shrink: 0;
+    }
+    .pp-dropdown .pp-item.pp-checked .pp-check-icon {
+        background: var(--exp-primary, #6366f1);
+        border-color: var(--exp-primary, #6366f1);
+    }
+    .pp-dropdown .pp-item.pp-checked .pp-check-icon::after {
+        content: '';
+        width: 5px;
+        height: 9px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translateY(-1px);
+    }
+    .pp-dropdown .pp-item .pp-label {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pp-dropdown .pp-item .pp-role {
+        font-size: 0.75rem;
+        color: #8b8fa3;
+        background: #f1f3f9;
+        padding: 1px 7px;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+    .pp-dropdown .pp-empty {
+        padding: 20px 14px;
+        text-align: center;
+        color: #adb5bd;
+        font-size: 0.88rem;
+    }
+    .pp-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+    .pp-dropdown::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+    }
+
     /* Modern Buttons */
     .modern-btn {
         display: inline-flex;
@@ -120,12 +293,11 @@
                                 <select class="exp-form-control" id="createSchoolId" name="school_id" required></select>
                             </div>
                             
-                            <div class="multi-select-search-dropdown">
-                                <div class="search-container">
-                                    <input type="text" class="exp-form-control search-input" id="participantsSearchInput" placeholder="<?php echo get_phrase('invite_attendees'); ?>">
-                                    <div class="badges-container mt-2" id="participantsBadges"></div>
+                            <div class="pp-picker" id="createPPicker">
+                                <div class="pp-field" id="createPPField">
+                                    <input type="text" class="pp-input" id="participantsSearchInput" placeholder="<?php echo get_phrase('invite_attendees'); ?>" autocomplete="off">
                                 </div>
-                                <div class="dropdown-menu" id="participantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
+                                <div class="pp-dropdown" id="participantsDropdown"></div>
                             </div>
                             <input type="hidden" name="participants" id="participantsInput">
                         </div>
@@ -281,12 +453,11 @@
                                 <select class="exp-form-control" id="school_id" name="school_id" required></select>
                             </div>
                             
-                            <div class="multi-select-search-dropdown">
-                                <div class="search-container">
-                                    <input type="text" class="exp-form-control search-input" id="editParticipantsSearchInput" placeholder="<?php echo get_phrase('Search classes or users'); ?>">
-                                    <div class="badges-container mt-2" id="editParticipantsBadges"></div>
+                            <div class="pp-picker" id="editPPicker">
+                                <div class="pp-field" id="editPPField">
+                                    <input type="text" class="pp-input" id="editParticipantsSearchInput" placeholder="<?php echo get_phrase('Search classes or users'); ?>" autocomplete="off">
                                 </div>
-                                <div class="dropdown-menu" id="editParticipantsDropdownMenu" style="max-height: 300px; overflow-y: auto;"></div>
+                                <div class="pp-dropdown" id="editParticipantsDropdown"></div>
                             </div>
                             <input type="hidden" name="participants" id="editParticipantsInput">
                         </div>
@@ -1155,30 +1326,7 @@ showEventDetails(eventId, occurrenceDate) {
                         }
                     });
                     const participants = event.participants && Array.isArray(event.participants) ? event.participants : [];
-                    this.refreshUsersDropdown(event.school_id, participants, () => {
-                        const badgesContainer = $('#editParticipantsBadges');
-                        badgesContainer.empty();
-                        const selected = [];
-
-                        participants.forEach(function(p) {
-                            const $checkbox = $(`#editParticipantsDropdownMenu .participant-checkbox[data-type="${p.type}"][value="${p.id}"]`);
-                            if ($checkbox.length) {
-                                $checkbox.prop('checked', true);
-                                const name = $checkbox.parent().text().replace(/^$$ \w+ $$\s*/, '').trim();
-                                selected.push({ type: p.type, id: p.id });
-
-                                const badge = $(`
-                                    <span class="badge" data-type="${p.type}" data-id="${p.id}">
-                                        ${CalendarApp.escapeHtml(name)}
-                                        <span class="remove-badge" data-type="${p.type}" data-id="${p.id}">&times;</span>
-                                    </span>
-                                `);
-                                badgesContainer.append(badge);
-                            }
-                        });
-
-                        $('#editParticipantsInput').val(JSON.stringify(selected));
-                    });
+                    this.refreshUsersDropdown(event.school_id, participants);
                     if (event.recurrence_type !== 'does_not_repeat') {
                         let recurrenceText = event.recurrence_type.charAt(0).toUpperCase() + event.recurrence_type.slice(1);
                         if (event.recurrence_type === 'weekly' && event.custom_recurrence) {
@@ -1479,12 +1627,7 @@ stopPolling() {
 
   bindGlobalEvents() {
     $('#createEventModal').on('show.bs.modal', () => {
-      $('#participantsSearchInput').val('');
-      $('#participantsBadges').empty();
-      $('#participantsDropdownMenu').html('');
-      $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
-      $('#participantsInput').val('[]');
-      $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
+      CalendarApp.resetPicker('create');
       $('#createeventEndDate').on('change', () => {
         const startDate = document.getElementById('createeventDate').value;
         const endDate = $('#createeventEndDate').val();
@@ -1547,41 +1690,8 @@ stopPolling() {
                 schoolSelect.prop('disabled', true);
                 csrfHash = data.csrf.csrfHash;
 
-              $.ajax({
-                url: '<?php echo site_url('admin/get_school_data'); ?>',
-                type: 'POST',
-                data: { school_id: data.data.id, [csrfName]: csrfHash },
-                success: (response) => {
-                   try {
-                        const schoolData = JSON.parse(response);
-                        if (schoolData.status === 'success') {
-                            let html = '<strong><?php echo get_phrase("Classes"); ?></strong>';
-                            if (schoolData.classes && Array.isArray(schoolData.classes)) {
-                                schoolData.classes.forEach(cls => {
-                                    html += `<label><input type="checkbox" class="participant-checkbox" data-type="class" value="${cls.id}"> ${CalendarApp.escapeHtml(cls.name)}</label>`;
-                                });
-                            }
-                            html += '<hr><strong><?php echo get_phrase("Users"); ?></strong>';
-                            if (schoolData.users && Array.isArray(schoolData.users)) {
-                                schoolData.users.forEach(user => {
-                                    const roleTranslations = {
-                                        'student': '<?php echo get_phrase("student"); ?>',
-                                        'teacher': '<?php echo get_phrase("mentor"); ?>',
-                                        'admin': '<?php echo get_phrase("admin"); ?>',
-                                        'superadmin': '<?php echo get_phrase("superadmin"); ?>'
-                                    };
-                                    const roleLabel = roleTranslations[user.role] || (user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown');
-                                    html += `<label><input type="checkbox" class="participant-checkbox" data-type="individual" value="${user.id}"> (${roleLabel}) ${CalendarApp.escapeHtml(user.name)}</label>`;
-                                });
-                            }
-                            $('#participantsDropdownMenu').html(html);
-                            csrfHash = schoolData.csrf.csrfHash;
-                        }
-                    } catch (e) {
-                        this.showNotification('error', "Error parsing school data");
-                    }
-                },
-               });
+              // Load school data and populate participants select
+              CalendarApp.refreshUsersDropdown(data.data.id, []);
         } else {
             this.showNotification('error', data.message);
         }
@@ -1591,119 +1701,6 @@ stopPolling() {
     });
 
 
-    $('#participantsSearchInput').off('click').on('click', function(e) {
-    e.stopPropagation();
-    const dropdown = $('#participantsDropdownMenu');
-    const searchTerm = $(this).val().toLowerCase().trim();
-    const schoolId = $('#createSchoolId').val();
-
-    if (schoolId) {
-        const selected = JSON.parse($('#participantsInput').val() || '[]');
-        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
-            if (searchTerm) {
-                dropdown.find('label').each(function() {
-                    const text = $(this).text().toLowerCase();
-                    $(this).toggle(text.includes(searchTerm));
-                });
-                const anyVisible = dropdown.find('label:visible').length > 0;
-                if (!anyVisible) {
-                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
-                }
-            }
-            dropdown.addClass('show').parent().addClass('open');
-        });
-    }
-});
-
-  $('#participantsSearchInput').off('input').on('input', function() {
-    const searchTerm = $(this).val().toLowerCase().trim();
-    const dropdown = $('#participantsDropdownMenu');
-    const schoolId = $('#createSchoolId').val();
-
-    if (schoolId) {
-        const selected = JSON.parse($('#participantsInput').val() || '[]');
-        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
-            if (searchTerm) {
-                const anyVisible = dropdown.find('label').filter(function() {
-                    const text = $(this).text().toLowerCase();
-                    const isVisible = text.includes(searchTerm);
-                    $(this).toggle(isVisible);
-                    return isVisible;
-                }).length > 0;
-
-                if (!anyVisible) {
-                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
-                }
-            }
-            dropdown.addClass('show').parent().addClass('open');
-        });
-    }
-});
-
-$(document).on('click', function(e) {
-    if (!$(e.target).closest('#createParticipants').length) {
-        $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
-    }
-});
-
-$('#participantsDropdownMenu').on('click', function(e) {
-    e.stopPropagation();
-});
-
-$('#participantsDropdownMenu').on('click', '.participant-checkbox', function() {
-    const selected = [];
-    const badgesContainer = $('#participantsBadges');
-    badgesContainer.empty();
-
-    $('#participantsDropdownMenu .participant-checkbox:checked').each(function() {
-        const $checkbox = $(this);
-        const type = $checkbox.data('type');
-        const id = $checkbox.val();
-        const name = $checkbox.parent().text().trim();
-        selected.push({ type, id });
-
-        // Add badge
-        const badge = $(`
-            <span class="badge" data-type="${type}" data-id="${id}">
-                ${CalendarApp.escapeHtml(name)}
-                <span class="remove-badge" data-type="${type}" data-id="${id}">&times;</span>
-            </span>
-        `);
-        badgesContainer.append(badge);
-    });
-
-    $('#participantsInput').val(JSON.stringify(selected));
-    $('#participantsSearchInput').focus();
-
-    // Trigger AJAX to refresh users dropdown
-    const schoolId = $('#createSchoolId').val();
-    if (schoolId) {
-        CalendarApp.refreshUsersDropdown(schoolId, selected);
-    }
-});
-
-// Gestion de la suppression des badges
-$('#participantsBadges').on('click', '.remove-badge', function() {
-    const type = $(this).data('type');
-    const id = $(this).data('id');
-    $(`#participantsDropdownMenu .participant-checkbox[data-type="${type}"][value="${id}"]`).prop('checked', false);
-    $(this).parent().remove();
-
-    const selected = [];
-    $('#participantsDropdownMenu .participant-checkbox:checked').each(function() {
-        selected.push({
-            type: $(this).data('type'),
-            id: $(this).val()
-        }); 
-    });
-    $('#participantsInput').val(JSON.stringify(selected));
-
-    // Trigger AJAX to refresh users dropdown
-    const schoolId = $('#createSchoolId').val();
-    if (schoolId) {
-        CalendarApp.refreshUsersDropdown(schoolId, selected);
-    }
-});
     $('#createEventForm').on('submit', (e) => {
       e.preventDefault();
       if (!this.validateForm('createEventForm')) {
@@ -1736,11 +1733,7 @@ $('#participantsBadges').on('click', '.remove-badge', function() {
               $('#createEventModal').modal('hide');
               $('#createEventForm')[0].reset();
               this.resetRecurrenceModal();
-              $('#participantsInput').val('');
-              $('#participantsBadges').empty();
-              $('#participantsDropdownMenu .participant-checkbox').prop('checked', false);
-              $('#participantsSearchInput').val('');
-              $('#participantsDropdownMenu').removeClass('show').parent().removeClass('open');
+              CalendarApp.resetPicker('create');
               this.showNotification('success', data.message);
               this.clearEventCache();
               this.calendar.refetchEvents();
@@ -2759,76 +2752,197 @@ stopActiveMeetingsPolling() {
     this.hasActiveMeetings = false;
   }
 },
+// --- Participants Picker Engine ---
+_ppData: { create: [], edit: [] },
+_ppSelected: { create: [], edit: [] },
+
 refreshUsersDropdown(schoolId, participants, callback) {
     $.ajax({
         url: '<?php echo site_url('admin/get_school_data'); ?>',
         type: 'POST',
-        data: {
-            school_id: schoolId,
-            participants: JSON.stringify(participants),
-            [csrfName]: csrfHash
-        },
+        data: { school_id: schoolId, participants: JSON.stringify(participants), [csrfName]: csrfHash },
         success: (response) => {
             try {
                 const data = JSON.parse(response);
                 if (data.status === 'success') {
-                    const dropdownMenu = $('#createEventModal').hasClass('show') ? $('#participantsDropdownMenu') : $('#editParticipantsDropdownMenu');
-                    let html = '<strong><?php echo get_phrase("Classes"); ?></strong>';
-
-                    // Ajouter les classes
-                    if (data.classes && Array.isArray(data.classes)) {
+                    const isCreate = $('#createEventModal').hasClass('show');
+                    const mode = isCreate ? 'create' : 'edit';
+                    const roleTranslations = {
+                        'student': '<?php echo get_phrase("student"); ?>',
+                        'teacher': '<?php echo get_phrase("mentor"); ?>',
+                        'admin': '<?php echo get_phrase("admin"); ?>',
+                        'superadmin': '<?php echo get_phrase("superadmin"); ?>'
+                    };
+                    const items = [];
+                    if (data.classes && data.classes.length > 0) {
                         data.classes.forEach(cls => {
-                            const isChecked = participants.some(p => p.type === 'class' && p.id === cls.id) ? 'checked' : '';
-                            html += `<label><input type="checkbox" class="participant-checkbox" data-type="class" value="${cls.id}" ${isChecked}> ${CalendarApp.escapeHtml(cls.name)}</label>`;
+                            items.push({ val: 'class__' + cls.id, type: 'class', label: cls.name, role: '<?php echo get_phrase("class"); ?>', group: 'classes' });
                         });
                     }
-
-                    html += '<hr><strong><?php echo get_phrase("Users"); ?></strong>';
-
-                    // Ajouter les utilisateurs
-                    if (data.users && Array.isArray(data.users)) {
+                    if (data.users && data.users.length > 0) {
                         data.users.forEach(user => {
-                            const isChecked = participants.some(p => p.type === 'individual' && p.id === user.id) ? 'checked' : '';
-                            const roleTranslations = {
-                                'student': '<?php echo get_phrase("student"); ?>',
-                                'teacher': '<?php echo get_phrase("mentor"); ?>',
-                                'admin': '<?php echo get_phrase("admin"); ?>',
-                                'superadmin': '<?php echo get_phrase("superadmin"); ?>'
-                            };
-                            const roleLabel = roleTranslations[user.role] || (user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown');
-                            html += `<label><input type="checkbox" class="participant-checkbox" data-type="individual" value="${user.id}" ${isChecked}> (${roleLabel}) ${CalendarApp.escapeHtml(user.name)}</label>`;
+                            const roleLabel = roleTranslations[user.role] || (user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '');
+                            items.push({ val: 'individual__' + user.id, type: 'individual', label: user.name, role: roleLabel, group: 'users' });
                         });
                     }
-
-                    dropdownMenu.html(html);
+                    CalendarApp._ppData[mode] = items;
+                    // Restore selected
+                    const selectedVals = participants.map(p => p.type + '__' + p.id);
+                    CalendarApp._ppSelected[mode] = selectedVals;
+                    CalendarApp.renderPicker(mode);
                     csrfHash = data.csrf.csrfHash;
-
-                    // Exécuter le callback si fourni
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
+                    if (typeof callback === 'function') callback();
                 } else {
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
+                    if (typeof callback === 'function') callback();
                 }
             } catch (e) {
                 CalendarApp.showNotification('error', "Error parsing school data");
-                if (typeof callback === 'function') {
-                    callback();
-                }
+                if (typeof callback === 'function') callback();
             }
         },
-        error: () => {
-            if (typeof callback === 'function') {
-                callback();
-            }
+        error: () => { if (typeof callback === 'function') callback(); }
+    });
+},
+
+renderPicker(mode) {
+    const isCreate = mode === 'create';
+    const $field = isCreate ? $('#createPPField') : $('#editPPField');
+    const $dropdown = isCreate ? $('#participantsDropdown') : $('#editParticipantsDropdown');
+    const $hidden = isCreate ? $('#participantsInput') : $('#editParticipantsInput');
+    const $search = $field.find('.pp-input');
+    const items = this._ppData[mode];
+    const selected = this._ppSelected[mode];
+    const searchTerm = ($search.val() || '').toLowerCase().trim();
+
+    // Render chips in field
+    $field.find('.pp-chip').remove();
+    selected.forEach(val => {
+        const item = items.find(i => i.val === val);
+        if (item) {
+            $('<span class="pp-chip" data-val="' + val + '">' +
+                '<span class="pp-chip-text">' + this.escapeHtml(item.label) + '</span>' +
+                '<span class="pp-chip-x" data-val="' + val + '">&times;</span>' +
+            '</span>').insertBefore($search);
         }
     });
+    $search.attr('placeholder', selected.length > 0 ? '' : (isCreate ? '<?php echo get_phrase("invite_attendees"); ?>' : '<?php echo get_phrase("Search classes or users"); ?>'));
+
+    // Render dropdown
+    let html = '';
+    const classItems = items.filter(i => i.group === 'classes');
+    const userItems = items.filter(i => i.group === 'users');
+
+    const renderGroup = (groupLabel, groupItems) => {
+        const filtered = groupItems.filter(i => !searchTerm || i.label.toLowerCase().includes(searchTerm) || i.role.toLowerCase().includes(searchTerm));
+        if (filtered.length === 0) return '';
+        let h = '<div class="pp-group">' + groupLabel + '</div>';
+        filtered.forEach(item => {
+            const checked = selected.includes(item.val) ? ' pp-checked' : '';
+            h += '<div class="pp-item' + checked + '" data-val="' + item.val + '">' +
+                    '<span class="pp-check-icon"></span>' +
+                    '<span class="pp-label">' + this.escapeHtml(item.label) + '</span>' +
+                    (item.role ? '<span class="pp-role">' + this.escapeHtml(item.role) + '</span>' : '') +
+                 '</div>';
+        });
+        return h;
+    };
+
+    html += renderGroup('<?php echo get_phrase("Classes"); ?>', classItems);
+    html += renderGroup('<?php echo get_phrase("Users"); ?>', userItems);
+
+    if (!html) {
+        html = '<div class="pp-empty"><?php echo get_phrase("no_results_found"); ?></div>';
+    }
+    $dropdown.html(html);
+
+    // Update hidden input
+    const selectedData = selected.map(val => {
+        const parts = val.split('__');
+        return { type: parts[0], id: parts[1] };
+    });
+    $hidden.val(JSON.stringify(selectedData));
+},
+
+togglePickerItem(mode, val) {
+    const sel = this._ppSelected[mode];
+    const idx = sel.indexOf(val);
+    if (idx > -1) {
+        sel.splice(idx, 1);
+    } else {
+        sel.push(val);
+    }
+    this.renderPicker(mode);
+},
+
+resetPicker(mode) {
+    this._ppSelected[mode] = [];
+    const isCreate = mode === 'create';
+    const $field = isCreate ? $('#createPPField') : $('#editPPField');
+    $field.find('.pp-chip').remove();
+    $field.find('.pp-input').val('');
+    (isCreate ? $('#participantsDropdown') : $('#editParticipantsDropdown')).html('');
+    (isCreate ? $('#participantsInput') : $('#editParticipantsInput')).val('[]');
+    (isCreate ? $('#createPPicker') : $('#editPPicker')).removeClass('pp-open');
 }
 };
 
 $(document).ready(() => {
+
+  // --- Participants Picker Event Handlers ---
+  // Open picker on field click
+  $(document).on('click', '.pp-field', function() {
+      const $picker = $(this).closest('.pp-picker');
+      $picker.addClass('pp-open pp-focus');
+      $(this).find('.pp-input').focus();
+  });
+
+  // Close picker on outside click
+  $(document).on('mousedown', function(e) {
+      $('.pp-picker.pp-open').each(function() {
+          if (!$(this).is(e.target) && !$(this).has(e.target).length) {
+              $(this).removeClass('pp-open pp-focus');
+          }
+      });
+  });
+
+  // Search input
+  $(document).on('input', '.pp-input', function() {
+      const $picker = $(this).closest('.pp-picker');
+      $picker.addClass('pp-open');
+      const mode = $picker.attr('id') === 'createPPicker' ? 'create' : 'edit';
+      CalendarApp.renderPicker(mode);
+  });
+
+  // Toggle item in dropdown
+  $(document).on('click', '.pp-item', function() {
+      const val = $(this).data('val');
+      const $picker = $(this).closest('.pp-picker');
+      const mode = $picker.attr('id') === 'createPPicker' ? 'create' : 'edit';
+      CalendarApp.togglePickerItem(mode, val);
+      $picker.find('.pp-input').focus();
+  });
+
+  // Remove chip
+  $(document).on('click', '.pp-chip-x', function(e) {
+      e.stopPropagation();
+      const val = $(this).data('val');
+      const $picker = $(this).closest('.pp-picker');
+      const mode = $picker.attr('id') === 'createPPicker' ? 'create' : 'edit';
+      CalendarApp.togglePickerItem(mode, val);
+  });
+
+  // Backspace to remove last chip
+  $(document).on('keydown', '.pp-input', function(e) {
+      if (e.key === 'Backspace' && !$(this).val()) {
+          const $picker = $(this).closest('.pp-picker');
+          const mode = $picker.attr('id') === 'createPPicker' ? 'create' : 'edit';
+          if (CalendarApp._ppSelected[mode].length > 0) {
+              CalendarApp._ppSelected[mode].pop();
+              CalendarApp.renderPicker(mode);
+          }
+      }
+  });
+
   const loadScripts = async () => {
     const scripts = [
       'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js',
@@ -2851,120 +2965,6 @@ $('#editEventBtn').on('click', () => {
   $('#eventEditModalLabel').text('<?php echo get_phrase("Edit_event"); ?>');
   $('#eventDetailsView').hide();
   $('#eventForm').show();
-
-  $('#editParticipantsSearchInput').off('click').on('click', function(e) {
-    e.stopPropagation();
-    const dropdown = $('#editParticipantsDropdownMenu');
-    const searchTerm = $(this).val().toLowerCase().trim();
-    const schoolId = $('#school_id').val();
-
-    if (schoolId) {
-        const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
-        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
-            if (searchTerm) {
-                dropdown.find('label').each(function() {
-                    const text = $(this).text().toLowerCase();
-                    $(this).toggle(text.includes(searchTerm));
-                });
-                const anyVisible = dropdown.find('label:visible').length > 0;
-                if (!anyVisible) {
-                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
-                }
-            }
-            dropdown.addClass('show').parent().addClass('open');
-        });
-    }
-});
-  // Gestion du champ de recherche et des badges pour eventEditModal
-$('#editParticipantsSearchInput').on('input', function() {
-    const searchTerm = $(this).val().toLowerCase().trim();
-    const dropdown = $('#editParticipantsDropdownMenu');
-    const schoolId = $('#school_id').val();
-
-    if (schoolId) {
-        const selected = JSON.parse($('#editParticipantsInput').val() || '[]');
-        CalendarApp.refreshUsersDropdown(schoolId, selected, () => {
-            if (searchTerm) {
-                const anyVisible = dropdown.find('label').filter(function() {
-                    const text = $(this).text().toLowerCase();
-                    const isVisible = text.includes(searchTerm);
-                    $(this).toggle(isVisible);
-                    return isVisible;
-                }).length > 0;
-
-                if (!anyVisible) {
-                    dropdown.html('<div style="padding: 10px; text-align: center; color: #6c757d;"><?php echo get_phrase("no_results_found"); ?></div>');
-                }
-            }
-            dropdown.addClass('show').parent().addClass('open');
-        });
-    }
-});
-
-$(document).on('click', function(e) {
-    if (!$(e.target).closest('#editParticipantsContainer').length) {
-        $('#editParticipantsDropdownMenu').removeClass('show').parent().removeClass('open');
-    }
-});
-
-$('#editParticipantsDropdownMenu').on('click', function(e) {
-    e.stopPropagation();
-});
-
-$('#editParticipantsDropdownMenu').on('click', '.participant-checkbox', function() {
-    const selected = [];
-    const badgesContainer = $('#editParticipantsBadges');
-    badgesContainer.empty();
-
-    $('#editParticipantsDropdownMenu .participant-checkbox:checked').each(function() {
-        const $checkbox = $(this);
-        const type = $checkbox.data('type');
-        const id = $checkbox.val();
-        const name = $checkbox.parent().text().trim();
-        selected.push({ type, id });
-
-        // Add badge
-        const badge = $(`
-            <span class="badge" data-type="${type}" data-id="${id}">
-                ${CalendarApp.escapeHtml(name)}
-                <span class="remove-badge" data-type="${type}" data-id="${id}">&times;</span>
-            </span>
-        `);
-        badgesContainer.append(badge);
-    });
-
-    $('#editParticipantsInput').val(JSON.stringify(selected));
-    $('#editParticipantsSearchInput').focus();
-
-    // Trigger AJAX to refresh users dropdown
-    const schoolId = $('#school_id').val();
-    if (schoolId) {
-        CalendarApp.refreshUsersDropdown(schoolId, selected);
-    }
-});
-
-// Gestion de la suppression des badges
-$('#editParticipantsBadges').on('click', '.remove-badge', function() {
-    const type = $(this).data('type');
-    const id = $(this).data('id');
-    $(`#editParticipantsDropdownMenu .participant-checkbox[data-type="${type}"][value="${id}"]`).prop('checked', false);
-    $(this).parent().remove();
-
-    const selected = [];
-    $('#editParticipantsDropdownMenu .participant-checkbox:checked').each(function() {
-        selected.push({
-            type: $(this).data('type'),
-            id: $(this).val()
-        });
-    });
-    $('#editParticipantsInput').val(JSON.stringify(selected));
-
-    // Trigger AJAX to refresh users dropdown
-    const schoolId = $('#school_id').val();
-    if (schoolId) {
-        CalendarApp.refreshUsersDropdown(schoolId, selected);
-    }
-});
 
   // Generate time options based on selected date
   const selectedDate = $('#eventDate').val() || CalendarApp.formatDate(new Date());
