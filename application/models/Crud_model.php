@@ -790,6 +790,7 @@ class Crud_model extends CI_Model
 		$data['title'] = html_escape($this->input->post('title'));
 		$data['starting_date'] = $this->input->post('starting_date');
 		$data['ending_date'] = $this->input->post('ending_date');
+		$data['content'] = $this->input->post('content');
 		$data['school_id'] = $this->school_id;
 		$data['session'] = $this->active_session;
 		$this->db->insert('announcement', $data);
@@ -814,7 +815,7 @@ class Crud_model extends CI_Model
                 $post_data = array(
                     'wall_id' => $wall['id'],
                     'author_user_id' => $user_id,
-                    'body' => $data['title'] . "\n\n" . get_phrase('starting_date') . ': ' . $data['starting_date'] . "\n" . get_phrase('ending_date') . ': ' . $data['ending_date'],
+                    'body' => $data['title'] . "\n\n" . $data['content'] . "\n\n" . get_phrase('starting_date') . ': ' . $data['starting_date'] . "\n" . get_phrase('ending_date') . ': ' . $data['ending_date'],
                     'type' => 'announcement',
                     'created_at' => date('Y-m-d H:i:s'),
                     'status' => 'published'
@@ -842,6 +843,7 @@ class Crud_model extends CI_Model
 		$ending_date = strtotime(date('d/m/Y')) - 1;
 		$data['starting_date'] = $this->input->post('starting_date');
 		$data['ending_date'] = $this->input->post('ending_date');
+		$data['content'] = $this->input->post('content');
 		$this->db->where('id', $param1);
 		$this->db->update('announcement', $data);
 

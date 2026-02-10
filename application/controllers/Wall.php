@@ -117,6 +117,7 @@ class Wall extends CI_Controller
             'classes' => [], // List of classes to display
             'can_post' => false,
             'can_moderate' => false,
+            'can_view_hidden' => false,
             'current_user' => $this->wallauthorization->get_current_user()
         ];
 
@@ -156,10 +157,36 @@ class Wall extends CI_Controller
                 }
             } else {
                 // Admin/Teacher sees all active classes
-                $page_data['classes'] = $this->db->get_where('classes', array(
-                    'school_id' => $school_id, 
-                    'statut' => 'active'
-                ))->result_array();
+                if ($this->wallauthorization->is_admin() || $this->wallauthorization->is_superadmin()) {
+                    $page_data['classes'] = $this->db->get_where('classes', array(
+                        'school_id' => $school_id, 
+                        'statut' => 'active'
+                    ))->result_array();
+                } else {
+                    // Teacher/Mentor sees only assigned classes
+                    $teacher = $this->db->get_where('teachers', array('user_id' => $user_id))->row_array();
+                    if ($teacher) {
+                        $this->db->select('classes.*');
+                        $this->db->from('classes');
+                        $this->db->join('teacher_permissions', 'teacher_permissions.class_id = classes.id');
+                        $this->db->where('teacher_permissions.teacher_id', $teacher['id']);
+                        
+                        // STRICT PERMISSION CHECK
+                        // Ensure at least one permission is active (1)
+                        $this->db->group_start();
+                        $this->db->where('teacher_permissions.marks', 1);
+                        $this->db->or_where('teacher_permissions.attendance', 1);
+                        $this->db->or_where('teacher_permissions.assignment', 1); // Check assignment too
+                        $this->db->group_end();
+                        
+                        $this->db->where('classes.school_id', $school_id);
+                        $this->db->where('classes.statut', 'active');
+                        $this->db->group_by('classes.id');
+                        $page_data['classes'] = $this->db->get()->result_array();
+                    } else {
+                        $page_data['classes'] = [];
+                    }
+                }
             }
         } 
         // --------------------------------------------------------------------
@@ -220,7 +247,23 @@ class Wall extends CI_Controller
             elseif ($is_admin) {
                 // Admins have FULL ACCESS
                 $page_data['can_post'] = true;
-                $page_data['can_moderate'] = true;
+                $page_data['can_moderate'] = false; // Admins can only moderate their own posts in class wall
+                $page_data['can_view_hidden'] = true;
+            } else {
+                // Teachers/Mentors
+                // Check authorization
+                if (!$this->wallauthorization->can_read_class_wall($class_id, $school_id)) {
+                    show_error(get_phrase('permission_denied'), 403);
+                    return;
+                }
+                
+                $page_data['can_post'] = $this->wallauthorization->can_post_class_wall($class_id, $school_id);
+                $page_data['can_moderate'] = false; 
+                
+                // Mentors can view hidden items
+                if ($this->wallauthorization->is_teacher_of_class($class_id)) {
+                    $page_data['can_view_hidden'] = true;
+                }
             }
 
             // Get or create class wall
@@ -299,6 +342,8 @@ class Wall extends CI_Controller
         $page_data['can_moderate'] = $can_moderate;
         $this->load->view('backend/wall/create_post', $page_data);
     }
+
+
 
     /**
      * Handle Post Creation
@@ -417,12 +462,40 @@ class Wall extends CI_Controller
             }
 
             $response['status'] = true;
-            $response['message'] = get_phrase('post_published_successfully');
+            $response['message'] = get_phrase('publication_published_successfully');
         } else {
-            $response['message'] = get_phrase('failed_to_publish_post');
+            $response['message'] = get_phrase('failed_to_publish_publication');
         }
 
         echo json_encode($response);
+    }
+
+    /**
+     * Show Edit Post Modal
+     * 
+     * @param int $post_id
+     */
+    public function edit_post($post_id)
+    {
+        // Get post details
+        $post = $this->wall_model->get_post_by_id($post_id);
+        if (!$post) {
+            echo get_phrase('post_not_found');
+            return;
+        }
+
+        // Check authorization
+        $user_id = $this->session->userdata('user_id');
+        $can_moderate_check = $this->wallauthorization->can_moderate_post($post_id);
+        $is_author = ($post['author_user_id'] == $user_id);
+        
+        if (!$can_moderate_check['can_moderate'] && !$is_author) {
+            echo get_phrase('permission_denied');
+            return;
+        }
+
+        $page_data['post'] = $post;
+        $this->load->view('backend/wall/edit_post', $page_data);
     }
 }
 

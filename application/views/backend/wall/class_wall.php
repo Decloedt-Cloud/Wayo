@@ -443,7 +443,7 @@
 
 <script src="<?php echo base_url('assets/backend/js/sweetalert.js'); ?>"></script>
 <script src="<?php echo base_url('assets/backend/js/quilljs/quill.min.js'); ?>"></script>
-
+<script src="<?php echo base_url('assets/backend/js/quilljs/image-resize.min.js'); ?>"></script>
 <?php if (isset($wall) && $wall): ?>
     <!-- ========================================================================
          WALL VIEW
@@ -483,7 +483,7 @@
                     <?php echo get_phrase('all_posts'); ?>
                 </button>
                 
-                <?php if ($can_moderate): ?>
+                <?php if ($can_view_hidden): ?>
                 <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem; padding-right: 0.5rem;">
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="show-hidden-posts" onchange="toggleHiddenPosts()">
@@ -648,7 +648,15 @@
     // Build post card HTML
     function buildPostCard(post) {
         const isHidden = post.status === 'hidden';
-        const postDate = new Date(post.created_at).toLocaleString();
+        
+        const dateObj = new Date(post.created_at);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        const postDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
         const attachmentsHtml = post.attachments && post.attachments.length > 0 
             ? buildAttachmentsHtml(post.attachments) 
             : '';
@@ -677,10 +685,12 @@
                 ${attachmentsHtml}
                 
                 <div class="wall-post-actions">
+                    ${post.author_user_id != CURRENT_USER_ID ? `
                     <button class="wall-action-btn" onclick="reportPost(${post.id})">
                         <i class="mdi mdi-flag-outline"></i>
                         <?php echo get_phrase('report'); ?>
                     </button>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -689,11 +699,22 @@
     // Build moderation actions
     function buildModerationActions(post) {
         const isHidden = post.status === 'hidden';
+        const isAuthor = (post.author_user_id == CURRENT_USER_ID);
         
         let actions = '';
         
-        // Moderate Buttons (Admin Only)
-        if (CAN_MODERATE) {
+        // Moderate Buttons (Admin or Author)
+        if (CAN_MODERATE || isAuthor) {
+            // Edit Button (Author only)
+            if (isAuthor) {
+                 actions += `
+                    <button class="wall-action-btn" onclick="editPost(${post.id})">
+                        <i class="mdi mdi-pencil-outline"></i>
+                        <?php echo get_phrase('edit'); ?>
+                    </button>
+                `;
+            }
+
             if (isHidden) {
                 actions += `
                     <button class="wall-action-btn" onclick="unhidePost(${post.id})">
@@ -961,6 +982,38 @@
                 });
             }
         });
+    }
+
+    // Edit Post
+    function editPost(postId) {
+        var url = '<?php echo site_url('wall/edit_post/'); ?>' + postId;
+        var title = '<i class="mdi mdi-pencil" style="color: #6366f1; font-size: 1.5rem;"></i> <?php echo get_phrase('edit_post'); ?>';
+        
+        if (typeof largeModal === 'function') {
+            largeModal(url, title);
+        } else {
+            if (typeof jQuery !== 'undefined' && jQuery('#large-modal').length) {
+                jQuery('#large-modal').modal('show', {backdrop: 'true'});
+                jQuery('#large-modal .modal-body').html('<div class="text-center p-5"><i class="mdi mdi-loading mdi-spin" style="font-size: 2rem;"></i></div>');
+                jQuery('#large-modal .modal-title').html(title);
+                
+                jQuery.ajax({
+                    url: url,
+                    success: function(response) {
+                        jQuery('#large-modal .modal-body').html(response);
+                    },
+                    error: function() {
+                        jQuery('#large-modal .modal-body').html('<div class="alert alert-danger">Error loading form</div>');
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: '<?php echo get_phrase('error'); ?>',
+                    text: '<?php echo get_phrase('unable_to_load_modal'); ?>',
+                    icon: 'error'
+                });
+            }
+        }
     }
     
     function reportPost(postId) {

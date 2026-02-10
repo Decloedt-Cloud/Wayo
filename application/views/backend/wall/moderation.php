@@ -659,6 +659,11 @@ function buildPostCard(post) {
                     </button>
                 `}
                 
+                <button class="mod-action-btn" onclick="editPost(${post.id})">
+                    <i class="mdi mdi-pencil-outline"></i>
+                    <?php echo get_phrase('edit'); ?>
+                </button>
+
                 <button class="mod-action-btn danger" onclick="deletePost(${post.id})">
                     <i class="mdi mdi-delete-outline"></i>
                     <?php echo get_phrase('delete'); ?>
@@ -808,6 +813,33 @@ function deletePost(postId) {
             }
         }
     });
+}
+
+function editPost(postId) {
+    var url = '<?php echo site_url('wall/edit_post/'); ?>' + postId;
+    var title = '<i class="mdi mdi-pencil" style="color: #6366f1; font-size: 1.5rem;"></i> <?php echo get_phrase('edit_post'); ?>';
+    
+    if (typeof largeModal === 'function') {
+        largeModal(url, title);
+    } else {
+        if (typeof jQuery !== 'undefined' && jQuery('#large-modal').length) {
+            jQuery('#large-modal').modal('show', {backdrop: 'true'});
+            jQuery('#large-modal .modal-body').html('<div class="text-center p-5"><i class="mdi mdi-loading mdi-spin" style="font-size: 2rem;"></i></div>');
+            jQuery('#large-modal .modal-title').html(title);
+            
+            jQuery.ajax({
+                url: url,
+                success: function(response) {
+                    jQuery('#large-modal .modal-body').html(response);
+                },
+                error: function() {
+                    jQuery('#large-modal .modal-body').html('<div class="alert alert-danger">Error loading form</div>');
+                }
+            });
+        } else {
+             error_notify('<?php echo get_phrase('unable_to_load_modal'); ?>');
+        }
+    }
 }
 
 // Show reports for a post (expand panel)

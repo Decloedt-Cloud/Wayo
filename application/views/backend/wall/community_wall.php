@@ -398,6 +398,30 @@
     animation: spin 1s linear infinite;
 }
 
+/* RTL Support */
+body[dir="rtl"] .wall-post-header {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] .wall-post-actions {
+    margin-right: auto;
+    margin-left: 0;
+    justify-content: flex-end;
+}
+
+body[dir="rtl"] .wall-header-left {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] .wall-header-title h1 {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] .wall-header-title span {
+    margin-left: 0 !important;
+    margin-right: 10px !important;
+}
+
 @keyframes spin {
     100% { transform: rotate(360deg); }
 }
@@ -405,7 +429,6 @@
 
 <script src="<?php echo base_url('assets/backend/js/sweetalert.js'); ?>"></script>
 <script src="<?php echo base_url('assets/backend/js/quilljs/quill.min.js'); ?>"></script>
-
 <!-- Page Header -->
 <div class="row">
     <div class="col-12">
@@ -491,6 +514,7 @@ const WALL_ID = <?php echo $wall['id']; ?>;
 const COMMUNITY_ID = <?php echo $community['id']; ?>;
 const CAN_POST = <?php echo $can_post ? 'true' : 'false'; ?>;
 const CAN_MODERATE = <?php echo $can_moderate ? 'true' : 'false'; ?>;
+const CURRENT_USER_ID = <?php echo $this->session->userdata('user_id'); ?>;
 
 let currentPage = 1;
 let currentFilter = 'all';
@@ -599,11 +623,19 @@ function renderPosts(posts) {
 function buildPostCard(post) {
     const isAnnouncement = post.type === 'announcement';
     const isHidden = post.status === 'hidden';
-    const postDate = new Date(post.created_at).toLocaleString();
+    const dateObj = new Date(post.created_at);
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const postDate = `${day}/${month}/${year} ${hours}:${minutes}`;
     const attachmentsHtml = post.attachments && post.attachments.length > 0 
         ? buildAttachmentsHtml(post.attachments) 
         : '';
     
+    const canManage = CAN_MODERATE || (post.author_user_id == CURRENT_USER_ID);
+
     return `
         <div class="wall-post-card ${isAnnouncement ? 'announcement' : ''}" ${isHidden ? 'style="opacity: 0.8; background-color: #f8fafc; border-style: dashed;"' : ''}>
             <div class="wall-post-header">
@@ -619,7 +651,7 @@ function buildPostCard(post) {
                     }
                     ${isHidden ? '<span class="wall-post-badge" style="background: #64748b; color: white; margin-left: 0.5rem;"><i class="mdi mdi-eye-off"></i> <?php echo get_phrase('hidden'); ?></span>' : ''}
                 </div>
-                ${CAN_MODERATE ? buildModerationActions(post) : ''}
+                ${canManage ? buildPostActions(post) : ''}
             </div>
             
             ${post.title ? `<h3 class="wall-post-title">${escapeHtml(post.title)}</h3>` : ''}
@@ -631,44 +663,62 @@ function buildPostCard(post) {
             ${attachmentsHtml}
             
             <div class="wall-post-actions">
+                ${post.author_user_id != CURRENT_USER_ID ? `
                 <button class="wall-action-btn" onclick="reportPost(${post.id})">
                     <i class="mdi mdi-flag-outline"></i>
                     <?php echo get_phrase('report'); ?>
                 </button>
+                ` : ''}
             </div>
         </div>
     `;
 }
 
-// Build moderation actions
-function buildModerationActions(post) {
+// Build post actions (Edit, Delete, Hide)
+function buildPostActions(post) {
     const isHidden = post.status === 'hidden';
-    const hasReports = post.reports_count > 0;
+    const isAuthor = (post.author_user_id == CURRENT_USER_ID);
     
     let actions = '';
     
-    if (isHidden) {
+    // Edit button (Author or Moderator)
+    if ((isAuthor || CAN_MODERATE) && post.type !== 'announcement') {
         actions += `
-            <button class="wall-action-btn" onclick="unhidePost(${post.id})">
-                <i class="mdi mdi-eye-outline"></i>
-                <?php echo get_phrase('unhide'); ?>
-            </button>
-        `;
-    } else {
-        actions += `
-            <button class="wall-action-btn danger" onclick="hidePost(${post.id})">
-                <i class="mdi mdi-eye-off-outline"></i>
-                <?php echo get_phrase('hide'); ?>
+            <button class="wall-action-btn" onclick="editPost(${post.id})">
+                <i class="mdi mdi-pencil-outline"></i>
+                <?php echo get_phrase('edit'); ?>
             </button>
         `;
     }
+
+    // Hide/Unhide button (Moderator only)
+    if (CAN_MODERATE) {
+        if (isHidden) {
+            actions += `
+                <button class="wall-action-btn" onclick="unhidePost(${post.id})">
+                    <i class="mdi mdi-eye-outline"></i>
+                    <?php echo get_phrase('unhide'); ?>
+                </button>
+            `;
+        } else {
+            actions += `
+                <button class="wall-action-btn danger" onclick="hidePost(${post.id})">
+                    <i class="mdi mdi-eye-off-outline"></i>
+                    <?php echo get_phrase('hide'); ?>
+                </button>
+            `;
+        }
+    }
     
-    actions += `
-        <button class="wall-action-btn danger" onclick="deletePost(${post.id})">
-            <i class="mdi mdi-delete-outline"></i>
-            <?php echo get_phrase('delete'); ?>
-        </button>
-    `;
+    // Delete button (Author or Moderator)
+    if (isAuthor || CAN_MODERATE) {
+        actions += `
+            <button class="wall-action-btn danger" onclick="deletePost(${post.id})">
+                <i class="mdi mdi-delete-outline"></i>
+                <?php echo get_phrase('delete'); ?>
+            </button>
+        `;
+    }
     
     return actions;
 }
@@ -868,6 +918,37 @@ function deletePost(postId) {
             });
         }
     });
+}
+
+function editPost(postId) {
+    var url = '<?php echo site_url('wall/edit_post/'); ?>' + postId;
+    var title = '<i class="mdi mdi-pencil" style="color: #6366f1; font-size: 1.5rem;"></i> <?php echo get_phrase('edit_post'); ?>';
+    
+    if (typeof largeModal === 'function') {
+        largeModal(url, title);
+    } else {
+        if (typeof jQuery !== 'undefined' && jQuery('#large-modal').length) {
+            jQuery('#large-modal').modal('show', {backdrop: 'true'});
+            jQuery('#large-modal .modal-body').html('<div class="text-center p-5"><i class="mdi mdi-loading mdi-spin" style="font-size: 2rem;"></i></div>');
+            jQuery('#large-modal .modal-title').html(title);
+            
+            jQuery.ajax({
+                url: url,
+                success: function(response) {
+                    jQuery('#large-modal .modal-body').html(response);
+                },
+                error: function() {
+                    jQuery('#large-modal .modal-body').html('<div class="alert alert-danger">Error loading form</div>');
+                }
+            });
+        } else {
+             Swal.fire({
+                title: '<?php echo get_phrase('error'); ?>',
+                text: '<?php echo get_phrase('unable_to_load_modal'); ?>',
+                icon: 'error'
+            });
+        }
+    }
 }
 
 function reportPost(postId) {
