@@ -4501,5 +4501,10 @@
     "quiz_requires_at_least_one_lesson": "The current section or a previous section must contain at least one lesson before you can generate a quiz with AI.",
     "end_date_must_be_on_or_after_start_date": "End date must be on or after start date",
     "course_settings": "Course settings",
-    "descriptions": "Descriptions"
+    "descriptions": "Descriptions",
+    "community_visibility": "Community visibility",
+    "toggle_community_visibility": "Toggle community visibility",
+    "public_community": "Public community",
+    "public_community_-_open_access": "Public community - open access",
+    "community_state_updated_successfully": "Community state updated successfully"
 }

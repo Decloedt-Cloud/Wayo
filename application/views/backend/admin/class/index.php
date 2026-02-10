@@ -400,6 +400,173 @@
 .w-100 {
     width: 100%;
 }
+
+/* ============================================================================
+   COMMUNITY STATE TOGGLE
+   ============================================================================ */
+
+.community-state-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1.5px solid #f0f0f0;
+}
+
+.community-state-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.community-state-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.community-state-info > i {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    transition: all 0.4s ease;
+}
+
+.community-state-info > i.fa-lock {
+    background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+}
+
+.community-state-label {
+    display: block;
+    font-weight: 600;
+    color: #344054;
+    font-size: 14px;
+}
+
+.community-state-value {
+    display: block;
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Toggle Switch */
+.community-toggle-wrapper {
+    flex-shrink: 0;
+}
+
+.community-toggle {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.community-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.community-toggle-slider {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #d1d5db;
+    border-radius: 28px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.community-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.community-toggle input:checked + .community-toggle-slider {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.community-toggle input:checked + .community-toggle-slider::before {
+    transform: translateX(24px);
+}
+
+.community-toggle:hover .community-toggle-slider {
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* State Badge */
+.community-state-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.4s ease;
+}
+
+.community-state-badge.badge-public {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.community-state-badge.badge-private {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+/* Disabled Price Field */
+.form-control-modern.field-disabled {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    border-color: #e5e7eb !important;
+    opacity: 0.7;
+}
+
+.btn-modern:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.info-box-private {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fecaca;
+}
+
+.info-box-private i {
+    color: #991b1b;
+}
+
+.info-box-private p {
+    color: #991b1b;
+}
+
+/* Toggle loading state */
+.community-toggle.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
 </style>
 
 <!-- Header -->
@@ -428,17 +595,49 @@ $result = $this->db->get_where('settings_school', array('school_id' => school_id
 ?>
 
 <!-- Community Pricing Card -->
+<?php $is_private = (isset($school_data['access']) && $school_data['access'] == 1); ?>
 <div class="pricing-card">
     <div class="pricing-card-header">
         <div class="icon-box">
             <i class="fas fa-tag"></i>
         </div>
-        <div>
+        <div style="flex: 1;">
             <h5><?php echo get_phrase('community_pricing'); ?></h5>
             <small><?php echo get_phrase('set_the_subscription_price_for_your_community'); ?></small>
         </div>
     </div>
     <div class="pricing-card-body">
+
+        <!-- Community State Toggle -->
+        <div class="community-state-section">
+            <div class="community-state-header">
+                <div class="community-state-info">
+                    <i class="fas <?php echo $is_private ? 'fa-lock' : 'fa-globe'; ?>" id="etat-icon"></i>
+                    <div>
+                        <span class="community-state-label"><?php echo get_phrase('community_visibility'); ?></span>
+                        <span class="community-state-value" id="etat-status-text">
+                            <?php echo $is_private ? get_phrase('private_community') : get_phrase('public_community'); ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="community-toggle-wrapper">
+                    <label class="community-toggle" title="<?php echo get_phrase('toggle_community_visibility'); ?>">
+                        <input type="checkbox" id="etat-toggle" <?php echo !$is_private ? 'checked' : ''; ?>>
+                        <span class="community-toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="community-state-badge <?php echo $is_private ? 'badge-private' : 'badge-public'; ?>" id="etat-badge">
+                <i class="fas <?php echo $is_private ? 'fa-shield-alt' : 'fa-users'; ?>"></i>
+                <span id="etat-badge-text">
+                    <?php echo $is_private 
+                        ? get_phrase('private_community_-_join_request_only') 
+                        : get_phrase('public_community_-_open_access'); ?>
+                </span>
+            </div>
+        </div>
+
+        <!-- Price Form -->
         <form method="POST" class="communityPriceAjaxForm" action="<?php echo route('payment_settings/price'); ?>" id="community_price_settings">
             <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
             
@@ -452,10 +651,10 @@ $result = $this->db->get_where('settings_school', array('school_id' => school_id
                     <input type="text" 
                            id="price_community" 
                            name="price_community" 
-                           class="form-control-modern" 
-                           value="<?php echo $school_data['price'] ?? '0.00'; ?>" 
+                           class="form-control-modern <?php echo $is_private ? 'field-disabled' : ''; ?>" 
+                           value="<?php echo $is_private ? '0.00' : ($school_data['price'] ?? '0.00'); ?>" 
                            placeholder="0.00"
-                           <?php if (isset($settings_school['type']) && $settings_school['type'] == 'Particulier'): ?> readonly <?php endif; ?>
+                           <?php if ($is_private || (isset($settings_school['type']) && $settings_school['type'] == 'Particulier')): ?> readonly <?php endif; ?>
                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" />
                 </div>
                 <?php if (isset($settings_school['type']) && $settings_school['type'] == 'Particulier'): ?>
@@ -464,9 +663,13 @@ $result = $this->db->get_where('settings_school', array('school_id' => school_id
                     <p><?php echo get_phrase('as_you_are_a_private_individual_the_price_will_be_automatically_set_to_0'); ?></p>
                 </div>
                 <?php endif; ?>
+                <div class="info-box info-box-private" id="private-price-info" style="<?php echo $is_private ? '' : 'display:none;'; ?>">
+                    <i class="fas fa-info-circle"></i>
+                    <p><?php echo get_phrase('you_cannot_monetize_a_private_community'); ?></p>
+                </div>
             </div>
 
-            <button type="submit" class="btn-modern btn-success-gradient w-100">
+            <button type="submit" class="btn-modern btn-success-gradient w-100" id="btn-update-price" <?php echo $is_private ? 'disabled' : ''; ?>>
                 <i class="fas fa-save"></i>
                 <?php echo get_phrase('update_price'); ?>
             </button>
@@ -491,6 +694,69 @@ $result = $this->db->get_where('settings_school', array('school_id' => school_id
 <script>
 $(document).ready(function() {
     $('select.select2:not(.normal)').each(function () { $(this).select2({ dropdownParent: '#right-modal' }); });
+
+    // Community Etat Toggle (Public/Private)
+    $('#etat-toggle').on('change', function() {
+        var toggle = $(this);
+        var isPublic = toggle.is(':checked') ? 1 : 0;
+        var toggleLabel = toggle.closest('.community-toggle');
+        
+        toggleLabel.addClass('loading');
+        
+        $.ajax({
+            url: '<?php echo route('payment_settings/toggle_etat'); ?>',
+            type: 'POST',
+            data: {
+                '<?=$this->security->get_csrf_token_name();?>': $('input[name="<?=$this->security->get_csrf_token_name();?>"]').val(),
+                'etat': isPublic
+            },
+            dataType: 'json',
+            success: function(response) {
+                toggleLabel.removeClass('loading');
+                if (response.status) {
+                    // Update CSRF token
+                    $('input[name="' + response.csrf.name + '"]').val(response.csrf.hash);
+                    
+                    var priceInput = $('#price_community');
+                    var priceInfo = $('#private-price-info');
+                    var btnUpdate = $('#btn-update-price');
+                    var etatIcon = $('#etat-icon');
+                    var etatText = $('#etat-status-text');
+                    var etatBadge = $('#etat-badge');
+                    var etatBadgeText = $('#etat-badge-text');
+                    
+                    if (isPublic) {
+                        // Public state
+                        priceInput.removeClass('field-disabled').prop('readonly', false);
+                        priceInfo.slideUp(300);
+                        btnUpdate.prop('disabled', false);
+                        etatIcon.removeClass('fa-lock').addClass('fa-globe');
+                        etatText.text('<?php echo get_phrase('public_community'); ?>');
+                        etatBadge.removeClass('badge-private').addClass('badge-public');
+                        etatBadgeText.html('<?php echo get_phrase('public_community_-_open_access'); ?>');
+                        etatBadge.find('i:first').removeClass('fa-shield-alt').addClass('fa-users');
+                    } else {
+                        // Private state
+                        priceInput.addClass('field-disabled').prop('readonly', true).val('0.00');
+                        priceInfo.slideDown(300);
+                        btnUpdate.prop('disabled', true);
+                        etatIcon.removeClass('fa-globe').addClass('fa-lock');
+                        etatText.text('<?php echo get_phrase('private_community'); ?>');
+                        etatBadge.removeClass('badge-public').addClass('badge-private');
+                        etatBadgeText.html('<?php echo get_phrase('private_community_-_join_request_only'); ?>');
+                        etatBadge.find('i:first').removeClass('fa-users').addClass('fa-shield-alt');
+                    }
+                } else {
+                    // Revert toggle on failure
+                    toggle.prop('checked', !toggle.is(':checked'));
+                }
+            },
+            error: function() {
+                toggleLabel.removeClass('loading');
+                toggle.prop('checked', !toggle.is(':checked'));
+            }
+        });
+    });
 
     // Community Pricing Form Submission
     $(".communityPriceAjaxForm").submit(function(e) {

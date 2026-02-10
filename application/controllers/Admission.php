@@ -43,6 +43,18 @@ class Admission extends CI_Controller
         }
     }
 
+    // ACTIVE SCHOOL ID FOR FRONTEND
+    function active_school_id_for_frontend($active_school_id = "")
+    {
+        if (addon_status('multi-school') && $active_school_id > 0) {
+            $this->session->set_userdata('active_school_id', $active_school_id);
+        } else {
+            $active_school_id = get_settings('school_id');
+            $this->session->set_userdata('active_school_id', $active_school_id);
+        }
+    }
+
+
 
     /*Admissions*/
     function online_admission($param1 = "", $param2 = "")
@@ -117,18 +129,55 @@ class Admission extends CI_Controller
     public function register_community()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode([
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status' => false,
+                    'message' => 'Method not allowed',
+                    'csrf' => [
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash()
+                    ]
+                ]));
+            return;
+        }
+
+        $this->output->set_content_type('application/json');
+
+        try {
+            ob_start();
+            $response = $this->frontend_model->online_admission_school();
+            $unexpected_output = ob_get_clean();
+
+            if (!empty($unexpected_output)) {
+                log_message('error', 'Unexpected output in register_community: ' . trim($unexpected_output));
+            }
+
+            $decoded = json_decode($response, true);
+            if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+                log_message('error', 'Invalid JSON from online_admission_school: ' . json_last_error_msg());
+                $response = json_encode([
+                    'status' => false,
+                    'message' => 'Server returned invalid JSON',
+                    'csrf' => [
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash()
+                    ]
+                ]);
+            }
+
+            $this->output->set_output($response);
+        } catch (Throwable $e) {
+            log_message('error', 'register_community failed: ' . $e->getMessage());
+            $this->output->set_output(json_encode([
                 'status' => false,
-                'message' => 'Method not allowed',
+                'message' => 'Server error',
                 'csrf' => [
                     'csrfName' => $this->security->get_csrf_token_name(),
                     'csrfHash' => $this->security->get_csrf_hash()
                 ]
-            ]);
-            return;
+            ]));
         }
-        
-        echo $this->frontend_model->online_admission_school();
     }
 
     public function check_duplication_ajax()

@@ -4167,5 +4167,10 @@
     "total_syllabus": "Volledig lesprogramma",
     "upload_and_share_study_materials": "Studiemateriaal uploaden en delen",
     "enter_syllabus_title": "Voer de titel van het lesprogramma in",
-    "bestandsgrootte_overschrijdt_10_mb": "Bestandsgrootte overschrijdt 10 mb"
+    "bestandsgrootte_overschrijdt_10_mb": "Bestandsgrootte overschrijdt 10 mb",
+    "community_visibility": "Zichtbaarheid van de community",
+    "toggle_community_visibility": "Zichtbaarheid van de community aan/uit zetten",
+    "public_community": "Openbare community",
+    "public_community_-_open_access": "Openbare community - open toegang",
+    "community_state_updated_successfully": "Communitystatus succesvol bijgewerkt"
 }

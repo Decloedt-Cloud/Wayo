@@ -72,8 +72,10 @@ class Crud_model extends CI_Model
 				$data['price'] = html_escape($price);
 			}
 		}
-		$data['date_debut'] = html_escape($this->input->post('start_date'));
-		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$start_date = html_escape($this->input->post('start_date'));
+		$end_date = html_escape($this->input->post('end_date'));
+		$data['date_debut'] = !empty($start_date) ? $start_date : null;
+		$data['date_fin'] = !empty($end_date) ? $end_date : null;
 		$data['statut'] = html_escape($this->input->post('status'));
 
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -117,8 +119,10 @@ class Crud_model extends CI_Model
 	{
 		$data['name'] = html_escape($this->input->post('name'));
 		$data['price'] = html_escape($this->input->post('price'));
-		$data['date_debut'] = html_escape($this->input->post('start_date'));
-		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$start_date = html_escape($this->input->post('start_date'));
+		$end_date = html_escape($this->input->post('end_date'));
+		$data['date_debut'] = !empty($start_date) ? $start_date : null;
+		$data['date_fin'] = !empty($end_date) ? $end_date : null;
 		$data['statut'] = html_escape($this->input->post('status'));
 
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {

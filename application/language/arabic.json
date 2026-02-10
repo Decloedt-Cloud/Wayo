@@ -4030,5 +4030,10 @@
     "max_size:_10_mo": "أقصى حجم: 10 Mo",
     "max_size:_20_mo": "أقصى حجم: 20 Mo",
     "upload_and_share_study_materials": "قم بتحميل ومشاركة المواد الدراسية",
-    "enter_syllabus_title": "أدخل عنوان المنهج"
+    "enter_syllabus_title": "أدخل عنوان المنهج",
+    "community_visibility": "رؤية المجتمع",
+    "toggle_community_visibility": "تبديل رؤية المجتمع",
+    "public_community": "مجتمع عام",
+    "public_community_-_open_access": "مجتمع عام - وصول مفتوح",
+    "community_state_updated_successfully": "تم تحديث حالة المجتمع بنجاح"
 }

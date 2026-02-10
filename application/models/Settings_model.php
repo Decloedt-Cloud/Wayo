@@ -644,21 +644,62 @@ class Settings_model extends CI_Model
     ];
     return json_encode($response);
   }
+    public function toggle_community_etat()
+  {
+    $is_public = intval($this->input->post('etat'));
+    // Convert: toggle sends 1=public, 0=private
+    // access column: 0=public, 1=private
+    $access = ($is_public == 1) ? 0 : 1;
+
+    $user_id = $this->session->userdata('user_id');
+    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin') {
+        $target_school_id = school_id();
+    } else {
+        $target_school_id = 1;
+    }
+
+    $data = array('access' => $access);
+
+    // If switching to private (access = 1), also reset price to 0
+    if ($access == 1) {
+        $data['price'] = 0;
+    }
+
+    $this->db->where('id', $target_school_id);
+    $this->db->update('schools', $data);
+
+    $response = array(
+      'status' => true,
+      'notification' => get_phrase('community_state_updated_successfully')
+    );
+    return json_encode($response);
+  }
+
     public function update_system_price()
   {
-    
+    // Backend protection: check if community is private (access = 1)
+    $user_id = $this->session->userdata('user_id');
+    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin') {
+        $target_school_id = school_id();
+    } else {
+        $target_school_id = 1;
+    }
+
+    $school = $this->db->get_where('schools', array('id' => $target_school_id))->row_array();
+
+    // Block price update if community is private
+    if (isset($school['access']) && $school['access'] == 1) {
+        $response = array(
+          'status' => false,
+          'notification' => get_phrase('you_cannot_monetize_a_private_community')
+        );
+        return false;
+    }
+
     $data['price'] = htmlspecialchars($this->input->post('price_community'));
 
-   
-    $user_id =  $this->session->userdata('user_id');
-    if (strtolower($this->db->get_where('users', array('id' => $user_id))->row('role')) == 'admin'){
-          $this->db->where('id', school_id());
-          $this->db->update('schools', $data);
-    }else{
-          $this->db->where('id', 1);
-          $this->db->update('schools', $data);
-
-    }
+    $this->db->where('id', $target_school_id);
+    $this->db->update('schools', $data);
 
     $response = array(
       'status' => true,

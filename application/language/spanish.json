@@ -4076,5 +4076,10 @@
     "max_size:_10_mo": "Tamaño máximo: 10 Mo",
     "max_size:_20_mo": "Tamaño máximo: 20 Mo",
     "upload_and_share_study_materials": "Subir y compartir materiales de estudio",
-    "enter_syllabus_title": "Introduzca el título del programa de estudios"
+    "enter_syllabus_title": "Introduzca el título del programa de estudios",
+    "community_visibility": "Visibilidad de la comunidad",
+    "toggle_community_visibility": "Alternar visibilidad de la comunidad",
+    "public_community": "Comunidad pública",
+    "public_community_-_open_access": "Comunidad pública - acceso abierto",
+    "community_state_updated_successfully": "Estado de la comunidad actualizado correctamente"
 }

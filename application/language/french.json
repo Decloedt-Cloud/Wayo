@@ -4186,5 +4186,10 @@
     "no_expenses_found": "Aucune dépense trouvée",
     "create_your_first_expense_to_track_spending": "Créez votre première dépense pour suivre vos dépenses",
     "end_date_must_be_on_or_after_start_date": "La date de fin doit être égale ou postérieure à la date de début",
-    "course_settings": "Paramètres du cours"
+    "course_settings": "Paramètres du cours",
+    "community_visibility": "Visibilité de la communauté",
+    "toggle_community_visibility": "Basculer la visibilité de la communauté",
+    "public_community": "Communauté publique",
+    "public_community_-_open_access": "Communauté publique – accès libre",
+    "community_state_updated_successfully": "L'état de la communauté a été mis à jour avec succès"
 }

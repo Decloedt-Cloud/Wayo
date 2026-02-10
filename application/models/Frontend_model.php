@@ -1002,6 +1002,7 @@ class Frontend_model extends CI_Model
     
     $school_data = [
         'name' => html_entity_decode(htmlspecialchars($this->input->post('school_name'))),
+        'country' => $country_code, // Code pays (MA, AE, etc.)
         'Rue' => htmlspecialchars($this->input->post('street')),
         'Numero' => htmlspecialchars($this->input->post('number')),
         'Ville' => htmlspecialchars($this->input->post('city')),
@@ -1047,7 +1048,6 @@ class Frontend_model extends CI_Model
         'currency_position' => 'left',
         'language' => 'english',
         'type' => htmlspecialchars($this->input->post('i_am')),
-        'Tax_residence' => $country_code,
         'vat_enabled' => 1, // TVA activée par défaut ou selon besoin
         'vat_rate' => $rate
     ];
