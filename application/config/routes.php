@@ -523,6 +523,7 @@ $route['api/classes/(:num)/wall']['POST'] = 'api/Wall/class_posts/$1';
 $route['api/posts/(:num)/report']['POST'] = 'api/Wall/report/$1';
 $route['api/posts/(:num)/hide']['POST'] = 'api/Wall/hide/$1';
 $route['api/posts/(:num)/unhide']['POST'] = 'api/Wall/unhide/$1';
+$route['api/posts/(:num)/edit']['POST'] = 'api/Wall/edit/$1';
 $route['api/posts/(:num)']['DELETE'] = 'api/Wall/posts/$1';
 
 $route['api/UpdateSystemLogo/(:num)'] = "api/Admin/update_system_logo/$1";

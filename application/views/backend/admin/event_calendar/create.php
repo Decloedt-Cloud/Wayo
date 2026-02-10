@@ -1,3 +1,7 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/quilljs/quill.snow.css">
+<script src="<?php echo base_url(); ?>assets/backend/js/quilljs/quill.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/backend/js/quilljs/image-resize.min.js"></script>
+
 <style>
 /* ============================================================================
    PREMIUM FORM DESIGN - EVENT CREATE
@@ -97,6 +101,54 @@
 .exp-input-wrapper {
     position: relative;
 }
+
+/* Quill Editor Customization */
+.ql-toolbar.ql-snow {
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.ql-container.ql-snow {
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+}
+
+.ql-editor {
+    min-height: 200px;
+    padding: 1rem;
+}
+
+.exp-editor-wrapper {
+    border: 2px solid var(--form-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--form-light);
+    transition: all 0.2s;
+}
+
+.exp-editor-wrapper:hover {
+    border-color: #cbd5e1;
+}
+
+.exp-editor-wrapper.focused {
+    border-color: var(--form-primary);
+    background: var(--form-white);
+    box-shadow: 0 0 0 4px rgba(var(--form-primary-rgb), 0.1);
+}
+
+.exp-editor-wrapper.is-invalid {
+    border-color: var(--form-danger);
+    background: #fef2f2;
+}
+
+.exp-editor-wrapper.is-invalid.focused {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
 
 .exp-input-icon {
     position: absolute;
@@ -386,6 +438,18 @@
             </div>
         </div>
         
+        <!-- Rich Content (Moved after Title) -->
+        <div class="exp-form-group">
+            <label class="exp-form-label">
+                <i class="mdi mdi-file-document-edit"></i>
+                <span><?php echo get_phrase('content'); ?></span>
+            </label>
+            <div class="exp-editor-wrapper">
+                <div id="quill-editor"></div>
+                <input type="hidden" name="content" id="content">
+            </div>
+        </div>
+        
         <!-- Starting Date -->
         <div class="exp-form-group">
             <label class="exp-form-label">
@@ -458,6 +522,45 @@ $(document).ready(function() {
     
     // Validation pattern
     const titleRegex = /^.{3,}$/;
+
+    // Initialize Quill editor
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: "<?php echo get_phrase('write_event_content_here'); ?>",
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'font': [] }],
+                [{ 'align': [] }],
+                ['clean'],
+                ['link', 'image', 'video']
+            ],
+            imageResize: window.ImageResize ? {} : undefined
+        }
+    });
+
+    // Handle editor focus styles
+    quill.on('selection-change', function(range, oldRange, source) {
+        if (range) {
+            $('.exp-editor-wrapper').addClass('focused');
+        } else {
+            $('.exp-editor-wrapper').removeClass('focused');
+        }
+    });
+
+    // Sync content to hidden input
+    quill.on('text-change', function() {
+        $('#content').val(quill.root.innerHTML);
+    });
 
     // Auto-open calendar on click
     $('input[type="date"]').on('click', function() {

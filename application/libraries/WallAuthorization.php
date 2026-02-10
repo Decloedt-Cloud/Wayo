@@ -88,6 +88,13 @@ class WallAuthorization
             return true;
         }
 
+        // Teacher/Mentor can read if they are assigned to the class
+        if ($this->current_role === 'teacher') {
+            if ($this->is_teacher_of_class($class_id)) {
+                return true;
+            }
+        }
+
        // Members who are enrolled in the class OR belong to the same school
         if (($this->current_role === 'member' || $this->current_role === 'student')) {
             // Check enrollment first
@@ -126,7 +133,46 @@ class WallAuthorization
             return true;
         }
 
+        // Teacher/Mentor can post if they are assigned to the class
+        if ($this->current_role === 'teacher') {
+            if ($this->is_teacher_of_class($class_id)) {
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    /**
+     * Check if current user is a teacher assigned to the class
+     * 
+     * @param int $class_id
+     * @return bool
+      */
+    public function is_teacher_of_class($class_id)
+    {
+        // Get teacher record
+        $teacher = $this->ci->db->get_where('teachers', array('user_id' => $this->current_user))->row_array();
+        
+        if (!$teacher) {
+            return false;
+        }
+
+        // Check permissions in teacher_permissions table
+        // We assume ANY permission record implies assignment
+        $this->ci->db->where('teacher_id', $teacher['id']);
+        $this->ci->db->where('class_id', $class_id);
+        
+        // STRICT CHECK: Must have at least one active permission
+        $this->ci->db->group_start();
+        $this->ci->db->where('marks', 1);
+        $this->ci->db->or_where('attendance', 1);
+        $this->ci->db->or_where('assignment', 1);
+        $this->ci->db->group_end();
+        
+        $query = $this->ci->db->get('teacher_permissions');
+
+        return $query->num_rows() > 0;
     }
 
     /**
@@ -153,6 +199,11 @@ class WallAuthorization
             return ['can_moderate' => false, 'reason' => 'post_not_found'];
         }
 
+        // Author can always moderate (delete/hide) their own post
+        if ($post['author_user_id'] == $this->current_user) {
+            return ['can_moderate' => true];
+        }
+
         // Admin of community can moderate posts in their community
         if ($this->current_role === 'admin') {
             // For community wall posts
@@ -160,14 +211,8 @@ class WallAuthorization
                 return ['can_moderate' => true];
             }
             
-            // For class wall posts - check if class belongs to admin's community
-            $this->ci->db->select('school_id');
-            $this->ci->db->where('id', $post['scope_id']);
-            $class = $this->ci->db->get('classes')->row_array();
-            
-            if ($class && $class['school_id'] == $this->current_school_id) {
-                return ['can_moderate' => true];
-            }
+            // For class wall posts - Admin can ONLY moderate their own posts (already checked above)
+            // So we do NOT return true here for class wall posts
         }
 
         return ['can_moderate' => false, 'reason' => 'insufficient_permissions'];

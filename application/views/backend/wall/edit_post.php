@@ -3,7 +3,7 @@
 <script src="<?php echo base_url(); ?>assets/backend/js/quilljs/image-resize.min.js"></script>
 
 <style>
-/* Modern Form Design */
+/* Modern Form Design - Same as create_post */
 .modern-form-wrapper {
     padding: 1rem;
 }
@@ -78,7 +78,6 @@
     padding: 1rem;
 }
 
-/* Fix Quill Tooltip Positioning (No visual style changes) */
 .ql-snow .ql-tooltip {
     left: 50% !important;
     transform: translateX(-50%) !important;
@@ -141,16 +140,22 @@
 
 <div class="row">
     <div class="col-12">
-        <form action="<?php echo site_url('wall/create_post_action/' . $wall_id); ?>" method="post" enctype="multipart/form-data" id="create-post-form">
+        <form action="<?php echo site_url('api/posts/' . $post['id'] . '/edit'); ?>" method="post" enctype="multipart/form-data" id="edit-post-form">
             <div class="modern-form-wrapper">
-                <!-- Title Field -->
+                <!-- Title Field (Optional, hidden if not used in backend yet) -->
+                <!-- Note: The API edit_post currently only updates 'body', but we'll include title in case we enable it later. 
+                     For now, we can hide it or keep it visible but backend might ignore it. 
+                     Based on create_post, there is a title. -->
+                <?php if (!empty($post['title'])): ?>
                 <div class="modern-form-group">
                     <label for="title" class="modern-label">
                         <i class="fas fa-heading"></i> <?php echo get_phrase('title'); ?>
                     </label>
                     <input type="text" class="modern-input" id="title" name="title" 
+                           value="<?php echo htmlspecialchars($post['title']); ?>"
                            placeholder="<?php echo get_phrase('enter_an_engaging_title'); ?>...">
                 </div>
+                <?php endif; ?>
 
                 <!-- Content Field -->
                 <div class="modern-form-group">
@@ -158,12 +163,10 @@
                         <i class="fas fa-align-left"></i> <?php echo get_phrase('content'); ?> <span class="text-danger">*</span>
                     </label>
                     <div class="editor-container">
-                        <div id="quill-editor"></div>
+                        <div id="quill-editor-edit"><?php echo $post['body']; ?></div>
                     </div>
-                    <input type="hidden" name="body" id="body">
+                    <input type="hidden" name="body" id="body_edit">
                 </div>
-                
-                <input type="hidden" name="post_type" value="post">
 
                 <!-- Actions -->
                 <div class="modern-actions">
@@ -171,7 +174,7 @@
                         <?php echo get_phrase('cancel'); ?>
                     </button>
                     <button type="submit" class="btn-modern-submit">
-                        <i class="mdi mdi-send"></i> <?php echo get_phrase('publish_post'); ?>
+                        <i class="mdi mdi-content-save"></i> <?php echo get_phrase('update_post'); ?>
                     </button>
                 </div>
             </div>
@@ -182,79 +185,77 @@
 <script>
 (function($) {
     if (!$) {
-        console.error('jQuery missing in create_post modal');
+        console.error('jQuery missing in edit_post modal');
         return;
     }
     
     // Initialize Quill
-    var quill;
+    var quillEdit;
     
     $(document).ready(function() {
         // Initialize Quill editor
-        if (document.getElementById('quill-editor')) {
-            quill = new Quill('#quill-editor', {
+        if (document.getElementById('quill-editor-edit')) {
+            quillEdit = new Quill('#quill-editor-edit', {
                 theme: 'snow',
                 placeholder: '<?php echo get_phrase('what_is_on_your_mind'); ?>',
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        ['bold', 'italic', 'underline', 'strike'],
                         ['blockquote', 'code-block'],
-
-                        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+                        [{ 'header': 1 }, { 'header': 2 }],
                         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-                        [{ 'direction': 'rtl' }],                         // text direction
-
-                        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
                         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'color': [] }, { 'background': [] }],
                         [{ 'font': [] }],
                         [{ 'align': [] }],
-
-                        ['clean'],                                         // remove formatting button
-                        ['link', 'image', 'video']                         // link and image, video
+                        ['clean'],
+                        ['link', 'image', 'video']
                     ],
                     imageResize: window.ImageResize ? {} : undefined
                 }
             });
 
             // Focus styling
-            quill.on('selection-change', function(range, oldRange, source) {
+            quillEdit.on('selection-change', function(range, oldRange, source) {
+                var container = $(quillEdit.container).parent();
                 if (range) {
-                    $('.editor-container').addClass('focused');
+                    container.addClass('focused');
                 } else {
-                    $('.editor-container').removeClass('focused');
+                    container.removeClass('focused');
                 }
             });
 
             // Real-time validation
-            quill.on('text-change', function() {
-                var text = quill.getText().trim();
-                var hasMedia = quill.root.getElementsByTagName('img').length > 0 || quill.root.getElementsByTagName('iframe').length > 0;
+            quillEdit.on('text-change', function() {
+                var text = quillEdit.getText().trim();
+                var hasMedia = quillEdit.root.getElementsByTagName('img').length > 0 || quillEdit.root.getElementsByTagName('iframe').length > 0;
+                var container = $(quillEdit.container).parent();
                 
                 if (text !== '' || hasMedia) {
-                    $('.editor-container').removeClass('is-invalid');
+                    container.removeClass('is-invalid');
                 }
             });
         }
 
-        $('#create-post-form').on('submit', function(e) {
+        $('#edit-post-form').on('submit', function(e) {
             e.preventDefault();
             var form = $(this);
             var btn = form.find('button[type="submit"]');
             var originalText = btn.text();
             
             // Get content from Quill
-            var bodyContent = quill.root.innerHTML;
-            var textContent = quill.getText().trim();
+            var bodyContent = quillEdit.root.innerHTML;
+            var textContent = quillEdit.getText().trim();
             
             // Update hidden input
-            $('#body').val(bodyContent);
+            $('#body_edit').val(bodyContent);
             
             // Basic Validation
-            var hasMedia = quill.root.getElementsByTagName('img').length > 0 || quill.root.getElementsByTagName('iframe').length > 0;
+            var hasMedia = quillEdit.root.getElementsByTagName('img').length > 0 || quillEdit.root.getElementsByTagName('iframe').length > 0;
             
             if (textContent === '' && !hasMedia) {
                 if(typeof error_notify === 'function') {
@@ -266,7 +267,7 @@
             }
 
             // Loading state
-            btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase('publishing'); ?>...');
+            btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> <?php echo get_phrase('updating'); ?>...');
 
             var formData = new FormData(this);
 
@@ -288,15 +289,11 @@
                             timer: 2000,
                             showConfirmButton: false
                         }).then(function() {
-                            // Close modal
-                            $('#large-modal').modal('hide');
-                            
-                            // Reload posts if function exists
-                            if (typeof loadPosts === 'function') {
-                                loadPosts(1, 'all');
-                            } else {
-                                location.reload();
+                            // Close modal and reload page to see changes
+                            if (typeof jQuery !== 'undefined' && jQuery('#large-modal').length) {
+                                 jQuery('#large-modal').modal('hide');
                             }
+                            location.reload();
                         });
                     } else {
                         Swal.fire({
@@ -306,16 +303,21 @@
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     btn.prop('disabled', false).text(originalText);
-                    Swal.fire({
-                        title: '<?php echo get_phrase('error'); ?>',
-                        text: '<?php echo get_phrase('an_error_occurred'); ?>',
-                        icon: 'error'
-                    });
+                    var errorMessage = 'An error occurred';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    if(typeof error_notify === 'function') {
+                        error_notify(errorMessage);
+                    } else {
+                        alert(errorMessage);
+                    }
                 }
             });
         });
     });
-})(typeof jQuery !== 'undefined' ? jQuery : null);
+})(jQuery);
 </script>

@@ -56,7 +56,7 @@ class Wall extends REST_Controller
         if (!is_numeric($community_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Invalid community ID'
+                'message' => get_phrase('invalid_community_id')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -65,7 +65,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->can_read_community_wall($community_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -76,7 +76,7 @@ class Wall extends REST_Controller
         if (!$wall) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to get wall'
+                'message' => get_phrase('failed_to_get_wall')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -154,7 +154,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->can_post_community_wall($community_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -164,7 +164,7 @@ class Wall extends REST_Controller
         if (empty($body)) {
             $this->response([
                 'status' => false,
-                'message' => 'Post body is required'
+                'message' => get_phrase('post_body_is_required')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -178,7 +178,7 @@ class Wall extends REST_Controller
         if (!$wall) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to get wall'
+                'message' => get_phrase('failed_to_get_wall')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -198,7 +198,7 @@ class Wall extends REST_Controller
         if (!$post_id) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to create post'
+                'message' => get_phrase('failed_to_create_publication')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -214,7 +214,7 @@ class Wall extends REST_Controller
 
         $this->response([
             'status' => true,
-            'message' => 'Post created successfully',
+            'message' => get_phrase('publication_created_successfully'),
             'data' => [
                 'post' => $post,
                 'attachments' => $attachments
@@ -232,7 +232,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->can_post_community_wall($community_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -245,7 +245,7 @@ class Wall extends REST_Controller
         if (empty($title) || empty($date) || empty($content)) {
             $this->response([
                 'status' => false,
-                'message' => 'Title, date, and content are required'
+                'message' => get_phrase('title_date_and_content_are_required')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -259,7 +259,7 @@ class Wall extends REST_Controller
         if (!$wall) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to get wall'
+                'message' => get_phrase('failed_to_get_wall')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -280,7 +280,7 @@ class Wall extends REST_Controller
         if (!$post_id) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to create announcement'
+                'message' => get_phrase('failed_to_create_announcement')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -296,7 +296,7 @@ class Wall extends REST_Controller
 
         $this->response([
             'status' => true,
-            'message' => 'Announcement created successfully',
+            'message' => get_phrase('announcement_created_successfully'),
             'data' => [
                 'post' => $post,
                 'attachments' => $attachments
@@ -318,7 +318,7 @@ class Wall extends REST_Controller
         if (!is_numeric($class_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Invalid class ID'
+                'message' => get_phrase('invalid_class_id')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -329,7 +329,7 @@ class Wall extends REST_Controller
         if (!$class) {
             $this->response([
                 'status' => false,
-                'message' => 'Class not found'
+                'message' => get_phrase('class_not_found')
             ], REST_Controller::HTTP_NOT_FOUND);
             return;
         }
@@ -342,7 +342,7 @@ class Wall extends REST_Controller
             log_message('error', "DEBUG_WALL: Authorization failed for class $class_id");
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -353,7 +353,7 @@ class Wall extends REST_Controller
         if (!$wall) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to get wall'
+                'message' => get_phrase('failed_to_get_wall')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -373,6 +373,11 @@ class Wall extends REST_Controller
                 if ($user['school_id'] == $class_school_id) {
                     $can_view_hidden = true;
                 }
+            }
+
+            // Allow teachers assigned to the class to view hidden posts
+            if (!$can_view_hidden && $this->wallauthorization->is_teacher_of_class($class_id)) {
+                $can_view_hidden = true;
             }
             
             if (!$can_view_hidden) {
@@ -426,7 +431,7 @@ class Wall extends REST_Controller
         if (!$class) {
             $this->response([
                 'status' => false,
-                'message' => 'Class not found'
+                'message' => get_phrase('class_not_found')
             ], REST_Controller::HTTP_NOT_FOUND);
             return;
         }
@@ -447,7 +452,7 @@ class Wall extends REST_Controller
         if (empty($body)) {
             $this->response([
                 'status' => false,
-                'message' => 'Post body is required'
+                'message' => get_phrase('publication_body_is_required')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -461,7 +466,7 @@ class Wall extends REST_Controller
         if (!$wall) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to get wall'
+                'message' => get_phrase('failed_to_get_wall')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -481,7 +486,7 @@ class Wall extends REST_Controller
         if (!$post_id) {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to create post'
+                'message' => get_phrase('failed_to_create_publication')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -497,12 +502,92 @@ class Wall extends REST_Controller
 
         $this->response([
             'status' => true,
-            'message' => 'Post created successfully',
+            'message' => get_phrase('publication_created_successfully'),
             'data' => [
                 'post' => $post,
                 'attachments' => $attachments
             ]
         ], REST_Controller::HTTP_CREATED);
+    }
+
+    /**
+     * POST /api/posts/{postId}/edit
+     * Edit a post
+     */
+    public function edit_post($post_id)
+    {
+        // Validate post_id
+        if (!is_numeric($post_id)) {
+            $this->response([
+                'status' => false,
+                'message' => 'Invalid post ID'
+            ], REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        $user_id = $this->session->userdata('user_id');
+        $post = $this->wall_model->get_post_by_id($post_id);
+        
+        if (!$post) {
+             $this->response([
+                'status' => false,
+                'message' => 'Post not found'
+            ], REST_Controller::HTTP_NOT_FOUND);
+            return;
+        }
+
+        $can_moderate = $this->wallauthorization->can_moderate_post($post_id);
+        $is_author = ($post['author_user_id'] == $user_id);
+        
+        if (!$can_moderate['can_moderate'] && !$is_author) {
+            $this->response([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+            return;
+        }
+
+        // Validate input
+        $body = $this->input->post('body');
+        $title = $this->input->post('title');
+
+        if (empty($body)) {
+            $this->response([
+                'status' => false,
+                'message' => get_phrase('publication_body_is_required')
+            ], REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        // Sanitize HTML
+        $body = $this->wallauthorization->sanitize_html($body);
+
+        // Update post
+        $data = [
+            'body' => $body,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if (!empty($title)) {
+            $data['title'] = $title;
+        }
+
+        $success = $this->wall_model->update_post($post_id, $data);
+
+        if ($success) {
+            $this->response([
+                'status' => true,
+                'message' => get_phrase('publication_updated_successfully'),
+                'data' => [
+                    'post' => $this->wall_model->get_post_by_id($post_id)
+                ]
+            ], REST_Controller::HTTP_OK);
+        } else {
+             $this->response([
+                'status' => false,
+                'message' => get_phrase('failed_to_update_publication')
+            ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // ============================================================
@@ -519,7 +604,7 @@ class Wall extends REST_Controller
         if (!is_numeric($post_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Invalid post ID'
+                'message' => get_phrase('invalid_publication_id')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -539,7 +624,7 @@ class Wall extends REST_Controller
         if (empty($reason)) {
             $this->response([
                 'status' => false,
-                'message' => 'Report reason is required'
+                'message' => get_phrase('report_reason_is_required')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -551,14 +636,14 @@ class Wall extends REST_Controller
         if (!$report_id) {
             $this->response([
                 'status' => false,
-                'message' => 'You have already reported this Publication'
+                'message' => get_phrase('you_have_already_reported_this_publication')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
         $this->response([
             'status' => true,
-            'message' => 'Publication reported successfully',
+            'message' => get_phrase('publication_reported_successfully'),
             'data' => [
                 'report_id' => $report_id
             ]
@@ -597,91 +682,12 @@ class Wall extends REST_Controller
         if ($success) {
             $this->response([
                 'status' => true,
-                'message' => 'Publication hidden successfully'
+                'message' => get_phrase('publication_hidden_successfully'),
             ], REST_Controller::HTTP_OK);
         } else {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to hide publication'
-            ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Duplicate unhide_post method removed
-
-    /**
-     * POST /api/posts/{postId}/edit
-     * Edit a post
-     */
-    public function edit_post($post_id)
-    {
-        // Validate post_id
-        if (!is_numeric($post_id)) {
-            $this->response([
-                'status' => false,
-                'message' => 'Invalid post ID'
-            ], REST_Controller::HTTP_BAD_REQUEST);
-            return;
-        }
-
-        // Check authorization (Must be author or have moderation rights)
-        // For now, let's assume admins/moderators can edit any post, and users can edit their own.
-        // We'll use can_moderate_post for admin check, and manual check for author.
-        $user_id = $this->session->userdata('user_id');
-        $post = $this->wall_model->get_post_by_id($post_id);
-        
-        if (!$post) {
-             $this->response([
-                'status' => false,
-                'message' => 'Post not found'
-            ], REST_Controller::HTTP_NOT_FOUND);
-            return;
-        }
-
-        $can_moderate = $this->wallauthorization->can_moderate_post($post_id);
-        $is_author = ($post['author_user_id'] == $user_id);
-        
-        if (!$can_moderate['can_moderate'] && !$is_author) {
-            $this->response([
-                'status' => false,
-                'message' => 'Unauthorized'
-            ], REST_Controller::HTTP_UNAUTHORIZED);
-            return;
-        }
-
-        // Validate input
-        $body = $this->input->post('body');
-        if (empty($body)) {
-            $this->response([
-                'status' => false,
-                'message' => 'Post body is required'
-            ], REST_Controller::HTTP_BAD_REQUEST);
-            return;
-        }
-
-        // Sanitize HTML
-        $body = $this->wallauthorization->sanitize_html($body);
-
-        // Update post
-        $data = [
-            'body' => $body,
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
-
-        $success = $this->wall_model->update_post($post_id, $data);
-
-        if ($success) {
-            $this->response([
-                'status' => true,
-                'message' => 'Post updated successfully',
-                'data' => [
-                    'post' => $this->wall_model->get_post_by_id($post_id)
-                ]
-            ], REST_Controller::HTTP_OK);
-        } else {
-             $this->response([
-                'status' => false,
-                'message' => 'Failed to update post'
+                'message' => get_phrase('failed_to_hide_publication')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -696,7 +702,7 @@ class Wall extends REST_Controller
         if (!is_numeric($post_id)) {
             $this->response([
                 'status' => false,
-                'message' => 'Invalid post ID'
+                'message' => get_phrase('invalid_publication_id')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -718,12 +724,12 @@ class Wall extends REST_Controller
         if ($success) {
             $this->response([
                 'status' => true,
-                'message' => 'Publication unhidden successfully'
+                'message' => get_phrase('publication_unhidden_successfully')
             ], REST_Controller::HTTP_OK);
         } else {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to unhide publication'
+                'message' => get_phrase('failed_to_unhide_publication')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -760,12 +766,12 @@ class Wall extends REST_Controller
         if ($success) {
             $this->response([
                 'status' => true,
-                'message' => 'Publication deleted successfully'
+                'message' => get_phrase('publication_deleted_successfully')
             ], REST_Controller::HTTP_OK);
         } else {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to delete publication'
+                'message' => get_phrase('failed_to_delete_publication')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -784,7 +790,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->is_superadmin()) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -833,7 +839,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->is_superadmin()) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -870,7 +876,7 @@ class Wall extends REST_Controller
         if (!$this->wallauthorization->is_superadmin()) {
             $this->response([
                 'status' => false,
-                'message' => 'Unauthorized'
+                'message' => get_phrase('unauthorized')
             ], REST_Controller::HTTP_UNAUTHORIZED);
             return;
         }
@@ -880,7 +886,7 @@ class Wall extends REST_Controller
         if (!in_array($status, ['resolved', 'dismissed'])) {
             $this->response([
                 'status' => false,
-                'message' => 'Invalid status'
+                'message' => get_phrase('invalid_report_status')
             ], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -891,12 +897,12 @@ class Wall extends REST_Controller
         if ($success) {
             $this->response([
                 'status' => true,
-                'message' => 'Report updated successfully'
+                'message' => get_phrase('report_updated_successfully')
             ], REST_Controller::HTTP_OK);
         } else {
             $this->response([
                 'status' => false,
-                'message' => 'Failed to update report'
+                'message' => get_phrase('failed_to_update_report')
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
