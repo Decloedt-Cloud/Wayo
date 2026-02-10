@@ -483,6 +483,7 @@ class Lms_model extends CI_Model
         }
     }
 
+    return $course_id;
     }
 
     public function course_edit($course_id)

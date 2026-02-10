@@ -78,6 +78,12 @@ $selected_user_id = $selected_user_id ?? 'all';
         height: 100%; /* For grid consistency */
     }
 
+    /* Permettre aux dropdowns de dépasser la carte filtre */
+    .modern-card.filter-card {
+        overflow: visible;
+        height: auto;
+    }
+
     .modern-card:hover {
         box-shadow: var(--shadow-lg);
         transform: translateY(-2px);
@@ -88,6 +94,10 @@ $selected_user_id = $selected_user_id ?? 'all';
     }
 
     /* Form Styles */
+    .modern-filter-form {
+        padding-bottom: 0.25rem;
+    }
+
     .modern-filter-form label {
         font-weight: 600;
         color: var(--text-dark);
@@ -98,11 +108,21 @@ $selected_user_id = $selected_user_id ?? 'all';
     .modern-select {
         border: 2px solid var(--border-color);
         border-radius: 12px;
-        padding: 0.625rem 1rem;
-        height: auto;
+        padding: 0.75rem 1rem;
+        height: auto !important;
+        min-height: 48px;
         font-size: 0.9375rem;
         color: var(--text-dark);
         transition: all 0.2s;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 12px;
+        padding-right: 2.5rem;
     }
 
     .modern-select:focus {
@@ -907,7 +927,7 @@ $selected_user_id = $selected_user_id ?? 'all';
     <!-- Filter Section -->
     <div class="row mb-4 fade-up delay-1">
         <div class="col-12">
-            <div class="modern-card">
+            <div class="modern-card filter-card">
                 <div class="modern-card-body">
                     <form class="row align-items-end modern-filter-form" action="javascript:void(0)">
                         <!-- Champ caché pour le jeton CSRF -->
@@ -997,8 +1017,7 @@ $selected_user_id = $selected_user_id ?? 'all';
             ->where_in('students.id', $student_ids)
             ->group_start()
             ->where('classes.date_fin >=', date('Y-m-d'))
-            ->or_where('classes.date_fin', null)
-            ->or_where('classes.date_fin', '')
+            ->or_where('classes.date_fin IS NULL', null, false)
             ->or_where('classes.date_fin', '0000-00-00')
             ->group_end();
 

@@ -2442,6 +2442,7 @@
     "start_with_your_profile": "ابدأ بملفك الشخصي، ثم أنشئ مجتمعك، وحدد السعر، وانشره",
     "invalid_file_type": "نوع الملف غير صالح",
     "file_size_exceeds_10mb": "حجم الملف يتجاوز 10 ميجا بايت",
+    "file_size_exceeds_20mb": "حجم الملف يتجاوز 20 ميجا بايت",
     "membres": "أعضاء",
     "launch_and_monetize": "الإطلاق وتحقيق الدخل",
     "transparency,_security,_and_control_over_your_data.": "الشفافية والأمان والتحكم في بياناتك.",
@@ -4057,5 +4058,15 @@
     "report_reason_is_required": "سبب الإبلاغ مطلوب",
     "you_have_already_reported_this_publication": "لقد قمت بالإبلاغ عن هذا المنشور مسبقًا",
     "invalid_report_status": "حالة التقرير غير صالحة",
-    "جدار_المجتمع": "جدار المجتمع"
+    "جدار_المجتمع": "جدار المجتمع",
+    "total_syllabus": "المنهج الدراسي الكامل",
+    "max_size:_10_mo": "أقصى حجم: 10 Mo",
+    "max_size:_20_mo": "أقصى حجم: 20 Mo",
+    "upload_and_share_study_materials": "قم بتحميل ومشاركة المواد الدراسية",
+    "enter_syllabus_title": "أدخل عنوان المنهج",
+    "community_visibility": "رؤية المجتمع",
+    "toggle_community_visibility": "تبديل رؤية المجتمع",
+    "public_community": "مجتمع عام",
+    "public_community_-_open_access": "مجتمع عام - وصول مفتوح",
+    "community_state_updated_successfully": "تم تحديث حالة المجتمع بنجاح"
 }

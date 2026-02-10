@@ -2373,6 +2373,19 @@ class Admin extends CI_Controller
 			// Renvoyer la réponse avec un nouveau jeton CSRF
 			echo json_encode(array('status' => $response, 'csrf' => $csrf));
 		}
+		if ($param1 == 'toggle_etat') {
+			$response = $this->settings_model->toggle_community_etat();
+			$csrf = array(
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+			);
+			$result = json_decode($response, true);
+			echo json_encode(array(
+				'status' => $result['status'],
+				'message' => $result['notification'] ?? '',
+				'csrf' => $csrf
+			));
+		}
 		if ($param1 == 'price') {
 			
 		  $response = $this->settings_model->update_system_price();

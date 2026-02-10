@@ -72,8 +72,10 @@ class Crud_model extends CI_Model
 				$data['price'] = html_escape($price);
 			}
 		}
-		$data['date_debut'] = html_escape($this->input->post('start_date'));
-		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$start_date = html_escape($this->input->post('start_date'));
+		$end_date = html_escape($this->input->post('end_date'));
+		$data['date_debut'] = !empty($start_date) ? $start_date : null;
+		$data['date_fin'] = !empty($end_date) ? $end_date : null;
 		$data['statut'] = html_escape($this->input->post('status'));
 
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -117,8 +119,10 @@ class Crud_model extends CI_Model
 	{
 		$data['name'] = html_escape($this->input->post('name'));
 		$data['price'] = html_escape($this->input->post('price'));
-		$data['date_debut'] = html_escape($this->input->post('start_date'));
-		$data['date_fin'] = html_escape($this->input->post('end_date'));
+		$start_date = html_escape($this->input->post('start_date'));
+		$end_date = html_escape($this->input->post('end_date'));
+		$data['date_debut'] = !empty($start_date) ? $start_date : null;
+		$data['date_fin'] = !empty($end_date) ? $end_date : null;
 		$data['statut'] = html_escape($this->input->post('status'));
 
 		if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -471,11 +475,11 @@ class Crud_model extends CI_Model
 	//START SYLLABUS section
 	public function syllabus_create($param1 = '')
 	{
-		$max_size = 10 * 1024 * 1024; // 10 Mo en bytes
+		$max_size = 20 * 1024 * 1024; // 20 Mo en bytes
 		if ($_FILES['syllabus_file']['size'] > $max_size) {
 			return array(
 				'status' => false,
-				'notification' => get_phrase('file_size_exceeds_10mb')
+				'notification' => get_phrase('file_size_exceeds_20mb')
 			);
 		}
 
@@ -493,21 +497,152 @@ class Crud_model extends CI_Model
 		$data['session_id'] = html_escape($this->input->post('session_id'));
 		$data['school_id'] = html_escape($this->input->post('school_id'));
 		$file_ext = pathinfo($_FILES['syllabus_file']['name'], PATHINFO_EXTENSION);
-		$data['file'] = md5(rand(10000000, 20000000)) . '.' . $file_ext;
-		$file_path = 'uploads/syllabus/' . $data['file'];
-		move_uploaded_file($_FILES['syllabus_file']['tmp_name'], $file_path);
-		
-		// Extraire le texte du document pour le Chat AI
-		$extraction = $this->extract_document_text(FCPATH . $file_path, $file_ext);
+		$temp_file_name = md5(rand(10000000, 20000000)) . '.' . $file_ext;
+		$upload_dir = FCPATH . 'uploads/syllabus/';
+		if (!is_dir($upload_dir)) {
+			@mkdir($upload_dir, 0777, true);
+		}
+		$temp_file_path = $upload_dir . $temp_file_name;
+		if (!@move_uploaded_file($_FILES['syllabus_file']['tmp_name'], $temp_file_path)) {
+			return array(
+				'status' => false,
+				'notification' => get_phrase('error_uploading_file')
+			);
+		}
+
+		// Extraire le texte du document pour le Chat AI (avant compression)
+		$extraction = $this->extract_document_text($temp_file_path, $file_ext);
 		$data['extracted_text'] = $extraction['text'];
 		$data['page_count'] = $extraction['page_count'];
-		
+
+		// Optimiser/compresser le fichier PDF via Ghostscript (le fichier reste un PDF)
+		if (strtolower($file_ext) === 'pdf') {
+			$optimized = $this->optimize_pdf($temp_file_path, $upload_dir);
+			if ($optimized !== false) {
+				// Supprimer l'original et utiliser la version optimisée
+				@unlink($temp_file_path);
+				$data['file'] = $optimized;
+			} else {
+				// Si Ghostscript échoue, garder le PDF original
+				$data['file'] = $temp_file_name;
+			}
+		} else {
+			$data['file'] = $temp_file_name;
+		}
+
 		$this->db->insert('syllabuses', $data);
 
 		return array(
 			'status' => true,
 			'notification' => get_phrase('syllabus_added_successfully')
 		);
+	}
+
+	/**
+	 * Optimiser un fichier PDF via Ghostscript pour réduire sa taille.
+	 * Réduit la taille en optimisant les images intégrées, polices et métadonnées.
+	 *
+	 * @param string $source_path Chemin absolu du PDF source
+	 * @param string $dest_dir Répertoire de destination
+	 * @return string|false Nom du fichier PDF optimisé, ou false en cas d'échec
+	 */
+	private function optimize_pdf($source_path, $dest_dir)
+	{
+		// Détecter le chemin de Ghostscript selon l'OS
+		$gs_path = $this->find_ghostscript();
+		if ($gs_path === false) {
+			log_message('error', 'Ghostscript introuvable — le PDF ne sera pas compressé.');
+			return false;
+		}
+
+		$optimized_name = md5(rand(10000000, 20000000)) . '.pdf';
+		$optimized_path = $dest_dir . $optimized_name;
+
+		// Commande Ghostscript pour optimiser le PDF
+		// /ebook = qualité 150 dpi (bon compromis taille/qualité pour des documents scolaires)
+		$cmd = escapeshellarg($gs_path)
+			. ' -sDEVICE=pdfwrite'
+			. ' -dCompatibilityLevel=1.4'
+			. ' -dPDFSETTINGS=/ebook'
+			. ' -dNOPAUSE -dQUIET -dBATCH'
+			. ' -dColorImageResolution=150'
+			. ' -dGrayImageResolution=150'
+			. ' -dMonoImageResolution=300'
+			. ' -sOutputFile=' . escapeshellarg($optimized_path)
+			. ' ' . escapeshellarg($source_path);
+
+		exec($cmd, $output, $return_code);
+
+		// Vérifier que la commande a réussi et que le fichier existe
+		if ($return_code !== 0 || !file_exists($optimized_path) || filesize($optimized_path) === 0) {
+			log_message('error', 'Ghostscript a échoué (code ' . $return_code . ') pour: ' . $source_path);
+			@unlink($optimized_path);
+			return false;
+		}
+
+		// Ne garder la version optimisée que si elle est réellement plus petite
+		$original_size = filesize($source_path);
+		$optimized_size = filesize($optimized_path);
+
+		if ($optimized_size >= $original_size) {
+			// L'optimisation n'a pas réduit la taille — garder l'original
+			@unlink($optimized_path);
+			return false;
+		}
+
+		log_message('info', 'PDF optimisé: ' . round($original_size / 1024) . ' Ko → '
+			. round($optimized_size / 1024) . ' Ko ('
+			. round((1 - $optimized_size / $original_size) * 100) . '% de réduction)');
+
+		return $optimized_name;
+	}
+
+	/**
+	 * Trouver le chemin de l'exécutable Ghostscript sur le système.
+	 * Supporte Windows (XAMPP) et Linux.
+	 *
+	 * @return string|false Chemin vers l'exécutable gs, ou false si introuvable
+	 */
+	private function find_ghostscript()
+	{
+		// Linux / Mac — gs est généralement dans le PATH
+		if (PHP_OS_FAMILY !== 'Windows') {
+			$path = trim(shell_exec('which gs 2>/dev/null'));
+			return (!empty($path) && file_exists($path)) ? $path : false;
+		}
+
+		// Windows — chercher gswin64c.exe ou gswin32c.exe
+		// 1. Vérifier si c'est dans le PATH
+		$path = trim(shell_exec('where gswin64c.exe 2>NUL'));
+		if (!empty($path) && file_exists($path)) {
+			return $path;
+		}
+		$path = trim(shell_exec('where gswin32c.exe 2>NUL'));
+		if (!empty($path) && file_exists($path)) {
+			return $path;
+		}
+
+		// 2. Chercher dans les emplacements d'installation courants
+		$program_dirs = [
+			'C:\\Program Files\\gs',
+			'C:\\Program Files (x86)\\gs',
+		];
+		foreach ($program_dirs as $dir) {
+			if (!is_dir($dir)) continue;
+			$versions = @scandir($dir, SCANDIR_SORT_DESCENDING);
+			if ($versions === false) continue;
+			foreach ($versions as $version) {
+				if ($version === '.' || $version === '..') continue;
+				foreach (['gswin64c.exe', 'gswin32c.exe'] as $binary) {
+					$full = $dir . '\\' . $version . '\\bin\\' . $binary;
+					if (file_exists($full)) {
+						return $full;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 	
 	/**
@@ -635,9 +770,9 @@ class Crud_model extends CI_Model
 		$syllabus_details = $this->get_syllabus_by_id($param1);
 		$this->db->where('id', $param1);
 		$this->db->delete('syllabuses');
-		$path = 'uploads/syllabus/' . $syllabus_details['file'];
-		if (file_exists($path)) {
-			unlink($path);
+		$path = FCPATH . 'uploads/syllabus/' . $syllabus_details['file'];
+		if (@file_exists($path)) {
+			@unlink($path);
 		}
 		$response = array(
 			'status' => true,

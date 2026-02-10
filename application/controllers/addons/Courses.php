@@ -175,9 +175,9 @@ class Courses extends CI_Controller {
     $this->teacher_access($param2);
     if($param1 == 'create'){
       $this->student_access_denied();
-      $this->lms_model->course_add();
+      $course_id = $this->lms_model->course_add();
       $this->session->set_flashdata('flash_message', get_phrase('course_added_successfully'));
-      redirect(site_url('addons/courses'));
+      redirect(site_url('addons/courses/course_edit/' . $course_id));
     }
 
     if($param1 == 'update'){

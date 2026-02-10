@@ -14,19 +14,26 @@ foreach ($sections as $idx => $sec) {
 }
 $initial_page = floor($current_section_index / $sections_per_page) + 1;
 
-// Calculate total lessons and completed
+// Calculate total lessons, quizzes and completed
 $total_lessons = 0;
+$total_quizzes = 0;
+$total_items = 0;
 $completed_lessons = 0;
 foreach ($sections as $sec) {
     $sec_lessons = $this->lms_model->get_lessons('section', $sec['id'])->result_array();
-    $total_lessons += count($sec_lessons);
+    $total_items += count($sec_lessons);
     foreach ($sec_lessons as $les) {
+        if (strtolower($les['lesson_type']) == 'quiz') {
+            $total_quizzes++;
+        } else {
+            $total_lessons++;
+        }
         if (lesson_progress($les['id'])) {
             $completed_lessons++;
         }
     }
 }
-$progress_percent = $total_lessons > 0 ? round(($completed_lessons / $total_lessons) * 100) : 0;
+$progress_percent = $total_items > 0 ? round(($completed_lessons / $total_items) * 100) : 0;
 ?>
 
 <style>
@@ -417,7 +424,12 @@ $progress_percent = $total_lessons > 0 ? round(($completed_lessons / $total_less
                 <i class="fas fa-list-ul"></i>
                 <?php echo get_phrase('course_content'); ?>
             </h3>
-            <span class="sidebar-stats"><?php echo $total_lessons; ?> <?php echo get_phrase('lessons'); ?></span>
+            <span class="sidebar-stats">
+                <?php echo $total_lessons; ?> <?php echo get_phrase('lessons'); ?>
+                <?php if ($total_quizzes > 0): ?>
+                    &bull; <?php echo $total_quizzes; ?> <?php echo get_phrase('quiz'); ?>
+                <?php endif; ?>
+            </span>
         </div>
         
         <!-- Progress Bar -->
@@ -427,7 +439,7 @@ $progress_percent = $total_lessons > 0 ? round(($completed_lessons / $total_less
             </div>
         </div>
         <div class="progress-info">
-            <span class="progress-text"><?php echo $completed_lessons; ?>/<?php echo $total_lessons; ?> <?php echo get_phrase('completed'); ?></span>
+            <span class="progress-text"><?php echo $completed_lessons; ?>/<?php echo $total_items; ?> <?php echo get_phrase('completed'); ?></span>
             <span class="progress-percent"><?php echo $progress_percent; ?>%</span>
         </div>
     </div>
@@ -485,7 +497,7 @@ $progress_percent = $total_lessons > 0 ? round(($completed_lessons / $total_less
                                 <?php endif; ?>
                             </a>
                             
-                            <div class="lesson-meta <?php echo $lesson['lesson_type'] == 'quiz' ? 'quiz' : ($lesson['lesson_type'] == 'other' ? 'attachment' : ''); ?>">
+                            <div class="lesson-meta <?php echo $lesson['lesson_type'] == 'quiz' ? 'quiz' : ''; ?>">
                                 <?php if ($lesson['lesson_type'] == 'video' || $lesson['lesson_type'] == '' || $lesson['lesson_type'] == NULL): ?>
                                     <i class="fas fa-play-circle"></i>
                                     <span><?php echo readable_time_for_humans($lesson['duration']); ?></span>
@@ -493,8 +505,8 @@ $progress_percent = $total_lessons > 0 ? round(($completed_lessons / $total_less
                                     <i class="fas fa-question-circle"></i>
                                     <span><?php echo get_phrase('quiz'); ?></span>
                                 <?php else: ?>
-                                    <i class="fas fa-paperclip"></i>
-                                    <span><?php echo get_phrase('attachment'); ?></span>
+                                    <i class="fas fa-book-open"></i>
+                                    <span><?php echo get_phrase('lesson'); ?></span>
                                 <?php endif; ?>
                             </div>
                         </div>
