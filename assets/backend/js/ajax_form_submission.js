@@ -15,10 +15,25 @@ function ajaxSubmit(e, form, callBackFunction) {
             dataType: 'json',
             data: data,
             success: function (response) {
-                // var response = JSON.parse(response.status);
-            // Décoder la partie status de la réponse
-            var statusData = JSON.parse(response.status);
-            $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                // Handle both legacy (status as JSON string) and CI4-safe (status as object) responses.
+                var statusData = response && response.status;
+                if (typeof statusData === 'string') {
+                    try {
+                        statusData = JSON.parse(statusData);
+                    } catch (err) {
+                        statusData = { status: false, notification: 'Invalid server response' };
+                    }
+                }
+                if (!statusData || typeof statusData !== 'object') {
+                    statusData = { status: false, notification: 'Invalid server response' };
+                }
+
+                var csrf = response && response.csrf ? response.csrf : {};
+                var csrfName = csrf.csrfName || csrf.name;
+                var csrfHash = csrf.csrfHash || csrf.hash;
+                if (csrfName && csrfHash) {
+                    $('input[name="' + csrfName + '"]').val(csrfHash);
+                }
                 if (statusData.status) {
                     success_notify(statusData.notification);
                     if (form.attr('class') === 'ajaxDeleteForm') {

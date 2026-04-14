@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /*
 *  @author   : Creativeitem
@@ -23,13 +23,19 @@ if ( ! function_exists('get_video_extension')){
 
 if ( ! function_exists('lesson_progress')){
     function lesson_progress($lesson_id = "", $user_id = "") {
-        $CI =&  get_instance();
-        $CI->load->database();
+        $session = \Config\Services::session();
         if ($user_id == "") {
-            $user_id = $CI->session->userdata('user_id');
+            $user_id = $session->get('user_id');
         }
-        $user_details = $CI->user_model->get_all_users($user_id)->row_array();
-        $watch_history_array = json_decode($user_details['watch_history'], true);
+        $userModel = model('User_model');
+        if (!$userModel) {
+            return 0;
+        }
+        $watch_history = (string) $userModel->get_user_details($user_id, 'watch_history');
+        $watch_history_array = json_decode($watch_history, true);
+        if (!is_array($watch_history_array)) {
+            return 0;
+        }
         for ($i = 0; $i < count($watch_history_array); $i++) {
           $watch_history_for_each_lesson = $watch_history_array[$i];
           if ($watch_history_for_each_lesson['lesson_id'] == $lesson_id) {
@@ -70,26 +76,36 @@ if ( ! function_exists('readable_time_for_humans')){
 
 if ( ! function_exists('course_progress')){
     function course_progress($course_id = "", $user_id = "") {
-        $CI =&  get_instance();
-        $CI->load->database();
+        $session = \Config\Services::session();
         if ($user_id == "") {
-            $user_id = $CI->session->userdata('user_id');
+            $user_id = $session->get('user_id');
         }
-        $watch_history = $CI->user_model->get_user_details($user_id, 'watch_history');
+        $userModel = model('User_model');
+        $lmsModel = model('App\\Models\\addons\\Lms_model');
+        if (!$userModel || !$lmsModel) {
+            return 0;
+        }
+        $watch_history = $userModel->get_user_details($user_id, 'watch_history');
 
-        // this array will contain all the completed lessons from different different courses by a user
         $completed_lessons_ids = array();
-
-        // this variable will contain number of completed lessons for a certain course. Like for this one the course_id
         $lesson_completed = 0;
 
-        // User's watch history
         $watch_history_array = json_decode($watch_history, true);
-        // desired course's lessons
-        $lessons_for_that_course = $CI->lms_model->get_lessons('course', $course_id);
-        // total number of lessons for that course
-        $total_number_of_lessons = $lessons_for_that_course->num_rows();
-        // arranging completed lesson ids
+        if (!is_array($watch_history_array)) {
+            $watch_history_array = [];
+        }
+        $lessons_for_that_course = $lmsModel->get_lessons('course', $course_id);
+        $lesson_rows = [];
+        if (is_object($lessons_for_that_course)) {
+            if (method_exists($lessons_for_that_course, 'result_array')) {
+                $lesson_rows = $lessons_for_that_course->result_array();
+            } elseif (method_exists($lessons_for_that_course, 'getResultArray')) {
+                $lesson_rows = $lessons_for_that_course->getResultArray();
+            }
+        } elseif (is_array($lessons_for_that_course)) {
+            $lesson_rows = $lessons_for_that_course;
+        }
+        $total_number_of_lessons = count($lesson_rows);
         for ($i = 0; $i < count($watch_history_array); $i++) {
           $watch_history_for_each_lesson = $watch_history_array[$i];
           if ($watch_history_for_each_lesson['progress'] == 1) {
@@ -97,8 +113,9 @@ if ( ! function_exists('course_progress')){
           }
         }
 
-        foreach ($lessons_for_that_course->result_array() as $row) {
-          if (in_array($row['id'], $completed_lessons_ids)) {
+        foreach ($lesson_rows as $row) {
+          $lesson_id = is_array($row) ? ($row['id'] ?? null) : ($row->id ?? null);
+          if ($lesson_id !== null && in_array($lesson_id, $completed_lessons_ids)) {
               $lesson_completed++;
           }
         }

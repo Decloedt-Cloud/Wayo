@@ -39,11 +39,15 @@ $(document).ready(function () {
                 setTimeout(() => $registerDropdown.addClass("display-none"), 100);
             }
             if ($loginDropdown.hasClass("display-none")) {
-                $loginDropdown.removeClass("display-none");
+                $loginDropdown.removeClass("display-none").show();
                 setTimeout(() => $loginDropdown.css('opacity', '1'), 10);
+                $(this).attr('aria-expanded', 'true');
             } else {
                 $loginDropdown.css('opacity', '0');
-                setTimeout(() => $loginDropdown.addClass("display-none"), 100);
+                setTimeout(() => {
+                    $loginDropdown.addClass("display-none").hide();
+                }, 100);
+                $(this).attr('aria-expanded', 'false');
             }
         });
     }
@@ -54,6 +58,7 @@ $(document).ready(function () {
             if (!$loginDropdown.hasClass("display-none")) {
                 $loginDropdown.css('opacity', '0');
                 setTimeout(() => $loginDropdown.addClass("display-none"), 100);
+                $loginToggle.attr('aria-expanded', 'false');
             }
             if (!$forgetDropdown.hasClass("display-none")) {
                 $forgetDropdown.css('opacity', '0');
@@ -116,6 +121,7 @@ $(document).ready(function () {
                 errorDiv.classList.add("display-none"); // Hide error message
             }
             setTimeout(() => $loginDropdown.addClass("display-none"), 100);
+            $loginToggle.attr('aria-expanded', 'false');
             if (!$forgetDropdown.hasClass("display-none")) {
                 $forgetDropdown.css('opacity', '0');
                 setTimeout(() => $forgetDropdown.addClass("display-none"), 100);
@@ -303,13 +309,19 @@ if (learnerForm) {
                                                             login_email: email,
                                                             login_password: password,
                                                             just_registered: 1,
-                                                            [response.csrf.csrfName]: response.csrf.csrfHash
+                                                            [response.csrf?.csrfName || response.csrf_token_name]: response.csrf?.csrfHash || response.csrf_hash
                                                         },
                                                         dataType: 'json',
                                                         success: function (loginResponse) {
                                                             // Update CSRF token
-                                                            const newCsrfName = loginResponse.csrf?.csrfName;
-                                                            const newCsrfHash = loginResponse.csrf?.csrfHash;
+                                                            let newCsrfName, newCsrfHash;
+                                                            if (loginResponse.csrf && loginResponse.csrf.csrfName) {
+                                                                newCsrfName = loginResponse.csrf.csrfName;
+                                                                newCsrfHash = loginResponse.csrf.csrfHash;
+                                                            } else if (loginResponse.csrf_token_name) {
+                                                                newCsrfName = loginResponse.csrf_token_name;
+                                                                newCsrfHash = loginResponse.csrf_hash;
+                                                            }
                                                             if (newCsrfName && newCsrfHash) {
                                                                 $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
                                                             }
@@ -471,9 +483,14 @@ function loginSubmit() {
     const passwordInput = document.getElementById("loginPassword");
     const errorDiv = document.getElementById("loginError");
     const loginDropdown = document.querySelector(".login-inline");
+    const submitBtn = document.getElementById("loginSubmit");
 
     if (!emailInput || !passwordInput || !errorDiv || !loginDropdown) {
         console.warn("Login form elements not found");
+        return false;
+    }
+
+    if (submitBtn && submitBtn.disabled) {
         return false;
     }
 
@@ -491,6 +508,11 @@ function loginSubmit() {
         return false;
     }
 
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = submitBtn.getAttribute('data-loading-text') || 'Processing...';
+    }
+
     validateCredentials(email, password).then((response) => {
         if (response.status) {
             document.getElementById("login-form").submit();
@@ -498,6 +520,15 @@ function loginSubmit() {
             errorDiv.textContent = response.message || 'Invalid email or password';
             errorDiv.classList.remove("display-none");
             loginDropdown.classList.add("has-error");
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.getAttribute('data-original-text') || 'Log in';
+            }
+        }
+    }).catch(() => {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.getAttribute('data-original-text') || 'Log in';
         }
     });
 
@@ -506,18 +537,26 @@ function loginSubmit() {
 
 function validateCredentials(email, password) {
     return new Promise((resolve) => {
-        const csrfName = $('input[name="' + csrfTokenName + '"]').attr('name');
-        const csrfHash = $('input[name="' + csrfTokenName + '"]').val();
+        const csrfName = $('input[name="' + window.csrfTokenName + '"]').attr('name');
+        const csrfHash = $('input[name="' + window.csrfTokenName + '"]').val();
 
         $.ajax({
             type: "POST",
-            url: loginValidateUrl,
+            url: window.loginValidateUrl,
             data: { email: email, password: password, [csrfName]: csrfHash },
             dataType: 'json',
             success: function (response) {
-                const newCsrfName = response.csrf.csrfName;
-                const newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                let newCsrfName, newCsrfHash;
+                if (response.csrf && response.csrf.csrfName) {
+                    newCsrfName = response.csrf.csrfName;
+                    newCsrfHash = response.csrf.csrfHash;
+                } else if (response.csrf_token_name) {
+                    newCsrfName = response.csrf_token_name;
+                    newCsrfHash = response.csrf_hash;
+                }
+                if (newCsrfName && newCsrfHash) {
+                    $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                }
 
                 resolve({
                     status: response.status,
@@ -548,18 +587,26 @@ function adjustLoginDropdownHeight($form) {
 
 function checkEmailExists(email) {
     return new Promise((resolve) => {
-        const csrfName = $('input[name="' + csrfTokenName + '"]').attr('name');
-        const csrfHash = $('input[name="' + csrfTokenName + '"]').val();
+        const csrfName = $('input[name="' + window.csrfTokenName + '"]').attr('name');
+        const csrfHash = $('input[name="' + window.csrfTokenName + '"]').val();
 
         $.ajax({
             type: "POST",
-            url: checkEmailExistsUrl,
+            url: window.checkEmailExistsUrl,
             data: { email: email, [csrfName]: csrfHash },
             dataType: 'json',
             success: function (response) {
-                const newCsrfName = response.csrf.csrfName;
-                const newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                let newCsrfName, newCsrfHash;
+                if (response.csrf && response.csrf.csrfName) {
+                    newCsrfName = response.csrf.csrfName;
+                    newCsrfHash = response.csrf.csrfHash;
+                } else if (response.csrf_token_name) {
+                    newCsrfName = response.csrf_token_name;
+                    newCsrfHash = response.csrf_hash;
+                }
+                if (newCsrfName && newCsrfHash) {
+                    $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                }
                 resolve({ exists: response.exists });
             },
             error: function (error) {

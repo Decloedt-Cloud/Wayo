@@ -1,0 +1,88 @@
+<?php $student_data = $this->user_model->get_logged_in_student_details(); ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/responsive.min.css">
+    <!--title-->
+    <div class="col-xl-12">
+        <div class="header-card">
+            <div class="card-body">
+                <h4 class="page-title d-inline-block"><i class="mdi mdi-calendar-today title_icon"></i> <?php echo get_phrase('class_routine'); ?></h4>
+      </div> <!-- end card body-->
+    </div> <!-- end card -->
+  </div><!-- end col-->
+
+
+<div class="row">
+  <div class="col-12">
+	
+<div class="mb-3">
+    <div class="main-card">
+      <div class="card-body">
+			<div class="row mt-3">
+				<div class="col-md-2 mb-1"></div>
+				<div class="col-md-3 mb-1">
+                            <select class="form-control"  name="school_id" id="school_id" onchange="schoolWiseClasse(this.value)">
+                                    <option value=""><?php echo get_phrase('schools'); ?></option>                                      
+                                      <?php 
+                                        $user_id   = session()->get('user_id');                        
+                                        $query = db()->table('schools')->select('*,schools.id as id')->join('students', 'schools.id = students.school_id', 'left')->where('students.user_id', $user_id)->get()->getResultArray();
+                                        ?>
+                                        <?php foreach ($query as $school): ?>
+                                            <option value="<?php echo $school['id']; ?>" <?php if($selected_school_id == $school['id']) echo 'selected'; ?>>   <?php echo  $school['name']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                
+                </div>
+				<div class="col-md-3 mb-1 ">
+					<select name="class" id="class_id_routine" class="form-control"   required>
+
+						<option value=""><?php echo get_phrase('select_a_class'); ?></option>
+
+					</select>
+				</div>
+
+				<div class="col-md-2 btncol">
+					<button class="btn btn-block btn-secondary" onclick="filter_class_routine()" ><?php echo get_phrase('filter'); ?></button>
+				</div>
+			</div>
+			<div class="card-body class_routine_content">
+				<?php include 'list.php'; ?>
+			</div>
+		</div>
+	</div>
+</div>
+	</div>
+</div>
+<script>
+
+
+
+function filter_class_routine(){
+	var class_id = $('#class_id_routine').val();
+
+	if(class_id != ""){
+		getFilteredClassRoutine();
+	}else{
+		toastr.error('<?php echo get_phrase('please_select_a_class'); ?>');
+	}
+}
+
+var getFilteredClassRoutine = function() {
+	var class_id = $('#class_id_routine').val();
+	
+	if(class_id != "" ){
+		$.ajax({
+			url: '<?php echo route('routine/filter/') ?>'+class_id,
+			success: function(response){
+				$('.class_routine_content').html(response);
+			}
+		});
+	}
+}
+function schoolWiseClasse(school_id) {
+    $.ajax({
+        url: "<?php echo route('academy/list/'); ?>"+school_id,
+        success: function(response){
+            $('#class_id_routine').html(response);
+        }
+    });
+}
+</script>

@@ -1,0 +1,1824 @@
+DEBUG - 2026-04-03 09:21:24 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:21:25 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:21:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:21:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:21:58 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 09:21:59 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:21:59 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:21:59 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(293): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:21:59 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(696): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:21:59 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(293): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(719): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 09:31:25 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:25 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 09:31:29 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:37 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 09:31:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:31:53 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 09:32:03 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:43:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:46:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:46:05 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 09:46:05 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:46:05 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:46:05 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(293): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:46:05 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(696): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 09:46:05 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(293): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(719): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 09:48:08 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 09:48:09 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 10:17:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:17:17 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 10:17:17 --> Error: Call to undefined method App\View\CI3_Result_Compat::getResultArray()
+[Method: GET, Route: app/permission]
+in APPPATH\Views\backend\admin\permission\index.php on line 360.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(538): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(551): App\Controllers\Admin->permission()
+ 8 APPPATH\Config\Routes.php(560): CodeIgniter\Router\RouteCollection::{closure}('permission')
+ 9 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}('permission')
+10 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+11 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 10:52:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:52:37 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 10:52:38 --> Error: Call to undefined method App\View\CI3_Result_Compat::getResult()
+[Method: GET, Route: app/permission]
+in APPPATH\Views\backend\admin\permission\index.php on line 360.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(538): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(551): App\Controllers\Admin->permission()
+ 8 APPPATH\Config\Routes.php(560): CodeIgniter\Router\RouteCollection::{closure}('permission')
+ 9 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}('permission')
+10 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+11 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 10:52:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:52:41 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 10:52:41 --> Error: Call to undefined method App\View\CI3_Result_Compat::getResult()
+[Method: GET, Route: app/permission]
+in APPPATH\Views\backend\admin\permission\index.php on line 360.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(538): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(551): App\Controllers\Admin->permission()
+ 8 APPPATH\Config\Routes.php(560): CodeIgniter\Router\RouteCollection::{closure}('permission')
+ 9 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}('permission')
+10 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+11 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 10:53:30 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:53:30 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 10:53:30 --> ErrorException: Undefined array key "student_count"
+[Method: GET, Route: app/permission]
+in APPPATH\Views\backend\admin\permission\index.php on line 363.
+ 1 APPPATH\Views\backend\admin\permission\index.php(363): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "student_count"', 'C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\permission\\index.php', 363)
+ 2 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\permission\\index.php')
+ 3 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 4 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 5 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 6 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 7 APPPATH\Controllers\Admin.php(538): view('backend/index', [...])
+ 8 APPPATH\Config\Routes.php(551): App\Controllers\Admin->permission()
+ 9 APPPATH\Config\Routes.php(560): CodeIgniter\Router\RouteCollection::{closure}('permission')
+10 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}('permission')
+11 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+12 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 10:54:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:54:38 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 10:54:38 --> ErrorException: Undefined array key "student_count"
+[Method: GET, Route: app/permission]
+in APPPATH\Views\backend\admin\permission\index.php on line 363.
+ 1 APPPATH\Views\backend\admin\permission\index.php(363): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "student_count"', 'C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\permission\\index.php', 363)
+ 2 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\permission\\index.php')
+ 3 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 4 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 5 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 6 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 7 APPPATH\Controllers\Admin.php(538): view('backend/index', [...])
+ 8 APPPATH\Config\Routes.php(551): App\Controllers\Admin->permission()
+ 9 APPPATH\Config\Routes.php(560): CodeIgniter\Router\RouteCollection::{closure}('permission')
+10 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}('permission')
+11 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+12 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 10:55:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 10:55:23 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 10:55:31 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 14:19:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 14:19:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 14:19:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 14:19:56 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:19:56 --> Error: Call to undefined function App\Models\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 59.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:26:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:26:20 --> Error: Call to undefined function App\Models\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 59.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:50:59 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:50:59 --> Error: Call to undefined function App\Models\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 59.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:54:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:54:46 --> Error: Call to undefined function App\Models\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 59.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:56:14 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:56:14 --> Error: Call to undefined function CodeIgniter\Database\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 60.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:57:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:57:00 --> Error: Call to undefined function CodeIgniter\Database\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 60.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 14:59:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 14:59:07 --> Error: Call to undefined function CodeIgniter\Database\db()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Models\User_model.php on line 60.
+ 1 APPPATH\Views\backend\index.php(43): App\Models\User_model->get_user_details('266')
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:07:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 15:07:41 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Connection::where()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\header.php on line 242.
+ 1 APPPATH\Views\backend\index.php(111): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:08:56 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 15:08:57 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Connection::where()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\header.php on line 242.
+ 1 APPPATH\Views\backend\index.php(111): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:18:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-04-03 15:18:51 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Connection::where()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\header.php on line 242.
+ 1 APPPATH\Views\backend\index.php(111): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:23:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:23:12 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:23:12 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Builder::getResultArray()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\navigation.php on line 47.
+ 1 APPPATH\Views\backend\index.php(117): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:26:43 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:26:43 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:26:43 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Connection::orderBy()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\navigation.php on line 669.
+ 1 APPPATH\Views\backend\index.php(117): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:27:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:27:52 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:27:52 --> Error: Call to undefined method CodeIgniter\Database\MySQLi\Connection::orderBy()
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\navigation.php on line 690.
+ 1 APPPATH\Views\backend\index.php(117): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:32:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:32:55 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:32:55 --> TypeError: count(): Argument #1 ($value) must be of type Countable|array, CodeIgniter\Database\MySQLi\Builder given
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\navigation.php on line 772.
+ 1 APPPATH\Views\backend\index.php(117): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:50:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:50:45 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:50:45 --> TypeError: count(): Argument #1 ($value) must be of type Countable|array, CodeIgniter\Database\MySQLi\Builder given
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\navigation.php on line 772.
+ 1 APPPATH\Views\backend\index.php(117): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 15:52:45 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 15:52:45 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 15:52:45 --> Error: Cannot use object of type CodeIgniter\Database\MySQLi\Builder as array
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\shared\trial_expired_modal.php on line 27.
+ 1 APPPATH\Views\backend\admin\dashboard\index.php(2): include()
+ 2 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 3 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 4 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 5 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 6 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 7 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 8 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 9 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+10 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+11 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:07:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:07:06 --> Total exams not yet taken calculated for school_id 93: 0
+CRITICAL - 2026-04-03 16:07:06 --> TypeError: count(): Argument #1 ($value) must be of type Countable|array, CodeIgniter\Database\MySQLi\Result given
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\admin\dashboard\index.php on line 636.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:14:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:14:38 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 16:14:38 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:14:38 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:14:38 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-04-03 16:14:38 --> TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\admin\dashboard\index.php on line 681.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:14:43 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:14:43 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 16:14:43 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:14:43 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:14:43 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-04-03 16:14:43 --> TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given
+[Method: GET, Route: app/dashboard]
+in APPPATH\Views\backend\admin\dashboard\index.php on line 681.
+ 1 APPPATH\Views\backend\index.php(147): include()
+ 2 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+ 5 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+ 6 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+ 7 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+ 8 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+ 9 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+10 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:17:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:07 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 16:17:07 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:07 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:07 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:07 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(696): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:07 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(719): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:17:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:27 --> Total exams not yet taken calculated for school_id 93: 0
+ERROR - 2026-04-03 16:17:27 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(666): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:27 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(667): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:27 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(681): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:27 --> Table 'wayo_db.attendance' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = \'93\'
+AND `date` = \'2026-04-03\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `attendance`
+WHERE `school_id` = :school_id:
+AND `date` = :date:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(310): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(696): App\Models\Crud_model->get_todays_attendance()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-04-03 16:17:27 --> Table 'wayo_db.events' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(910): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(827): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `events`
+WHERE `school_id` = \'93\'
+AND `date` >= \'2026-04-01\'
+AND `date` <= \'2026-04-30\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `events`
+WHERE `school_id` = :school_id:
+AND `date` >= :date:
+AND `date` <= :date.1:', [...], false)
+ 5 APPPATH\Models\Crud_model.php(292): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Views\backend\admin\dashboard\index.php(719): App\Models\Crud_model->get_current_month_events()
+ 7 APPPATH\Views\backend\index.php(147): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\admin\\dashboard\\index.php')
+ 8 SYSTEMPATH\View\View.php(240): include('C:\\xampp\\htdocs\\School-Management-De_migration\\app\\Views\\backend\\index.php')
+ 9 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+10 APPPATH\View\View.php(357): CodeIgniter\View\View->render('backend/index', [], true)
+11 SYSTEMPATH\Common.php(1250): App\View\View->render('backend/index', [], true)
+12 APPPATH\Controllers\Admin.php(108): view('backend/index', [...])
+13 APPPATH\Config\Routes.php(333): App\Controllers\Admin->dashboard()
+14 SYSTEMPATH\CodeIgniter.php(872): CodeIgniter\Router\RouteCollection::{closure}()
+15 SYSTEMPATH\CodeIgniter.php(480): CodeIgniter\CodeIgniter->startController()
+16 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+17 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+18 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+19 FCPATH\index.php(75): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2026-04-03 16:17:30 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:30 --> calendar() called - admin_login: true, user_type: 'admin', session_id: 'f6497375597ed3d78fab9d9c20bc4f3d', all_session: array (
+  '__ci_last_regenerate' => 1775229277,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/dashboard',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 16:17:31 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 16:17:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:34 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:17:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:17:34 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:17:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:19:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:19:45 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:19:45 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:14 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:14 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:22:15 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:15 --> calendar() called - admin_login: true, user_type: 'admin', session_id: 'abb9ed3af9adaa9eb1733107be7b5735', all_session: array (
+  '__ci_last_regenerate' => 1775229735,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 16:22:16 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 16:22:18 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:19 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:22:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:22:20 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:48:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:48:27 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:51:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:51:44 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:52:14 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:14 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:52:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:16 --> calendar() called - admin_login: true, user_type: 'admin', session_id: '05936448ef112b4f8690de8edad95b3b', all_session: array (
+  '__ci_last_regenerate' => 1775231536,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 16:52:16 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 16:52:22 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:22 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:22 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:22 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:52:22 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 16:52:23 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 16:52:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:04 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:04 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:03:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:06 --> calendar() called - admin_login: true, user_type: 'admin', session_id: '8d6c852163c2f8786988dfa1920ff159', all_session: array (
+  '__ci_last_regenerate' => 1775232185,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 17:03:06 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 17:03:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:10 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:03:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:03:10 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:03:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:00 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:07:03 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:03 --> calendar() called - admin_login: true, user_type: 'admin', session_id: '8d6c852163c2f8786988dfa1920ff159', all_session: array (
+  '__ci_last_regenerate' => 1775232185,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 17:07:03 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 17:07:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:05 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:07:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:07:05 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:07:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:10 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:18:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:11 --> calendar() called - admin_login: true, user_type: 'admin', session_id: '0a07b9802a6be0db4d200599a7d986d8', all_session: array (
+  '__ci_last_regenerate' => 1775233091,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 17:18:11 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 17:18:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:13 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:18:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:13 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:18:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:36 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:18:57 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:03 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:03 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:30:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:05 --> calendar() called - admin_login: true, user_type: 'admin', session_id: 'c56a28e4887f55aba85c753fafcc1f6f', all_session: array (
+  '__ci_last_regenerate' => 1775233805,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 17:30:06 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 17:30:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:12 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:30:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:13 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:30:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:31 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:31 --> calendar() called - admin_login: true, user_type: 'admin', session_id: 'c56a28e4887f55aba85c753fafcc1f6f', all_session: array (
+  '__ci_last_regenerate' => 1775233805,
+  '_ci_previous_url' => 'http://localhost/School-Management-De_migration/app/calendar',
+  'user' => 
+  (object) array(
+     'id' => '266',
+     'name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+     'email' => 'fattahallam1949@gmail.com',
+     'humhub_id' => NULL,
+     'password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
+     'role' => 'admin',
+     'address' => 'sdfsfffffffffffffffffffff00',
+     'Rue' => 'sqdsqdqd',
+     'Numero' => '454545',
+     'Ville' => 'casablanca',
+     'Codepostal' => '20600',
+     'num_vat' => '56555656',
+     'phone' => '06058855663',
+     'remember_token' => NULL,
+     'birthday' => '2024-10-31',
+     'gender' => 'Male',
+     'school_id' => '93',
+     'authentication_key' => NULL,
+     'watch_history' => '[{"lesson_id":"113","progress":"1"},{"lesson_id":"110","progress":"1"},{"lesson_id":"111","progress":"1"},{"lesson_id":"112","progress":"1"},{"lesson_id":"114","progress":"1"},{"lesson_id":"116","progress":"1"},{"lesson_id":"115","progress":"1"},{"lesson_id":"71","progress":"1"},{"lesson_id":"159","progress":"1"}]',
+     'status' => '1',
+     'reset_token' => NULL,
+     'reset_expires_at' => NULL,
+     'created_date' => '2025-05-15 14:27:15',
+     'updated_date' => '2026-04-02 17:03:58',
+     'language' => 'english',
+     'kb_account_id_perso' => NULL,
+     'kb_external_key_perso' => NULL,
+  ),
+  'password' => '123456789',
+  'user_login_type' => true,
+  'active_school_id' => '93',
+  'school_id' => '93',
+  'admin_login' => true,
+  'user_id' => '266',
+  'user_name' => 'ds55uuuuuuu5qdf55sf sdfsf',
+  'user_type' => 'admin',
+  'role' => 'admin',
+  'language' => 'english',
+  'lang_code' => 'en',
+)
+DEBUG - 2026-04-03 17:30:31 --> Total exams not yet taken calculated for school_id 93: 0
+DEBUG - 2026-04-03 17:30:40 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:42 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:30:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:30:43 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:30:43 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:32:18 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:32:18 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:35:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:35:00 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 17:36:35 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 17:36:35 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 18:01:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 18:01:54 --> get_events() called - admin_login: true
+DEBUG - 2026-04-03 23:37:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 23:37:01 --> get_events() called - admin_login: NULL
+DEBUG - 2026-04-03 23:38:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-04-03 23:38:11 --> get_events() called - admin_login: NULL

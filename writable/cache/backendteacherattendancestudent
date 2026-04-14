@@ -1,0 +1,302 @@
+a:3:{s:4:"time";i:1776094032;s:3:"ttl";i:0;s:4:"data";s:8542:"<style>
+    /* Premium Table Styling */
+    .exp-table-wrapper {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        margin-top: 1.5rem;
+    }
+
+    .exp-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .exp-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .exp-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        vertical-align: middle;
+    }
+
+    .exp-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .exp-table tr:hover td {
+        background-color: #f8fafc;
+    }
+
+    /* Avatar & Name */
+    .exp-user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .exp-user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .exp-user-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    /* Toggle Switch for Attendance */
+    .exp-attendance-toggle {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 12px;
+        position: relative;
+    }
+
+    .exp-attendance-radio {
+        display: none;
+    }
+
+    .exp-attendance-label {
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        user-select: none;
+    }
+
+    .exp-attendance-label:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .exp-attendance-radio:checked + .exp-attendance-label.present {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .exp-attendance-radio:checked + .exp-attendance-label.absent {
+        background: #ef4444;
+        color: white;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Action Buttons */
+    .exp-actions-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .exp-action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-decoration: none !important;
+    }
+
+    .exp-btn-present-all {
+        background: #ecfdf5;
+        color: #059669;
+        border-color: #d1fae5;
+    }
+
+    .exp-btn-present-all:hover {
+        background: #d1fae5;
+        transform: translateY(-2px);
+    }
+
+    .exp-btn-absent-all {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fee2e2;
+    }
+
+    .exp-btn-absent-all:hover {
+        background: #fee2e2;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 768px) {
+        .exp-attendance-toggle {
+            flex-direction: column;
+            gap: 4px;
+            padding: 2px;
+        }
+        
+        .exp-attendance-label {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            justify-content: center;
+            min-width: 80px;
+        }
+        
+        .exp-actions-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .exp-action-btn {
+            font-size: 0.85rem;
+            padding: 0.75rem;
+        }
+        
+        .exp-user-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .exp-user-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        
+        .exp-table th,
+        .exp-table td {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .exp-attendance-toggle {
+            width: 100%;
+        }
+        
+        .exp-attendance-label {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            min-width: 70px;
+        }
+        
+        .exp-table-wrapper {
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+        
+        .exp-table th {
+            font-size: 0.7rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .exp-table td {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+
+</style>
+
+    
+    <!-- Hidden CSRF Token for AJAX handling -->
+    <input type="hidden" class="fresh-csrf-token" name="csrf_test_name" value="dc95ed153fa58cf071a68e068569cd9cd7fc1073210d5c9b41005e81309655ad" />
+
+    <div class="exp-actions-row">
+        <a href="javascript:void(0);" class="exp-action-btn exp-btn-present-all" onclick="present_all()">
+            <i class="mdi mdi-check-circle"></i>
+            Present all        </a>
+        <a href="javascript:void(0);" class="exp-action-btn exp-btn-absent-all" onclick="absent_all()">
+            <i class="mdi mdi-alert-circle"></i>
+            Absent all        </a>
+    </div>
+
+    <div class="exp-table-wrapper">
+        <table class="exp-table">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th style="text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                                                <tr>
+                    <td>
+                        <div class="exp-user-info">
+                                                        <div class="exp-user-avatar">
+                                T                            </div>
+                            <span class="exp-user-name">
+                                ttttt                            </span>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="hidden" name="student_id[]" value="186">
+                        
+                        
+                        <div class="exp-attendance-toggle">
+                            <!-- Present Option -->
+                            <input type="radio" 
+                                   id="status-p-186" 
+                                   name="status-186" 
+                                   value="1" 
+                                   class="exp-attendance-radio present-radio" 
+                                    
+                                   required>
+                            <label class="exp-attendance-label present" for="status-p-186">
+                                <i class="mdi mdi-check"></i> Present                            </label>
+
+                            <!-- Absent Option -->
+                            <input type="radio" 
+                                   id="status-a-186" 
+                                   name="status-186" 
+                                   value="0" 
+                                   class="exp-attendance-radio absent-radio" 
+                                   checked 
+                                   required>
+                            <label class="exp-attendance-label absent" for="status-a-186">
+                                <i class="mdi mdi-close"></i> Absent                            </label>
+                        </div>
+                    </td>
+                </tr>
+                        </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        function present_all() {
+            $(".present-radio").prop('checked', true);
+        }
+
+        function absent_all() {
+            $(".absent-radio").prop('checked',true);
+        }
+    </script>
+
+";}

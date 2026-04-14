@@ -1,0 +1,115 @@
+<?php $base_url = base_url(); ?>
+
+
+<!-- Google Fonts -->
+<link href="//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+
+<!-- CSS Implementing Plugins -->
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/vendor/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/vendor/animate.css/animate.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/vendor/fancybox/jquery.fancybox.css">
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/vendor/cubeportfolio/css/cubeportfolio.min.css">
+
+<!-- CSS Front Template -->
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/css/theme.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/toastr/toastr.min.css">
+
+
+
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/theme.min.css">
+
+<!-- CSS Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+
+<!-- CSS Owl carousel -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" integrity="sha512-sMXtMNL1zRzolHYKEujM2AqCLUR9F2C4/05cdbxjjLSRvMQIciEPCQZo++nk7go3BtSuK9kfa/s+a4f4i5pLkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- CSS Leaflet -->
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- JS Script in need of first loading -->
+
+<script src="<?php echo base_url();?>assets/frontend/<?php echo $theme;?>/vendor/jquery/dist/jquery.min.js"></script>
+
+<!-- Custom CSS-->
+
+
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/footer.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/navigation.min.css?v=<?php echo filemtime(ROOTPATH.'assets/frontend/ultimate/css/navigation.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/general.min.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/frontend/ultimate/css/toastr.min.css">
+
+
+<?php
+if ($page_name == "home") {
+
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/custom.min.css">';
+
+} elseif ($page_name == "about") {
+
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/about-page.min.css">';
+
+} elseif ($page_name == "contact") {
+
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/contact.min.css">';
+
+} elseif ($page_name == "online_admission"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
+  
+}
+elseif ($page_name == "online_admission_student"){
+ 
+  echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/online-admission.min.css">';
+  
+}elseif ($page_name == "communities"){
+
+     echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/communities.css?v=' . filemtime(ROOTPATH . 'assets/frontend/ultimate/css/communities.css') . '">';
+  
+}elseif ($page_name == "community_details"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/community-details.min.css">';
+}
+elseif ($page_name == "tutorial"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.css?v=' . filemtime(ROOTPATH . 'assets/frontend/ultimate/css/tutorial.css') . '">';
+}
+elseif ($page_name == "faq"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/faq.min.css">';
+}
+elseif ($page_name == "terms_conditions"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/terms-conditions.min.css">';
+    
+}
+elseif ($page_name == "privacy_policy"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/privacy-policy.min.css">';
+    
+}
+elseif ($page_name == "affiliation"){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/affiliation.min.css">';
+    
+}
+elseif (strpos($page_name, 'Articles') !== false){
+
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/blog.min.css">';
+    
+}
+
+$uriPath = service('request')->getUri()->getPath();
+if (strpos($uriPath, 'tutorial') !== false) {
+    echo '<link rel="stylesheet" href="' . $base_url . 'assets/frontend/ultimate/css/tutorial.css?v=' . filemtime(ROOTPATH . 'assets/frontend/ultimate/css/tutorial.css') . '">';
+}
+?>

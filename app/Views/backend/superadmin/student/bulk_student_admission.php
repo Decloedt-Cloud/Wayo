@@ -1,0 +1,137 @@
+<?php $classes = isset($student_create_classes) && is_array($student_create_classes) ? $student_create_classes : []; ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.min.css">
+
+<div class="container">
+    <div class="modern-card">
+
+        <form method="POST" class="col-md-12 ajaxForm" action="<?php echo route('student/create_bulk_student'); ?>" id="student_admission_form">
+            <!-- Champ caché pour le jeton CSRF -->
+            <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" />
+
+            <div class="row justify-content-md-center">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 mb-lg-0">
+                    <select name="class_id" id="class_id_bulk" class="form-control" required>
+                        <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                        <?php foreach ($classes as $class) { ?>
+                            <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+      
+            <div id="first-row">
+                <div class="row student-row mt-1">
+                    <div class="student-row row align-items-center">
+                        <div class="col-md-3">
+                            <input type="text" name="name[]" class="form-control"
+                                placeholder="<?php echo get_phrase('Name'); ?>" required>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="email" name="email[]" class="form-control"
+                                placeholder="<?php echo get_phrase('Email'); ?>" required>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="gender[]" class="form-control" required>
+                                <option value=""><?php echo get_phrase('select_gender'); ?></option>
+                                <option value="Male"><?php echo get_phrase('male'); ?></option>
+                                <option value="Female"><?php echo get_phrase('female'); ?></option>
+                                <option value="Others"><?php echo get_phrase('others'); ?></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <button type="button" class=" btn btn-success btn-icon" onclick="appendRow()">
+                                <i class="mdi mdi-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center mt-4">
+                <button type="submit" class="action-btn btn btn-primary btn-modern col-md-4 col-sm-12">
+                    <i class="bi bi-check-circle mdi mdi-account-multiple-plus-outline action-btnmdi"></i> <?php echo get_phrase('add_students'); ?>
+                </button>
+            </div>
+        </form>
+
+        <div id="blank-row" style="display: none;">
+            <div class="row student-row mt-1">
+                <div class="student-row row align-items-center">
+                    <div class="col-md-3">
+                        <input type="text" name="name[]" class="form-control"
+                            placeholder="<?php echo get_phrase('Name'); ?>" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="email" name="email[]" class="form-control"
+                            placeholder="<?php echo get_phrase('Email'); ?>" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="gender[]" class="form-control" required>
+                            <option value=""><?php echo get_phrase('select_gender'); ?></option>
+                            <option value="Male"><?php echo get_phrase('male'); ?></option>
+                            <option value="Female"><?php echo get_phrase('female'); ?></option>
+                            <option value="Others"><?php echo get_phrase('others'); ?></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn btn-icon btn-danger" onclick="removeRow(this)"> <i class="mdi mdi-window-close"></i> </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var blank_field = $('#blank-row').html();
+
+    function appendRow() {
+        $('#first-row').append(blank_field);
+    }
+
+    function removeRow(elem) {
+        $(elem).closest('.student-row').remove();
+    }
+
+    $(".ajaxForm").submit(function(e) {
+        e.preventDefault();
+        var form = $(this);
+
+        // Afficher le spinner et désactiver le bouton
+        var adding_text = "<?php echo get_phrase('adding'); ?>";
+        var submitBtn = $('button[type="submit"]', form);
+        var original_text = submitBtn.html();
+
+        submitBtn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> ' + adding_text);
+
+        // Soumettre le formulaire en AJAX
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                form.trigger("reset");
+
+                // Afficher la notification appropriée
+                if (response.type === 'error') {
+                    error_notify(response.notification);
+                } else {
+                    success_notify(response.notification);
+                }
+
+                // Réactiver le bouton après délai
+                setTimeout(function() {
+                    submitBtn.prop('disabled', false).html(original_text);
+                }, 3300);
+            },
+            error: function(xhr, status, error) {
+                error_notify("<?php echo get_phrase('an_error_occurred_please_try_again'); ?>");
+                submitBtn.prop('disabled', false).html(original_text);
+
+                // Debug: afficher l'erreur dans la console
+                // console.error(xhr.responseText);
+            }
+        });
+    });
+</script>

@@ -15,27 +15,29 @@ var schoolFormSelector = document.getElementById("schoolFormSelector");
 // Guard: only add listeners if elements exist
 if (studentFormSelector) {
   studentFormSelector.addEventListener("click", function () {
-    document.getElementById("studentform").style.display = "block";
-    document.getElementById("schoolform").style.display = "none";
-    studentFormLine.classList.remove("underline-left");
-    schoolFormLine.classList.add("underline-right");
+    var studentformEl = document.getElementById("studentform");
+    var schoolformEl = document.getElementById("schoolform");
+    if (studentformEl) studentformEl.style.display = "block";
+    if (schoolformEl) schoolformEl.style.display = "none";
+    if (studentFormLine) studentFormLine.classList.remove("underline-left");
+    if (schoolFormLine) schoolFormLine.classList.add("underline-right");
     studentFormSelector.classList.add("active-form");
     schoolFormSelector.classList.remove("active-form");
-    document
-      .querySelector(".side-line-left")
-      .setAttribute("data-selected", "true");
-    document
-      .querySelector(".side-line-right")
-      .setAttribute("data-selected", "false");
+    var sideLineLeft = document.querySelector(".side-line-left");
+    var sideLineRight = document.querySelector(".side-line-right");
+    if (sideLineLeft) sideLineLeft.setAttribute("data-selected", "true");
+    if (sideLineRight) sideLineRight.setAttribute("data-selected", "false");
   });
 }
 
 if (schoolFormSelector) {
   schoolFormSelector.addEventListener("click", function () {
-    document.getElementById("schoolform").style.display = "block";
-    document.getElementById("studentform").style.display = "none";
-    schoolFormLine.classList.remove("underline-right");
-    studentFormLine.classList.add("underline-left");
+    var studentformEl = document.getElementById("studentform");
+    var schoolformEl = document.getElementById("schoolform");
+    if (schoolformEl) schoolformEl.style.display = "block";
+    if (studentformEl) studentformEl.style.display = "none";
+    if (schoolFormLine) schoolFormLine.classList.remove("underline-right");
+    if (studentFormLine) studentFormLine.classList.add("underline-left");
     schoolFormSelector.classList.add("active-form");
     studentFormSelector.classList.remove("active-form");
     document
@@ -136,14 +138,19 @@ if (p && rpp) {
 var schoolFormEl = document.getElementById("schoolform");
 if (schoolFormEl) {
   schoolFormEl.addEventListener("submit", function(event) {
-      var password = document.getElementById("password").value;
-      var confirmPassword = document.getElementById("repeat-password").value;
+      var passwordEl = document.getElementById("password");
+      var confirmPasswordEl = document.getElementById("repeat-password");
+      if (!passwordEl || !confirmPasswordEl) return;
+      
+      var password = passwordEl.value;
+      var confirmPassword = confirmPasswordEl.value;
 
       if (password !== confirmPassword) {
           // Prevent form submission
           event.preventDefault();
           // Show error message
-          document.getElementById("errorMessage").style.display = "block";
+          var errorMessageEl = document.getElementById("errorMessage");
+          if (errorMessageEl) errorMessageEl.style.display = "block";
       }
   });
 }

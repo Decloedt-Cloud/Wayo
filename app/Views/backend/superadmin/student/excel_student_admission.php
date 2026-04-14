@@ -1,0 +1,91 @@
+<?php $classes = isset($student_create_classes) && is_array($student_create_classes) ? $student_create_classes : []; ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/backend/css/bulk-student-admission.min.css">
+<form method="POST" class="col-md-12 ajaxForm" action="<?php echo route('student/create_excel'); ?>" id = "student_admission_form" enctype="multipart/form-data">
+    <!-- Champ caché pour le jeton CSRF -->
+    <input type="hidden" name="<?=csrf_token();?>" value="<?=csrf_hash();?>" />
+    
+    <div class="row justify-content-md-center">
+
+
+        <div class="col-md-8 mt-4">
+            <div class="row">
+                <div class="col-6">
+                    <select name="class_id" id="class_id_excel" class="form-control"  required>
+                        <option value=""><?php echo get_phrase('select_a_class'); ?></option>
+                        <?php foreach($classes as $class){ ?>
+                            <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <a href="<?php echo base_url('assets/csv_file/student.generate.csv'); ?>" class="btn btn-success btn-sm mb-1" download><?php echo get_phrase('generate_csv_file'); ?><i class="mdi mdi-download"></i></a>
+                    <button href="#" class="btn1 btn btn-dark btn-sm mb-1 mdi mdi-eye-outline" onclick="largeModal('<?php echo site_url('modal/popup/student/csv_preview'); ?>', 'CSV Format');" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo get_phrase('preview_csv_format'); ?>"></button>
+
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label class="m-0"><?php echo get_phrase('upload').' CSV'; ?></label>
+                <div class="custom-file-upload d-block">
+                    <input type="file" id="csv_file" class="form-control" name="csv_file" required>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="text-center mt-4">
+                <button type="submit" class="action-btn btn btn-primary btn-modern col-md-4 col-sm-12">
+                    <i class="bi bi-check-circle mdi mdi-file-excel-outline action-btnmdi"></i> <?php echo get_phrase('add_students'); ?>
+                </button>
+            </div>
+</form>
+
+
+<script>
+$(document).ready(function(){
+    initCustomFileUploader();
+
+    // Nouveau code pour gérer la soumission
+    $('#student_admission_form').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        var originalText = submitBtn.html();
+        
+        // Afficher le spinner
+        submitBtn.html('<i class="mdi mdi-loading mdi-spin"></i> ' + originalText).prop('disabled', true);
+
+        // Créer FormData pour l'envoi de fichier
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if(response.type === 'error') {
+                    error_notify(response.notification);
+                } else {
+                    success_notify(response.notification);
+                }
+            },
+            error: function(xhr, status, error) {
+            error_notify("<?php echo get_phrase('an_error_occurred_please_try_again'); ?>");
+               // Debug: afficher l'erreur dans la console
+              // console.error(xhr.responseText);
+             },
+            complete: function() {
+                // Réinitialiser après 3 secondes
+                setTimeout(function() {
+                    submitBtn.html(originalText).prop('disabled', false);
+                    form.trigger("reset");
+                    $('#class_id_excel').val('').trigger('change');
+                }, 3300);
+            }
+        });
+    });
+});
+
+</script>
