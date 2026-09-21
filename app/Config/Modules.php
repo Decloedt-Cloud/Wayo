@@ -7,7 +7,21 @@ class Modules
     public $enabled = true;
     public $discoverInComposer = true;
     public $composerPackages = [];
-    public $aliases = [];
+
+    /**
+     * Auto-discovery rules. Without `'services'` here, `service('moroccoB2BService')`
+     * and other custom factories in Config\Services are never resolved (only core
+     * CodeIgniter\Config\Services methods are scanned).
+     *
+     * @var list<string>
+     */
+    public $aliases = [
+        'events',
+        'filters',
+        'registrars',
+        'routes',
+        'services',
+    ];
 
     public function shouldDiscover(string $alias): bool
     {

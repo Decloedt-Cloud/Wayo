@@ -17,7 +17,7 @@ class Database extends Config
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
-        'DBDebug'      => ENVIRONMENT === 'development',
+        'DBDebug'      => true,
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
         'swapPre'      => '',
@@ -26,4 +26,16 @@ class Database extends Config
         'strictOn'     => false,
         'failover'     => [],
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->default['hostname'] = (string) env('database.default.hostname', $this->default['hostname']);
+        $this->default['username'] = (string) env('database.default.username', $this->default['username']);
+        $this->default['password'] = (string) env('database.default.password', $this->default['password']);
+        $this->default['database'] = (string) env('database.default.database', $this->default['database']);
+        $this->default['DBDriver'] = (string) env('database.default.DBDriver', $this->default['DBDriver']);
+        $this->default['DBDebug']  = (ENVIRONMENT === 'development');
+    }
 }

@@ -5618,6 +5618,26 @@ public function update_event() {
 
     $events = $this->superadmin_model->get_by_query($sql, $params);
 
+    $participantsByEventId = [];
+    $allParticipantsRows = [];
+    if ($events !== []) {
+        $allParticipantsRows = $this->superadmin_model->get_participants_for_events_batch(array_column($events, 'id'));
+        foreach ($allParticipantsRows as $prow) {
+            $participantsByEventId[$prow['event_id']][] = $prow;
+        }
+    }
+    $batchClassIds = [];
+    $batchUserIds = [];
+    foreach ($allParticipantsRows as $p) {
+        if ($p['type'] === 'class') {
+            $batchClassIds[] = (int) $p['guest'];
+        } elseif ($p['type'] === 'individual') {
+            $batchUserIds[] = (int) $p['guest'];
+        }
+    }
+    $classMap = $this->superadmin_model->get_classes_map_by_ids($batchClassIds);
+    $userMap = $this->superadmin_model->get_users_map_by_ids($batchUserIds);
+
     // Charger la configuration BigBlueButton
     $bbb_config = config('Bigbluebutton');
     $bbb_url = $bbb_config->bbb_url;
@@ -5631,18 +5651,18 @@ public function update_event() {
         $event['school_name'] = $event['school_name'] ?? '';
         $event['created_by_name'] = $event['created_by_name'] ?? 'Unknown';
         $event['participants'] = [];
-        $participants = $this->superadmin_model->get_participants_by_event($event['id']);
+        $participants = $participantsByEventId[$event['id']] ?? [];
         foreach ($participants as $participant) {
             $participant_data = [
                 'id' => $participant['guest'],
                 'type' => $participant['type']
             ];
             if ($participant['type'] === 'class') {
-                $class = $this->superadmin_model->get_class_by_id($participant['guest']);
-                $participant_data['name'] = $class ? $class['name'] : 'Unknown';
+                $class = $classMap[(int) $participant['guest']] ?? null;
+                $participant_data['name'] = $class['name'] ?? 'Unknown';
             } elseif ($participant['type'] === 'individual') {
-                $user = $this->superadmin_model->get_user_by_id($participant['guest']);
-                $participant_data['name'] = $user ? $user['name'] : 'Unknown';
+                $user = $userMap[(int) $participant['guest']] ?? null;
+                $participant_data['name'] = $user['name'] ?? 'Unknown';
             }
             $event['participants'][] = $participant_data;
         }

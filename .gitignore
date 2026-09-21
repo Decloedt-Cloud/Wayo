@@ -1,39 +1,60 @@
-# Ignorer les fichiers de configuration
+#--------------------------------------------------------------------
+# Environment / secrets
+#--------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+socketio-server/.env
+
+#--------------------------------------------------------------------
+# Dependencies
+#--------------------------------------------------------------------
+/vendor/
+/composer.lock
+/node_modules/
+socketio-server/node_modules/
+
+#--------------------------------------------------------------------
+# CI4 writable (runtime)
+#--------------------------------------------------------------------
+writable/cache/*
+!writable/cache/index.html
+writable/logs/*
+!writable/logs/index.html
+writable/session/*
+!writable/session/index.html
+writable/uploads/*
+!writable/uploads/index.html
+writable/debugbar/*
+!writable/debugbar/index.html
+
+#--------------------------------------------------------------------
+# Legacy CI3 paths (kept for safety)
+#--------------------------------------------------------------------
 application/config/database.php
 application/config/config.php
-
-
-# Ignorer les dossiers de cache et de logs
 application/cache/*
 application/logs/*
 
-
-# Ignorer les fichiers temporaires et les uploads
-#/uploads/*
+#--------------------------------------------------------------------
+# Uploads / temp
+#--------------------------------------------------------------------
 tmp/*
-
-# Exclure les sous-dossiers nécessaires pour garder /uploads/images/decloedt/logo/
+#/uploads/*
 !/uploads/images/
 !/uploads/images/decloedt/
 !/uploads/images/decloedt/logo/
 !/uploads/images/decloedt/logo/*
-
-# Ignorer uniquement gallery_cover et slider dans /uploads/images
 /uploads/images/gallery_cover/
 /uploads/images/slider/
 
-
-# Ignorer les fichiers et dossiers générés par l'IDE
+#--------------------------------------------------------------------
+# IDE / OS
+#--------------------------------------------------------------------
 .idea/
 .vscode/
 *.sublime-project
 *.sublime-workspace
-
-# Ignorer les fichiers système
 .DS_Store
 Thumbs.db
 .codegpt
-
-.env
-/vendor/
-/composer.lock

@@ -3778,6 +3778,26 @@ public function get_user_school() {
     $sql .= " GROUP BY event_calendars.id";
     $events = $this->student_model->get_by_query($sql, $params);
 
+    $participantsByEventId = [];
+    $allParticipantsRows = [];
+    if ($events !== []) {
+        $allParticipantsRows = $this->student_model->get_participants_for_events_batch(array_column($events, 'id'));
+        foreach ($allParticipantsRows as $prow) {
+            $participantsByEventId[$prow['event_id']][] = $prow;
+        }
+    }
+    $batchClassIds = [];
+    $batchUserIds = [];
+    foreach ($allParticipantsRows as $p) {
+        if ($p['type'] === 'class') {
+            $batchClassIds[] = (int) $p['guest'];
+        } elseif ($p['type'] === 'individual') {
+            $batchUserIds[] = (int) $p['guest'];
+        }
+    }
+    $classMap = $this->student_model->get_classes_map_by_ids($batchClassIds);
+    $userMap = $this->student_model->get_users_map_by_ids($batchUserIds);
+
     // Post-traitement des Ã©vÃ©nements
     $processed_events = [];
     $now = new DateTime('now', new DateTimeZone('UTC'));
@@ -3790,18 +3810,18 @@ public function get_user_school() {
 
         // Ajouter les informations des participants
         $event['participants'] = [];
-        $participants = $this->student_model->get_participants_by_event($event['id']);
+        $participants = $participantsByEventId[$event['id']] ?? [];
         foreach ($participants as $participant) {
             $participant_data = [
                 'id' => $participant['guest'],
                 'type' => $participant['type']
             ];
             if ($participant['type'] === 'class') {
-                $class = $this->student_model->get_class_by_id($participant['guest']);
-                $participant_data['name'] = is_array($class) ? ($class['name'] ?? 'Unknown') : ($class->name ?? 'Unknown');
+                $class = $classMap[(int) $participant['guest']] ?? null;
+                $participant_data['name'] = $class['name'] ?? 'Unknown';
             } elseif ($participant['type'] === 'individual') {
-                $user = $this->student_model->get_user_by_id($participant['guest']);
-                $participant_data['name'] = is_array($user) ? ($user['name'] ?? 'Unknown') : ($user->name ?? 'Unknown');
+                $user = $userMap[(int) $participant['guest']] ?? null;
+                $participant_data['name'] = $user['name'] ?? 'Unknown';
             }
             $event['participants'][] = $participant_data;
         }

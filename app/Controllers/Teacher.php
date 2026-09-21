@@ -3746,11 +3746,6 @@ public function create_event() {
     }
 
     public function get_events() {
-    // DÃ©bogage
-    log_message('error', 'TEACHER get_events() called - teacher_login: ' . (session()->get('teacher_login') ?? 'NOT SET'));
-    log_message('error', 'TEACHER get_events() - user_id: ' . (session()->get('user_id') ?? 'NOT SET'));
-    log_message('error', 'TEACHER get_events() - role: ' . (session()->get('role') ?? 'NOT SET'));
-
     // VÃ©rifier l'authentification de l'utilisateur
     if (session()->get('teacher_login') != 1) {
         $csrf = [
@@ -3846,6 +3841,43 @@ public function create_event() {
     $sql .= " GROUP BY event_calendars.id";
     $events = $this->teacher_model->get_by_query($sql, $params);
 
+    $participantsByEventId = [];
+    if ($events !== []) {
+        $allParticipantsRows = $this->teacher_model->get_participants_for_events_batch(array_column($events, 'id'));
+        foreach ($allParticipantsRows as $prow) {
+            $participantsByEventId[$prow['event_id']][] = $prow;
+        }
+    }
+
+    $batchClassIds = [];
+    $batchUserIds = [];
+    foreach ($events as $evt) {
+        $plist = $participantsByEventId[$evt['id']] ?? [];
+        $canSee = false;
+        foreach ($plist as $p) {
+            if ($p['type'] === 'class' && in_array($p['guest'], $permitted_class_ids)) {
+                $canSee = true;
+                break;
+            }
+            if ($p['type'] === 'individual' && $p['guest'] == $user_id) {
+                $canSee = true;
+                break;
+            }
+        }
+        if (!$canSee) {
+            continue;
+        }
+        foreach ($plist as $p) {
+            if ($p['type'] === 'class') {
+                $batchClassIds[] = (int) $p['guest'];
+            } elseif ($p['type'] === 'individual') {
+                $batchUserIds[] = (int) $p['guest'];
+            }
+        }
+    }
+    $classMap = $this->teacher_model->get_classes_map_by_ids($batchClassIds);
+    $userMap = $this->teacher_model->get_users_map_by_ids($batchUserIds);
+
     // Charger la configuration BigBlueButton
     $bbbConfig = config('Bigbluebutton');
     $bbb_url = $bbbConfig->bbb_url ?? '';
@@ -3856,7 +3888,7 @@ public function create_event() {
     $now = new DateTime('now', new DateTimeZone('UTC'));
     $threshold = (clone $now)->modify('-24 hours');
     foreach ($events as $event) {
-        $participants = $this->teacher_model->get_participants_by_event($event['id']);
+        $participants = $participantsByEventId[$event['id']] ?? [];
 
         // Check access (class OR individual)
         $has_access = false;
@@ -3878,11 +3910,11 @@ public function create_event() {
         foreach ($participants as $p) {
             $data = ['id' => $p['guest'], 'type' => $p['type']];
             if ($p['type'] === 'class') {
-                $class = $this->teacher_model->get_class_by_id($p['guest']);
-                $data['name'] = is_array($class) ? ($class['name'] ?? 'Unknown') : (($class->name ?? 'Unknown'));
+                $class = $classMap[(int) $p['guest']] ?? null;
+                $data['name'] = $class['name'] ?? 'Unknown';
             } else {
-                $user = $this->teacher_model->get_user_by_id($p['guest']);
-                $data['name'] = is_array($user) ? ($user['name'] ?? 'Unknown') : (($user->name ?? 'Unknown'));
+                $user = $userMap[(int) $p['guest']] ?? null;
+                $data['name'] = $user['name'] ?? 'Unknown';
             }
             $event['participants'][] = $data;
         }

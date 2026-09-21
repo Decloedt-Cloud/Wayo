@@ -155,6 +155,49 @@ class Student_model extends Model {
             ->getResultArray();
     }
 
+    /** @param list<int|string> $eventIds @return list<array<string,mixed>> */
+    public function get_participants_for_events_batch(array $eventIds): array
+    {
+        $eventIds = array_values(array_unique(array_filter(array_map('intval', $eventIds), static fn ($id) => $id > 0)));
+        if ($eventIds === []) {
+            return [];
+        }
+
+        return \db()->table('participants')->whereIn('event_id', $eventIds)->get()->getResultArray();
+    }
+
+    /** @param list<int|string> $classIds @return array<int, array<string,mixed>> */
+    public function get_classes_map_by_ids(array $classIds): array
+    {
+        $classIds = array_values(array_unique(array_filter(array_map('intval', $classIds), static fn ($id) => $id > 0)));
+        if ($classIds === []) {
+            return [];
+        }
+        $rows = \db()->table('classes')->whereIn('id', $classIds)->get()->getResultArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = $row;
+        }
+
+        return $map;
+    }
+
+    /** @param list<int|string> $userIds @return array<int, array<string,mixed>> */
+    public function get_users_map_by_ids(array $userIds): array
+    {
+        $userIds = array_values(array_unique(array_filter(array_map('intval', $userIds), static fn ($id) => $id > 0)));
+        if ($userIds === []) {
+            return [];
+        }
+        $rows = \db()->table('users')->select('id, name')->whereIn('id', $userIds)->get()->getResultArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = $row;
+        }
+
+        return $map;
+    }
+
     public function get_session_meeting($meeting_id, $appointment_id) {
         return \db()->table('sessions_meetings')
             ->where('meeting_id', $meeting_id)

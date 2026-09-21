@@ -14,9 +14,10 @@ RewriteRule ^(.*)$ index.php/$1 [L]
 # Empêcher l'indexation des répertoires
 Options -Indexes
 
-# Blocage complet du répertoire vendor (commented out)
-# RewriteCond %{REQUEST_URI} ^/vendor/ [NC]
-# RewriteRule ^ - [F,L]
+# Blocage complet du répertoire vendor
+RewriteRule ^vendor(/|$) - [F,L]
+RewriteRule ^writable(/|$) - [F,L]
+RewriteRule ^\.env$ - [F,L]
 
 # Protection des images contre l'accès direct et ouverture dans nouvel onglet
 # <IfModule mod_rewrite.c>

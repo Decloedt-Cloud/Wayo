@@ -33,11 +33,11 @@ class Courses extends BaseController {
   public function __construct(){
 
     // DeepSeek API Configuration
-    $this->deepseekUrl = 'https://api.deepseek.com/v1/chat/completions';
-    $this->deepseekApiKey = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API Key
+    $this->deepseekUrl = (string) env('ai.deepseekUrl', 'https://api.deepseek.com/v1/chat/completions');
+    $this->deepseekApiKey = (string) env('ai.deepseekApiKey', '');
     
     // Local LLM API Configuration (LM Studio / Ollama / vLLM)
-    $this->localLlmUrl = 'http://154.146.250.62:7000/v1/chat/completions';
+    $this->localLlmUrl = (string) env('ai.localLlmUrl', '');
     
     // Initialize HTMLPurifier for XSS protection
     $this->initHtmlPurifier();
@@ -2787,8 +2787,12 @@ PROMPT;
    */
   private function call_deepseek_api($prompt, $timeout_seconds = 60)
   {
-    $api_key = 'sk-249b9057de6f47029c596004558ab8ce'; // DeepSeek API key
-    $api_url = 'https://api.deepseek.com/v1/chat/completions';
+    $api_key = $this->deepseekApiKey !== '' ? $this->deepseekApiKey : (string) env('ai.deepseekApiKey', '');
+    $api_url = $this->deepseekUrl !== '' ? $this->deepseekUrl : (string) env('ai.deepseekUrl', 'https://api.deepseek.com/v1/chat/completions');
+
+    if ($api_key === '') {
+      return ['error' => 'DeepSeek API key is not configured (ai.deepseekApiKey).'];
+    }
 
     $data = [
       'model' => 'deepseek-chat',

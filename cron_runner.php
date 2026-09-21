@@ -4,19 +4,34 @@
  * À placer dans le répertoire racine de l'application
  */
 
-// Configuration
-$valid_token = '147489da98c2c7c3b55045c29b453886e34b80c72f6a68dd6caae2689b327e4d';
-$app_path = __DIR__; // Répertoire courant
+// Load .env (CI4 is not bootstrapped here)
+$envFile = __DIR__ . DIRECTORY_SEPARATOR . '.env';
+if (is_readable($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#' || strpos($line, '=') === false) {
+            continue;
+        }
+        [$name, $value] = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim($value);
+        $value = trim($value, "\"'");
+        if ($name !== '' && getenv($name) === false) {
+            putenv($name . '=' . $value);
+            $_ENV[$name] = $value;
+        }
+    }
+}
 
-// Headers pour JSON
+$valid_token = (string) (getenv('cron.token') ?: ($_ENV['cron.token'] ?? ''));
+$app_path = __DIR__;
+
 header('Content-Type: application/json');
 
-// Récupération du token
 $token = $_GET['token'] ?? '';
 $action = $_GET['action'] ?? '';
 
-// Validation du token
-if (empty($token) || $token !== $valid_token) {
+if ($valid_token === '' || $token === '' || !hash_equals($valid_token, (string) $token)) {
     http_response_code(401);
     echo json_encode([
         'success' => false,
@@ -26,7 +41,6 @@ if (empty($token) || $token !== $valid_token) {
     exit;
 }
 
-// Validation de l'action
 if ($action !== 'fx_fetch_daily') {
     http_response_code(400);
     echo json_encode([
@@ -38,15 +52,12 @@ if ($action !== 'fx_fetch_daily') {
     exit;
 }
 
-// Exécution de la commande
-$command = "cd $app_path && php index.php cron fx_fetch_daily 2>&1";
+$command = 'cd ' . escapeshellarg($app_path) . ' && php index.php cron fx_fetch_daily 2>&1';
 $start_time = microtime(true);
 
 exec($command, $output, $return_code);
 
 $execution_time = round(microtime(true) - $start_time, 2);
-
-// Analyse du résultat
 $success = $return_code === 0 && strpos(implode("\n", $output), '[OK]') !== false;
 
 $response = [
@@ -61,14 +72,13 @@ if ($success) {
     http_response_code(200);
     $response['message'] = 'Tâche exécutée avec succès';
 
-    // Extraire les taux si disponibles
     $output_text = implode("\n", $output);
-    if (preg_match('/Rates:\s*(.+?)(?:\n\n|\$)/s', $output_text, $matches)) {
+    if (preg_match('/Rates:\s*(.+?)(?:\n\n|$)/s', $output_text, $matches)) {
         $rates_text = trim($matches[1]);
         $rates = [];
         foreach (explode("\n", $rates_text) as $line) {
             if (preg_match('/(\w+):\s*([\d.]+)/', $line, $rate_match)) {
-                $rates[$rate_match[1]] = (float)$rate_match[2];
+                $rates[$rate_match[1]] = (float) $rate_match[2];
             }
         }
         if (!empty($rates)) {
@@ -80,7 +90,6 @@ if ($success) {
     $response['message'] = 'Échec de l\'exécution';
 }
 
-$response['output'] = array_slice($output, 0, 20); // Limiter la sortie
+$response['output'] = array_slice($output, 0, 20);
 
 echo json_encode($response, JSON_PRETTY_PRINT);
-?>

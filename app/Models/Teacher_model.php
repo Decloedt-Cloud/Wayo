@@ -124,6 +124,49 @@ class Teacher_model extends Model {
         return \db()->table('participants')->where('event_id', $event_id)->get()->getResultArray();
     }
 
+    /** @param list<int|string> $eventIds @return list<array<string,mixed>> */
+    public function get_participants_for_events_batch(array $eventIds): array
+    {
+        $eventIds = array_values(array_unique(array_filter(array_map('intval', $eventIds), static fn ($id) => $id > 0)));
+        if ($eventIds === []) {
+            return [];
+        }
+
+        return \db()->table('participants')->whereIn('event_id', $eventIds)->get()->getResultArray();
+    }
+
+    /** @param list<int|string> $classIds @return array<int, array<string,mixed>> id => row */
+    public function get_classes_map_by_ids(array $classIds): array
+    {
+        $classIds = array_values(array_unique(array_filter(array_map('intval', $classIds), static fn ($id) => $id > 0)));
+        if ($classIds === []) {
+            return [];
+        }
+        $rows = \db()->table('classes')->whereIn('id', $classIds)->get()->getResultArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = $row;
+        }
+
+        return $map;
+    }
+
+    /** @param list<int|string> $userIds @return array<int, array<string,mixed>> id => row */
+    public function get_users_map_by_ids(array $userIds): array
+    {
+        $userIds = array_values(array_unique(array_filter(array_map('intval', $userIds), static fn ($id) => $id > 0)));
+        if ($userIds === []) {
+            return [];
+        }
+        $rows = \db()->table('users')->select('id, name')->whereIn('id', $userIds)->get()->getResultArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = $row;
+        }
+
+        return $map;
+    }
+
     public function get_recording_by_id($recording_id) {
         return \db()->table('recordings')->where('id', $recording_id)->get()->getRowArray();
     }

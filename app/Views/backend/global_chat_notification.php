@@ -51,10 +51,13 @@ if (!$is_chat_page):
         echo: null,
         currentTotalUnread: 0, // Stockage local du nombre de messages
 
-        log: function(msg, $data = null) {
+        log: function(msg, data = null) {
             if (this.config.debug) {
-                if (data) console.log(`[ChatNotify] ${msg}`, data);
-                else console.log(`[ChatNotify] ${msg}`);
+                if (data) {
+                    console.log(`[ChatNotify] ${msg}`, data);
+                } else {
+                    console.log(`[ChatNotify] ${msg}`);
+                }
             }
         },
 

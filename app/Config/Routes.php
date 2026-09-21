@@ -129,11 +129,14 @@ $routes->get('ar/communities/(:any)', 'Home::communities');
 $routes->get('es/communities/(:any)', 'Home::communities');
 $routes->get('nl/communities/(:any)', 'Home::communities');
 $routes->get('home/communities', 'Home::communities');
-$routes->get('test-ci4', function() {
-    echo "Test route - CI4 anonymous function works!";
-    exit;
-});
-$routes->get('test-ctrl', 'Test::index');
+if (ENVIRONMENT === 'development') {
+    $routes->get('test-ci4', static function () {
+        echo 'Test route - CI4 anonymous function works!';
+        exit;
+    });
+    $routes->get('test-ctrl', 'Test::index');
+}
+
 $routes->get('login', 'Login::index');
 $routes->get('login/logout', 'Login::logout', ['as' => 'logout']);
 $routes->get('verify-email/(:any)', 'Home::verify_email/$1');
@@ -590,9 +593,11 @@ $routes->post('app/(.*)', static function ($path) use ($dispatchGenericApp) {
 $routes->get('admin', 'Admin::index');
 $routes->get('admin/dashboard', 'Admin::dashboard', ['as' => 'dashboard']);
 $routes->get('admin/invoice', 'Admin::invoice', ['as' => 'invoice']);
-$routes->get('test-route', function() {
-    return 'Test route works!';
-});
+if (ENVIRONMENT === 'development') {
+    $routes->get('test-route', static function () {
+        return 'Test route works!';
+    });
+}
 
 $routes->get('admin/language', 'Admin::language', ['as' => 'language']);
 $routes->get('admin/language/dropdown', 'Admin::language/dropdown', ['as' => 'language/dropdown']);
@@ -1079,9 +1084,6 @@ $routes->get('meeting_states', 'Bigbluebutton::meeting_states');
 $routes->post('meeting_states', 'Bigbluebutton::meeting_states');
 $routes->get('bigbluebutton/meeting_states', 'Bigbluebutton::meeting_states');
 $routes->post('bigbluebutton/meeting_states', 'Bigbluebutton::meeting_states');
-
-$routes->get('test-meeting/start', 'TestMeeting::start');
-$routes->get('test-meeting/join', 'TestMeeting::joinAsAttendee');
 
 $routes->get('cron', 'Cron::index');
 $routes->get('cron/(:segment)', 'Cron::$1');

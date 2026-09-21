@@ -6,18 +6,24 @@ require_once ROOTPATH . 'app/Libraries/JWT.php';
 
 class TokenHandler
 {
-   private $key = "academy-lms-api-token-handler";
-   
-   public function GenerateToken($data)
-   {
-       $jwt = JWT::encode($data, $this->key);
-       return $jwt;
-   }
+    private $key;
 
-   public function DecodeToken($token)
-   {
-       $decoded = JWT::decode($token, $this->key, array('HS256'));
-       $decodedData = (array) $decoded;
-       return $decodedData;
-   }
+    public function __construct()
+    {
+        $this->key = (string) env('jwt.secret', '');
+        if ($this->key === '') {
+            throw new \RuntimeException('JWT secret is not configured (jwt.secret).');
+        }
+    }
+
+    public function GenerateToken($data)
+    {
+        return JWT::encode($data, $this->key);
+    }
+
+    public function DecodeToken($token)
+    {
+        $decoded = JWT::decode($token, $this->key, ['HS256']);
+        return (array) $decoded;
+    }
 }
