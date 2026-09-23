@@ -16,12 +16,12 @@ header("Pragma: no-cache");
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="<?php echo $this->settings_model->get_favicon(); ?>">
-    <?php include APPPATH . 'views/backend/includes_top.php'; ?>
+    <?php include APPPATH . 'Views/backend/includes_top.php'; ?>
 </head>
 <body class="gray-bg justify-content-center">
     <?php
         include 'online_exam.php';
-        include APPPATH . 'views/backend/includes_bottom.php';
+        include APPPATH . 'Views/backend/includes_bottom.php';
         $backend_common_scripts = APPPATH . 'Views/backend/common_scripts.php';
         $academy_common_scripts = APPPATH . 'Views/backend/academy/common_scripts.php';
         if (file_exists($backend_common_scripts)) {

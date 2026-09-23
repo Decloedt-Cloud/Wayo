@@ -103,7 +103,7 @@ $exam_starting_date = isset($exam_details['starting_date']) ? (int) $exam_detail
         </table>
     </div>
 <?php else: ?>
-    <?php include APPPATH . 'views/backend/empty.php'; ?>
+    <?php include APPPATH . 'Views/backend/empty.php'; ?>
 <?php endif; ?>
 
 <script>

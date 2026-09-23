@@ -84,8 +84,8 @@
 </div>
 
 <?php
-		// include APPPATH.'views/lessons/lessons.php';
-		// include APPPATH.'views/lessons/includes_bottom.php';
+		// include APPPATH.'Views/lessons/lessons.php';
+		// include APPPATH.'Views/lessons/includes_bottom.php';
 		// include 'lessons/common_scripts.php';
 	?>
 <!-- Bootstrap CSS -->

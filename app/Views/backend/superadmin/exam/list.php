@@ -93,7 +93,7 @@ $exam_calendar_json = isset($exam_calendar_json) ? $exam_calendar_json : '[]';
                             </tbody>
                         </table>
                     <?php else: ?>
-                        <?php include APPPATH.'views/backend/empty.php'; ?>
+                        <?php include APPPATH.'Views/backend/empty.php'; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -190,10 +190,10 @@ function updateExamTable(exams) {
                 </table>
             `;
         } else {
-            tableHtml = `<?php include APPPATH.'views/backend/empty.php'; ?>`;
+            tableHtml = `<?php include APPPATH.'Views/backend/empty.php'; ?>`;
         }
     } else {
-        tableHtml = `<?php include APPPATH.'views/backend/empty.php'; ?>`;
+        tableHtml = `<?php include APPPATH.'Views/backend/empty.php'; ?>`;
     }
 
     $('#exam-table-container').html(tableHtml);

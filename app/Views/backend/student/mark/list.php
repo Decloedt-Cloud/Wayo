@@ -64,5 +64,5 @@ endif;
         </tbody>
     </table>
 <?php else: ?>
-    <?php include APPPATH . 'views/backend/empty.php'; ?>
+    <?php include APPPATH . 'Views/backend/empty.php'; ?>
 <?php endif; ?>

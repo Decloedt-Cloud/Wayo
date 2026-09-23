@@ -77,4 +77,4 @@ window.TYPEAHEAD_DATA_BASE = <?php echo json_encode(base_url('assets/backend/dat
 </script>
 
 <!-- Global Chat Notification Script -->
-<?php include APPPATH . 'views/backend/global_chat_notification.php'; ?>
+<?php include APPPATH . 'Views/backend/global_chat_notification.php'; ?>

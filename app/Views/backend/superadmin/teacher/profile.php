@@ -3,7 +3,7 @@
     $teacher = db()->table('teachers')->where('id', $param1)->get()->getRowArray();
     if (empty($teacher)) {
         // Handle case where teacher is not found
-        include APPPATH . 'views/backend/empty.php';
+        include APPPATH . 'Views/backend/empty.php';
         return;
     }
 ?>

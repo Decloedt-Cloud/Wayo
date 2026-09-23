@@ -68,7 +68,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-body">
-              <?php include APPPATH.'views/backend/empty.php'; ?>
+              <?php include APPPATH.'Views/backend/empty.php'; ?>
             </div>
           </div>
         </div>

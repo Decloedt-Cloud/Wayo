@@ -35,8 +35,8 @@ if (isset($class_id)):
     </tbody>
   </table>
 <?php else: ?>
-  <?php include APPPATH.'views/backend/empty.php'; ?>
+  <?php include APPPATH.'Views/backend/empty.php'; ?>
 <?php endif; ?>
 <?php else: ?>
-  <?php include APPPATH.'views/backend/empty.php'; ?>
+  <?php include APPPATH.'Views/backend/empty.php'; ?>
 <?php endif; ?>

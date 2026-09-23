@@ -397,7 +397,7 @@
         </div>
     <?php else: ?>
         <div class="fade-up">
-            <?php include APPPATH . 'views/backend/empty.php'; ?>
+            <?php include APPPATH . 'Views/backend/empty.php'; ?>
         </div>
     <?php endif; ?>
 </div>

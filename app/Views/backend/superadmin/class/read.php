@@ -3,7 +3,7 @@
     $class = db()->table('classes')->where('id', $param1)->get()->getRowArray();
     if (empty($class)) {
         // Handle case where class is not found
-        include APPPATH . 'views/backend/empty.php';
+        include APPPATH . 'Views/backend/empty.php';
         return;
     }
      // Fetch currency

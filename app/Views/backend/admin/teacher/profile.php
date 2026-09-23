@@ -1,7 +1,7 @@
 <?php
     $teacher = db()->table('teachers')->where('id', $param1)->get()->getRowArray();
     if (empty($teacher)) {
-        include APPPATH . 'views/backend/empty.php';
+        include APPPATH . 'Views/backend/empty.php';
         return;
     }
     $teacher = array_merge([

@@ -52,7 +52,7 @@ if(count($check_data) > 0):?>
     </tbody>
 </table>
 <?php else: ?>
-	<?php include APPPATH.'views/backend/empty.php'; ?>
+	<?php include APPPATH.'Views/backend/empty.php'; ?>
 <?php endif; ?>
 <script>
   // Récupérer les éléments de la popup une seule fois

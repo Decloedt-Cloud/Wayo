@@ -41,5 +41,5 @@ $book_issues = $this->crud_model->get_book_issues_by_student_id($student_details
         </tbody>
     </table>
 <?php else: ?>
-<?php include APPPATH.'views/backend/empty.php'; ?>
+<?php include APPPATH.'Views/backend/empty.php'; ?>
 <?php endif; ?>
