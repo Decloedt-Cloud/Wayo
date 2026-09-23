@@ -765,6 +765,56 @@ class Audit_log_model extends Model
             ->getResultArray();
     }
 
+    public function log_fiche_change($school_id, array $before, array $after, array $meta = [])
+    {
+        $changes = [];
+        foreach (array_unique(array_merge(array_keys($before), array_keys($after))) as $field) {
+            $from = $before[$field] ?? null;
+            $to = array_key_exists($field, $after) ? $after[$field] : $from;
+            if ($this->ficheValuesDiffer($from, $to)) {
+                $changes[$field] = [
+                    'from' => $from,
+                    'to' => $to,
+                ];
+            }
+        }
+
+        foreach ($meta as $key => $value) {
+            if ($value) {
+                $changes[$key] = $value;
+            }
+        }
+
+        if ($changes === []) {
+            return true;
+        }
+
+        return $this->log_action([
+            'user_id' => session()->get('user_id'),
+            'user_type' => session()->get('user_type'),
+            'school_id' => $school_id,
+            'action_type' => 'update',
+            'entity_type' => 'school_fiche',
+            'entity_id' => $school_id,
+            'action_details' => [
+                'changes' => $changes,
+            ],
+        ]);
+    }
+
+    private function ficheValuesDiffer($from, $to): bool
+    {
+        if ($from === null && $to === null) {
+            return false;
+        }
+
+        if (is_numeric($from) && is_numeric($to)) {
+            return abs((float) $from - (float) $to) > 0.00001;
+        }
+
+        return (string) $from !== (string) $to;
+    }
+
     private function get_client_ip()
     {
         $ip_keys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];

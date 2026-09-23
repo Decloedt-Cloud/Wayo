@@ -101,7 +101,7 @@ class Teacher extends BaseController
             log_message('debug', "Teacher construct - School not approved or not found");
         }
 
-        if ($school) {
+        if ($school && community_billing_enabled()) {
             $now = time();
             $is_trial = isset($school['is_trial']) ? (int)$school['is_trial'] : 0;
             $is_paid = isset($school['is_paid']) ? (int)$school['is_paid'] : 0;

@@ -280,9 +280,12 @@ $routes->get('login/get_csrf_token', 'Login::get_csrf_token');
 $routes->get('login/retrieve_password', 'Login::retrieve_password');
 
 $routes->get('register', 'Register::index');
+$routes->get('register/communities', 'Register::communities');
+$routes->get('register/community/(:num)', 'Register::community/$1');
 $routes->get('register/community', 'Admission::online_admission');
 $routes->post('register/create', 'Register::create');
 $routes->post('register/community', 'Admission::register_community');
+$routes->post('register/member', 'Admission::register_member');
 
 $resolveAppRole = static function (): string {
     $session = service('session');

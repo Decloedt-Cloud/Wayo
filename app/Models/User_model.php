@@ -143,10 +143,6 @@ class User_model extends Model {
 	// SCHOOL CRUD SECTION STARTS
 	public function create_school()
 	{
-		// Période d'essai : 14 jours gratuits
-		$now = time();
-		$trial_days = 14;
-		
 		// $data['school_id'] = html_escape($this->request->getPost('school_id'));
 		$data['name'] = html_entity_decode(html_escape($this->request->getPost('name')));
 		$data['phone'] = html_escape($this->request->getPost('phone'));
@@ -156,12 +152,7 @@ class User_model extends Model {
 		$data['access'] = html_escape($this->request->getPost('access'));
 		$data['category'] = html_escape($this->request->getPost('category'));
 		$data['status'] = 1;
-		// Champs liés à l'abonnement / période d'essai
-		$data['trial_start'] = $now;
-		$data['trial_end'] = $now + (60 * 60 * 24 * $trial_days);
-		$data['is_trial'] = 1;
-		$data['is_paid'] = 0;
-		$data['subscription_status'] = 'trialing';
+		$data = array_merge($data, community_subscription_seed());
 		// $data['role'] = 'admin';
 		// $data['watch_history'] = '[]';
 
@@ -233,10 +224,13 @@ class User_model extends Model {
 		$data['address'] = html_escape($this->request->getPost('address'));
 		$data['access'] = html_escape($this->request->getPost('access'));
 		$data['category'] = htmlspecialchars_decode($this->request->getPost('category'));
+		$tracked = ['name', 'phone', 'description', 'address', 'access', 'category'];
+		$before = \db()->table('schools')->select(implode(',', $tracked))->where('id', $param1)->get()->getRowArray() ?? [];
 		// check email duplication
 		// $duplication_status = $this->check_duplication('on_update', $data['email'], $param1);
 		// if($duplication_status){
 		\db()->table('schools')->where('id', $param1)->update($data);
+		$logoUpdated = false;
 		$schoolImage = $this->request->getFile('school_image');
 		if ($schoolImage && $schoolImage->isValid() && !$schoolImage->hasMoved()) {
 			$uploadDir = FCPATH . 'uploads/schools';
@@ -244,7 +238,15 @@ class User_model extends Model {
 				@mkdir($uploadDir, 0755, true);
 			}
 			$schoolImage->move($uploadDir, $param1 . '.jpg', true);
+			$logoUpdated = true;
 		}
+
+		(new \App\Models\Audit_log_model())->log_fiche_change(
+			$param1,
+			array_intersect_key($before, array_flip($tracked)),
+			array_intersect_key($data, array_flip($tracked)),
+			['logo_updated' => $logoUpdated]
+		);
 		
 		$response = array(
 			'status' => true,

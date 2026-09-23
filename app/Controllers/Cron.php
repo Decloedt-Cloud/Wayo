@@ -323,6 +323,16 @@ class Cron extends BaseController {
             return;
         }
 
+        if (!community_billing_enabled()) {
+            $this->outputResult([
+                'success' => true,
+                'message' => 'Community billing is disabled. Invoice generation skipped.',
+                'processed' => 0,
+                'errors' => 0
+            ]);
+            return;
+        }
+
         log_message('info', 'Cron::subscription_generate_invoices - Starting renewal invoice generation');
 
         $start_time = microtime(true);

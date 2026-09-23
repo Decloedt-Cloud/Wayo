@@ -4543,5 +4543,8 @@
     "public_community": "Public community",
     "public_community_-_open_access": "Public community - open access",
     "community_state_updated_successfully": "Community state updated successfully",
-    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "All-in-one platform to create, engage, and sell: courses, video calls, chat, and integrated payments."
+    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "All-in-one platform to create, engage, and sell: courses, video calls, chat, and integrated payments.",
+    "community_is_free_for_now": "It is free for now.",
+    "no_payment_is_required_for_now": "No payment is required for now.",
+    "create_the_community": "Create the community"
 }

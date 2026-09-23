@@ -24,6 +24,55 @@ class Register extends BaseController
         return view('frontend/' . $this->theme . '/register');
     }
 
+    public function create()
+    {
+        return $this->register_user();
+    }
+
+    /**
+     * GET /register/communities — public community list (JSON).
+     */
+    public function communities()
+    {
+        $communities = db()->table('schools')
+            ->select('id, name, category, access, description, country, Ville, phone, status')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        return $this->response->setJSON([
+            'status' => true,
+            'data' => $communities,
+            'communities' => $communities,
+        ]);
+    }
+
+    /**
+     * GET /register/community/{id} — public community details (JSON).
+     */
+    public function community($id = null)
+    {
+        $community = db()->table('schools')
+            ->select('id, name, category, access, description, country, Ville, Rue, Numero, Codepostal, phone, status')
+            ->where('id', (int) $id)
+            ->get()
+            ->getRowArray();
+
+        if (!$community) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Community not found',
+                'data' => null,
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'status' => true,
+            'data' => $community,
+            'community' => $community,
+        ]);
+    }
+
     public function register_user()
     {
         

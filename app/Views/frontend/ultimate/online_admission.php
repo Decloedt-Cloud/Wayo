@@ -1427,6 +1427,7 @@ $db = \Config\Database::connect();
                             
                             <h3 class="sub-title"><?php echo get_phrase('Wayo_Creator_Pro'); ?></h3>
                             
+                            <?php if (community_billing_enabled()) : ?>
                             <div class="sub-trial-badge">
                                 <i class="fa-solid fa-gift"></i> <?php echo get_phrase('14_day_free_trial'); ?>
                             </div>
@@ -1438,6 +1439,14 @@ $db = \Config\Database::connect();
                             <p class="sub-desc">
                                 <?php echo get_phrase('you_benefit_from_a_14_day_free_trial_to_test_all_features'); ?>
                             </p>
+                            <?php else : ?>
+                            <div class="sub-trial-badge">
+                                <i class="fa-solid fa-gift"></i> <?php echo get_phrase('community_is_free_for_now'); ?>
+                            </div>
+                            <p class="sub-desc">
+                                <?php echo get_phrase('no_payment_is_required_for_now'); ?>
+                            </p>
+                            <?php endif; ?>
 
                             <ul class="sub-features">
                                 <li><i class="fa-solid fa-check"></i> <?php echo get_phrase('unlimited_classes_&_trainings'); ?></li>

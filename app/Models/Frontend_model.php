@@ -1182,11 +1182,7 @@ class Frontend_model extends Model {
         $country_code = strtoupper(substr($tax_residence_input, 0, 2));
     }
 
-    // Période d'essai : 14 jours gratuits
-    $now = time();
-    $trial_days = 14;
-    
-    $school_data = [
+    $school_data = array_merge([
         'name' => html_entity_decode(htmlspecialchars($this->request->getPost('school_name'))),
         'country' => $country_code, // Code pays (MA, AE, etc.)
         'Rue' => htmlspecialchars($this->request->getPost('street')),
@@ -1199,13 +1195,7 @@ class Frontend_model extends Model {
         'access' => $access,
         'category' => htmlspecialchars($this->request->getPost('category')),
         // 'price' => 0, // Price step removed (Managed by DB default NULL)
-        // Champs liés à l'abonnement / période d'essai
-        'trial_start' => $now,
-        'trial_end' => $now + (60 * 60 * 24 * $trial_days),
-        'is_trial' => 1,
-        'is_paid' => 0,
-        'subscription_status' => 'trialing'
-    ];
+    ], community_subscription_seed());
 
     // Insert school
     \db()->table('schools')->insert($school_data);

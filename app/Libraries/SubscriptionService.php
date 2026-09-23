@@ -50,6 +50,14 @@ class SubscriptionService {
 
         $now = time();
 
+        if (!community_billing_enabled()) {
+            return [
+                'status' => $school['subscription_status'] ?: self::STATUS_TRIALING,
+                'is_access_allowed' => true,
+                'message' => 'Community billing is disabled'
+            ];
+        }
+
         // Trialing period
         if ($school['subscription_status'] === self::STATUS_TRIALING ||
             ($school['is_trial'] == 1 && (!isset($school['trial_end']) || $school['trial_end'] > $now))) {

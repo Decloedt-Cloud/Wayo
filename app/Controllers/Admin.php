@@ -2767,6 +2767,11 @@ public function get_sections_by_class()
       return;
     }
 
+    if (($page_data['invoice_details']['payment_type'] ?? '') === 'subscription_admin' && !community_billing_enabled()) {
+      session()->setFlashdata('flash_message', get_phrase('community_is_free_for_now'));
+      return redirect()->to(site_url('app/dashboard'));
+    }
+
     $current_user_type = session()->get('user_type');
     $current_school_id = session()->get('school_id');
     $invoice_school_id = $page_data['invoice_details']['school_id'];
@@ -3026,6 +3031,11 @@ public function get_sections_by_class()
       log_message('error', "Payment attempt for non-existent invoice: #{$invoice_id}");
       session()->setFlashdata('error_message', get_phrase('invalid_invoice'));
       return redirect()->to('/app/dashboard');
+    }
+
+    if (($invoice_details['payment_type'] ?? '') === 'subscription_admin' && !community_billing_enabled()) {
+      session()->setFlashdata('flash_message', get_phrase('community_is_free_for_now'));
+      return redirect()->to(site_url('app/dashboard'));
     }
 
     $current_user_type = session()->get('user_type');

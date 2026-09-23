@@ -4068,5 +4068,8 @@
     "public_community": "مجتمع عام",
     "public_community_-_open_access": "مجتمع عام - وصول مفتوح",
     "community_state_updated_successfully": "تم تحديث حالة المجتمع بنجاح",
-    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "المنصة المتكاملة لإنشاء وتسيير وبيع دوراتك: كورسات، فيزيو، الدردشة و الدفع المتكامل."
+    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "المنصة المتكاملة لإنشاء وتسيير وبيع دوراتك: كورسات، فيزيو، الدردشة و الدفع المتكامل.",
+    "community_is_free_for_now": "إنه مجاني في الوقت الحالي.",
+    "no_payment_is_required_for_now": "لا يُطلب أي دفع في الوقت الحالي.",
+    "create_the_community": "إنشاء المجتمع"
 }

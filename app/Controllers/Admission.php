@@ -113,7 +113,7 @@ class Admission extends BaseController
 
         $cache = \Config\Services::cache();
         $ip = $this->request->getIPAddress();
-        $cacheKey = 'register_attempts_' . $ip;
+        $cacheKey = 'register_attempts_' . md5($ip);
         $attempts = $cache->get($cacheKey) ?: 0;
         $maxAttempts = 5;
         $ttl = 3600;
@@ -158,7 +158,7 @@ class Admission extends BaseController
 
         $cache = \Config\Services::cache();
         $ip = $this->request->getIPAddress();
-        $cacheKey = 'register_attempts_' . $ip;
+        $cacheKey = 'register_attempts_' . md5($ip);
         $attempts = $cache->get($cacheKey) ?: 0;
         $maxAttempts = 5;
         $ttl = 3600;
@@ -235,6 +235,7 @@ class Admission extends BaseController
                     'csrfHash' => $this->security->getHash()
                 ]
             ]));
+            return $resp;
         }
     }
 

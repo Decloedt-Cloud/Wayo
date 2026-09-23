@@ -120,6 +120,7 @@
                   <span class="plan-kicker"><?php echo get_phrase("Mentor Plan"); ?></span>
                   <h3><?php echo get_phrase("The Complete Offer"); ?></h3>
                   <p class="plan-description"><?php echo get_phrase("Access our entire platform without any limits. A unique solution to let you focus on what truly matters: sharing your knowledge."); ?></p>
+                  <?php if (community_billing_enabled()) : ?>
                   <div class="plan-price-split">
                       <span class="price-value"></span>
                       <div class="price-details">
@@ -127,6 +128,7 @@
                           <span class="price-period"><?php echo str_replace('/', '/ ', get_phrase("per month, no commitment")); ?></span>
                       </div>
                   </div>
+                  <?php endif; ?>
                     <?php if ($session->get('user_id')) : ?>
                         <!-- utilisateur connecté -->
                         <a href="<?php echo route('dashboard'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
@@ -134,7 +136,7 @@
                         <!-- utilisateur non connecté -->
                           <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
                     <?php endif; ?>
-                  <p class="plan-guarantee">✔<?php echo get_phrase("Enjoy 14 days of free trial before paying."); ?></p>
+                  <p class="plan-guarantee"><?php echo community_billing_enabled() ? '✔' . get_phrase("Enjoy 14 days of free trial before paying.") : get_phrase('community_is_free_for_now'); ?></p>
               </div>
               <div class="plan-features-split">
                   <h4><?php echo get_phrase("Included in your plan:"); ?></h4>

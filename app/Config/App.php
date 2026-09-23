@@ -26,7 +26,7 @@ class App extends BaseConfig
     /**
      * Base Site URL
      */
-    public string $baseURL = 'http://localhost/Wayo/';
+    public string $baseURL = 'http://localhost/wayo/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.

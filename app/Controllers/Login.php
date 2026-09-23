@@ -175,6 +175,7 @@ class Login extends BaseController
             return $this->loginErrorResponse(get_phrase('your_account_has_been_disabled'));
         }
 
+        $this->upgradeLegacyPassword((int) $row->id, $password, $storedHash);
         $this->clearLoginRateLimit($email);
         session()->regenerate(true);
         $this->clearRoleLoginFlags();
@@ -409,7 +410,30 @@ class Login extends BaseController
             return false;
         }
 
+        if ($this->isLegacySha1Password($storedHash)) {
+            return hash_equals(strtolower($storedHash), sha1($plainPassword));
+        }
+
         return password_verify($plainPassword, $storedHash);
+    }
+
+    private function isLegacySha1Password(string $storedHash): bool
+    {
+        return (bool) preg_match('/^[a-f0-9]{40}$/i', $storedHash);
+    }
+
+    private function upgradeLegacyPassword(int $userId, string $plainPassword, string $storedHash): void
+    {
+        $needsUpgrade = $this->isLegacySha1Password($storedHash)
+            || password_needs_rehash($storedHash, PASSWORD_DEFAULT);
+
+        if (!$needsUpgrade) {
+            return;
+        }
+
+        $this->db->table('users')
+            ->where('id', $userId)
+            ->update(['password' => password_hash($plainPassword, PASSWORD_DEFAULT)]);
     }
 
     private function validatePasswordComplexity(string $password): array

@@ -27,6 +27,7 @@ writable/uploads/*
 !writable/uploads/index.html
 writable/debugbar/*
 !writable/debugbar/index.html
+writable/community_billing_state.json
 
 #--------------------------------------------------------------------
 # Legacy CI3 paths (kept for safety)

@@ -10,11 +10,11 @@ $__is_mentor = ($__current_role === 'teacher' || $__current_role === 'mentor');
 $__trial_expired = false;
 
 // Utiliser la variable du contrôleur si disponible (priorité)
-if (isset($this->trial_expired) && $this->trial_expired === true) {
+if (community_billing_enabled() && isset($this->trial_expired) && $this->trial_expired === true) {
     $__trial_expired = true;
 }
 
-if (in_array($__current_role, $__trial_roles, true)) {
+if (community_billing_enabled() && in_array($__current_role, $__trial_roles, true)) {
     $__school_id = session()->get('active_school_id');
     if (!$__school_id) {
         $__school_id = session()->get('school_id');

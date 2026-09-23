@@ -39,6 +39,84 @@ if (!function_exists('ci3_compat_enabled')) {
     }
 }
 
+if (!function_exists('community_billing_enabled')) {
+    /**
+     * Platform subscription and trial for communities.
+     * billing.communityEnabled=false keeps the payment code and turns billing off.
+     */
+    function community_billing_enabled(): bool
+    {
+        static $enabled = null;
+        if ($enabled === null) {
+            $enabled = filter_var(env('billing.communityEnabled', false), FILTER_VALIDATE_BOOLEAN);
+            community_billing_sync($enabled);
+        }
+
+        return $enabled;
+    }
+}
+
+if (!function_exists('community_subscription_seed')) {
+    /**
+     * Subscription fields written when a community is created.
+     */
+    function community_subscription_seed(): array
+    {
+        if (!community_billing_enabled()) {
+            return [
+                'trial_start' => null,
+                'trial_end' => null,
+                'is_trial' => 0,
+                'is_paid' => 0,
+                'subscription_status' => 'complimentary',
+            ];
+        }
+
+        $now = time();
+
+        return [
+            'trial_start' => $now,
+            'trial_end' => $now + (60 * 60 * 24 * 14),
+            'is_trial' => 1,
+            'is_paid' => 0,
+            'subscription_status' => 'trialing',
+        ];
+    }
+}
+
+if (!function_exists('community_billing_sync')) {
+    /**
+     * When billing is switched back on, unpaid communities receive a fresh 14-day trial.
+     */
+    function community_billing_sync(bool $enabled): void
+    {
+        $path = WRITEPATH . 'community_billing_state.json';
+        $previous = null;
+
+        if (is_file($path)) {
+            $decoded = json_decode((string) file_get_contents($path), true);
+            if (is_array($decoded) && array_key_exists('enabled', $decoded)) {
+                $previous = (bool) $decoded['enabled'];
+            }
+        }
+
+        if ($previous === false && $enabled === true) {
+            $now = time();
+            db()->query(
+                'UPDATE schools SET trial_start = ?, trial_end = ?, is_trial = 1, subscription_status = ? WHERE IFNULL(is_paid, 0) = 0',
+                [$now, $now + (14 * 86400), 'trialing']
+            );
+        }
+
+        if ($previous !== $enabled) {
+            file_put_contents($path, json_encode([
+                'enabled' => $enabled,
+                'updated_at' => time(),
+            ]));
+        }
+    }
+}
+
 if (!function_exists('html_escape')) {
     /**
      * CI3 compatibility helper used throughout migrated controllers/models.

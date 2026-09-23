@@ -1466,7 +1466,13 @@ if ($current_user_id) {
                     <div class="subscription-plan">
                         <div class="plan-header">
                             <h4><?php echo get_phrase("creator_plan") ?></h4>
-                            <div class="plan-price">790 <?php echo get_phrase("MAD") ?> <span>/ <?php echo get_phrase("month,_no_commitment") ?></span></div>
+                            <div class="plan-price">
+                                <?php if (community_billing_enabled()) : ?>
+                                    790 <?php echo get_phrase("MAD") ?> <span>/ <?php echo get_phrase("month,_no_commitment") ?></span>
+                                <?php else : ?>
+                                    <?php echo get_phrase('community_is_free_for_now'); ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <div class="plan-body">
                             <p><?php echo get_phrase("access_all_the_features_to_publish_your_community:") ?></p>
@@ -1485,15 +1491,20 @@ if ($current_user_id) {
                     <div class="trial-callout">
                         <i class="fas fa-calendar-check"></i>
                         <div class="trial-text">
-                            <strong><?php echo get_phrase("enjoy_a_14-day_free_trial.") ?></strong>
-                            <span><?php echo get_phrase("no_payment_will_be_required_before_the_end_of_your_trial.") ?></span>
+                            <?php if (community_billing_enabled()) : ?>
+                                <strong><?php echo get_phrase("enjoy_a_14-day_free_trial.") ?></strong>
+                                <span><?php echo get_phrase("no_payment_will_be_required_before_the_end_of_your_trial.") ?></span>
+                            <?php else : ?>
+                                <strong><?php echo get_phrase('community_is_free_for_now'); ?></strong>
+                                <span><?php echo get_phrase('no_payment_is_required_for_now'); ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="modal-actions space-between">
                         <button type="button" class="btn-saas btn-community-2" id="modal-back-btn"><?php echo get_phrase("back") ?></button>
                         <button type="submit" class="btn-saas btn-community">
-                            <?php echo get_phrase("start_the_14_day_trial") ?>
+                            <?php echo community_billing_enabled() ? get_phrase("start_the_14_day_trial") : get_phrase('create_the_community'); ?>
                         </button>
                     </div>
                 </div>

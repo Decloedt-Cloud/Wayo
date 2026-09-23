@@ -450,6 +450,10 @@ class Settings_model extends Model {
     $data['access'] = htmlspecialchars($this->request->getPost('access'));
     // $data['category'] was being overwritten. Assuming 'category' input is for school category
     $data['category'] = htmlspecialchars_decode($this->request->getPost('category'));
+    $trackedSchool = ['name', 'phone', 'Rue', 'Numero', 'Ville', 'Codepostal', 'description', 'access', 'category', 'country'];
+    $trackedSettings = ['type', 'num_vat', 'file'];
+    $beforeSchool = \db()->table('schools')->select(implode(',', $trackedSchool))->where('id', $schoolId)->get()->getRowArray() ?? [];
+    $beforeSettings = \db()->table('settings_school')->select(implode(',', $trackedSettings))->where('school_id', $schoolId)->get()->getRowArray() ?? [];
     
     // Validate Tax Residence and prepare country code
     $tax_residence = htmlspecialchars_decode($this->request->getPost('tax_residence'));
@@ -465,6 +469,9 @@ class Settings_model extends Model {
     $data['country'] = $country_code;
 
     \db()->table('schools')->where('id', $schoolId)->update($data);
+
+    $logoUpdated = false;
+    $coverUpdated = false;
 
     // ----------------- Upload logo (compressé) -----------------
     if($this->isUploadOk('school_image')) {
@@ -483,8 +490,10 @@ class Settings_model extends Model {
             90     // qualité JPEG
         );
         
+        $logoUpdated = $logo_result !== false;
         if ($logo_result === false) {
             log_message('error', 'Failed to compress school logo for school_id: ' . $schoolId);
+            (new \App\Models\Audit_log_model())->log_fiche_change($schoolId, $beforeSchool, $data);
             return json_encode([
                 'status' => false, 
                 'error_type' => 'logo',
@@ -510,8 +519,15 @@ class Settings_model extends Model {
             90     // qualité JPEG
         );
         
+        $coverUpdated = $cover_result !== false;
         if ($cover_result === false) {
             log_message('error', 'Failed to compress school cover for school_id: ' . $schoolId);
+            (new \App\Models\Audit_log_model())->log_fiche_change(
+                $schoolId,
+                $beforeSchool,
+                $data,
+                ['logo_updated' => $logoUpdated]
+            );
             return json_encode([
                 'status' => false, 
                 'error_type' => 'cover',
@@ -591,6 +607,16 @@ class Settings_model extends Model {
 
     \db()->table('settings_school')->where('school_id', $schoolId)->update($data_settings_school);
 
+    (new \App\Models\Audit_log_model())->log_fiche_change(
+      $schoolId,
+      array_merge($beforeSchool, $beforeSettings),
+      array_merge($data, $data_settings_school),
+      [
+        'logo_updated' => $logoUpdated,
+        'cover_updated' => $coverUpdated,
+      ]
+    );
+
     $response = array(
       'status' => true,
       'notification' => get_phrase('school_settings_updated_successfully')
@@ -620,6 +646,7 @@ class Settings_model extends Model {
       if (unlink($file_path)) {
         // Mettre à jour la base de données
         \db()->table('settings_school')->where('school_id', $schoolId)->update(array('file' => NULL));
+        (new \App\Models\Audit_log_model())->log_fiche_change($schoolId, ['file' => $current_settings['file']], ['file' => null]);
         
         return json_encode([
           'status' => true,
@@ -634,6 +661,7 @@ class Settings_model extends Model {
     } else {
       // Le fichier n'existe plus, mais on supprime quand même la référence en base
       \db()->table('settings_school')->where('school_id', $schoolId)->update(array('file' => NULL));
+      (new \App\Models\Audit_log_model())->log_fiche_change($schoolId, ['file' => $current_settings['file']], ['file' => null]);
       
       return json_encode([
         'status' => true,
@@ -661,6 +689,7 @@ class Settings_model extends Model {
       'system_currency' => htmlspecialchars($currency, ENT_QUOTES, 'UTF-8'),
       'currency_position' => htmlspecialchars($currency_position, ENT_QUOTES, 'UTF-8'),
     ];
+    $before = \db()->table('settings_school')->select('system_currency, currency_position')->where('school_id', $school_id)->get()->getRowArray() ?? [];
 
     $settings_table = \db()->table('settings_school');
     $existing = $settings_table->where('school_id', $school_id)->countAllResults();
@@ -670,6 +699,8 @@ class Settings_model extends Model {
       $data['school_id'] = $school_id;
       \db()->table('settings_school')->insert($data);
     }
+
+    (new \App\Models\Audit_log_model())->log_fiche_change($school_id, $before, $data);
 
     return json_encode([
       'status' => true,
@@ -697,7 +728,9 @@ class Settings_model extends Model {
         $data['price'] = 0;
     }
 
+    $before = \db()->table('schools')->select('access, price')->where('id', $target_school_id)->get()->getRowArray() ?? [];
     \db()->table('schools')->where('id', $target_school_id)->update($data);
+    (new \App\Models\Audit_log_model())->log_fiche_change($target_school_id, $before, $data);
 
     $response = array(
       'status' => true,
@@ -738,8 +771,10 @@ class Settings_model extends Model {
     }
 
     $data['price'] = number_format($price, 2, '.', '');
+    $before = ['price' => $school['price'] ?? null];
 
     \db()->table('schools')->where('id', $target_school_id)->update($data);
+    (new \App\Models\Audit_log_model())->log_fiche_change($target_school_id, $before, $data);
 
     $response = array(
       'status' => true,
@@ -787,6 +822,7 @@ class Settings_model extends Model {
       'vat_enabled' => $vat_enabled,
       'vat_rate' => htmlspecialchars($vat_rate, ENT_QUOTES, 'UTF-8'),
     ];
+    $before = \db()->table('settings_school')->select('vat, vat_enabled, vat_rate')->where('school_id', $school_id)->get()->getRowArray() ?? [];
 
     $settings_table = \db()->table('settings_school');
     $existing = $settings_table->where('school_id', $school_id)->countAllResults();
@@ -796,6 +832,8 @@ class Settings_model extends Model {
       $data['school_id'] = $school_id;
       \db()->table('settings_school')->insert($data);
     }
+
+    (new \App\Models\Audit_log_model())->log_fiche_change($school_id, $before, $data);
 
     return json_encode([
       'status' => true,

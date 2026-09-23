@@ -4223,5 +4223,8 @@
     "public_community": "Communauté publique",
     "public_community_-_open_access": "Communauté publique – accès libre",
     "community_state_updated_successfully": "L'état de la communauté a été mis à jour avec succès",
-    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "La plateforme tout-en-un pour créer, animer et vendre : cours, visio, chat et paiements intégrés."
+    "all-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.": "La plateforme tout-en-un pour créer, animer et vendre : cours, visio, chat et paiements intégrés.",
+    "community_is_free_for_now": "C'est gratuit pour le moment.",
+    "no_payment_is_required_for_now": "Aucun paiement n'est demandé pour le moment.",
+    "create_the_community": "Créer la communauté"
 }

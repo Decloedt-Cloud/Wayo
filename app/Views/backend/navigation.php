@@ -631,7 +631,7 @@ if ($user_type == 'admin') {
 // Déterminer si le menu doit être grisé
 $is_disabled = (!$school_approved || !$student_approved || $trial_expired);
 
-if ($user_type == 'admin') {
+if ($user_type == 'admin' && community_billing_enabled()) {
     // Calcul de l’état de la période d’essai
     if ($school) {
         $now       = time();
