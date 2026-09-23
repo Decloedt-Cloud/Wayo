@@ -14,3 +14,12 @@ defined('EXIT_USER_INPUT')     || define('EXIT_USER_INPUT', 7);
 defined('EXIT_DATABASE')       || define('EXIT_DATABASE', 8);
 defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9);
 defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);
+
+defined('SECOND') || define('SECOND', 1);
+defined('MINUTE') || define('MINUTE', 60);
+defined('HOUR')   || define('HOUR', 3600);
+defined('DAY')    || define('DAY', 86400);
+defined('WEEK')   || define('WEEK', 604800);
+defined('MONTH')  || define('MONTH', 2592000);
+defined('YEAR')   || define('YEAR', 31536000);
+defined('DECADE') || define('DECADE', 315360000);
