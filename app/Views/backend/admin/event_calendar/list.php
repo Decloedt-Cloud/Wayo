@@ -3,7 +3,7 @@ $school_id = school_id();
 // $user_id = session()->get('user_id');
 // $school_id = db()->table('users')->where('id', $user_id)->get()->getResultArray()->row('school_id');
 
-$announcements = db()->table('announcement')->where('school_id', $school_id)->where('session', active_session())->getResultArray();
+$announcements = db()->table('announcement')->where('school_id', $school_id)->where('session', active_session())->get()->getResultArray();
 $total_events = count($announcements);
 ?>
 
