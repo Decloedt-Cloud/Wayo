@@ -159,6 +159,38 @@ class Home extends BaseController
         echo view('frontend/' . $this->theme . '/index', $page_data);
     }
 
+    /**
+     * A community is public only when it is approved and not deleted.
+     */
+    private function visibleCommunitiesBuilder()
+    {
+        return $this->db->table('schools')
+            ->where('status', 1)
+            ->where('Etat', 1);
+    }
+
+    private function communityIsPublic(array $school): bool
+    {
+        return (int) ($school['status'] ?? 0) === 1
+            && (int) ($school['Etat'] ?? 0) === 1;
+    }
+
+    private function publicCommunityStats(): array
+    {
+        $communities = (clone $this->visibleCommunitiesBuilder())->countAllResults();
+        $members = (int) $this->db->table('students')
+            ->join('schools', 'schools.id = students.school_id')
+            ->where('students.status', 1)
+            ->where('schools.status', 1)
+            ->where('schools.Etat', 1)
+            ->countAllResults();
+
+        return [
+            'visible_communities_count' => $communities,
+            'visible_members_count' => $members,
+        ];
+    }
+
     public function communities($lang_code = null)
     {
         $perPage = 8;
@@ -215,9 +247,7 @@ class Home extends BaseController
             return redirect()->to($canonicalUrl);
         }
 
-        $builder = $this->db->table('schools')
-            ->where('status', 1)
-            ->where('Etat', 1);
+        $builder = $this->visibleCommunitiesBuilder();
 
         $validCategory = false;
         if (!empty($category)) {
@@ -312,6 +342,7 @@ class Home extends BaseController
         $page_data['page_name'] = 'communities';
         $page_data['page_title'] = 'Communities';
         $page_data['theme'] = $this->theme;
+        $page_data = array_merge($page_data, $this->publicCommunityStats());
         echo view('frontend/' . $this->theme . '/index', $page_data);
     }
 
@@ -323,7 +354,7 @@ class Home extends BaseController
         }
 
         $school = $this->db->table('schools')->where('id', $schoolId)->get()->getRowArray();
-        if (!$school) {
+        if (!$school || !$this->communityIsPublic($school)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
@@ -578,18 +609,14 @@ class Home extends BaseController
                 ->groupEnd();
         };
 
-        $countBuilder = $this->db->table('schools')
-            ->where('status', 1)
-            ->where('Etat', 1);
+        $countBuilder = $this->visibleCommunitiesBuilder();
         $countBuilder = $applySearchFilters($countBuilder, $input);
         $totalRows = (int) $countBuilder->countAllResults();
 
         $totalPages = max(1, (int) ceil($totalRows / $perPage));
         $offset = ($page - 1) * $perPage;
 
-        $listBuilder = $this->db->table('schools')
-            ->where('status', 1)
-            ->where('Etat', 1);
+        $listBuilder = $this->visibleCommunitiesBuilder();
         $listBuilder = $applySearchFilters($listBuilder, $input);
 
         $schools = $listBuilder
@@ -642,6 +669,7 @@ class Home extends BaseController
         $page_data['page_name'] = 'communities';
         $page_data['page_title'] = get_phrase('communities');
         $page_data['theme'] = $this->theme;
+        $page_data = array_merge($page_data, $this->publicCommunityStats());
         if ($input !== '') {
             $page_data['input_search'] = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
             if (empty($schools)) {

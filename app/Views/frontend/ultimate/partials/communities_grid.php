@@ -62,7 +62,7 @@ if (!empty($schools)) {
           <!-- Card Content -->
           <div class="card-content">
             <h3 class="card-title"><?php echo htmlspecialchars($c['name']); ?></h3>
-            <p class="card-description"><?php echo htmlspecialchars($c['description']); ?></p>
+            <p class="card-description"><?php echo htmlspecialchars((string) ($c['description'] ?? '')); ?></p>
             
             <!-- Stats -->
             <div class="card-stats">

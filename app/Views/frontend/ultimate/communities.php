@@ -12,11 +12,11 @@
       <div class="hero-stats">
         <div class="hero-stat">
           <i class="fa-solid fa-users"></i>
-          <span><?php echo db_connect()->table('schools')->where('status', 1)->where('Etat', 1)->countAllResults(); ?>+ <?php echo get_phrase("communities"); ?></span>
+          <span><?php echo (int) ($visible_communities_count ?? 0); ?>+ <?php echo get_phrase("communities"); ?></span>
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-graduation-cap"></i>
-          <span><?php echo db_connect()->table('students')->countAllResults(); ?>+ <?php echo get_phrase("members"); ?></span>
+          <span><?php echo (int) ($visible_members_count ?? 0); ?>+ <?php echo get_phrase("members"); ?></span>
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-star"></i>
@@ -53,7 +53,7 @@
               <option value="<?php echo lang_route('communities'); ?>"><?php echo get_phrase('All_categories'); ?></option>
               <?php foreach ($categories as $category): ?>
                 <?php $cat_formated = str_replace(" ", "_", $category['name']); ?>
-                <option value="<?php echo lang_route('communities', $cat_formated); ?>">
+                <option value="<?php echo lang_route('communities', $cat_formated); ?>"<?php echo (($selected_category ?? '') === $category['name']) ? ' selected' : ''; ?>>
                   <?php echo get_phrase($category['name']); ?>
                 </option>
               <?php endforeach; ?>

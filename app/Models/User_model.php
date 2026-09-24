@@ -1636,7 +1636,8 @@ class User_model extends Model {
 	// Get School cover Starts
 	public function get_school_cover($school_id)
 	{
-		if (file_exists('uploads/communityCover/' . $school_id . '.jpg'))
+		$cover = FCPATH . 'uploads/communityCover/' . $school_id . '.jpg';
+		if (is_file($cover))
 			return base_url() . 'uploads/communityCover/' . $school_id . '.jpg';
 		else
 			return base_url() . 'uploads/communityCover/placeholder.jpg';
