@@ -108,7 +108,7 @@ $is_rtl = (get_user_language() === 'arabic');
         <link rel="stylesheet" href="<?php echo $base_url; ?>assets/frontend/ultimate/css/about-page.min.css">
     <?php elseif ($page_name == "contact"): ?>
         <link rel="stylesheet" href="<?php echo $base_url; ?>assets/frontend/ultimate/css/contact.min.css">
-    <?php elseif ($page_name == "online_admission"): ?>
+    <?php elseif ($page_name == "online_admission" || $page_name == "online_admission_student"): ?>
         <link rel="stylesheet" href="<?php echo $base_url; ?>assets/frontend/ultimate/css/online-admission.min.css">
     <?php elseif ($page_name == "affiliation"): ?>
         <link rel="stylesheet" href="<?php echo $base_url; ?>assets/frontend/ultimate/css/affiliation.min.css">
