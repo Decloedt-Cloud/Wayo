@@ -36,8 +36,8 @@ if (!$is_chat_page):
     // Namespace GlobalChatNotifier pour éviter les conflits
     const GlobalChatNotifier = {
         config: {
-            chatServiceUrl: 'https://chat.wayo.site/api/v1',
-            authUrl: 'https://chat.wayo.site/api/auth/cross-auth',
+            chatServiceUrl: 'https://wayochat.wayo.ac/api/v1',
+            authUrl: 'https://wayochat.wayo.ac/api/auth/cross-auth',
             wapToken: '<?php echo $wap_token; ?>',
             appId: 'wayo',
             authToken: null,
@@ -164,7 +164,7 @@ if (!$is_chat_page):
                 this.echo = new Echo({
                     broadcaster: 'reverb',
                     key: 'iuvcjjlml7xkwbdfaxo3',
-                    wsHost: 'chat.wayo.site',
+                    wsHost: 'wayochat.wayo.ac',
                     wsPort: 443,
                     wssPort: 443,
                     forceTLS: true,

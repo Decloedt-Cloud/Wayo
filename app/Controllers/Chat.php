@@ -27,7 +27,7 @@ class Chat extends BaseController {
         }
 
         // Configuration de l'API backend (URL du microservice)
-        $this->chat_service_url = "https://chat.wayo.site/api/v1"; 
+        $this->chat_service_url = "https://wayochat.wayo.ac/api/v1"; 
         
         // Load TokenHandler to generate WAP Token for Chat Service
         $this->tokenHandler = new TokenHandler();

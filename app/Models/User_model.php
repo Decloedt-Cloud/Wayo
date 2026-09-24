@@ -2828,7 +2828,7 @@ private function _sync_user_to_chat_service($user_id)
 		];
 
 		// URL du Chat Service (hardcodé comme ailleurs dans le projet)
-		$url = 'https://chat.wayo.site/api/auth/sync-user';
+		$url = 'https://wayochat.wayo.ac/api/auth/sync-user';
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
