@@ -1484,23 +1484,20 @@ class Superadmin extends BaseController
     }
 
     if ($param1 == 'filter') {
-      $date = '01 ' . $this->request->getPost('month') . ' ' . $this->request->getPost('year');
-      $page_data['attendance_date'] = strtotime($date);
-      $page_data['class_id'] = htmlspecialchars($this->request->getPost('class_id'));
-      $page_data['section_id'] = htmlspecialchars($this->request->getPost('section_id'));
-      $page_data['month'] = htmlspecialchars($this->request->getPost('month'));
-      $page_data['year'] = htmlspecialchars($this->request->getPost('year'));
-        // Charger la vue mise Ã  jour
-        $response_html = view('backend/superadmin/attendance/list', $page_data, ['cache' => 0]);
-        // PrÃ©parer le nouveau jeton CSRF
-        $csrf = array(
-         'csrfName' => csrf_token(),
-         'csrfHash' => csrf_hash(),
-     );
+      $month = (string) $this->request->getPost('month');
+      $year = (string) $this->request->getPost('year');
+      $page_data['attendance_date'] = strtotime('01 ' . $month . ' ' . $year);
+      $page_data['class_id'] = htmlspecialchars((string) $this->request->getPost('class_id'));
+      $page_data['section_id'] = htmlspecialchars((string) $this->request->getPost('section_id'));
+      $page_data['month'] = htmlspecialchars($month);
+      $page_data['year'] = htmlspecialchars($year);
+      $response_html = view('backend/superadmin/attendance/list', $page_data);
 
-     // Renvoyer la rÃ©ponse JSON avec le HTML mis Ã  jour et le nouveau jeton CSRF
-     echo json_encode(array('status' => $response_html, 'csrfName' => $csrf['csrfName'], 'csrfHash' => $csrf['csrfHash']));
-
+      return $this->response->setJSON([
+          'status' => $response_html,
+          'csrfName' => csrf_token(),
+          'csrfHash' => csrf_hash(),
+      ]);
     }
 
     if ($param1 == 'student') {

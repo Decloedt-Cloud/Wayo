@@ -2026,11 +2026,12 @@ class Teacher extends BaseController
 		}
 
 		if($param1 == 'filter'){
-			$date = '01 '.$this->request->getPost('month').' '.$this->request->getPost('year');
-			$page_data['attendance_date'] = strtotime($date);
-			$page_data['class_id'] = htmlspecialchars($this->request->getPost('class_id'));
-			$page_data['month'] = htmlspecialchars($this->request->getPost('month'));
-			$page_data['year'] = htmlspecialchars($this->request->getPost('year'));
+			$month = (string) $this->request->getPost('month');
+			$year = (string) $this->request->getPost('year');
+			$page_data['attendance_date'] = strtotime('01 ' . $month . ' ' . $year);
+			$page_data['class_id'] = htmlspecialchars((string) $this->request->getPost('class_id'));
+			$page_data['month'] = htmlspecialchars($month);
+			$page_data['year'] = htmlspecialchars($year);
 
 			// Charger la vue mise Ã  jour
 			$response_html = view('backend/teacher/attendance/list', $page_data, ['cache' => 0]);

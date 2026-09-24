@@ -477,10 +477,10 @@ var getDailtyAttendance = function () {
         $('.attendance_content').html(response.status);
         
             // Mettre à jour le jeton CSRF avec le nouveau jeton renvoyé dans la réponse
-            if(response.csrf){
-                var newCsrfName = response.csrf.csrfName;
-                var newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash); // Mise à jour du token CSRF
+            var newCsrfName = response.csrfName || (response.csrf && response.csrf.csrfName);
+            var newCsrfHash = response.csrfHash || (response.csrf && response.csrf.csrfHash);
+            if (newCsrfName && newCsrfHash) {
+                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
             }
       },
       error: function() {
