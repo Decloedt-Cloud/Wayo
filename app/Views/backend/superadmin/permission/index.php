@@ -91,7 +91,7 @@
  
         if(class_id != "" ){
             $.ajax({
-                url: '<?php echo route('permission/filter/') ?>'+class_id,
+                url: '<?php echo route('permission/filter/') ?>/'+class_id,
                 success: function(response){
                     $('.permission_content').html(response);
                 }

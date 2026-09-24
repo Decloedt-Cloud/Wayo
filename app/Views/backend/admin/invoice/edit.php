@@ -547,7 +547,7 @@ function classWiseStudentOnEdit(classId) {
     $('#student_id_on_edit').prop('disabled', true);
     
     $.ajax({
-        url: "<?php echo route('invoice/student/'); ?>" + classId,
+        url: "<?php echo route('invoice/student/'); ?>"/"+ classId,
         success: function(response) {
             $('#student_id_on_edit').html(response).prop('disabled', false);
             if ($('#student_id_on_edit').hasClass('select2-hidden-accessible')) {

@@ -78,7 +78,7 @@
         var csrfName = $('input[name="<?= csrf_token(); ?>"]').attr('name');
         var csrfHash = $('input[name="<?= csrf_token(); ?>"]').val();
         $.ajax({
-            url: '<?php echo route('student/filter/') ?>' + (class_id == 'all' ? '' : class_id),
+            url: '<?php echo route('student/filter/') ?>/' + (class_id == 'all' ? '' : class_id),
             data: { [csrfName]: csrfHash },
             dataType: 'json',
             success: function (response) {

@@ -70,7 +70,7 @@
 
 		if (class_id != "") {
 			$.ajax({
-				url: '<?php echo route('routine/filter/') ?>' + class_id,
+				url: '<?php echo route('routine/filter/') ?>/' + class_id,
 				success: function(response) {
 					$('.class_routine_content').html(response);
 				}

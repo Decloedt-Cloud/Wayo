@@ -360,7 +360,7 @@
 
         if (class_id != "") {
             $.ajax({
-                url: '<?php echo route('syllabus/list/') ?>' + class_id,
+                url: '<?php echo route('syllabus/list/') ?>/' + class_id,
                 success: function(response) {
                     $('.syllabus_content').html(response);
                     initDataTable('basic-datatable');
@@ -371,7 +371,7 @@
 
     function schoolWiseClasse(school_id) {
         $.ajax({
-            url: "<?php echo route('academy/list/'); ?>" + school_id,
+            url: "<?php echo route('academy/list/'); ?>"/"+ school_id,
             success: function(response) {
                 $('#class_id_syllabus').html(response);
                 // Sélectionner automatiquement "all" et charger les syllabus

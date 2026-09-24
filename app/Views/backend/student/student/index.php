@@ -57,7 +57,7 @@
        
         if(class_id != "" ){
             $.ajax({
-                url: '<?php echo route('student/filter/') ?>'+class_id,
+                url: '<?php echo route('student/filter/') ?>/'+class_id,
                 success: function(response){
                     $('.student_content').html(response);
                 }

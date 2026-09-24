@@ -80,7 +80,7 @@
 
         // Si 'all', on charge sans filtre
         $.ajax({
-            url: '<?php echo route('syllabus/list/') ?>' + class_id,
+            url: '<?php echo route('syllabus/list/') ?>/' + class_id,
             success: function(response) {
                 $('.syllabus_content').html(response);
                 initDataTable('basic-datatable');

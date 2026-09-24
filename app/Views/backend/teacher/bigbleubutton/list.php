@@ -97,7 +97,7 @@ $rooms = db()->table('rooms')->where('school_id', $school_id)->where('Etat', 1)-
 
                 <!-- Nombre de participants -->
                 <div class="meeting-participants" id="participants-<?php echo $room['id']; ?>">👥 0 <?php echo get_phrase("participants") ?></div>
-                <a href="<?php echo route('Calendar/').$room['class_id'].'/'.$room['id']; ?>"><i class="mdi mdi-calendar"><?php echo get_phrase("Calendar") ?></i></a>
+                <a href="<?php echo route('Calendar/').'/'.$room['class_id'].'/'.$room['id']; ?>"><i class="mdi mdi-calendar"><?php echo get_phrase("Calendar") ?></i></a>
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <!-- <a href="<?php //echo base_url('bigbluebutton/start_meeting/' . $room['id']); ?>"

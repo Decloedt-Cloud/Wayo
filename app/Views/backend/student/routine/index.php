@@ -70,7 +70,7 @@ var getFilteredClassRoutine = function() {
 	
 	if(class_id != "" ){
 		$.ajax({
-			url: '<?php echo route('routine/filter/') ?>'+class_id,
+			url: '<?php echo route('routine/filter/') ?>/'+class_id,
 			success: function(response){
 				$('.class_routine_content').html(response);
 			}
@@ -79,7 +79,7 @@ var getFilteredClassRoutine = function() {
 }
 function schoolWiseClasse(school_id) {
     $.ajax({
-        url: "<?php echo route('academy/list/'); ?>"+school_id,
+        url: "<?php echo route('academy/list/'); ?>"/"+school_id,
         success: function(response){
             $('#class_id_routine').html(response);
         }

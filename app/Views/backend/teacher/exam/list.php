@@ -437,7 +437,7 @@ function updateExamsList(exams) {
                         <button type="button" class="btn-icon btn-edit-exam" data-exam-id="${exam.id}">
                             <i class="fas fa-pen-to-square"></i>
                         </button>
-                        <button type="button" class="btn-icon btn-delete-exam" data-delete-url="<?php echo route('exam/delete/'); ?>${exam.id}">
+                        <button type="button" class="btn-icon btn-delete-exam" data-delete-url="<?php echo route('exam/delete/'); ?>/${exam.id}">
                             <i class="fas fa-trash-can"></i>
                         </button>
                     </div>

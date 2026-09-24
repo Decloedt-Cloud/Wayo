@@ -65,7 +65,7 @@ $(document).ready(function () {
 
 function classWiseStudentOnCreate(classId) {
   $.ajax({
-    url: "<?php echo route('invoice/student/'); ?>"+classId,
+    url: "<?php echo route('invoice/student/'); ?>"/"+classId,
     success: function(response){
       $('#student_id_on_create').html(response);
     }

@@ -105,7 +105,7 @@ $('document').ready(function(){
 function classWiseCours(classId) {
 
     $.ajax({
-        url: "<?php echo route('quiz/list/'); ?>"+classId,
+        url: "<?php echo route('quiz/list/'); ?>"/"+classId,
         success: function(response){
             $('#quiz_id').html(response); 
         }

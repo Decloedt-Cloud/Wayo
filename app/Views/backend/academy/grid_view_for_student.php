@@ -1391,7 +1391,7 @@ function filterStudentClasses() {
 
 function schoolWiseClasse(school_id) {
 alert(school_id);
-    $.get("<?= route('academy/list/'); ?>" + school_id, function (response) {
+    $.get("<?= route('academy/list/'); ?>"/"+ school_id, function (response) {
         $('#class_id_course').html(response);
     });
 }

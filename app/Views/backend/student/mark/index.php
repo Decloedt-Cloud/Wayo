@@ -61,7 +61,7 @@ function examsWiseClass(examId) {
     
     if (examId) {
         $.ajax({
-            url: "<?php echo route('exam_class/list/'); ?>" + examId,
+            url: "<?php echo route('exam_class/list/'); ?>"/"+ examId,
             success: function(response){
                 classSelect.html(response);
                 classSelect.prop('disabled', false); // Activer le menu des classes

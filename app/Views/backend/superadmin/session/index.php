@@ -19,7 +19,7 @@
 <script>
 function makeSessionActive() {
     var session_id = $('#session_dropdown').val();
-    var url = '<?php echo route('session_manager/active_session/'); ?>'+session_id
+    var url = '<?php echo route('session_manager/active_session/'); ?>/'+session_id
     $.ajax({
         type : 'GET',
         url: url,

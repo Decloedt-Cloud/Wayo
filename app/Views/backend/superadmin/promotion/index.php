@@ -167,7 +167,7 @@
      function enrollStudent(promotion_data, enroll_id) {
        $.ajax({
          type: 'get',
-         url: '<?php echo route('promotion/promote/'); ?>' + promotion_data,
+         url: '<?php echo route('promotion/promote/'); ?>/'+ promotion_data,
          success: function(response) {
            if (response) {
              $("#success_" + enroll_id).show();
