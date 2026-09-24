@@ -588,7 +588,8 @@ class User_model extends Model {
 		$changed_by = $user_id;
 
 		if ($current) {
-			$builder->where('class_id', $class_id)
+			\db()->table('teacher_permissions')
+				->where('class_id', $class_id)
 				->where('teacher_id', $teacher_id)
 				->update($data);
 			
@@ -607,7 +608,7 @@ class User_model extends Model {
 				],
 				$data
 			);
-			$builder->insert($insert);
+			\db()->table('teacher_permissions')->insert($insert);
 			
 			log_message('info', 'Permission created by user_id: ' . $changed_by . 
 				' for teacher_id: ' . $teacher_id . ', class_id: ' . $class_id . 
@@ -624,8 +625,6 @@ class User_model extends Model {
 
 	private function log_permission_changes($teacher_id, $class_id, $column_name, $old_data, $new_data, $changed_by, $school_id)
 	{
-		$history_builder = \db()->table('permission_history');
-		
 		if ($column_name === 'all') {
 			$columns_to_log = ['marks', 'attendance'];
 		} else {
@@ -637,7 +636,7 @@ class User_model extends Model {
 			$new_value = isset($new_data[$col]) ? (int) $new_data[$col] : 0;
 
 			if ($old_value !== $new_value) {
-				$history_builder->insert([
+				\db()->table('permission_history')->insert([
 					'teacher_id' => $teacher_id,
 					'class_id' => $class_id,
 					'column_name' => $col,
