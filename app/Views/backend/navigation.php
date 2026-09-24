@@ -15,37 +15,43 @@ if ($current_school_id <= 0) {
     $current_school_id = (int) get_settings('school_id');
 }
 
-$pendingBuilder = $this->db->table('exams');
-$pendingBuilder->select('COUNT(DISTINCT exams.id) AS pending_count', false)
-    ->join('enrols e', 'e.class_id = exams.class_id', 'inner')
-    ->join('students s', 's.id = e.student_id', 'inner')
-    ->where('s.user_id', (int) $user_id);
-if ($current_school_id > 0) {
-    $pendingBuilder->where('exams.school_id', $current_school_id);
-    $pendingBuilder->where('e.school_id', $current_school_id);
+$pending_exams_count = 0;
+$pending_students = 0;
+$pending_schools = 0;
+try {
+    $pendingBuilder = $this->db->table('exams');
+    $pendingBuilder->select('COUNT(DISTINCT exams.id) AS pending_count', false)
+        ->join('enrols e', 'e.class_id = exams.class_id', 'inner')
+        ->join('students s', 's.id = e.student_id', 'inner')
+        ->where('s.user_id', (int) $user_id);
+    if ($current_school_id > 0) {
+        $pendingBuilder->where('exams.school_id', $current_school_id);
+        $pendingBuilder->where('e.school_id', $current_school_id);
+    }
+    if ($session !== null && $session !== '') {
+        $pendingBuilder->groupStart()
+            ->where('exams.session', $session)
+            ->orWhere('exams.session', null)
+            ->orWhere('exams.session', '')
+            ->groupEnd();
+        $pendingBuilder->groupStart()
+            ->where('e.session', $session)
+            ->orWhere('e.session', null)
+            ->orWhere('e.session', '')
+            ->groupEnd();
+    }
+    $pendingBuilder->where(
+        'NOT EXISTS (SELECT 1 FROM exam_responses er WHERE er.exam_id = exams.id AND er.user_id = ' . (int) $user_id . ')',
+        null,
+        false
+    );
+    $pendingRow = $pendingBuilder->get()->getRowArray();
+    $pending_exams_count = (int) ($pendingRow['pending_count'] ?? 0);
+    $pending_students = count(db()->table('students')->where(['status' => 0, 'school_id' => $current_school_id])->get()->getResultArray());
+    $pending_schools = count(db()->table('schools')->where(['status' => 0, 'Etat' => 1])->get()->getResultArray());
+} catch (\Throwable $e) {
+    log_message('error', 'Sidebar counts failed: ' . $e->getMessage());
 }
-if ($session !== null && $session !== '') {
-    $pendingBuilder->groupStart()
-        ->where('exams.session', $session)
-        ->orWhere('exams.session', null)
-        ->orWhere('exams.session', '')
-        ->groupEnd();
-    $pendingBuilder->groupStart()
-        ->where('e.session', $session)
-        ->orWhere('e.session', null)
-        ->orWhere('e.session', '')
-        ->groupEnd();
-}
-$pendingBuilder->where(
-    'NOT EXISTS (SELECT 1 FROM exam_responses er WHERE er.exam_id = exams.id AND er.user_id = ' . (int) $user_id . ')',
-    null,
-    false
-);
-$pendingRow = $pendingBuilder->get()->getRowArray();
-$pending_exams_count = (int) ($pendingRow['pending_count'] ?? 0);
-log_message('debug', 'Total exams not yet taken calculated for school_id ' . $current_school_id . ': ' . $pending_exams_count);
-$pending_students = count(db()->table('students')->where(['status' => 0, 'school_id' => $current_school_id])->get()->getResultArray());
-$pending_schools = count(db()->table('schools')->where(['status' => 0, 'Etat' => 1])->get()->getResultArray());
 ?>
 
 <style>

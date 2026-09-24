@@ -840,7 +840,7 @@
                     <td>
                       <?php
                       $expense_category_details = db()->table('expense_categories')->where('id', $expense['expense_category_id'])->get()->getRowArray();
-                      echo $expense_category_details['name'];
+                      echo $expense_category_details['name'] ?? '';
                       ?>
                     </td>
                     <td style="text-align: right;"><strong><?php echo currency($expense['amount']); ?></strong></td>

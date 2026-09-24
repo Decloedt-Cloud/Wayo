@@ -11,11 +11,11 @@ if ($user_id) {
     $tokenHandlerPath = APPPATH . 'Libraries/TokenHandler.php';
     if (file_exists($tokenHandlerPath)) {
         require_once $tokenHandlerPath;
-        $tokenHandler = new \App\Libraries\TokenHandler();
-        $tokenData = ['user_id' => $user_id, 'issued_at' => time()];
         try {
+            $tokenHandler = new \App\Libraries\TokenHandler();
+            $tokenData = ['user_id' => $user_id, 'issued_at' => time()];
             $wap_token = $tokenHandler->GenerateToken($tokenData);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'GlobalChatNotification: Token generation failed - ' . $e->getMessage());
         }
     }
