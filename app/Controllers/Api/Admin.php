@@ -89,7 +89,16 @@ class Admin extends REST_Controller {
           // The database column is 'id', but we can also add 'user_id' to match token if needed
           // CrossAuthController looks for 'id' and 'email'
           
-          $this->response(['status' => true, 'data' => $userDetails], REST_Controller::HTTP_OK);
+          $payload = ['status' => true, 'data' => $userDetails];
+          $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+          if ($json === false) {
+              return $this->response(['status' => false, 'message' => 'Invalid user payload'], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+          }
+
+          return $this->response
+              ->setStatusCode(REST_Controller::HTTP_OK)
+              ->setContentType('application/json')
+              ->setBody($json);
       } catch (\Throwable $e) {
           $this->response(['status' => false, 'message' => 'Invalid Token'], REST_Controller::HTTP_UNAUTHORIZED);
       }
