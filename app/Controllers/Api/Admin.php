@@ -90,7 +90,7 @@ class Admin extends REST_Controller {
           // CrossAuthController looks for 'id' and 'email'
           
           $this->response(['status' => true, 'data' => $userDetails], REST_Controller::HTTP_OK);
-      } catch (Exception $e) {
+      } catch (\Throwable $e) {
           $this->response(['status' => false, 'message' => 'Invalid Token'], REST_Controller::HTTP_UNAUTHORIZED);
       }
   }
