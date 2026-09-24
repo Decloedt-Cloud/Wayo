@@ -1605,13 +1605,13 @@ class User_model extends Model {
 		
 		if ($action == 'on_create') {
 			$duplicate_email_check = $db->table('users')
-				->where('LOWER(email)', $email)
+				->where('LOWER(email)', $email, false)
 				->get();
 			
 			return $duplicate_email_check->getNumRows() === 0;
 		} elseif ($action == 'on_update') {
 			$duplicate_email_check = $db->table('users')
-				->where('LOWER(email)', $email)
+				->where('LOWER(email)', $email, false)
 				->where('id !=', $user_id)
 				->get();
 			
@@ -2725,7 +2725,6 @@ class User_model extends Model {
 			'role' => 'student',
 			'status' => 1,
 			'language' => $user_language,
-			'school_id' => null, // Ajustez selon votre logique
 			'watch_history' => '[]'
 		];
 
@@ -2740,22 +2739,9 @@ class User_model extends Model {
 			]);
 		}
 		
-		$files = $this->request->getFiles();
-		// Gérer l'upload de l'image
-		if (isset($files['student_image']) && is_uploaded_file($files['student_image']['tmp_name'])) {
-			$upload_path = 'uploads/users/' . $user_id . '.jpg';
-
-			if (!move_uploaded_file($files['student_image']['tmp_name'], $upload_path)) {
-				log_message('error', 'move_uploaded_file a échoué vers ' . $upload_path);
-				return json_encode([
-					'status' => false,
-					'message' => get_phrase('image_upload_failed'),
-					'csrf' => [
-						'csrfName' => csrf_token(),
-						'csrfHash' => csrf_hash()
-					]
-				]);
-			}
+		$image = $this->request->getFile('student_image');
+		if ($image && $image->isValid() && !$image->hasMoved()) {
+			$image->move(FCPATH . 'uploads/users', $user_id . '.jpg', true);
 		}
 		try {
 			$this->email_model->Add_online_admission($data['email'], $user_id, $data['name']);
@@ -2763,22 +2749,23 @@ class User_model extends Model {
 			log_message('error', 'Member registration email failed: ' . $e->getMessage());
 		}
 
-		// Log admission in audit trail
-		$audit_log_model = new \App\Models\Audit_log_model();
-		$audit_log_model->log_online_admission_student($user_id, [
-			'name' => $data['name'],
-			'email' => $data['email'],
-			'birthday' => $data['birthday'],
-			'school_id' => $data['school_id'],
-			'language' => $data['language']
-		]);
+		try {
+			$audit_log_model = new \App\Models\Audit_log_model();
+			$audit_log_model->log_online_admission_student($user_id, [
+				'name' => $data['name'],
+				'email' => $data['email'],
+				'birthday' => $data['birthday'],
+				'language' => $data['language']
+			]);
+		} catch (\Throwable $e) {
+			log_message('error', 'Member registration audit failed: ' . $e->getMessage());
+		}
 
 		// Auto-login
 		session()->set([
 			'user_login_type' => true,
 			'student_login' => true,
 			'user_id' => $user_id,
-			'school_id' => $data['school_id'],
 			'user_name' => $data['name'],
 			'user_type' => 'student',
 			'is_logged_in' => true
