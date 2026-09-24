@@ -636,15 +636,19 @@ class User_model extends Model {
 			$new_value = isset($new_data[$col]) ? (int) $new_data[$col] : 0;
 
 			if ($old_value !== $new_value) {
-				\db()->table('permission_history')->insert([
-					'teacher_id' => $teacher_id,
-					'class_id' => $class_id,
-					'column_name' => $col,
-					'old_value' => $old_value,
-					'new_value' => $new_value,
-					'changed_by' => $changed_by,
-					'school_id' => $school_id
-				]);
+				try {
+					\db()->table('permission_history')->insert([
+						'teacher_id' => $teacher_id,
+						'class_id' => $class_id,
+						'column_name' => $col,
+						'old_value' => $old_value,
+						'new_value' => $new_value,
+						'changed_by' => $changed_by,
+						'school_id' => $school_id
+					]);
+				} catch (\Throwable $e) {
+					log_message('error', 'Permission history was not saved: ' . $e->getMessage());
+				}
 			}
 		}
 	}

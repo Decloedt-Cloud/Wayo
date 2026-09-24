@@ -576,16 +576,22 @@ class Admin extends BaseController
     }
 
     if ($param1 == 'modify_permission') {
-      $page_data['class_id'] = htmlspecialchars((string) ($this->request->getPost('class_id') ?? ''));
+      $page_data['class_id'] = (int) ($this->request->getPost('class_id') ?? 0);
       $this->user_model->teacher_permission();
-      $response_html = view('backend/admin/permission/list', $page_data);
 
-      $csrf = array(
+      $response_html = '';
+      try {
+        $response_html = view('backend/admin/permission/list', $page_data);
+      } catch (\Throwable $e) {
+        log_message('error', 'Permission list could not be refreshed: ' . $e->getMessage());
+      }
+
+      return $this->response->setJSON([
+          'status' => true,
+          'html' => $response_html,
           'csrfName' => csrf_token(),
           'csrfHash' => csrf_hash(),
-      );
-
-      echo json_encode(array('html' => $response_html, 'csrfName' => $csrf['csrfName'], 'csrfHash' => $csrf['csrfHash']));
+      ]);
     }
 
     if ($param1 == 'history') {
