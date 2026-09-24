@@ -424,15 +424,21 @@ class Crud_model extends Model
         $end_date = date('Y-m-t');
         
         try {
-            $result = \db()->table('events')
+            $query = \db()->table('event_calendars')
                 ->where('school_id', $school_id)
-                ->where("date >= ", $start_date)
-                ->where("date <= ", $end_date)
-                ->get()
-                ->getResultArray();
-            
-            return $result;
-        } catch (\Exception $e) {
+                ->where('starting_date <=', $end_date)
+                ->groupStart()
+                    ->where('ending_date >=', $start_date)
+                    ->orWhere('ending_date', null)
+                ->groupEnd()
+                ->get();
+
+            if ($query === false) {
+                return [];
+            }
+
+            return $query->getResultArray();
+        } catch (\Throwable $e) {
             return [];
         }
     }
@@ -447,7 +453,7 @@ class Crud_model extends Model
                 ->where('school_id', $school_id)
                 ->where('timestamp', $timestamp)
                 ->countAllResults();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 0;
         }
     }
@@ -472,10 +478,13 @@ class Crud_model extends Model
                 $builder->where('class_id', $class_id);
             }
             
-            $result = $builder->where('school_id', $school_id)->get()->getResultArray();
-            
-            return $result;
-        } catch (\Exception $e) {
+            $query = $builder->where('school_id', $school_id)->get();
+            if ($query === false) {
+                return [];
+            }
+
+            return $query->getResultArray();
+        } catch (\Throwable $e) {
             return [];
         }
     }
@@ -500,10 +509,13 @@ class Crud_model extends Model
             $builder->where('school_id', $school_id);
             $builder->where('session', $active_session);
 
-            $result = $builder->get()->getResultArray();
+            $query = $builder->get();
+            if ($query === false) {
+                return [];
+            }
 
-            return $result;
-        } catch (\Exception $e) {
+            return $query->getResultArray();
+        } catch (\Throwable $e) {
             log_message('error', 'Expense query error: ' . $e->getMessage());
             return [];
         }
