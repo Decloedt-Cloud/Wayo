@@ -2714,17 +2714,13 @@ class User_model extends Model {
 			]);
 		}
 
-		$user_language = get_user_language();
-		
-		// Préparer les données de l'utilisateur
 		$data = [
 			'name' => html_entity_decode(htmlspecialchars($this->request->getPost('first_name') . ' ' . $this->request->getPost('last_name'))),
-			'email' => htmlspecialchars($email),
-			'birthday' => htmlspecialchars($this->request->getPost('date_of_birth')),
+			'email' => $email,
+			'birthday' => (string) $this->request->getPost('date_of_birth'),
 			'password' => password_hash($plainPassword, PASSWORD_DEFAULT),
 			'role' => 'student',
 			'status' => 1,
-			'language' => $user_language,
 			'watch_history' => '[]'
 		];
 
@@ -2755,7 +2751,7 @@ class User_model extends Model {
 				'name' => $data['name'],
 				'email' => $data['email'],
 				'birthday' => $data['birthday'],
-				'language' => $data['language']
+				'language' => get_user_language()
 			]);
 		} catch (\Throwable $e) {
 			log_message('error', 'Member registration audit failed: ' . $e->getMessage());
