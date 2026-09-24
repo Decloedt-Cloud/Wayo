@@ -52,7 +52,7 @@ if (!empty($schools)) {
           <!-- Card Image -->
           <div class="card-image">
             <img src="<?php echo $this->user_model->get_school_cover($c['id']); ?>" 
-                 alt="<?php echo htmlspecialchars($c['name']); ?>" 
+                 alt="<?php echo htmlspecialchars(html_entity_decode((string) $c['name'], ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>" 
                  loading="lazy">
             <span class="card-badge <?php echo $is_private ? 'private' : 'public'; ?>">
               <?php echo $is_private ? get_phrase('Private') : get_phrase('public'); ?>
@@ -61,8 +61,8 @@ if (!empty($schools)) {
           
           <!-- Card Content -->
           <div class="card-content">
-            <h3 class="card-title"><?php echo htmlspecialchars($c['name']); ?></h3>
-            <p class="card-description"><?php echo htmlspecialchars((string) ($c['description'] ?? '')); ?></p>
+            <h3 class="card-title"><?php echo htmlspecialchars(html_entity_decode((string) $c['name'], ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></h3>
+            <p class="card-description"><?php echo htmlspecialchars(html_entity_decode((string) ($c['description'] ?? ''), ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></p>
             
             <!-- Stats -->
             <div class="card-stats">
