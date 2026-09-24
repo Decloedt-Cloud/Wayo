@@ -108,7 +108,7 @@ if (!function_exists('community_billing_sync')) {
             );
         }
 
-        if ($previous !== $enabled) {
+        if ($previous !== $enabled && is_writable(dirname($path))) {
             file_put_contents($path, json_encode([
                 'enabled' => $enabled,
                 'updated_at' => time(),

@@ -453,16 +453,20 @@ if (!function_exists('currency')) {
     }else{
       $settings_data = db_get_where('settings_school', array('school_id' => $session->get('school_id') ))->getRowArray();
     }
+    if (!is_array($settings_data) || empty($settings_data['system_currency'])) {
+      return (string) $price;
+    }
     $currency_code = $settings_data['system_currency'];
 
-    $symbol = $db->table('currencies')->where('code', $currency_code)->get()->getRow()->symbol;
+    $currencyRow = $db->table('currencies')->where('code', $currency_code)->get()->getRow();
+    $symbol = $currencyRow->symbol ?? $currency_code;
 
     // Force AED symbol to 'AED' instead of Arabic
     if ($currency_code == 'AED' || $symbol == 'د.م' || $symbol == 'د.م.') {
       $symbol = 'AED';
     }
 
-    $position = $settings_data['currency_position'];
+    $position = $settings_data['currency_position'] ?? 'left';
 
     // Force right-space position for AED
     if ($currency_code == 'AED' || $symbol == 'AED') {
@@ -496,7 +500,7 @@ if (!function_exists('currency_payment')) {
       $symbol = 'AED';
     }
 
-    $position = $settings_data['currency_position'];
+    $position = $settings_data['currency_position'] ?? 'left';
 
     // Force right-space position for AED
     if ($currency_code == 'AED' || $symbol == 'AED') {

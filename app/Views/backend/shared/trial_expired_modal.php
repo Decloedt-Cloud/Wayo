@@ -1,7 +1,7 @@
 <?php
 $__trial_roles = ['admin', 'teacher'];
-$__current_role = strtolower(session()->get('user_type'));
-$__current_role_alt = strtolower(session()->get('role')); // Fallback
+$__current_role = strtolower((string) session()->get('user_type'));
+$__current_role_alt = strtolower((string) session()->get('role')); // Fallback
 if (!$__current_role || $__current_role === '') {
     $__current_role = $__current_role_alt;
 }
