@@ -1605,13 +1605,13 @@ class User_model extends Model {
 		
 		if ($action == 'on_create') {
 			$duplicate_email_check = $db->table('users')
-				->where('LOWER(email)', $email, false)
+				->where('email', $email)
 				->get();
 			
 			return $duplicate_email_check->getNumRows() === 0;
 		} elseif ($action == 'on_update') {
 			$duplicate_email_check = $db->table('users')
-				->where('LOWER(email)', $email, false)
+				->where('email', $email)
 				->where('id !=', $user_id)
 				->get();
 			
@@ -2721,7 +2721,7 @@ class User_model extends Model {
 			'name' => html_entity_decode(htmlspecialchars($this->request->getPost('first_name') . ' ' . $this->request->getPost('last_name'))),
 			'email' => htmlspecialchars($email),
 			'birthday' => htmlspecialchars($this->request->getPost('date_of_birth')),
-			'password' => sha1($this->request->getPost('password-student')),
+			'password' => password_hash($plainPassword, PASSWORD_DEFAULT),
 			'role' => 'student',
 			'status' => 1,
 			'language' => $user_language,

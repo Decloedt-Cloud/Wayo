@@ -131,7 +131,19 @@ class Admission extends BaseController
             return;
         }
         
-        $result = $this->user_model->register_user_form();
+        try {
+            $result = $this->user_model->register_user_form();
+        } catch (\Throwable $e) {
+            log_message('error', 'register_member failed: ' . $e->getMessage());
+            $result = json_encode([
+                'status' => false,
+                'message' => get_phrase('registration_failed'),
+                'csrf' => [
+                    'csrfName' => csrf_token(),
+                    'csrfHash' => csrf_hash()
+                ]
+            ]);
+        }
         $decoded = json_decode($result, true);
         if (isset($decoded['status']) && $decoded['status'] === false) {
             $cache->save($cacheKey, $attempts + 1, $ttl);
