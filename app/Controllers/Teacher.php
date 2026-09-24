@@ -2084,7 +2084,7 @@ class Teacher extends BaseController
 			$page_data['check_permission'] = (!empty($page_data['class_id']) && in_array((int) $page_data['class_id'], $allowedClassIds, true)) ? 1 : 0;
 
 			      // Charger la vue mise Ã  jour
-			$response_html = view('backend/teacher/attendance/student', $page_data, ['cache' => 0]);
+			$response_html = view('backend/teacher/attendance/student', $page_data);
 			// PrÃ©parer le nouveau jeton CSRF
 			$csrf = array(
 			'csrfName' => csrf_token(),

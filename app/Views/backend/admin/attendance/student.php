@@ -256,15 +256,19 @@
                     <td>
                         <div class="exp-user-info">
                             <?php
-                                $student_details = db()->table('students')->where('id', $enroll['student_id'])->get()->getRowArray();
-                                $user_details = db()->table('users')->where('id', $student_details['user_id'])->get()->getRowArray();
-                                $initials = strtoupper(substr($user_details['name'], 0, 1));
+                                $student_details = db()->table('students')->where('id', $enroll['student_id'])->get()->getRowArray() ?: [];
+                                $user_details = [];
+                                if (!empty($student_details['user_id'])) {
+                                    $user_details = db()->table('users')->where('id', $student_details['user_id'])->get()->getRowArray() ?: [];
+                                }
+                                $memberName = (string) ($user_details['name'] ?? '');
+                                $initials = $memberName !== '' ? strtoupper(substr($memberName, 0, 1)) : '?';
                             ?>
                             <div class="exp-user-avatar">
                                 <?php echo $initials; ?>
                             </div>
                             <span class="exp-user-name">
-                                <?php echo $user_details['name']; ?>
+                                <?php echo esc($memberName); ?>
                             </span>
                         </div>
                     </td>
@@ -272,12 +276,16 @@
                         <input type="hidden" name="student_id[]" value="<?php echo $enroll['student_id']; ?>">
                         
                         <?php
-                            $update_attendance = db()->table('daily_attendances')->where('timestamp', $attendance_date)->get()->getResultArray();
-                            $status = -1;
-                            if(count($update_attendance) > 0) {
-                                $row = $update_attendance[0];
-                                $status = $row['status'];
-                                echo '<input type="hidden" name="attendance_id[]" value="'.$row['id'].'">';
+                            $row = db()->table('daily_attendances')
+                                ->where('timestamp', $attendance_date)
+                                ->where('student_id', $enroll['student_id'])
+                                ->where('class_id', $class_id)
+                                ->where('school_id', $school_id)
+                                ->get()
+                                ->getRowArray();
+                            $status = $row['status'] ?? -1;
+                            if (!empty($row['id'])) {
+                                echo '<input type="hidden" name="attendance_id[]" value="'.(int) $row['id'].'">';
                             }
                         ?>
 
