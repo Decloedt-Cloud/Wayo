@@ -7,6 +7,11 @@
   width: 100%;
   padding: 25px;
 }
+.empty_box img{
+  width: 150px;
+  max-width: 100%;
+  height: auto;
+}
 .modal_height{
   height: 100%;
 }

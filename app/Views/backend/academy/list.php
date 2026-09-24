@@ -560,6 +560,13 @@ $check_data = db()->table('sessions')->get();
             background: #4f46e5;
         }
 
+        .empty_box img,
+        .exp-empty-img {
+            width: 150px;
+            max-width: 100%;
+            height: auto;
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             .aca-list-header, 
@@ -771,7 +778,7 @@ $check_data = db()->table('sessions')->get();
     <?php
     if (session()->get('teacher_login') == 1 && empty($courses) && empty($teacher_allowed_class_ids)): ?>
         <div class="exp-empty-state">
-            <img class="exp-empty-img" src="<?php echo base_url('assets/backend/images/empty_box.png'); ?>" />
+            <img class="exp-empty-img" width="150" height="107" alt="" src="<?php echo base_url('assets/backend/images/empty_box.png'); ?>" />
             <div class="exp-empty-text"><?php echo get_phrase('no_classes_authorized_for_menu_management'); ?></div>
         </div>
     <?php elseif (count($courses) > 0): ?>
