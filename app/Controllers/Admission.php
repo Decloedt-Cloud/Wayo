@@ -7,6 +7,7 @@ class Admission extends BaseController
 {
     protected $theme = 'ultimate';
     protected $active_school_id;
+    protected $models = ['User_model', 'Crud_model', 'Frontend_model'];
 
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
     {
