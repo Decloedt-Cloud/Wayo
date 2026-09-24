@@ -35,12 +35,12 @@ class ContentSecurityPolicyFilter implements FilterInterface
 
         $cspHeader = "default-src 'self'; " .
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
-            'http://cdn.jsdelivr.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://stackpath.bootstrapcdn.com https://ajax.googleapis.com https://js.stripe.com https://www.paypalobjects.com https://t.paypal.com https://www.paypal.com; ' .
+            'http://cdn.jsdelivr.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://stackpath.bootstrapcdn.com https://ajax.googleapis.com https://js.stripe.com https://www.paypalobjects.com https://t.paypal.com https://www.paypal.com https://static.cloudflareinsights.com; ' .
             "style-src 'self' 'unsafe-inline' 'unsafe-hashes' " .
             'http://cdn.jsdelivr.net https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com https://stackpath.bootstrapcdn.com; ' .
             "img-src 'self' data: blob: http: https: https://cdn.plyr.io; " .
             "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; " .
-            'connect-src \'self\' ' . $baseURL . ' https://wayochat.wayo.ac wss://wayochat.wayo.ac https://cdn.jsdelivr.net https://cdn.plyr.io https://api.country.is https://unpkg.com https://js.stripe.com https://www.paypal.com https://www.paypalobjects.com; ' .
+            'connect-src \'self\' ' . $baseURL . ' https://wayochat.wayo.ac wss://wayochat.wayo.ac https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.plyr.io https://api.country.is https://unpkg.com https://js.stripe.com https://www.paypal.com https://www.paypalobjects.com https://static.cloudflareinsights.com https://cloudflareinsights.com; ' .
             "media-src 'self' blob: https:; " .
             "object-src 'none'; " .
             "frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; " .
