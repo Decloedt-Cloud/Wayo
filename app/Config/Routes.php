@@ -98,21 +98,11 @@ $routes->get('fr', 'Home::index');
 $routes->get('ar', 'Home::index');
 $routes->get('es', 'Home::index');
 $routes->get('nl', 'Home::index');
-$routes->get('en/join/community', function() {
-    return redirect()->to('/admission/online_admission');
-});
-$routes->get('fr/join/community', function() {
-    return redirect()->to('/fr/admission/online_admission');
-});
-$routes->get('ar/join/community', function() {
-    return redirect()->to('/ar/admission/online_admission');
-});
-$routes->get('es/join/community', function() {
-    return redirect()->to('/es/admission/online_admission');
-});
-$routes->get('nl/join/community', function() {
-    return redirect()->to('/nl/admission/online_admission');
-});
+$routes->get('en/join/community', 'Admission::online_admission');
+$routes->get('fr/join/community', 'Admission::online_admission');
+$routes->get('ar/join/community', 'Admission::online_admission');
+$routes->get('es/join/community', 'Admission::online_admission');
+$routes->get('nl/join/community', 'Admission::online_admission');
 $routes->get('en/join/member', 'Admission::online_admission_student');
 $routes->get('fr/join/member', 'Admission::online_admission_student');
 $routes->get('ar/join/member', 'Admission::online_admission_student');
@@ -617,9 +607,7 @@ $routes->get('community_wall', 'Wall::community');
 $routes->get('community_wall/(:segment)', 'Wall::community/$1');
 $routes->get('(:segment)/community_wall', 'Wall::community');
 $routes->get('(:segment)/community_wall/(:segment)', 'Wall::community/$2');
-$routes->get('join/community', function() {
-    return redirect()->to('/admission/online_admission');
-}, ['as' => 'join/community']);
+$routes->get('join/community', 'Admission::online_admission', ['as' => 'join/community']);
 $routes->get('join/member', 'Admission::online_admission_student');
 $routes->post('join/member/submit/student', 'Admission::online_admission_student/submit/student');
 $routes->post('admission/online_admission_student/submit/student', 'Admission::online_admission_student/submit/student');
