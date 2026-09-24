@@ -2723,22 +2723,11 @@ class User_model extends Model {
 			'status' => 1,
 			'watch_history' => '[]'
 		];
+		$columns = \Config\Database::connect()->getFieldNames('users');
+		$data = array_intersect_key($data, array_flip($columns));
 
-		// Insérer l'utilisateur dans la base de données
 		\db()->table('users')->insert($data);
 		$user_id = \db()->insertID();
-		if (!empty($data['school_id'])) {
-			\db()->table('user_schools')->insert([
-				'user_id'   => $user_id,
-				'school_id' => $data['school_id'],
-				'role'      => 'student'
-			]);
-		}
-		
-		$image = $this->request->getFile('student_image');
-		if ($image && $image->isValid() && !$image->hasMoved()) {
-			$image->move(FCPATH . 'uploads/users', $user_id . '.jpg', true);
-		}
 		try {
 			$this->email_model->Add_online_admission($data['email'], $user_id, $data['name']);
 		} catch (\Throwable $e) {

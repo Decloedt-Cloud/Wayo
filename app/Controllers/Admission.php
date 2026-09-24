@@ -137,7 +137,7 @@ class Admission extends BaseController
             log_message('error', 'register_member failed: ' . $e->getMessage());
             $result = json_encode([
                 'status' => false,
-                'message' => get_phrase('registration_failed'),
+                'message' => $e->getMessage(),
                 'csrf' => [
                     'csrfName' => csrf_token(),
                     'csrfHash' => csrf_hash()
