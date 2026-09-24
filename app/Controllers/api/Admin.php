@@ -49,11 +49,8 @@ class Admin extends REST_Controller {
 
   // VALIDATE USER TOKEN
   public function user_get() {
-      $headers = $this->request->getHeaders();
+      $authHeader = $this->request->getHeaderLine('Authorization');
       $token = null;
-
-      // Handle case-insensitive header keys
-      $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : (isset($headers['authorization']) ? $headers['authorization'] : null);
 
       if ($authHeader) {
           $matches = array();

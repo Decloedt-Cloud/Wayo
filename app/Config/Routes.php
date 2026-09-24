@@ -1101,6 +1101,7 @@ $routes->post('stripe-webhook', 'StripeWebhook::index');
 $routes->get('api/admin', 'Api\Admin::index');
 $routes->get('api/admin/(:segment)', 'Api\Admin::$1');
 $routes->post('api/admin/(:segment)', 'Api\Admin::$1');
+$routes->get('api/user', 'Api\Admin::user_get');
 
 $routes->get('api/fxrates', 'Api\FxRates::index');
 $routes->get('api/fxrates/(:segment)', 'Api\FxRates::$1');
