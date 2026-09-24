@@ -612,7 +612,7 @@
                         <a href="<?php echo route('dashboard'); ?>" class="btn btn-accent btn-pill"><?php echo get_phrase("Create my account ") ?></a>
                     <?php else : ?>
                         <!-- utilisateur non connecté -->
-                        <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn btn-accent btn-pill"><?php echo get_phrase("Create my account") ?></a>
+                        <a href="<?php echo lang_route('join/community'); ?>" class="btn btn-accent btn-pill"><?php echo get_phrase("Create my account") ?></a>
           <?php endif; ?>
         </div>
       </div>

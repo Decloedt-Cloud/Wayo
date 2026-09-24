@@ -28,7 +28,7 @@
             <?php if (session()->get('user_id')) : ?>
               <a href="<?php echo route('dashboard'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
             <?php else : ?>
-              <a href="<?php echo site_url('admission/online_admission'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
+              <a href="<?php echo lang_route('join/community'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
             <?php endif; ?>
             <button class="obi-btn obi-btn--ghost" data-video="https://www.youtube.com/embed/2e6g2Lsl7aw"><?php echo get_phrase("Watch a demo") ?></button>
           </div>
@@ -129,7 +129,7 @@
                  <a href="<?php echo route('dashboard'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
             <?php else : ?>
                 <!-- utilisateur non connecté -->
-                  <a href="<?php echo site_url('admission/online_admission'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
+                  <a href="<?php echo lang_route('join/community'); ?>" class="obi-btn"><?php echo get_phrase("Start now") ?></a>
             <?php endif; ?>
              <button class="obi-btn obi-btn--ghost" data-video="https://www.youtube.com/embed/2e6g2Lsl7aw"><?php echo get_phrase("Watch a demo") ?></button>
            

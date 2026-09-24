@@ -184,7 +184,7 @@
         <!-- Formulaire : Inscription -->
        <form id="signupForm" class="login-pane" hidden novalidate>
         <div class="role-chooser">
-          <a class="role-card" href="<?php echo site_url('admission/online_admission_student'); ?>" id="ctaMember">
+          <a class="role-card" href="<?php echo lang_route('join/member'); ?>" id="ctaMember">
             <div class="role-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <path fill="currentColor" d="M12 13a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Zm0 2c-4.418 0-8 2.239-8 5v2h16v-2c0-2.761-3.582-5-8-5Z"/>
@@ -197,7 +197,7 @@
             <span class="role-arrow" aria-hidden="true">›</span>
           </a>
 
-          <a class="role-card" href="<?php echo site_url('admission/online_admission'); ?>" id="ctaMentor">
+          <a class="role-card" href="<?php echo lang_route('join/community'); ?>" id="ctaMentor">
             <div class="role-icon star">
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <path fill="currentColor" d="m12 2 2.6 5.7 6.3.9-4.6 4.5 1.1 6.3L12 16.9 6.6 19.4l1.1-6.3L3 8.6l6.3-.9L12 2z"/>

@@ -96,7 +96,7 @@
             <h2><i class="fa-solid fa-rocket <?php echo (get_user_language() === 'arabic') ? 'ms-2' : 'me-2'; ?>"></i><?php echo get_phrase("Launch your own community in minutes") ?></h2>
             <p><?php echo get_phrase("Monetize your expertise, engage your members, and enjoy the power of the Wayo platform") ?></p>
           </div>
-          <a href="<?php echo site_url('admission/online_admission'); ?>" class="cta-btn"><?php echo get_phrase("Create my community") ?> <i class="fa-solid fa-arrow-right <?php echo (get_user_language() === 'arabic') ? 'me-2 fa-flip-horizontal' : 'ms-2'; ?>"></i></a>
+          <a href="<?php echo lang_route('join/community'); ?>" class="cta-btn"><?php echo get_phrase("Create my community") ?> <i class="fa-solid fa-arrow-right <?php echo (get_user_language() === 'arabic') ? 'me-2 fa-flip-horizontal' : 'ms-2'; ?>"></i></a>
         </div>
       </div>
     </section>

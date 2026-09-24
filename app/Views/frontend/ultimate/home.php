@@ -24,7 +24,7 @@
             <p class="sub"><?php echo get_phrase("All-in-one_platform_to_create,_engage,_and_sell:_courses,_video_calls,_chat,_and_integrated_payments.") ?></p>
             <div class="hero-ctas">
               <?php if (!$session->get('user_id')): ?>
-                <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn outline"><?php echo get_phrase("create_community") ?></a>
+                <a href="<?php echo lang_route('join/community'); ?>" class="btn outline"><?php echo get_phrase("create_community") ?></a>
               <?php endif; ?>
             </div>
 
@@ -134,7 +134,7 @@
                         <a href="<?php echo route('dashboard'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
                     <?php else : ?>
                         <!-- utilisateur non connecté -->
-                          <a href="<?php echo site_url('admission/online_admission'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
+                          <a href="<?php echo lang_route('join/community'); ?>" class="btn accent plan-cta-split"><?php echo get_phrase("Start and build my community") ?></a>
                     <?php endif; ?>
                   <p class="plan-guarantee"><?php echo community_billing_enabled() ? '✔' . get_phrase("Enjoy 14 days of free trial before paying.") : get_phrase('community_is_free_for_now'); ?></p>
               </div>

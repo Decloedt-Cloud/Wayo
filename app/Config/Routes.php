@@ -108,11 +108,25 @@ $routes->get('fr/join/member', 'Admission::online_admission_student');
 $routes->get('ar/join/member', 'Admission::online_admission_student');
 $routes->get('es/join/member', 'Admission::online_admission_student');
 $routes->get('nl/join/member', 'Admission::online_admission_student');
-$routes->get('en/admission/online_admission', 'Home::online_admission_school');
-$routes->get('fr/admission/online_admission', 'Home::online_admission_school');
-$routes->get('ar/admission/online_admission', 'Home::online_admission_school');
-$routes->get('es/admission/online_admission', 'Home::online_admission_school');
-$routes->get('nl/admission/online_admission', 'Home::online_admission_school');
+$routes->get('en/admission/online_admission', static function () {
+    return redirect()->to('/en/join/community', 301);
+});
+$routes->get('fr/admission/online_admission', static function () {
+    return redirect()->to('/fr/join/community', 301);
+});
+$routes->get('ar/admission/online_admission', static function () {
+    return redirect()->to('/ar/join/community', 301);
+});
+$routes->get('es/admission/online_admission', static function () {
+    return redirect()->to('/es/join/community', 301);
+});
+$routes->get('nl/admission/online_admission', static function () {
+    return redirect()->to('/nl/join/community', 301);
+});
+$routes->get('admission/online_admission_student', static function () {
+    $lang = function_exists('get_current_lang_code') ? get_current_lang_code() : 'en';
+    return redirect()->to('/' . $lang . '/join/member', 301);
+});
 $routes->get('en/communities', 'Home::communities');
 $routes->get('fr/communities', 'Home::communities');
 $routes->get('ar/communities', 'Home::communities');
@@ -151,7 +165,10 @@ $routes->get('privacy_policy', 'Home::privacy_policy');
 $routes->get('terms_conditions', 'Home::terms_conditions');
 $routes->get('communities', 'Home::communities');
 $routes->get('community_details/(:num)', 'Home::community_details/$1');
-$routes->get('online_admission', 'Home::online_admission_school');
+$routes->get('online_admission', static function () {
+    $lang = function_exists('get_current_lang_code') ? get_current_lang_code() : 'en';
+    return redirect()->to('/' . $lang . '/join/community', 301);
+});
 
 $routes->get('en/about', 'Home::about');
 $routes->get('fr/about', 'Home::about');
@@ -249,13 +266,29 @@ $routes->get('fr/community_details/(:num)', 'Home::community_details/$1');
 $routes->get('ar/community_details/(:num)', 'Home::community_details/$1');
 $routes->get('es/community_details/(:num)', 'Home::community_details/$1');
 $routes->get('nl/community_details/(:num)', 'Home::community_details/$1');
-$routes->get('en/online_admission', 'Home::online_admission_school');
-$routes->get('fr/online_admission', 'Home::online_admission_school');
-$routes->get('ar/online_admission', 'Home::online_admission_school');
-$routes->get('es/online_admission', 'Home::online_admission_school');
-$routes->get('nl/online_admission', 'Home::online_admission_school');
-$routes->get('online-admission', 'Home::onlineadmission');
-$routes->get('admission/online_admission', 'Home::online_admission_school');
+$routes->get('en/online_admission', static function () {
+    return redirect()->to('/en/join/community', 301);
+});
+$routes->get('fr/online_admission', static function () {
+    return redirect()->to('/fr/join/community', 301);
+});
+$routes->get('ar/online_admission', static function () {
+    return redirect()->to('/ar/join/community', 301);
+});
+$routes->get('es/online_admission', static function () {
+    return redirect()->to('/es/join/community', 301);
+});
+$routes->get('nl/online_admission', static function () {
+    return redirect()->to('/nl/join/community', 301);
+});
+$routes->get('online-admission', static function () {
+    $lang = function_exists('get_current_lang_code') ? get_current_lang_code() : 'en';
+    return redirect()->to('/' . $lang . '/join/community', 301);
+});
+$routes->get('admission/online_admission', static function () {
+    $lang = function_exists('get_current_lang_code') ? get_current_lang_code() : 'en';
+    return redirect()->to('/' . $lang . '/join/community', 301);
+});
 
 $routes->get('help-center', 'Home::help_center');
 $routes->get('en/help-center', 'Home::help_center');
