@@ -113,6 +113,11 @@ $routes->get('es/join/community', function() {
 $routes->get('nl/join/community', function() {
     return redirect()->to('/nl/admission/online_admission');
 });
+$routes->get('en/join/member', 'Admission::online_admission_student');
+$routes->get('fr/join/member', 'Admission::online_admission_student');
+$routes->get('ar/join/member', 'Admission::online_admission_student');
+$routes->get('es/join/member', 'Admission::online_admission_student');
+$routes->get('nl/join/member', 'Admission::online_admission_student');
 $routes->get('en/admission/online_admission', 'Home::online_admission_school');
 $routes->get('fr/admission/online_admission', 'Home::online_admission_school');
 $routes->get('ar/admission/online_admission', 'Home::online_admission_school');
@@ -615,6 +620,9 @@ $routes->get('(:segment)/community_wall/(:segment)', 'Wall::community/$2');
 $routes->get('join/community', function() {
     return redirect()->to('/admission/online_admission');
 }, ['as' => 'join/community']);
+$routes->get('join/member', 'Admission::online_admission_student');
+$routes->post('join/member/submit/student', 'Admission::online_admission_student/submit/student');
+$routes->post('admission/online_admission_student/submit/student', 'Admission::online_admission_student/submit/student');
 
 $routes->get('admin/school', 'Admin::school');
 $routes->get('admin/dashboard', 'Admin::dashboard');
