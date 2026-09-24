@@ -76,6 +76,7 @@
     .exp-filter-grid {
         display: flex;
         align-items: flex-end;
+        flex-wrap: wrap;
         gap: 1rem;
     }
 
@@ -180,34 +181,45 @@
     .exp-list-container {
         border: 1px solid var(--exp-border);
         border-radius: 12px;
-        overflow: hidden;
+        overflow-x: auto;
         background: white;
         box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         min-height: 400px;
     }
 
-    .exp-list-header {
+    .exp-list-header,
+    .exp-list-item {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
+        grid-template-columns: minmax(200px, 2.2fr) repeat(3, minmax(110px, 1fr)) minmax(110px, 0.9fr);
+        min-width: 720px;
+        column-gap: 0.75rem;
+    }
+
+    .exp-list-header {
         padding: 1rem 1.5rem;
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         border-bottom: 1px solid var(--exp-border);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 600;
         text-transform: uppercase;
         color: white;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.4px;
     }
 
     .exp-list-header div {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        justify-content: center;
+        gap: 0.35rem;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    .exp-list-header div:first-child {
+        justify-content: flex-start;
     }
 
     .exp-list-item {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--exp-border);
         align-items: center;
