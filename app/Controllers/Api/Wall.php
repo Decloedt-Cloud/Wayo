@@ -8,8 +8,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 
-require APPPATH . '/libraries/TokenHandler.php';
-require APPPATH . 'libraries/REST_Controller.php';
+require APPPATH . 'Libraries/TokenHandler.php';
+require APPPATH . 'Libraries/REST_Controller.php';
 
 /**
  * Wall API Controller
@@ -27,9 +27,7 @@ class Wall extends REST_Controller
         
         ini_set('display_errors', 0);
         ini_set('error_reporting', 0);
-        
-        $this->db->db_debug = FALSE;
-        
+
         $this->loadModel('Wall_model', 'wall_model');
         $this->loadModel('User_model', 'user_model');
         $this->wallauthorization = new \App\Libraries\WallAuthorization();
