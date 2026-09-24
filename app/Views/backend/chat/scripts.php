@@ -1464,10 +1464,10 @@
             const formData = new FormData();
             formData.append('content', content);
             
-            let $type = 'text';
-            if (selectedImageFile) { $type = 'image';
+            let type = 'text';
+            if (selectedImageFile) { type = 'image';
                 formData.append('file', selectedImageFile);
-            } else if (recordedAudioBlob) { $type = 'audio';
+            } else if (recordedAudioBlob) { type = 'audio';
                 formData.append('file', recordedAudioBlob, 'audio.webm');
                 // Optional: calculate duration if needed
             }
