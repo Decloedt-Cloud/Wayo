@@ -1891,7 +1891,13 @@ class Admin extends BaseController
                 'csrfName' => csrf_token(),
                 'csrfHash' => csrf_hash(),
             );
-            echo json_encode(array('html' => $html_content, 'csrf' => $csrf));
+            $payload = array('html' => $html_content, 'csrf' => $csrf);
+            $json = json_encode($payload, JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($json === false) {
+                $payload['html'] = '';
+                $json = json_encode($payload);
+            }
+            return $this->response->setContentType('application/json')->setBody($json);
         }
 
         if (empty($param1)) {

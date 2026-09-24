@@ -414,7 +414,7 @@ if (!isset($working_page)) {
         console.log('Fetching librarian list...');
         
         $.ajax({
-            url: '<?php echo route('librarian/list') ?>',
+            url: '<?php echo site_url('app/librarian/list') ?>',
             data: { [csrfName]: csrfHash },
             success: function (response) {
                 console.log('Librarian list fetched successfully');

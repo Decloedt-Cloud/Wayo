@@ -56,12 +56,6 @@
 <?php endif; ?>
 
 <script>
-    $('document').ready(function () {
-        // Charger tous les étudiants au démarrage
-        showAllStudents();
-    });
-
-
     function filter_student() {
         var class_id = $('#class_id').val();
 
@@ -78,10 +72,13 @@
         var csrfName = $('input[name="<?= csrf_token(); ?>"]').attr('name');
         var csrfHash = $('input[name="<?= csrf_token(); ?>"]').val();
         $.ajax({
-            url: '<?php echo route('student/filter/') ?>/' + (class_id == 'all' ? '' : class_id),
+            url: '<?php echo site_url('app/student/filter/') ?>' + (class_id == 'all' ? '' : class_id),
             data: { [csrfName]: csrfHash },
             dataType: 'json',
             success: function (response) {
+                if (!response || typeof response.html === 'undefined') {
+                    return;
+                }
                 $('.student_content').html(response.html);
                 if ($.fn.DataTable.isDataTable('#basic-datatable')) {
                     $('#basic-datatable').DataTable().destroy();
@@ -102,9 +99,9 @@
     }
 
                 });
-                var newCsrfName = response.csrf.csrfName;
-                var newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+                if (response.csrf && response.csrf.csrfName && response.csrf.csrfHash) {
+                    $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                }
             }
         });
     }

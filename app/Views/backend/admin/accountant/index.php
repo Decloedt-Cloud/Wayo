@@ -486,7 +486,7 @@ if (!isset($working_page)) {
         console.log('Fetching accountant list...');
         
         $.ajax({
-            url: '<?php echo route('accountant/list') ?>',
+            url: '<?php echo site_url('app/accountant/list') ?>',
             data: { [csrfName]: csrfHash },
             success: function (response) {
                 console.log('Accountant list fetched successfully');

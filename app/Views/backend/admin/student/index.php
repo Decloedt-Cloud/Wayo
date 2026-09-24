@@ -391,14 +391,6 @@
         }
     };
 
-    $('document').ready(function () {
-        // Charger tous les étudiants au démarrage
-        if(typeof window.showAllStudents === 'function') {
-            window.showAllStudents();
-        }
-    });
-
-
     window.filter_student = function() {
         var class_id = $('#class_id').val();
 
@@ -428,16 +420,20 @@
         console.log('Fetching student list...');
         
         $.ajax({
-            url: '<?php echo site_url('admin/student/filter/'); ?>' + (class_id == 'all' ? '' : class_id),
+            url: '<?php echo site_url('app/student/filter/'); ?>' + (class_id == 'all' ? '' : class_id),
             data: { [csrfName]: csrfHash },
             dataType: 'json',
             success: function (response) {
                 console.log('Student list fetched successfully');
+                if (!response || typeof response.html === 'undefined') {
+                    $('.student_content').css('opacity', '1');
+                    return;
+                }
                 $('.student_content').html(response.html).css('opacity', '1');
-                
-                var newCsrfName = response.csrf.csrfName;
-                var newCsrfHash = response.csrf.csrfHash;
-                $('input[name="' + newCsrfName + '"]').val(newCsrfHash);
+
+                if (response.csrf && response.csrf.csrfName && response.csrf.csrfHash) {
+                    $('input[name="' + response.csrf.csrfName + '"]').val(response.csrf.csrfHash);
+                }
                 
                 // Restore state and trigger updates in the new list.php script
                 if (currentSearch) {
