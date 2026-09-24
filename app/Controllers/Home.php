@@ -257,7 +257,7 @@ class Home extends BaseController
             }
         }
 
-        $totalRows = (clone $builder)->countAllResults();
+        $totalRows = (clone $builder)->countAllResults(false);
         $totalPages = max(1, (int) ceil($totalRows / $perPage));
         $offset = ($page - 1) * $perPage;
         $schools = $builder

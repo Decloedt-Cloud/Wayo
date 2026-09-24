@@ -294,6 +294,11 @@ class BuilderCompat
         $this->builder = $builder;
     }
 
+    public function __clone()
+    {
+        $this->builder = clone $this->builder;
+    }
+
     /**
      * Override get() to return a ResultCompat.
      */
