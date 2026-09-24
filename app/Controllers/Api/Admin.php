@@ -2,6 +2,8 @@
 
 namespace App\Controllers\api;
 
+use App\Libraries\REST_Controller;
+use App\Libraries\TokenHandler;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
