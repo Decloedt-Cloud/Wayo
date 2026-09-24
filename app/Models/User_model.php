@@ -2689,14 +2689,14 @@ class User_model extends Model {
 				'status' => false,
 				'message' => get_phrase('validation_error'),
 				'csrf' => [
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash()
+					'csrfName' => csrf_token(),
+					'csrfHash' => csrf_hash()
 				]
 			]);
 		}
 
-		// Vérifier la duplication de l'email
-		if (\db()->table('users')->countAllResults() > 0) {
+		$email = strtolower(trim((string) $this->request->getPost('student_email')));
+		if (!$this->check_duplication('on_create', $email)) {
 			$audit_log_model = new \App\Models\Audit_log_model();
 			$audit_log_model->log_failed_registration_student([
 				'name' => $this->request->getPost('first_name') . ' ' . $this->request->getPost('last_name'),
@@ -2708,8 +2708,8 @@ class User_model extends Model {
 				'status' => false,
 				'message' => get_phrase('email_already_exists'),
 				'csrf' => [
-					'csrfName' => $this->security->get_csrf_token_name(),
-					'csrfHash' => $this->security->get_csrf_hash()
+					'csrfName' => csrf_token(),
+					'csrfHash' => csrf_hash()
 				]
 			]);
 		}
@@ -2719,7 +2719,7 @@ class User_model extends Model {
 		// Préparer les données de l'utilisateur
 		$data = [
 			'name' => html_entity_decode(htmlspecialchars($this->request->getPost('first_name') . ' ' . $this->request->getPost('last_name'))),
-			'email' => htmlspecialchars($this->request->getPost('student_email')),
+			'email' => htmlspecialchars($email),
 			'birthday' => htmlspecialchars($this->request->getPost('date_of_birth')),
 			'password' => sha1($this->request->getPost('password-student')),
 			'role' => 'student',
@@ -2732,11 +2732,13 @@ class User_model extends Model {
 		// Insérer l'utilisateur dans la base de données
 		\db()->table('users')->insert($data);
 		$user_id = \db()->insertID();
-		\db()->table('user_schools')->insert([
-			'user_id'   => $user_id,
-			'school_id' => $data['school_id'], // ou l'ID de la communauté
-			'role'      => 'student'
-		]);
+		if (!empty($data['school_id'])) {
+			\db()->table('user_schools')->insert([
+				'user_id'   => $user_id,
+				'school_id' => $data['school_id'],
+				'role'      => 'student'
+			]);
+		}
 		
 		$files = $this->request->getFiles();
 		// Gérer l'upload de l'image
@@ -2749,14 +2751,17 @@ class User_model extends Model {
 					'status' => false,
 					'message' => get_phrase('image_upload_failed'),
 					'csrf' => [
-						'csrfName' => $this->security->get_csrf_token_name(),
-						'csrfHash' => $this->security->get_csrf_hash()
+						'csrfName' => csrf_token(),
+						'csrfHash' => csrf_hash()
 					]
 				]);
 			}
 		}
-		// Envoyer un email de confirmation
-		$this->email_model->Add_online_admission($data['email'], $user_id, $data['name']);
+		try {
+			$this->email_model->Add_online_admission($data['email'], $user_id, $data['name']);
+		} catch (\Throwable $e) {
+			log_message('error', 'Member registration email failed: ' . $e->getMessage());
+		}
 
 		// Log admission in audit trail
 		$audit_log_model = new \App\Models\Audit_log_model();
@@ -2784,8 +2789,8 @@ class User_model extends Model {
 			'status' => true,
 			'message' => get_phrase('registration_successful'),
 			'csrf' => [
-				'csrfName' => $this->security->get_csrf_token_name(),
-				'csrfHash' => $this->security->get_csrf_hash()
+				'csrfName' => csrf_token(),
+				'csrfHash' => csrf_hash()
 			]
 		]);
 	}
