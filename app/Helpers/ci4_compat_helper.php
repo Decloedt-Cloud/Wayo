@@ -659,10 +659,10 @@ if (!function_exists('get_phrase')) {
     {
         $language_code = get_user_language();
         
-        $langFile = APPPATH . 'Language/' . ucfirst($language_code) . '.json';
-        
-        if (!file_exists($langFile)) {
-            $langFile = APPPATH . 'Language/English.json';
+        $langFile = APPPATH . 'Language/' . $language_code . '.json';
+
+        if (!is_file($langFile)) {
+            $langFile = APPPATH . 'Language/english.json';
         }
         
         if (file_exists($langFile)) {
@@ -684,7 +684,7 @@ if (!function_exists('openJSONFile')) {
     function openJSONFile($code)
     {
         $jsonString = [];
-        $langFile = APPPATH . 'Language/' . ucfirst($code) . '.json';
+        $langFile = APPPATH . 'Language/' . $code . '.json';
         
         if (file_exists($langFile)) {
             $jsonString = file_get_contents($langFile);
