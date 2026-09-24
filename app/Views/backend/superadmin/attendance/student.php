@@ -19,7 +19,14 @@
                 <?php foreach($enrols as $enroll): ?>
                 <tr>
                     <td>
-                        <?php echo $this->user_model->get_user_details(db()->table('students')->where('id', $enroll['student_id'])->get()->getRow()->user_id ?? '', 'name'); ?>
+                        <?php
+                            $studentRow = db()->table('students')->where('id', $enroll['student_id'])->get()->getRow();
+                            $studentName = '';
+                            if (!empty($studentRow->user_id) && isset($this->user_model)) {
+                                $studentName = $this->user_model->get_user_details($studentRow->user_id, 'name');
+                            }
+                            echo esc((string) $studentName);
+                        ?>
                     </td>
                     <td>
                         <input type="hidden" name="student_id[]" value="<?php echo $enroll['student_id']; ?>">

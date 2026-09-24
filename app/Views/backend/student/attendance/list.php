@@ -87,7 +87,10 @@
   <div class="col-md-8">
     <div class="attendance-summary">
         <h4><?php echo get_phrase('attendance_report').' '.get_phrase('of').' '.date('F', $attendance_date); ?></h4>
-        <h5><?php echo get_phrase('class'); ?> : <?php echo db()->table('classes')->where('id', $class_id)->get()->getRow()->name ?? ''; ?></h5>
+        <h5><?php
+            $classRow = db()->table('classes')->where('id', $class_id)->get()->getRow();
+            echo get_phrase('class'); ?> : <?php echo $classRow->name ?? '';
+        ?></h5>
         <h5>
         <?php echo get_phrase('last_updated_at'); ?> :
         <?php if (get_settings('date_of_last_updated_attendance') == ""): ?>
@@ -141,13 +144,23 @@
                 <?php if($student_id_count != $attendance_of_student['student_id']): ?>
                 <tr>
                     <td style="position: sticky; left: 0; background: white; z-index: 5; border-right: 1px solid var(--border-color);">
-                        <?php echo $this->user_model->get_user_details(db()->table('students')->where('id', $attendance_of_student['student_id'])->get()->getRow()->user_id ?? '', 'name'); ?>
+                        <?php
+                            $studentRow = db()->table('students')->where('id', $attendance_of_student['student_id'])->get()->getRow();
+                            $studentName = '';
+                            if (!empty($studentRow->user_id) && isset($this->user_model)) {
+                                $studentName = $this->user_model->get_user_details($studentRow->user_id, 'name');
+                            }
+                            echo esc((string) $studentName);
+                        ?>
                     </td>
                     <?php for ($i = 1; $i <= $number_of_days; $i++): ?>
                     <?php $date = $i.' '.$month.' '.$year; ?>
                     <?php $timestamp = strtotime($date); ?>
                     <td class="text-center">
-                        <?php $status = db()->table('daily_attendances')->where('class_id', $class_id)->where('school_id', $school_id)->where('session_id', $active_sesstion)->where('student_id', $attendance_of_student['student_id'])->where('timestamp', $timestamp)->get()->getRow()->status ?? null; ?>
+                        <?php
+                            $statusRow = db()->table('daily_attendances')->where('class_id', $class_id)->where('school_id', $school_id)->where('session_id', $active_sesstion)->where('student_id', $attendance_of_student['student_id'])->where('timestamp', $timestamp)->get()->getRow();
+                            $status = $statusRow->status ?? null;
+                        ?>
                         <?php if($status == 1){ ?>
                         <i class="mdi mdi-circle text-success status-icon"></i>
                         <?php }elseif($status === "0"){ ?>
