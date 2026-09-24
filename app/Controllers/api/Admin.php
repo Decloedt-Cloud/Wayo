@@ -7,9 +7,9 @@ use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 
-require APPPATH . '/libraries/TokenHandler.php';
+require APPPATH . 'Libraries/TokenHandler.php';
 //include Rest Controller library
-require APPPATH . 'libraries/REST_Controller.php';
+require APPPATH . 'Libraries/REST_Controller.php';
 
 class Admin extends REST_Controller {
 
