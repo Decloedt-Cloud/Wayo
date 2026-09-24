@@ -684,7 +684,8 @@ class Teacher extends BaseController
         // Load view for non-AJAX request
         $page_data['recordings'] = $recordings;
         $page_data['filters'] = $filters;
-        $page_data['page_name'] = 'recording/recording';
+        $page_data['folder_name'] = 'recording';
+        $page_data['page_name'] = 'recording';
         $page_data['page_title'] = 'recording';
 
         return view('backend/index', $page_data);
